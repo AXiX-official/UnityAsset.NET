@@ -336,7 +336,7 @@ public sealed class BundleFile
         }
     }
 
-    private void fixCRC(uint targetCRC, uint currentCRC)
+    public void fixCRC(uint targetCRC, uint currentCRC)
     {
         if (targetCRC == currentCRC)
         {
