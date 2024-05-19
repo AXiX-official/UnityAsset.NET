@@ -1,5 +1,8 @@
 ﻿# UnityAsset.NET
 
+[![MIT](https://img.shields.io/github/license/AXiX-official/UnityAsset.NET)](https://github.com/AXiX-official/UnityAsset.NET/master/LICENSE)
+[![NuGet Stats](https://img.shields.io/nuget/v/UnityAsset.NET.svg)](https://www.nuget.org/packages/UnityAsset.NET)
+
 A .NET library for reading and modifying Unity assets and bundles.
 
 ## Features
