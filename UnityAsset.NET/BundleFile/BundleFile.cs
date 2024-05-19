@@ -23,6 +23,8 @@ public sealed class BundleFile
     public bool BlocksInfoAtTheEnd = false;
     
     public bool HasBlockInfoNeedPaddingAtStart;
+
+    private bool HeaderAligned = false;
     
     private ArchiveFlags mask;
     
@@ -33,13 +35,28 @@ public sealed class BundleFile
         UnityCNKey = key;
         
         Header = new Header(reader);
+        var version = ParseVersion();
         
         if (Header.version >= 7)
         {
             reader.AlignStream(16);
+            HeaderAligned = true;
+        }
+        else if (version[0] == 2019 && version[1] == 4) // temp fix for 2019.4.x
+        {
+            var p = reader.Position;
+            var len = 16 - p % 16;
+            var bytes = reader.ReadBytes((int)len);
+            if (bytes.Any(x => x != 0))
+            {
+                reader.Position = p;
+            }
+            else
+            {
+                HeaderAligned = true;
+            }
         }
         
-        var version = ParseVersion();
         if (version[0] < 2020 || //2020 and earlier
             (version[0] == 2020 && version[1] == 3 && version[2] <= 34) || //2020.3.34 and earlier
             (version[0] == 2021 && version[1] == 3 && version[2] <= 2) || //2021.3.2 and earlier
@@ -290,7 +307,7 @@ public sealed class BundleFile
         
         Header.Write(writer);
         
-        if (Header.version >= 7)
+        if (HeaderAligned)
         {
             writer.AlignStream(16);
         }
@@ -341,7 +358,7 @@ public sealed class BundleFile
         DataInfo.calculateSize(ref Header.uncompressedBlocksInfoSize,ref Header.compressedBlocksInfoSize);
         long size = 0;
         size += Header.CalculateSize();
-        if (Header.version >= 7)
+        if (HeaderAligned)
         {
             var a = size % 16;
             if (a != 0)
