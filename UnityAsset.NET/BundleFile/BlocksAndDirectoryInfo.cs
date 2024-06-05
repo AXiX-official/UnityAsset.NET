@@ -80,7 +80,8 @@ public class BlocksAndDirectoryInfo
     {
         foreach (var block in BlocksInfo)
         {
-            block.flags &= ~StorageBlockFlags.CompressionTypeMask;
+            //block.flags &= ~StorageBlockFlags.CompressionTypeMask;
+            block.flags &= 0x0;
             block.compressedSize = block.uncompressedSize;
         }
         Update();
@@ -115,6 +116,33 @@ public class BlocksAndDirectoryInfo
             }
         }
 
+        BlocksInfo = newBlocksInfo;
+        Update();
+    }
+    
+    public void Split()
+    {
+        List<StorageBlockInfo> newBlocksInfo = new List<StorageBlockInfo>();
+        foreach (var block in BlocksInfo)
+        {
+            if (block.uncompressedSize > 0x00020000)
+            {
+                uint num = block.uncompressedSize / 0x00020000;
+                uint num2 = block.uncompressedSize % 0x00020000;
+                for (uint i = 0; i < num; i++)
+                {
+                    newBlocksInfo.Add(new StorageBlockInfo(0x00020000, 0x00020000, block.flags));
+                }
+                if (num2 > 0)
+                {
+                    newBlocksInfo.Add(new StorageBlockInfo(num2, num2, block.flags));
+                }
+            }
+            else
+            {
+                newBlocksInfo.Add(block);
+            }
+        }
         BlocksInfo = newBlocksInfo;
         Update();
     }

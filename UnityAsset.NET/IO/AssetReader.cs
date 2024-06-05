@@ -6,19 +6,29 @@ namespace UnityAsset.NET.IO;
 public class AssetReader : BinaryReader
 {
     public bool BigEndian;
+
+    private long StartPosition;
     
     public long Position
     {
-        get => BaseStream.Position;
-        set => BaseStream.Position = value;
+        get => BaseStream.Position - StartPosition;
+        set => BaseStream.Position = value + StartPosition;
     }
     
     private readonly byte[] buffer;
+    
+    public AssetReader(byte[] data, bool isBigEndian = true) : base(new MemoryStream(data))
+    {
+        buffer = new byte[8];
+        BigEndian = isBigEndian;
+        StartPosition = 0;
+    }
     
     public AssetReader(Stream stream, bool isBigEndian = true) : base(stream)
     {
         buffer = new byte[8];
         BigEndian = isBigEndian;
+        StartPosition = stream.Position;
     }
     
     public void AlignStream(int alignment)

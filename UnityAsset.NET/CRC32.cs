@@ -74,6 +74,16 @@ public static class CRC32
         return ~crc;
     }
     
+    public static uint CalculateCRC32(List<byte> data, uint initialCrc = 0)
+    {
+        uint crc = ~initialCrc;
+        foreach (var b in data)
+        {
+            crc = (crc >> 8) ^ Crc32Table[(crc ^ b) & 0xFF];
+        }
+        return ~crc;
+    }
+    
     public static uint CalculateCRC32(Stream data, uint initialCrc = 0)
     {
         data.Position = 0;

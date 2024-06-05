@@ -8,26 +8,45 @@ namespace UnityAsset.NET.BundleFile;
 
 public sealed class BundleFile
 {
-    public Header Header;
+    /// <summary>
+    /// BundleFile header
+    /// </summary>
+    public Header Header { get; set; }
     
-    public string? UnityCNKey;
+    /// <summary>
+    /// Key for UnityCN encryption
+    /// </summary>
+    public string? UnityCNKey { get; set; }
     
-    public UnityCN? UnityCNInfo;
+    /// <summary>
+    /// Data for UnityCN encryption
+    /// </summary>
+    public UnityCN? UnityCNInfo { get; set; }
     
-    public BlocksAndDirectoryInfo DataInfo;
+    /// <summary>
+    /// BlocksAndDirectoryInfo
+    /// </summary>
+    public BlocksAndDirectoryInfo DataInfo { get; set; }
 
-    public List<MemoryStream> cabStreams;
+    public List<MemoryStream> cabStreams { get; set; }
     
-    public uint crc32;
-    
-    public bool BlocksInfoAtTheEnd = false;
-    
-    public bool HasBlockInfoNeedPaddingAtStart;
+    public uint crc32 { get; set; }
 
-    private bool HeaderAligned = false;
+    private bool _blocksInfoAtTheEnd;
     
-    private ArchiveFlags mask;
+    public bool BlocksInfoAtTheEnd { get => _blocksInfoAtTheEnd; set => _blocksInfoAtTheEnd = value; }
     
+    public bool HasBlockInfoNeedPaddingAtStart { get; set; }
+
+    private bool HeaderAligned { get; set; }
+    
+    private ArchiveFlags mask { get; set; }
+
+    public BundleFile(string path, bool original = false, string? key = null)
+        : this(new FileStream(path, FileMode.Open, FileAccess.Read), original, key)
+    {
+    }
+
     public BundleFile(Stream input, bool original = false, string? key = null)
     {
         using AssetReader reader = new AssetReader(input);
@@ -36,26 +55,6 @@ public sealed class BundleFile
         
         Header = new Header(reader);
         var version = ParseVersion();
-        
-        if (Header.version >= 7)
-        {
-            reader.AlignStream(16);
-            HeaderAligned = true;
-        }
-        else if (version[0] == 2019 && version[1] == 4) // temp fix for 2019.4.x
-        {
-            var p = reader.Position;
-            var len = 16 - p % 16;
-            var bytes = reader.ReadBytes((int)len);
-            if (bytes.Any(x => x != 0))
-            {
-                reader.Position = p;
-            }
-            else
-            {
-                HeaderAligned = true;
-            }
-        }
         
         if (version[0] < 2020 || //2020 and earlier
             (version[0] == 2020 && version[1] == 3 && version[2] <= 34) || //2020.3.34 and earlier
@@ -81,7 +80,27 @@ public sealed class BundleFile
             Header.flags &= (ArchiveFlags)~mask;
         }
         
-        DataInfo = new BlocksAndDirectoryInfo(reader, Header, ref BlocksInfoAtTheEnd);
+        if (Header.version >= 7)
+        {
+            reader.AlignStream(16);
+            HeaderAligned = true;
+        }
+        else if (version[0] == 2019 && version[1] == 4) // temp fix for 2019.4.x
+        {
+            var p = reader.Position;
+            var len = 16 - p % 16;
+            var bytes = reader.ReadBytes((int)len);
+            if (bytes.Any(x => x != 0))
+            {
+                reader.Position = p;
+            }
+            else
+            {
+                HeaderAligned = true;
+            }
+        }
+        
+        DataInfo = new BlocksAndDirectoryInfo(reader, Header, ref _blocksInfoAtTheEnd);
 
         foreach (var blockInfo in DataInfo.BlocksInfo)
         {
@@ -179,7 +198,7 @@ public sealed class BundleFile
 
             foreach (var block in DataInfo.BlocksInfo)
             {
-                block.flags &= (StorageBlockFlags)~StorageBlockFlags.CompressionTypeMask;
+                block.flags &= ~StorageBlockFlags.CompressionTypeMask;
                 block.flags |= (StorageBlockFlags)newFlag;
             }
         }
@@ -234,11 +253,15 @@ public sealed class BundleFile
         }
     }
     
+    public void WriteToFile(string path, string infoPacker = "none", string dataPacker = "none", bool unityCN = false)
+    {
+        using FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+        Write(fs, infoPacker, dataPacker, unityCN);
+    }
+    
     public void Write(Stream output, string infoPacker = "none", string dataPacker = "none", bool unityCN = false)
     {
         MemoryStream compressedStream = new MemoryStream();
-        
-        //Bumbo();
         
         fixCRC(crc32, CalculateCRC32());
         
@@ -248,8 +271,15 @@ public sealed class BundleFile
         {
             throw new Exception("UnityCN encryption requires lz4 or lz4hc compression type");
         }
-        
-        //DataInfo.merge();
+
+        if (dataPacker == "none")
+        {
+            DataInfo.merge();
+        }
+        else
+        {
+            DataInfo.Split();
+        }
         
         MemoryStream BlocksStream = new MemoryStream();
 
