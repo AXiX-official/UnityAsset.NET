@@ -27,6 +27,7 @@ public static class LZ4
                         literalLength += b;
                     } while (b == 0xFF && s < sourceEnd);
                 }
+
                 Buffer.MemoryCopy(s, t, literalLength, literalLength);
                 s += literalLength;
                 t += literalLength;
@@ -43,10 +44,24 @@ public static class LZ4
                         matchLength += b;
                     } while (b == 0xFF && s < sourceEnd);
                 }
+
                 matchLength += 4;
-                Buffer.MemoryCopy(t - offset, t, matchLength, matchLength);
+
+                while (matchLength > offset)
+                {
+                    Buffer.MemoryCopy(t - offset, t, offset, offset);
+                    t += offset;
+                    matchLength -= offset;
+                }
+
+                if (matchLength > 0)
+                {
+                    Buffer.MemoryCopy(t - offset, t, matchLength, matchLength);
+                }
+
                 t += matchLength;
             }
+
             return (int)(t - targetPtr);
         }
     }
