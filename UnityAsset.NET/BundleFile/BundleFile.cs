@@ -115,6 +115,7 @@ public sealed class BundleFile
         ReadBlocks(reader);
         
         DataInfo.uncompresseFlags();
+        DataInfo.merge();
         Header.flags &= (ArchiveFlags)~StorageBlockFlags.CompressionTypeMask;
         DataInfo.calculateSize(ref Header.uncompressedBlocksInfoSize,ref Header.compressedBlocksInfoSize);
         
@@ -272,11 +273,7 @@ public sealed class BundleFile
             throw new Exception("UnityCN encryption requires lz4 or lz4hc compression type");
         }
 
-        if (dataPacker == "none")
-        {
-            DataInfo.merge();
-        }
-        else
+        if (dataPacker != "none")
         {
             DataInfo.Split();
         }
@@ -336,15 +333,15 @@ public sealed class BundleFile
         using AssetWriter writer = new AssetWriter(output);
         
         Header.Write(writer);
-        
-        if (HeaderAligned)
-        {
-            writer.AlignStream(16);
-        }
 
         if (unityCN && UnityCNInfo != null)
         {
             UnityCNInfo.Write(writer);
+        }
+        
+        if (HeaderAligned)
+        {
+            writer.AlignStream(16);
         }
 
         if (!BlocksInfoAtTheEnd)

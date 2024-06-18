@@ -1,4 +1,5 @@
-﻿using UnityAsset.NET.Enums;
+﻿using System.Text;
+using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.BundleFile;
@@ -32,9 +33,10 @@ public sealed class StorageBlockInfo
 
     public override string ToString()
     {
-        return 
-            $"compressedSize: 0x{compressedSize:X8} | " +
-            $"uncompressedSize: 0x{uncompressedSize:X8} | " +
-            $"flags: 0x{(int)flags:X8}";
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("compressedSize: 0x{0:X8} | ", compressedSize);
+        sb.AppendFormat("uncompressedSize: 0x{0:X8} | ", uncompressedSize);
+        sb.AppendFormat("flags: 0x{0:X8}", (int)flags);
+        return sb.ToString();
     }
 }

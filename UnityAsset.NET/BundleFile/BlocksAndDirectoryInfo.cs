@@ -3,7 +3,7 @@ using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.BundleFile;
 
-public class BlocksAndDirectoryInfo
+public sealed class BlocksAndDirectoryInfo
 {
     public byte[] UncompressedDataHash;
 
@@ -114,6 +114,11 @@ public class BlocksAndDirectoryInfo
             {
                 newBlocksInfo.Add(block);
             }
+        }
+        
+        if (DirectoryInfo.Sum(x => x.size) != newBlocksInfo.Sum(x => x.uncompressedSize))
+        {
+            throw new Exception("Expected all blocks size bigger than CAB size");
         }
 
         BlocksInfo = newBlocksInfo;

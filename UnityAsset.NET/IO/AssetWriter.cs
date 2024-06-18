@@ -3,7 +3,7 @@ using System.Text;
 
 namespace UnityAsset.NET.IO;
 
-public class AssetWriter : BinaryWriter
+public sealed class AssetWriter : BinaryWriter
 {
     public bool BigEndian;
     

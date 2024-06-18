@@ -1,4 +1,5 @@
-﻿using UnityAsset.NET.IO;
+﻿using System.Text;
+using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.BundleFile;
 
@@ -27,11 +28,12 @@ public sealed class CABInfo
 
     public override string ToString()
     {
-        return 
-            $"offset: 0x{offset:X8} | " + 
-            $"size: 0x{size:X8} | " + 
-            $"flags: {flags} | " + 
-            $"path: {path}";
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("offset: 0x{0:X8} | ", offset);
+        sb.AppendFormat("size: 0x{0:X8} | ", size);
+        sb.AppendFormat("flags: {0} | ", flags);
+        sb.AppendFormat("path: {0}", path);
+        return sb.ToString();
     }
         
     public long CalculateSize()

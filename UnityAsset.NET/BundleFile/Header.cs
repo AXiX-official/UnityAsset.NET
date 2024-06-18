@@ -1,4 +1,5 @@
-﻿using UnityAsset.NET.Enums;
+﻿using System.Text;
+using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.BundleFile;
@@ -47,15 +48,16 @@ public sealed class Header
 
         public override string ToString()
         {
-            return
-                $"signature: {signature} | " +
-                $"version: {version} | " +
-                $"unityVersion: {unityVersion} | " +
-                $"unityRevision: {unityRevision} | " +
-                $"size: 0x{size:X8} | " +
-                $"compressedBlocksInfoSize: 0x{compressedBlocksInfoSize:X8} | " +
-                $"uncompressedBlocksInfoSize: 0x{uncompressedBlocksInfoSize:X8} | " +
-                $"flags: 0x{(int)flags:X8}";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("signature: {0} | ", signature);
+            sb.AppendFormat("version: {0} | ", version);
+            sb.AppendFormat("unityVersion: {0} | ", unityVersion);
+            sb.AppendFormat("unityRevision: {0} | ", unityRevision);
+            sb.AppendFormat("size: 0x{0:X8} | ", size);
+            sb.AppendFormat("compressedBlocksInfoSize: 0x{0:X8} | ", compressedBlocksInfoSize);
+            sb.AppendFormat("uncompressedBlocksInfoSize: 0x{0:X8} | ", uncompressedBlocksInfoSize);
+            sb.AppendFormat("flags: 0x{0:X8}", (int)flags);
+            return sb.ToString();
         }
         
         public long CalculateSize()

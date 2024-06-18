@@ -3,7 +3,7 @@ using System.Text;
 
 namespace UnityAsset.NET.IO;
 
-public class AssetReader : BinaryReader
+public sealed class AssetReader : BinaryReader
 {
     public bool BigEndian;
 
@@ -92,8 +92,17 @@ public class AssetReader : BinaryReader
             return base.ReadUInt32();
         }
     }
-    
-    
+
+    public string ReadNullTerminated()
+    {
+        string output = "";
+        char curChar;
+        while ((curChar = ReadChar()) != 0x00)
+        {
+            output += curChar;
+        }
+        return output;
+    }
     
     public string ReadStringToNull(int maxLength = 32767)
     {
