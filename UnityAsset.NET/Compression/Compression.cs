@@ -12,7 +12,7 @@ public static class Compression
         {
             case "lz4":
                 byte[] decompressedData = new byte[decompressedSize];
-                LZ4Codec.Decode(compressedData, new Span<byte>(decompressedData));
+                LZ4.Decode(compressedData, new Span<byte>(decompressedData));
                 decompressedStream.Write(decompressedData, 0, decompressedData.Length);
                 break;
             case "lzma":
