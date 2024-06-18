@@ -66,12 +66,31 @@ public static class CRC32
     
     public static uint CalculateCRC32(byte[] data, uint initialCrc = 0)
     {
-        uint crc = ~initialCrc;
-        foreach (var b in data)
+        int coreCount = Environment.ProcessorCount;
+        int partSize = (data.Length + coreCount - 1) / coreCount;
+
+        uint[] results = new uint[coreCount];
+        
+        Parallel.For(0, coreCount, i =>
         {
-            crc = (crc >> 8) ^ Crc32Table[(crc ^ b) & 0xFF];
+            int start = i * partSize;
+            int length = Math.Min(partSize, data.Length - start);
+            
+            uint crc = ~initialCrc;
+            var span = data.AsSpan(start, length);
+            foreach (var b in span)
+            {
+                crc = (crc >> 8) ^ Crc32Table[(crc ^ b) & 0xFF];
+            }
+            results[i] = ~crc;
+        });
+        
+        uint finalCrc = ~initialCrc;
+        foreach (var crc in results)
+        {
+            finalCrc = (finalCrc >> 8) ^ Crc32Table[(finalCrc ^ crc) & 0xFF];
         }
-        return ~crc;
+        return ~finalCrc;
     }
     
     public static uint CalculateCRC32(List<byte> data, uint initialCrc = 0)
