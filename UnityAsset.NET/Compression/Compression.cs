@@ -12,7 +12,11 @@ public static class Compression
         {
             case "lz4":
                 byte[] decompressedData = new byte[decompressedSize];
-                LZ4.Decode(compressedData, new Span<byte>(decompressedData));
+                int size = LZ4.Decode(compressedData, new Span<byte>(decompressedData));
+                if (size != decompressedSize)
+                {
+                    throw new Exception($"LZ4 decompression failed, expected {decompressedSize} bytes, got {size} bytes");
+                }
                 decompressedStream.Write(decompressedData, 0, decompressedData.Length);
                 break;
             case "lzma":

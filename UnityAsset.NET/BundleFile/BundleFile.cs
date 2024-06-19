@@ -369,9 +369,7 @@ public sealed class BundleFile
         {
             return;
         }
-        uint append = CRC32.rCRC(targetCRC, currentCRC);
-        var fixCRCBytes = BitConverter.GetBytes(append);
-        Array.Reverse(fixCRCBytes);
+        var fixCRCBytes = CRC32.rCRC(targetCRC, currentCRC);
         
         cabStreams[^1].SetLength(cabStreams[^1].Length + 4);
         cabStreams[^1].Position = cabStreams[^1].Length - 4;
