@@ -42,8 +42,8 @@ public static class Compression
             case "none":
                 return uncompressedData.ToList();
             case "lz4":
-                byte[] compressedData = new byte[LZ4Codec.MaximumOutputSize(uncompressedData.Length)];
-                int compressedSize = LZ4Codec.Encode(uncompressedData, compressedData);
+                byte[] compressedData = new byte[LZ4.MaximumOutputSize(uncompressedData.Length)];
+                int compressedSize = LZ4.EncodeFast(uncompressedData, compressedData);
                 return compressedData.Take(compressedSize).ToList();
             case "lz4hc":
                 byte[] compressedDataHC = new byte[LZ4Codec.MaximumOutputSize(uncompressedData.Length)];
