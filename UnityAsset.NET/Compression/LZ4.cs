@@ -106,8 +106,10 @@ public static unsafe class LZ4
                         }
                         int literalLen = (int) (s - anchor);
                         int matchLen = 4;
-                        while (s + matchLen < sourceEnd && *(s + matchLen) == *(sourceOffset + matchLen))
+                        while (s + matchLen < sourceEnd)
                         {
+                            if (*(s + matchLen) != *(sourceOffset + matchLen))
+                                break;
                             matchLen++;
                         }
                         int token = Math.Min(literalLen, 15) << 4 | Math.Min(matchLen - 4, 15);

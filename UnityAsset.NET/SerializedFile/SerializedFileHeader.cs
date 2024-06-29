@@ -1,4 +1,5 @@
-﻿using UnityAsset.NET.Enums;
+﻿using System.Text;
+using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.SerializedFile;
@@ -6,10 +7,10 @@ namespace UnityAsset.NET.SerializedFile;
 public sealed class SerializedFileHeader
 {
     public uint MetadataSize;
-    public long FileSize;
+    public ulong FileSize;
     public SerializedFileFormatVersion Version;
-    public long DataOffset;
-    public byte Endianess;
+    public ulong DataOffset;
+    public bool Endianess;
     
     public SerializedFileHeader(AssetReader reader)
     {
@@ -20,25 +21,31 @@ public sealed class SerializedFileHeader
 
         if (Version < SerializedFileFormatVersion.Unknown_9)
         {
-            throw new Exception("Unsupported version.");
+            throw new Exception($"Unsupported version: {Version}");
         }
         
-        Endianess = reader.ReadByte();
+        Endianess = reader.ReadBoolean();
         reader.ReadBytes(3);// unused bytes
         
         if (Version >= SerializedFileFormatVersion.LargeFilesSupport)
         {
             MetadataSize = reader.ReadUInt32();
-            FileSize = reader.ReadUInt32();
-            DataOffset = reader.ReadUInt32();
+            FileSize = reader.ReadUInt64();
+            DataOffset = reader.ReadUInt64();
             reader.ReadInt64(); // unknown
         }
         
-        reader.BigEndian = Endianess == 1;
+        reader.BigEndian = Endianess;
     }
 
     public override string ToString()
     {
-        return $"MetadataSize: 0x{MetadataSize:X8} | FileSize: 0x{FileSize:X8} | Version: {Version} | DataOffset: 0x{DataOffset:X8} | Endianness: {(EndianType)Endianess}";
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat("MetadataSize: 0x{0:X8} | ", MetadataSize);
+        sb.AppendFormat("FileSize: 0x{0:X8} | ", FileSize);
+        sb.AppendFormat("Version: {0} | ", Version);
+        sb.AppendFormat("DataOffset: 0x{0:X8} | ", DataOffset);
+        sb.AppendFormat("Endianness: {0}", Endianess ? "BigEndian" : "LittleEndian");
+        return sb.ToString();
     }
 }
