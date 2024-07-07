@@ -21,7 +21,7 @@ public sealed class BlocksAndDirectoryInfo
         {
             blocksInfoAtTheEnd = true;
             long position = reader.Position;
-            reader.Position = reader.BaseStream.Length - header.compressedBlocksInfoSize;
+            reader.Position = header.size - header.compressedBlocksInfoSize;
             BlocksInfoBytes = reader.ReadBytes((int)header.compressedBlocksInfoSize).ToList();
             reader.Position = position;
         }
