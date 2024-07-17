@@ -31,6 +31,13 @@ public sealed class AssetReader : BinaryReader
         StartPosition = stream.Position;
     }
     
+    public AssetReader(string filePath, bool isBigEndian = true) : base(new FileStream(filePath, FileMode.Open, FileAccess.Read))
+    {
+        buffer = new byte[8];
+        BigEndian = isBigEndian;
+        StartPosition = 0;
+    }
+    
     public void AlignStream(int alignment)
     {
         var pos = Position;

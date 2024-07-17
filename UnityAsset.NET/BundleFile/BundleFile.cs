@@ -42,18 +42,30 @@ public sealed class BundleFile
     
     private ArchiveFlags mask { get; set; }
 
-    public BundleFile(string path, bool original = false, string? key = null)
-        : this(new FileStream(path, FileMode.Open, FileAccess.Read), original, key)
+    public BundleFile(string path, string? key = null)
+        : this(new FileStream(path, FileMode.Open, FileAccess.Read), key)
     {
     }
 
-    public BundleFile(Stream input, bool original = false, string? key = null)
+    public BundleFile(Stream input, string? key = null)
     {
         using AssetReader reader = new AssetReader(input);
         
         UnityCNKey = key;
         
         Header = new Header(reader);
+        ReadBundleWithHeader(reader, Header, key);
+    }
+    
+    public BundleFile(AssetReader reader,Header header, string? key = null)
+    {
+        UnityCNKey = key;
+        Header = header;
+        ReadBundleWithHeader(reader, header, key);
+    }
+
+    private void ReadBundleWithHeader(AssetReader reader, Header header, string? key = null)
+    {
         var version = ParseVersion();
         
         if (version[0] < 2020 || //2020 and earlier
