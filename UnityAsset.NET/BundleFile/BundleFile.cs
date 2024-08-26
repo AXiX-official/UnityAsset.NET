@@ -47,6 +47,16 @@ public sealed class BundleFile
     {
     }
 
+    public BundleFile(byte[] data, string? key = null)
+    {
+        using AssetReader reader = new AssetReader(data);
+        
+        UnityCNKey = key;
+        
+        Header = new Header(reader);
+        ReadBundleWithHeader(reader, Header, key);
+    }
+
     public BundleFile(Stream input, string? key = null)
     {
         using AssetReader reader = new AssetReader(input);
@@ -266,13 +276,13 @@ public sealed class BundleFile
         }
     }
     
-    public void WriteToFile(string path, string infoPacker = "none", string dataPacker = "none", bool unityCN = false)
+    public void WriteToFile(string path, string infoPacker = "none", string dataPacker = "none", bool unityCN = false, string key = "")
     {
         using FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write);
-        Write(fs, infoPacker, dataPacker, unityCN);
+        Write(fs, infoPacker, dataPacker, unityCN, key);
     }
     
-    public void Write(Stream output, string infoPacker = "none", string dataPacker = "none", bool unityCN = false)
+    public void Write(Stream output, string infoPacker = "none", string dataPacker = "none", bool unityCN = false, string key = "")
     {
         MemoryStream compressedStream = new MemoryStream();
         
@@ -312,13 +322,17 @@ public sealed class BundleFile
         
         if (unityCN)
         {
-            if (UnityCNKey == null)
-            {
-                throw new Exception("UnityCN key is required for encryption");
-            }
             if (UnityCNInfo == null)
             {
-                throw new Exception("TODO: UnityCNInfo is null");
+                if (key != "")
+                {
+                    UnityCNKey = key;
+                    UnityCNInfo = new UnityCN(UnityCNKey);
+                }
+                else
+                {
+                    throw new Exception("UnityCN key is required for encryption");
+                }
             }
             UnityCNInfo.reset();
             compressedStream.Position = 0;
@@ -422,18 +436,6 @@ public sealed class BundleFile
         
         size += BlocksStreamLength;
         Header.size = size;
-    }
-    
-    public void Bumbo()
-    {
-        var blockFlag = DataInfo.BlocksInfo[^1].flags;
-        var blockSize = int.MaxValue / 2;
-        DataInfo.BlocksInfo.Add(new StorageBlockInfo((uint)blockSize, (uint)blockSize, blockFlag));
-        DataInfo.DirectoryInfo[^1].size += blockSize;
-        cabStreams[^1].SetLength(cabStreams[^1].Length + blockSize);
-        cabStreams[^1].Position = cabStreams[^1].Length - blockSize;
-        cabStreams[^1].Write(new byte[blockSize]);
-        cabStreams[^1].Position = 0;
     }
     
     private int[] ParseVersion()

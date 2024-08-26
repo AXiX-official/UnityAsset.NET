@@ -40,12 +40,29 @@ public sealed class UnityCN
         reset();
     }
 
+    public UnityCN(string key)
+    {
+        SetKey(key);
+
+        value = 0;
+        
+        InfoBytes = [0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0xA6, 0xB1, 0xDE, 0x48, 0x9E, 0x2B, 0x53, 0x5C];
+        InfoKey = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10];
+        EncryptKey(InfoKey, InfoBytes);
+        
+        SignatureKey = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10];
+        SignatureBytes = Encoding.UTF8.GetBytes(Signature);
+        EncryptKey(SignatureKey, SignatureBytes);
+        
+        reset();
+    }
+
     public void reset()
     {
-        var infoBytes = InfoBytes.ToArray();
-        var infoKey = InfoKey.ToArray();
-        var signatureBytes = SignatureBytes.ToArray();
-        var signatureKey = SignatureKey.ToArray();
+        var infoBytes = (byte[])InfoBytes.Clone();
+        var infoKey = (byte[])InfoKey.Clone();
+        var signatureBytes = (byte[])SignatureBytes.Clone();
+        var signatureKey = (byte[])SignatureKey.Clone();
         
         DecryptKey(signatureKey, signatureBytes);
 
@@ -115,6 +132,16 @@ public sealed class UnityCN
     }
 
     private void DecryptKey(byte[] key, byte[] data)
+    {
+        if (Encryptor != null)
+        {
+            key = Encryptor.TransformFinalBlock(key, 0, key.Length);
+            for (int i = 0; i < 0x10; i++)
+                data[i] ^= key[i];
+        }
+    }
+    
+    private void EncryptKey(byte[] key, byte[] data)
     {
         if (Encryptor != null)
         {

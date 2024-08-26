@@ -12,11 +12,9 @@ public static class Compression
         {
             case "lz4":
                 byte[] decompressedData = new byte[decompressedSize];
-                int size = LZ4.Decode(compressedData, new Span<byte>(decompressedData));
+                var size = LZ4Codec.Decode(compressedData, new Span<byte>(decompressedData));
                 if (size != decompressedSize)
-                {
-                    throw new Exception($"LZ4 decompression failed, expected {decompressedSize} bytes, got {size} bytes");
-                }
+                    throw new Exception($"Decompressed size mismatch, expected {decompressedSize}, got {size}");
                 decompressedStream.Write(decompressedData, 0, decompressedData.Length);
                 break;
             case "lzma":
@@ -42,12 +40,12 @@ public static class Compression
             case "none":
                 return uncompressedData.ToList();
             case "lz4":
-                byte[] compressedData = new byte[LZ4.MaximumOutputSize(uncompressedData.Length)];
-                int compressedSize = LZ4.EncodeFast(uncompressedData, compressedData);
+                byte[] compressedData = new byte[LZ4Codec.MaximumOutputSize(uncompressedData.Length)];
+                int compressedSize = LZ4Codec.Encode(uncompressedData, compressedData);
                 return compressedData.Take(compressedSize).ToList();
             case "lz4hc":
                 byte[] compressedDataHC = new byte[LZ4Codec.MaximumOutputSize(uncompressedData.Length)];
-                int compressedSizeHC = LZ4Codec.Encode(uncompressedData, compressedDataHC, LZ4Level.L09_HC);
+                int compressedSizeHC = LZ4Codec.Encode(uncompressedData, compressedDataHC, LZ4Level.L12_MAX);
                 return compressedDataHC.Take(compressedSizeHC).ToList();
             case "lzma":
                 var encoder = new Encoder();
@@ -56,7 +54,7 @@ public static class Compression
                 long fileSize = uncompressedStream.Length;
                 uncompressedStream.Position = 0;
                 encoder.Code(uncompressedStream, compressedStream, -1, -1, null);
-                Console.WriteLine($"Compressed {fileSize} bytes to {compressedStream.Length} bytes");
+                //Console.WriteLine($"Compressed {fileSize} bytes to {compressedStream.Length} bytes");
                 return compressedStream.ToArray().ToList();
             default:
                 throw new ArgumentException($"Unsupported compression type {compressionType}");

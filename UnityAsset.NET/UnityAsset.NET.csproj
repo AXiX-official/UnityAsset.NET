@@ -6,19 +6,20 @@
         <Nullable>enable</Nullable>
         <Authors>AXiX</Authors>
         <Description>A .NET library for reading and modifying Unity assets and bundles.</Description>
-        <Version>0.0.4-beta.1</Version>
+        <Version>0.0.4-beta.2</Version>
         <Title>UnityAsset.NET</Title>
         <Copyright>AXiX</Copyright>
         <PackageProjectUrl>https://github.com/AXiX-official/UnityAsset.NET</PackageProjectUrl>
         <RepositoryUrl>https://github.com/AXiX-official/UnityAsset.NET</RepositoryUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <AssemblyVersion>0.0.4.1</AssemblyVersion>
-        <FileVersion>0.0.4.1</FileVersion>
+        <AssemblyVersion>0.0.4.2</AssemblyVersion>
+        <FileVersion>0.0.4.2</FileVersion>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>Unity</PackageTags>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <PublishAot>true</PublishAot>
     </PropertyGroup>
 
     <ItemGroup>
