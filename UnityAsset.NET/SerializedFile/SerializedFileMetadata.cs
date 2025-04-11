@@ -9,7 +9,7 @@ public sealed class SerializedFileMetadata
 {
     public string UnityVersion;
     
-    public BuildTarget Platform;
+    public BuildTarget TargetPlatform;
     
     public bool TypeTreeEnabled;
 
@@ -18,7 +18,7 @@ public sealed class SerializedFileMetadata
     public SerializedFileMetadata(AssetReader reader, SerializedFileFormatVersion version)
     {
         UnityVersion = reader.ReadNullTerminated();
-        Platform = (BuildTarget)reader.ReadUInt32();
+        TargetPlatform = (BuildTarget)reader.ReadUInt32();
         if (version >= SerializedFileFormatVersion.HasTypeTreeHashes)
         {
             TypeTreeEnabled = reader.ReadBoolean();
@@ -39,7 +39,7 @@ public sealed class SerializedFileMetadata
     {
         StringBuilder sb = new StringBuilder();
         sb.AppendFormat("UnityVersion: {0} | ", UnityVersion);
-        sb.AppendFormat("Platform: {0} | ", Platform);
+        sb.AppendFormat("Platform: {0} | ", TargetPlatform);
         sb.AppendFormat("TypeTreeEnabled: {0} | ", TypeTreeEnabled);
         sb.AppendFormat("Types: {0}", Types.Count);
         return sb.ToString();

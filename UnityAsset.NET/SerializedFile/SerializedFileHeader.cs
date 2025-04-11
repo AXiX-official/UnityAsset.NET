@@ -25,7 +25,7 @@ public sealed class SerializedFileHeader
         }
         
         Endianess = reader.ReadBoolean();
-        reader.ReadBytes(3);// unused bytes
+        reader.Skip(3);// unused bytes
         
         if (Version >= SerializedFileFormatVersion.LargeFilesSupport)
         {

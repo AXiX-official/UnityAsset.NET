@@ -127,4 +127,9 @@ public sealed class AssetReader : BinaryReader
         }
         return Encoding.UTF8.GetString(bytes.ToArray());
     }
+
+    public void Skip(int length)
+    {
+        BaseStream.Position += length;
+    }
 }

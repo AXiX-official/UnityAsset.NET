@@ -40,7 +40,7 @@ public sealed class BundleFile
 
     private bool HeaderAligned { get; set; }
     
-    private ArchiveFlags mask { get; set; }
+    private ArchiveFlags UnityCNMask { get; set; }
 
     public BundleFile(string path, string? key = null)
         : this(new FileStream(path, FileMode.Open, FileAccess.Read), key)
@@ -83,23 +83,29 @@ public sealed class BundleFile
             (version[0] == 2021 && version[1] == 3 && version[2] <= 2) || //2021.3.2 and earlier
             (version[0] == 2022 && version[1] == 3 && version[2] <= 1)) //2022.3.1 and earlier
         {
-            mask = ArchiveFlags.BlockInfoNeedPaddingAtStart;
+            UnityCNMask = ArchiveFlags.BlockInfoNeedPaddingAtStart;
             HasBlockInfoNeedPaddingAtStart = false;
         }
         else
         {
-            mask = ArchiveFlags.UnityCNEncryption;
+            UnityCNMask = ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew;
             HasBlockInfoNeedPaddingAtStart = true;
         }
-        if ((Header.flags & mask) != 0)
+        if ((Header.flags & UnityCNMask) != 0)
         {
-            Console.WriteLine($"Encryption flag exist, file is encrypted, attempting to decrypt");
+            //Console.WriteLine($"Encryption flag exist, file is encrypted, attempting to decrypt");
             if (UnityCNKey == null)
             {
                 throw new Exception("UnityCN key is required for decryption");
             }
+
+            if (UnityCNMask == (ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew))
+            {
+                UnityCNMask = ((Header.flags & ArchiveFlags.UnityCNEncryptionNew) != 0) ?
+                    ArchiveFlags.UnityCNEncryptionNew : ArchiveFlags.UnityCNEncryption;
+            }
             UnityCNInfo = new UnityCN(reader, UnityCNKey);
-            Header.flags &= (ArchiveFlags)~mask;
+            Header.flags &= (ArchiveFlags)~UnityCNMask;
         }
         
         if (Header.version >= 7)
@@ -286,7 +292,7 @@ public sealed class BundleFile
     {
         MemoryStream compressedStream = new MemoryStream();
         
-        fixCRC(crc32, CalculateCRC32());
+        //fixCRC(crc32, CalculateCRC32());
         
         BlocksCompressionType = dataPacker;
 
@@ -349,7 +355,7 @@ public sealed class BundleFile
             encryptedStream.Position = 0;
             compressedStream.SetLength(0);
             encryptedStream.CopyTo(compressedStream);
-            Header.flags |= mask;
+            Header.flags |= UnityCNMask;
         }
         
         BlocksInfoCompressionType = infoPacker;

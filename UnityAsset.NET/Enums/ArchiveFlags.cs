@@ -8,5 +8,6 @@ public enum ArchiveFlags
     BlocksInfoAtTheEnd = 0x80,
     OldWebPluginCompatibility = 0x100,
     BlockInfoNeedPaddingAtStart = 0x200,
-    UnityCNEncryption = 0x400
+    UnityCNEncryption = 0x400,
+    UnityCNEncryptionNew = 0x1000
 }
