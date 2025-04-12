@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Security.Cryptography;
 
 using UnityAsset.NET.Extensions;
@@ -6,7 +8,7 @@ using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.BundleFile;
 
-public sealed class UnityCN
+public sealed unsafe class UnityCN
 {
     private const string Signature = "#$unity3dchina!@";
 
@@ -14,14 +16,19 @@ public sealed class UnityCN
     
     uint value;
     
-    public byte[] InfoBytes = new byte[0x10];
-    public byte[] InfoKey = new byte[0x10];
+    public readonly byte[] InfoBytes;
+    public readonly byte[] InfoKey;
     
-    public byte[] SignatureBytes = new byte[0x10];
-    public byte[] SignatureKey = new byte[0x10];
+    public readonly byte[] SignatureBytes;
+    public readonly byte[] SignatureKey;
 
-    public byte[] Index = new byte[0x10];
-    public byte[] Sub = new byte[0x10];
+    public readonly byte[] Index = new byte[0x10];
+    public readonly byte[] Sub = new byte[0x10];
+    
+    private GCHandle subHandle;
+    private GCHandle indexHandle;
+    private readonly byte* subPtr;
+    private readonly byte* indexPtr;
 
     public UnityCN(AssetReader reader, string key)
     {
@@ -38,6 +45,18 @@ public sealed class UnityCN
         reader.Position += 1;
         
         reset();
+        
+        subHandle = GCHandle.Alloc(Sub, GCHandleType.Pinned);
+        indexHandle = GCHandle.Alloc(Index, GCHandleType.Pinned);
+
+        subPtr = (byte*)subHandle.AddrOfPinnedObject();
+        indexPtr = (byte*)indexHandle.AddrOfPinnedObject();
+    }
+    
+    ~UnityCN()
+    {
+        if (subHandle.IsAllocated) subHandle.Free();
+        if (indexHandle.IsAllocated) indexHandle.Free();
     }
 
     public UnityCN(string key)
@@ -55,6 +74,12 @@ public sealed class UnityCN
         EncryptKey(SignatureKey, SignatureBytes);
         
         reset();
+        
+        subHandle = GCHandle.Alloc(Sub, GCHandleType.Pinned);
+        indexHandle = GCHandle.Alloc(Index, GCHandleType.Pinned);
+
+        subPtr = (byte*)subHandle.AddrOfPinnedObject();
+        indexPtr = (byte*)indexHandle.AddrOfPinnedObject();
     }
 
     public void reset()
@@ -112,13 +137,80 @@ public sealed class UnityCN
         }
         return true;
     }
+    
+    public void DecryptAndDecompress(ReadOnlySpan<byte> compressedData, Stream decompressedStream,
+        long decompressedSize, int index)
+    {
+        byte[] decompressedData = new byte[decompressedSize];
+        var decompressedSpan = new Span<byte>(decompressedData);
+        fixed (byte* sourcePtr = &compressedData.GetPinnableReference())
+        fixed (byte* targetPtr = &decompressedSpan.GetPinnableReference())
+        {
+            byte* s = sourcePtr;
+            byte* t = targetPtr;
+            byte* sourceEnd = sourcePtr + compressedData.Length;
+            while (s < sourceEnd)
+            {
+                var innerIndex = index;
+                var token = DecryptByteUnsafe(*s++, innerIndex++);
+                var literalLength = token >> 4;
+                var matchLength = token & 0xF;
+                if (literalLength == 0xF)
+                {
+                    int b;
+                    do
+                    {
+                        b = DecryptByteUnsafe(*s++, innerIndex++);
+                        literalLength += b;
+                    } while (b == 0xFF);
+                }
+                Buffer.MemoryCopy(s, t, literalLength, literalLength);
+                s += literalLength;
+                t += literalLength;
+                
+                if (s == sourceEnd && matchLength == 0) break;
+                if (s >= sourceEnd) throw new Exception("Invalid compressed data");
+                
+                var offset = (int)DecryptByteUnsafe(*s++, innerIndex++);
+                offset |= DecryptByteUnsafe(*s++, innerIndex++) << 8;
+                if (matchLength == 0xF)
+                {
+                    int b;
+                    do
+                    {
+                        b = DecryptByteUnsafe(*s++, innerIndex++);
+                        matchLength += b;
+                    } while (b == 0xFF);
+                }
 
+                matchLength += 4;
+                while (matchLength > offset)
+                {
+                    Buffer.MemoryCopy(t - offset, t, offset, offset);
+                    t += offset;
+                    matchLength -= offset;
+                }
+
+                if (matchLength > 0)
+                { 
+                    Buffer.MemoryCopy(t - offset, t, matchLength, matchLength);
+                    t += matchLength;
+                }
+                
+                index++;
+            }
+        }
+        decompressedStream.Write(decompressedData, 0, decompressedData.Length);
+    }
+    
+
+    [Obsolete("This method is obsolete. Use DecryptAndDecompress instead.")]
     public void DecryptBlock(Span<byte> bytes, int size, int index)
     {
         var offset = 0;
         while (offset < size)
         {
-            offset += Decrypt(bytes.Slice(offset), index++, size - offset);
+            offset += Decrypt(bytes[offset..], index++, size - offset);
         }
     }
     
@@ -127,7 +219,7 @@ public sealed class UnityCN
         var offset = 0;
         while (offset < size)
         {
-            offset += Encrypt(bytes.Slice(offset), index++, size - offset);
+            offset += Encrypt(bytes[offset..], index++, size - offset);
         }
     }
 
@@ -154,11 +246,21 @@ public sealed class UnityCN
     private int DecryptByte(Span<byte> bytes, ref int offset, ref int index)
     {
         var b = Sub[((index >> 2) & 3) + 4] + Sub[index & 3] + Sub[((index >> 4) & 3) + 8] + Sub[((byte)index >> 6) + 12];
-        bytes[offset] = (byte)((Index[bytes[offset] & 0xF] - b) & 0xF | 0x10 * (Index[bytes[offset] >> 4] - b));
+        bytes[offset] = (byte)((Index[bytes[offset] & 0xF] - b) & 0xF | (Index[bytes[offset] >> 4] - b) << 4) ;
         b = bytes[offset];
         offset++;
         index++;
         return b;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private byte DecryptByteUnsafe(byte b, int index)
+    {
+        var mb = subPtr[index & 3]
+                 + subPtr[((index >> 2) & 3) + 4]
+                 + subPtr[((index >> 4) & 3) + 8]
+                 + subPtr[((byte)index >> 6) + 12];
+        return (byte)((indexPtr[b & 0xF] - mb) & 0xF | (indexPtr[b >> 4] - mb) << 4);
     }
     
     private int EncryptByte(Span<byte> bytes, ref int offset, ref int index)

@@ -240,11 +240,7 @@ public sealed class BundleFile
         {
             var blockInfo = DataInfo.BlocksInfo[i];
             var compressionType = (CompressionType)(blockInfo.flags & StorageBlockFlags.CompressionTypeMask);
-            var encryptedData = reader.ReadBytes((int)blockInfo.compressedSize); 
-            if (UnityCNInfo != null)
-            {
-                UnityCNInfo.DecryptBlock(encryptedData, encryptedData.Length, i);
-            }
+            var encryptedData = reader.ReadBytes((int)blockInfo.compressedSize);
             ReadOnlySpan<byte> compressedData = encryptedData;
             switch (compressionType)
             {
@@ -261,7 +257,14 @@ public sealed class BundleFile
               case CompressionType.Lz4:
               case CompressionType.Lz4HC:
                   {
-                      Compression.DecompressToStream(compressedData, BlocksStream, blockInfo.uncompressedSize, "lz4");
+                      if (UnityCNInfo != null)
+                      {
+                          UnityCNInfo.DecryptAndDecompress(compressedData, BlocksStream, blockInfo.uncompressedSize, i);
+                      }
+                      else
+                      {
+                          Compression.DecompressToStream(compressedData, BlocksStream, blockInfo.uncompressedSize, "lz4");
+                      }
                       break;
                   }
               default:
