@@ -32,6 +32,37 @@ public static class Compression
         }
     }
     
+    public static void DecompressToBytes(ReadOnlySpan<byte> compressedData, Span<byte> decompressedData, string compressionType)
+    {
+        switch (compressionType)
+        {
+            case "lz4":
+                var sizeLz4 = LZ4Codec.Decode(compressedData, decompressedData);
+                if (sizeLz4 != decompressedData.Length)
+                    throw new Exception($"Decompressed size mismatch, expected {decompressedData.Length}, got {sizeLz4}");
+                break;
+            case "lzma":
+            {
+                var properties = new byte[5];
+                if (compressedData.Length < 5)
+                    throw new Exception("input .lzma is too short");
+                compressedData.Slice(0, 5).CopyTo(properties);
+                var decoder = new Decoder();
+                decoder.SetDecoderProperties(properties);
+                MemoryStream compressedStream = new MemoryStream(compressedData.Slice(5).ToArray());
+                using var decompressedStream = new MemoryStream(decompressedData.Length);
+                decoder.Code(compressedStream, decompressedStream, compressedData.Length - 5, decompressedData.Length, null);
+                decompressedStream.Position = 0;
+                var sizeLzma = decompressedStream.Read(decompressedData);
+                if (sizeLzma != decompressedData.Length)
+                    throw new Exception($"Decompressed size mismatch, expected {decompressedData.Length}, got {sizeLzma}");
+                break;
+            }
+            default:
+                throw new ArgumentException($"Unsupported compression type {compressionType}");
+        }
+    }
+    
     public static List<byte> CompressStream(MemoryStream uncompressedStream, string compressionType)
     {
         byte[] uncompressedData = uncompressedStream.ToArray();

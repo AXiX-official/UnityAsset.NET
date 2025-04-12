@@ -2,8 +2,7 @@
 
 public static unsafe class LZ4
 {
-    // Only about half the speed of K4os.Compression.LZ4
-    
+    // Cost about 1.2x time compare with K4os.Compression.LZ4
     public static int Decode(ReadOnlySpan<byte> source, Span<byte> target)
     {
         int length = source.Length;
@@ -15,12 +14,24 @@ public static unsafe class LZ4
             byte* s = sourcePtr;
             byte* t = targetPtr;
             byte* sourceEnd = sourcePtr + length;
+            byte* targetEnd = targetPtr + target.Length;
             while (s < sourceEnd)
             {
                 byte token = *s++;
                 int literalLength = token >> 4;
                 int matchLength = token & 0xF;
-                if (literalLength == 0xF)
+                if (literalLength != 0xF)
+                {
+                    if (s + 0xF <= sourceEnd)
+                    {
+                        *(Int128*)t = *(Int128*)s;
+                    }
+                    else
+                    {
+                        Buffer.MemoryCopy(s, t, literalLength, literalLength);
+                    }
+                }
+                else
                 {
                     byte b;
                     do
@@ -28,12 +39,15 @@ public static unsafe class LZ4
                         b = *s++;
                         literalLength += b;
                     } while (b == 0xFF && s < sourceEnd);
+                    Buffer.MemoryCopy(s, t, literalLength, literalLength);
                 }
-                Buffer.MemoryCopy(s, t, literalLength, literalLength);
+                
                 s += literalLength;
                 t += literalLength;
+                
                 if (s == sourceEnd && matchLength == 0) break;
                 if (s >= sourceEnd) return -1;
+                
                 int offset = *s++ | (*s++ << 8);
                 if (matchLength == 0xF)
                 {
@@ -45,14 +59,26 @@ public static unsafe class LZ4
                     } while (b == 0xFF && s < sourceEnd);
                 }
                 matchLength += 4;
-                while (matchLength > offset)
+                if (matchLength <= offset)
                 {
-                    Buffer.MemoryCopy(t - offset, t, offset, offset);
-                    t += offset;
-                    matchLength -= offset;
+                    if (matchLength <= 0xF && t + 0xF <= targetEnd)
+                    {
+                        *(Int128*)t = *(Int128*)(t - offset);
+                    }
+                    else
+                    {
+                        Buffer.MemoryCopy(t - offset, t, matchLength, matchLength);
+                    }
                 }
-                if (matchLength > 0)
+                else
                 {
+                    while (matchLength > offset)
+                    {
+                        Buffer.MemoryCopy(t - offset, t, offset, offset);
+                        t += offset;
+                        matchLength -= offset;
+                    }
+                    
                     Buffer.MemoryCopy(t - offset, t, matchLength, matchLength);
                 }
                 t += matchLength;
@@ -61,6 +87,8 @@ public static unsafe class LZ4
         }
     }
     
+    // Bad Implementation
+    [Obsolete("This method is obsolete.")]
     public static int EncodeFast(ReadOnlySpan<byte> source, Span<byte> target)
     {
         int sourceLength = source.Length - 5;

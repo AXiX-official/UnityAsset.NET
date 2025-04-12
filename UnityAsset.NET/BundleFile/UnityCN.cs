@@ -30,6 +30,8 @@ public sealed unsafe class UnityCN
     private readonly byte* subPtr;
     private readonly byte* indexPtr;
 
+    private bool isIndexSpecial = true;
+
     public UnityCN(AssetReader reader, string key)
     {
         SetKey(key);
@@ -45,6 +47,15 @@ public sealed unsafe class UnityCN
         reader.Position += 1;
         
         reset();
+        
+        for (int i = 0; i < Index.Length; i++)
+        {
+            if (Index[i] != i)
+            {
+                isIndexSpecial = false;
+                break;
+            }
+        }
         
         subHandle = GCHandle.Alloc(Sub, GCHandleType.Pinned);
         indexHandle = GCHandle.Alloc(Index, GCHandleType.Pinned);
@@ -138,69 +149,89 @@ public sealed unsafe class UnityCN
         return true;
     }
     
-    public void DecryptAndDecompress(ReadOnlySpan<byte> compressedData, Stream decompressedStream,
-        long decompressedSize, int index)
+    public void DecryptAndDecompress(ReadOnlySpan<byte> compressedData, Span<byte> decompressedData, int index)
     {
-        byte[] decompressedData = new byte[decompressedSize];
-        var decompressedSpan = new Span<byte>(decompressedData);
         fixed (byte* sourcePtr = &compressedData.GetPinnableReference())
-        fixed (byte* targetPtr = &decompressedSpan.GetPinnableReference())
+        fixed (byte* targetPtr = &decompressedData.GetPinnableReference())
         {
             byte* s = sourcePtr;
             byte* t = targetPtr;
             byte* sourceEnd = sourcePtr + compressedData.Length;
+            byte* targetEnd = targetPtr + decompressedData.Length;
             while (s < sourceEnd)
             {
                 var innerIndex = index;
-                var token = DecryptByteUnsafe(*s++, innerIndex++);
+                var token = DecryptByteSp(*s++, innerIndex++);
                 var literalLength = token >> 4;
                 var matchLength = token & 0xF;
-                if (literalLength == 0xF)
+                if (literalLength != 0xF)
+                {
+                    if (s + 0xF <= sourceEnd)
+                    {
+                        *(Int128*)t = *(Int128*)s;
+                    }
+                    else
+                    {
+                        Buffer.MemoryCopy(s, t, literalLength, literalLength);
+                    }
+                }
+                else
                 {
                     int b;
                     do
                     {
-                        b = DecryptByteUnsafe(*s++, innerIndex++);
+                        b = DecryptByteSp(*s++, innerIndex++);
                         literalLength += b;
                     } while (b == 0xFF);
+                    Buffer.MemoryCopy(s, t, literalLength, literalLength);
                 }
-                Buffer.MemoryCopy(s, t, literalLength, literalLength);
+                
                 s += literalLength;
                 t += literalLength;
                 
                 if (s == sourceEnd && matchLength == 0) break;
                 if (s >= sourceEnd) throw new Exception("Invalid compressed data");
                 
-                var offset = (int)DecryptByteUnsafe(*s++, innerIndex++);
-                offset |= DecryptByteUnsafe(*s++, innerIndex++) << 8;
+                var offset = (int)DecryptByteSp(*s++, innerIndex++);
+                offset |= DecryptByteSp(*s++, innerIndex++) << 8;
                 if (matchLength == 0xF)
                 {
                     int b;
                     do
                     {
-                        b = DecryptByteUnsafe(*s++, innerIndex++);
+                        b = DecryptByteSp(*s++, innerIndex++);
                         matchLength += b;
                     } while (b == 0xFF);
                 }
 
                 matchLength += 4;
-                while (matchLength > offset)
-                {
-                    Buffer.MemoryCopy(t - offset, t, offset, offset);
-                    t += offset;
-                    matchLength -= offset;
-                }
-
-                if (matchLength > 0)
-                { 
-                    Buffer.MemoryCopy(t - offset, t, matchLength, matchLength);
-                    t += matchLength;
-                }
                 
+                if (matchLength <= offset)
+                {
+                    if (matchLength <= 0xF && t + 0xF <= targetEnd)
+                    {
+                        *(Int128*)t = *(Int128*)(t - offset);
+                    }
+                    else
+                    {
+                        Buffer.MemoryCopy(t - offset, t, matchLength, matchLength);
+                    }
+                }
+                else
+                {
+                    while (matchLength > offset)
+                    {
+                        Buffer.MemoryCopy(t - offset, t, offset, offset);
+                        t += offset;
+                        matchLength -= offset;
+                    }
+                    
+                    Buffer.MemoryCopy(t - offset, t, matchLength, matchLength);
+                }
+                t += matchLength;
                 index++;
             }
         }
-        decompressedStream.Write(decompressedData, 0, decompressedData.Length);
     }
     
 
@@ -261,6 +292,23 @@ public sealed unsafe class UnityCN
                  + subPtr[((index >> 4) & 3) + 8]
                  + subPtr[((byte)index >> 6) + 12];
         return (byte)((indexPtr[b & 0xF] - mb) & 0xF | (indexPtr[b >> 4] - mb) << 4);
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private byte DecryptByteSp(byte b, int index)
+    {
+        var mb = subPtr[index & 3]
+                 + subPtr[((index >> 2) & 3) + 4]
+                 + subPtr[((index >> 4) & 3) + 8]
+                 + subPtr[((byte)index >> 6) + 12];
+        if (isIndexSpecial)
+        {
+            return (byte)(((b & 0xF) - mb) & 0xF | ((b >> 4) - mb) << 4);
+        }
+        else
+        {
+            return (byte)((indexPtr[b & 0xF] - mb) & 0xF | (indexPtr[b >> 4] - mb) << 4);
+        }
     }
     
     private int EncryptByte(Span<byte> bytes, ref int offset, ref int index)

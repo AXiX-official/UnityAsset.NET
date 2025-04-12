@@ -235,23 +235,27 @@ public sealed class BundleFile
     
     private void ReadBlocks(AssetReader reader)
     {
-        MemoryStream BlocksStream = new MemoryStream();
+        int totalSize = DataInfo.BlocksInfo.Sum(block => (int)block.uncompressedSize);
+        byte[] blocksBuffer = new byte[totalSize];
+        int bufferOffset = 0;
         for (int i = 0; i < DataInfo.BlocksInfo.Count; i++)
         {
             var blockInfo = DataInfo.BlocksInfo[i];
             var compressionType = (CompressionType)(blockInfo.flags & StorageBlockFlags.CompressionTypeMask);
             var encryptedData = reader.ReadBytes((int)blockInfo.compressedSize);
             ReadOnlySpan<byte> compressedData = encryptedData;
+            Span<byte> decompressedData = blocksBuffer.AsSpan(bufferOffset, (int)blockInfo.uncompressedSize);
             switch (compressionType)
             {
               case CompressionType.None:
                   {
-                      BlocksStream.Write(compressedData);
+                      compressedData.CopyTo(decompressedData);
                       break;
                   }
               case CompressionType.Lzma:
                   {
-                      Compression.DecompressToStream(compressedData, BlocksStream, blockInfo.uncompressedSize, "lzma");
+                      
+                      Compression.DecompressToBytes(compressedData, decompressedData, "lzma");
                       break;
                   }
               case CompressionType.Lz4:
@@ -259,19 +263,19 @@ public sealed class BundleFile
                   {
                       if (UnityCNInfo != null)
                       {
-                          UnityCNInfo.DecryptAndDecompress(compressedData, BlocksStream, blockInfo.uncompressedSize, i);
+                          UnityCNInfo.DecryptAndDecompress(compressedData, decompressedData, i);
                       }
                       else
                       {
-                          Compression.DecompressToStream(compressedData, BlocksStream, blockInfo.uncompressedSize, "lz4");
+                          Compression.DecompressToBytes(compressedData, decompressedData, "lz4");
                       }
                       break;
                   }
               default:
                   throw new IOException($"Unsupported compression type {compressionType}");
             }
-        }  
-        BlocksStream.Position = 0;
+            bufferOffset += (int)blockInfo.uncompressedSize;
+        }
 
         cabStreams = new List<MemoryStream>();
         
@@ -279,8 +283,9 @@ public sealed class BundleFile
         {
             MemoryStream cabStream = new MemoryStream();
             cabStreams.Add(cabStream);
-            BlocksStream.Position = cab.offset;
-            BlocksStream.CopyTo(cabStream, cab.size);
+            //BlocksStream.Position = cab.offset;
+            //BlocksStream.CopyTo(cabStream, cab.size);
+            cabStream.Write(blocksBuffer, (int)cab.offset, (int)cab.size);
             cabStream.Position = 0;
         }
     }
