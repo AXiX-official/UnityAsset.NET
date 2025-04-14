@@ -5,15 +5,14 @@ public static unsafe class LZ4
     // Cost about 1.2x time compare with K4os.Compression.LZ4
     public static int Decode(ReadOnlySpan<byte> source, Span<byte> target)
     {
-        int length = source.Length;
-        if (length < 5)
+        if (source.Length < 5)
             return 0;
         fixed (byte* sourcePtr = &source.GetPinnableReference())
         fixed (byte* targetPtr = &target.GetPinnableReference())
         {
             byte* s = sourcePtr;
             byte* t = targetPtr;
-            byte* sourceEnd = sourcePtr + length;
+            byte* sourceEnd = sourcePtr + source.Length;
             byte* targetEnd = targetPtr + target.Length;
             while (s < sourceEnd)
             {
@@ -22,7 +21,7 @@ public static unsafe class LZ4
                 int matchLength = token & 0xF;
                 if (literalLength != 0xF)
                 {
-                    if (s + 0xF <= sourceEnd)
+                    if (t + 0x10 <= targetEnd)
                     {
                         *(Int128*)t = *(Int128*)s;
                     }
@@ -38,7 +37,7 @@ public static unsafe class LZ4
                     {
                         b = *s++;
                         literalLength += b;
-                    } while (b == 0xFF && s < sourceEnd);
+                    } while (b == 0xFF);
                     Buffer.MemoryCopy(s, t, literalLength, literalLength);
                 }
                 
@@ -56,12 +55,12 @@ public static unsafe class LZ4
                     {
                         b = *s++;
                         matchLength += b;
-                    } while (b == 0xFF && s < sourceEnd);
+                    } while (b == 0xFF);
                 }
                 matchLength += 4;
                 if (matchLength <= offset)
                 {
-                    if (matchLength <= 0xF && t + 0xF <= targetEnd)
+                    if (matchLength <= 0x10 && t + 0x10 <= targetEnd)
                     {
                         *(Int128*)t = *(Int128*)(t - offset);
                     }

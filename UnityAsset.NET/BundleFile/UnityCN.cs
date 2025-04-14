@@ -166,7 +166,7 @@ public sealed unsafe class UnityCN
                 var matchLength = token & 0xF;
                 if (literalLength != 0xF)
                 {
-                    if (s + 0xF <= sourceEnd)
+                    if (t + 0x10 <= targetEnd)
                     {
                         *(Int128*)t = *(Int128*)s;
                     }
@@ -208,7 +208,7 @@ public sealed unsafe class UnityCN
                 
                 if (matchLength <= offset)
                 {
-                    if (matchLength <= 0xF && t + 0xF <= targetEnd)
+                    if (matchLength <= 0x10 && t + 0x10 <= targetEnd)
                     {
                         *(Int128*)t = *(Int128*)(t - offset);
                     }
