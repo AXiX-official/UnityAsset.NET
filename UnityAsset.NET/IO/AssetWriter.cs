@@ -20,23 +20,47 @@ public sealed class AssetWriter : BinaryWriter
             Write(new byte[alignment - offset]);
         }
     }
+
+    public void Align(int alignment)
+    {
+        var mod = BaseStream.Position % alignment;
+        if (mod != 0)
+        {
+            BaseStream.Position += alignment - mod;
+        }
+    }
     
-    public void WriteInt32(int value)
+    public void WriteBoolean(bool value)
+    {
+        Write(value ? (byte)1 : (byte)0);
+    }
+    
+    public void WriteInt16(Int16 value)
     {
         Write(BigEndian ? BinaryPrimitives.ReverseEndianness(value) : value);
     }
     
-    public void WriteInt64(long value)
+    public void WriteInt32(Int32 value)
     {
         Write(BigEndian ? BinaryPrimitives.ReverseEndianness(value) : value);
     }
     
-    public void WriteUInt16(ushort value)
+    public void WriteInt64(Int64 value)
     {
         Write(BigEndian ? BinaryPrimitives.ReverseEndianness(value) : value);
     }
     
-    public void WriteUInt32(uint value)
+    public void WriteUInt16(UInt16 value)
+    {
+        Write(BigEndian ? BinaryPrimitives.ReverseEndianness(value) : value);
+    }
+    
+    public void WriteUInt32(UInt32 value)
+    {
+        Write(BigEndian ? BinaryPrimitives.ReverseEndianness(value) : value);
+    }
+    
+    public void WriteUInt64(UInt64 value)
     {
         Write(BigEndian ? BinaryPrimitives.ReverseEndianness(value) : value);
     }
@@ -50,5 +74,13 @@ public sealed class AssetWriter : BinaryWriter
     public void WriteStream(Stream stream)
     {
         stream.CopyTo(BaseStream);
+    }
+    
+    public void WriteArray<T>(List<T> array, Action<AssetWriter, T> writer)
+    {
+        foreach (var item in array)
+        {
+            writer(this, item);
+        }
     }
 }

@@ -46,4 +46,9 @@ public struct Hash128
     {
         return new Hash128() { data = new byte[16] };
     }
+    
+    public void Write(AssetWriter w)
+    {
+        w.Write(data);
+    }
 }

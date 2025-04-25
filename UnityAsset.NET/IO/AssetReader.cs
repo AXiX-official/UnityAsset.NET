@@ -38,13 +38,26 @@ public sealed class AssetReader : BinaryReader
         StartPosition = 0;
     }
     
-    public void AlignStream(int alignment)
+    public void Align(int alignment)
     {
         var pos = Position;
         var mod = pos % alignment;
         if (mod != 0)
         {
             Position += alignment - mod;
+        }
+    }
+    
+    public override Int16 ReadInt16()
+    {
+        if (BigEndian)
+        {
+            Read(buffer, 0, 2);
+            return BinaryPrimitives.ReadInt16BigEndian(buffer);
+        }
+        else
+        {
+            return base.ReadInt16();
         }
     }
 
@@ -99,6 +112,19 @@ public sealed class AssetReader : BinaryReader
             return base.ReadUInt32();
         }
     }
+    
+    public override UInt64 ReadUInt64()
+    {
+        if (BigEndian)
+        {
+            Read(buffer, 0, 8);
+            return BinaryPrimitives.ReadUInt64BigEndian(buffer);
+        }
+        else
+        {
+            return base.ReadUInt64();
+        }
+    }
 
     public string ReadNullTerminated()
     {
@@ -131,5 +157,15 @@ public sealed class AssetReader : BinaryReader
     public void Skip(int length)
     {
         BaseStream.Position += length;
+    }
+    
+    public List<T> ReadArray<T>(int count, Func<AssetReader, T> constructor)
+    {
+        var array = new List<T>(count);
+        for (int i = 0; i < count; i++)
+        {
+            array.Add(constructor(this));
+        }
+        return array;
     }
 }

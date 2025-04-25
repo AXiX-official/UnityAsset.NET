@@ -96,7 +96,7 @@ public sealed class BundleFile
             //Console.WriteLine($"Encryption flag exist, file is encrypted, attempting to decrypt");
             if (UnityCNKey == null)
             {
-                throw new Exception("UnityCN key is required for decryption");
+                throw new Exception($"UnityCN key is required for decryption. UnityCN Flag Mask: {UnityCNMask}");
             }
 
             if (UnityCNMask == (ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew))
@@ -110,7 +110,7 @@ public sealed class BundleFile
         
         if (Header.version >= 7)
         {
-            reader.AlignStream(16);
+            reader.Align(16);
             HeaderAligned = true;
         }
         else if (version[0] == 2019 && version[1] == 4) // temp fix for 2019.4.x
@@ -137,7 +137,7 @@ public sealed class BundleFile
         
         if (HasBlockInfoNeedPaddingAtStart && (Header.flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
         {
-            reader.AlignStream(16);
+            reader.Align(16);
         }
         
         ReadBlocks(reader);

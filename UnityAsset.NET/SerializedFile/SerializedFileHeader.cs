@@ -11,36 +11,56 @@ public sealed class SerializedFileHeader
     public SerializedFileFormatVersion Version;
     public ulong DataOffset;
     public bool Endianess;
+    public byte[] Reserved;
+    public Int64 Unknown;
     
-    public SerializedFileHeader(AssetReader reader)
+    public SerializedFileHeader(AssetReader r)
     {
-        MetadataSize = reader.ReadUInt32();
-        FileSize = reader.ReadUInt32();
-        Version = (SerializedFileFormatVersion)reader.ReadUInt32();
-        DataOffset = reader.ReadUInt32();
+        MetadataSize = r.ReadUInt32();
+        FileSize = r.ReadUInt32();
+        Version = (SerializedFileFormatVersion)r.ReadUInt32();
+        DataOffset = r.ReadUInt32();
 
         if (Version < SerializedFileFormatVersion.Unknown_9)
         {
             throw new Exception($"Unsupported version: {Version}");
         }
         
-        Endianess = reader.ReadBoolean();
-        reader.Skip(3);// unused bytes
+        Endianess = r.ReadBoolean();
+        Reserved = r.ReadBytes(3);
         
         if (Version >= SerializedFileFormatVersion.LargeFilesSupport)
         {
-            MetadataSize = reader.ReadUInt32();
-            FileSize = reader.ReadUInt64();
-            DataOffset = reader.ReadUInt64();
-            reader.ReadInt64(); // unknown
+            MetadataSize = r.ReadUInt32();
+            FileSize = r.ReadUInt64();
+            DataOffset = r.ReadUInt64();
+            Unknown = r.ReadInt64(); // unknown
         }
-        
-        reader.BigEndian = Endianess;
     }
 
+    public void Write(AssetWriter w)
+    {
+        w.WriteUInt32(MetadataSize);
+        w.WriteUInt32((uint)FileSize);
+        w.WriteUInt32((uint)Version);
+        w.WriteUInt32((uint)DataOffset);
+        
+        w.WriteBoolean(Endianess);
+        w.Write(Reserved);
+
+        if (Version >= SerializedFileFormatVersion.LargeFilesSupport)
+        {
+            w.WriteUInt32(MetadataSize);
+            w.WriteUInt64(FileSize);
+            w.WriteUInt64(DataOffset);
+            w.WriteInt64(Unknown); // unknown
+        }
+    }
+    
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();
+        sb.AppendLine("Serialized File Header:");
         sb.AppendFormat("MetadataSize: 0x{0:X8} | ", MetadataSize);
         sb.AppendFormat("FileSize: 0x{0:X8} | ", FileSize);
         sb.AppendFormat("Version: {0} | ", Version);
