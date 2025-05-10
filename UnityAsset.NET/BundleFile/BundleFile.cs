@@ -33,8 +33,16 @@ public sealed class BundleFile
     public uint crc32 { get; set; }
 
     private bool _blocksInfoAtTheEnd;
-    
-    public bool BlocksInfoAtTheEnd { get => _blocksInfoAtTheEnd; set => _blocksInfoAtTheEnd = value; }
+
+    public bool BlocksInfoAtTheEnd
+    {
+        get => _blocksInfoAtTheEnd;
+        set
+        {
+            _blocksInfoAtTheEnd = value;
+            Header.flags = value ? Header.flags | ArchiveFlags.BlocksInfoAtTheEnd : Header.flags & ~ArchiveFlags.BlocksInfoAtTheEnd;
+        }
+    }
     
     public bool HasBlockInfoNeedPaddingAtStart { get; set; }
 

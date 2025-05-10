@@ -40,10 +40,20 @@ public sealed class SerializedFileHeader
 
     public void Write(AssetWriter w)
     {
-        w.WriteUInt32(MetadataSize);
-        w.WriteUInt32((uint)FileSize);
-        w.WriteUInt32((uint)Version);
-        w.WriteUInt32((uint)DataOffset);
+        if (Version >= SerializedFileFormatVersion.LargeFilesSupport)
+        {
+            w.WriteUInt32(0);
+            w.WriteUInt32(0);
+            w.WriteUInt32((uint)Version);
+            w.WriteUInt32(0);
+        }
+        else
+        {
+            w.WriteUInt32(MetadataSize);
+            w.WriteUInt32((uint)FileSize);
+            w.WriteUInt32((uint)Version);
+            w.WriteUInt32((uint)DataOffset);
+        }
         
         w.WriteBoolean(Endianess);
         w.Write(Reserved);

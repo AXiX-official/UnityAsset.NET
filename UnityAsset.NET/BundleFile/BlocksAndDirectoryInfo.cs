@@ -27,6 +27,7 @@ public sealed class BlocksAndDirectoryInfo
         }
         else //0x40 BlocksAndDirectoryInfoCombined
         {
+            Console.WriteLine($"reader.pos {reader.Position}");
             BlocksInfoBytes = reader.ReadBytes((int)header.compressedBlocksInfoSize).ToList();
         }
         

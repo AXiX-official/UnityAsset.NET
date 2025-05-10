@@ -13,7 +13,7 @@ public sealed class SerializedType
     
     public short ScriptTypeIndex;
 
-    public Hash128 ScriptIdHash;
+    public Hash128? ScriptIdHash;
     
     public Hash128 TypeHash;
     
@@ -103,7 +103,7 @@ public sealed class SerializedType
             (version >= RefactorTypeData && TypeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && ScriptTypeIndex > 0))
         {
-            ScriptIdHash.Write(w);
+            ScriptIdHash?.Write(w);
         }
         
         TypeHash.Write(w);
@@ -142,7 +142,7 @@ public sealed class SerializedType
         sb.AppendFormat("TypeID: {0} | ", TypeID);
         sb.AppendFormat("IsStrippedType: {0} | ", IsStrippedType);
         sb.AppendFormat("ScriptTypeIndex: {0} | ", ScriptTypeIndex);
-        sb.AppendFormat("ScriptIdHash: {0} | ", ScriptIdHash);
+        sb.AppendFormat("ScriptIdHash: {0} | ", ScriptIdHash?.ToString() ?? "null");
         sb.AppendFormat("TypeHash: {0} | ", TypeHash);
         sb.AppendFormat("IsRefType: {0} | ", IsRefType);
         sb.AppendFormat("Nodes: {0} | ", Nodes.Count);
