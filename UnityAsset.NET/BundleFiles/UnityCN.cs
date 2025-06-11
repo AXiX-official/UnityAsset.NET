@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
 
-namespace UnityAsset.NET.BundleFile;
+namespace UnityAsset.NET.BundleFiles;
 
 public sealed unsafe class UnityCN
 {
@@ -234,7 +234,6 @@ public sealed unsafe class UnityCN
         }
     }
     
-
     [Obsolete("This method is obsolete. Use DecryptAndDecompress instead.")]
     public void DecryptBlock(Span<byte> bytes, int size, int index)
     {

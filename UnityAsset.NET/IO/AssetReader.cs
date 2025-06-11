@@ -3,40 +3,42 @@ using System.Text;
 
 namespace UnityAsset.NET.IO;
 
-public sealed class AssetReader : BinaryReader
+public sealed class AssetReader : BinaryReader, ICabFile
 {
     public bool BigEndian;
 
-    private long StartPosition;
+    private readonly long _startPosition;
     
     public long Position
     {
-        get => BaseStream.Position - StartPosition;
-        set => BaseStream.Position = value + StartPosition;
+        get => BaseStream.Position - _startPosition;
+        set => BaseStream.Position = value + _startPosition;
     }
     
     private readonly byte[] buffer;
     
-    public AssetReader(byte[] data, bool isBigEndian = true) : base(new MemoryStream(data))
+    public AssetReader(byte[] data, bool isBigEndian = true, long startPosition = 0) : base(new MemoryStream(data))
     {
         buffer = new byte[8];
         BigEndian = isBigEndian;
-        StartPosition = 0;
+        this._startPosition = startPosition;
     }
     
-    public AssetReader(Stream stream, bool isBigEndian = true) : base(stream)
+    public AssetReader(Stream stream, bool isBigEndian = true, long startPosition = 0) : base(stream)
     {
         buffer = new byte[8];
         BigEndian = isBigEndian;
-        StartPosition = stream.Position;
+        this._startPosition = startPosition;
     }
     
-    public AssetReader(string filePath, bool isBigEndian = true) : base(new FileStream(filePath, FileMode.Open, FileAccess.Read))
+    public AssetReader(string filePath, bool isBigEndian = true, long startPosition = 0) : base(new FileStream(filePath, FileMode.Open, FileAccess.Read))
     {
         buffer = new byte[8];
         BigEndian = isBigEndian;
-        StartPosition = 0;
+        this._startPosition = startPosition;
     }
+    
+    public bool EOF => BaseStream.Position >= BaseStream.Length;
     
     public void Align(int alignment)
     {
@@ -61,7 +63,7 @@ public sealed class AssetReader : BinaryReader
         }
     }
 
-    public override int ReadInt32()
+    public override Int32 ReadInt32()
     {
         if (BigEndian)
         {
@@ -74,7 +76,7 @@ public sealed class AssetReader : BinaryReader
         }
     }
 
-    public override long ReadInt64()
+    public override Int64 ReadInt64()
     {
         if (BigEndian)
         {
@@ -87,7 +89,7 @@ public sealed class AssetReader : BinaryReader
         }
     }
     
-    public override ushort ReadUInt16()
+    public override UInt16 ReadUInt16()
     {
         if (BigEndian)
         {
@@ -100,7 +102,7 @@ public sealed class AssetReader : BinaryReader
         }
     }
     
-    public override uint ReadUInt32()
+    public override UInt32 ReadUInt32()
     {
         if (BigEndian)
         {
@@ -125,17 +127,6 @@ public sealed class AssetReader : BinaryReader
             return base.ReadUInt64();
         }
     }
-
-    public string ReadNullTerminated()
-    {
-        string output = "";
-        char curChar;
-        while ((curChar = ReadChar()) != 0x00)
-        {
-            output += curChar;
-        }
-        return output;
-    }
     
     public string ReadStringToNull(int maxLength = 32767)
     {
@@ -159,12 +150,32 @@ public sealed class AssetReader : BinaryReader
         BaseStream.Position += length;
     }
     
-    public List<T> ReadArray<T>(int count, Func<AssetReader, T> constructor)
+    public List<T> ReadList<T>(int count, Func<AssetReader, T> constructor)
     {
         var array = new List<T>(count);
         for (int i = 0; i < count; i++)
         {
             array.Add(constructor(this));
+        }
+        return array;
+    }
+    
+    public byte[] ReadByteArray(int count)
+    {
+        byte[] array = new byte[count];
+        for (int i = 0; i < count; i++)
+        {
+            array[i] = ReadByte();
+        }
+        return array;
+    }
+    
+    public int[] ReadIntArray(int count)
+    {
+        int[] array = new int[count];
+        for (int i = 0; i < count; i++)
+        {
+            array[i] = ReadInt32();
         }
         return array;
     }

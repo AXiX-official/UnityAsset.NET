@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Authors>AXiX</Authors>
@@ -19,7 +19,6 @@
         <PackageTags>Unity</PackageTags>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-        <PublishAot>true</PublishAot>
     </PropertyGroup>
 
     <ItemGroup>
@@ -35,7 +34,6 @@
 
     <ItemGroup>
       <PackageReference Include="K4os.Compression.LZ4" Version="1.3.8" />
-      <PackageReference Include="LZ4Codec" Version="2023.6.1" />
       <PackageReference Include="SevenZip" Version="19.0.0" />
     </ItemGroup>
 

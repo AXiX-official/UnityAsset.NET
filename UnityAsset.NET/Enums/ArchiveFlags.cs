@@ -1,7 +1,7 @@
 ﻿namespace UnityAsset.NET.Enums;
 
 [Flags]
-public enum ArchiveFlags
+public enum ArchiveFlags : UInt32
 {
     CompressionTypeMask = 0x3f,
     BlocksAndDirectoryInfoCombined = 0x40,

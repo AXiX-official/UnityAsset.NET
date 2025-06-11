@@ -1,23 +1,28 @@
 ﻿using SevenZip.Compression.LZMA;
 using K4os.Compression.LZ4;
+using UnityAsset.NET.Enums;
 
 namespace UnityAsset.NET;
 
 public static class Compression
 {
     public static void DecompressToStream(ReadOnlySpan<byte> compressedData, Stream decompressedStream,
-        long decompressedSize, string compressionType)
+        long decompressedSize, CompressionType compressionType)
     {
         switch (compressionType)
         {
-            case "lz4":
+            case CompressionType.None:
+                decompressedStream.Write(compressedData);
+                break;
+            case CompressionType.Lz4:
+            case CompressionType.Lz4HC:
                 byte[] decompressedData = new byte[decompressedSize];
                 var size = LZ4Codec.Decode(compressedData, new Span<byte>(decompressedData));
                 if (size != decompressedSize)
                     throw new Exception($"Decompressed size mismatch, expected {decompressedSize}, got {size}");
                 decompressedStream.Write(decompressedData, 0, decompressedData.Length);
                 break;
-            case "lzma":
+            case CompressionType.Lzma:
                 var properties = new byte[5];
                 if (compressedData.Length < 5)
                     throw new Exception("input .lzma is too short");
@@ -30,18 +35,23 @@ public static class Compression
             default:
                 throw new ArgumentException($"Unsupported compression type {compressionType}");
         }
+        decompressedStream.Position = 0;
     }
     
-    public static void DecompressToBytes(ReadOnlySpan<byte> compressedData, Span<byte> decompressedData, string compressionType)
+    public static void DecompressToBytes(ReadOnlySpan<byte> compressedData, Span<byte> decompressedData, CompressionType compressionType)
     {
         switch (compressionType)
         {
-            case "lz4":
+            case CompressionType.None:
+                compressedData.CopyTo(decompressedData);
+                break;
+            case CompressionType.Lz4:
+            case CompressionType.Lz4HC:
                 var sizeLz4 = LZ4Codec.Decode(compressedData, decompressedData);
                 if (sizeLz4 != decompressedData.Length)
                     throw new Exception($"Decompressed size mismatch, expected {decompressedData.Length}, got {sizeLz4}");
                 break;
-            case "lzma":
+            case CompressionType.Lzma:
             {
                 var properties = new byte[5];
                 if (compressedData.Length < 5)
@@ -63,30 +73,32 @@ public static class Compression
         }
     }
     
-    public static List<byte> CompressStream(MemoryStream uncompressedStream, string compressionType)
+    public static long CompressStream(ReadOnlySpan<byte> uncompressedData, MemoryStream compressedStream, CompressionType compressionType)
     {
-        byte[] uncompressedData = uncompressedStream.ToArray();
         switch (compressionType)
         {
-            case "none":
-                return uncompressedData.ToList();
-            case "lz4":
+            case CompressionType.None:
+                compressedStream.Write(uncompressedData);
+                return uncompressedData.Length;
+            case CompressionType.Lz4:
                 byte[] compressedData = new byte[LZ4Codec.MaximumOutputSize(uncompressedData.Length)];
                 int compressedSize = LZ4Codec.Encode(uncompressedData, compressedData);
-                return compressedData.Take(compressedSize).ToList();
-            case "lz4hc":
-                byte[] compressedDataHC = new byte[LZ4Codec.MaximumOutputSize(uncompressedData.Length)];
-                int compressedSizeHC = LZ4Codec.Encode(uncompressedData, compressedDataHC, LZ4Level.L12_MAX);
-                return compressedDataHC.Take(compressedSizeHC).ToList();
-            case "lzma":
+                compressedStream.Write(compressedData[..compressedSize]);
+                return compressedSize;
+            case CompressionType.Lz4HC:
+                byte[] compressedDataHc = new byte[LZ4Codec.MaximumOutputSize(uncompressedData.Length)];
+                int compressedSizeHc = LZ4Codec.Encode(uncompressedData, compressedDataHc, LZ4Level.L12_MAX);
+                compressedStream.Write(compressedDataHc[..compressedSizeHc]);
+                return compressedSizeHc;
+            case CompressionType.Lzma:
                 var encoder = new Encoder();
-                MemoryStream compressedStream = new MemoryStream();
+                MemoryStream subStream = new MemoryStream();
                 encoder.WriteCoderProperties(compressedStream);
-                long fileSize = uncompressedStream.Length;
-                uncompressedStream.Position = 0;
-                encoder.Code(uncompressedStream, compressedStream, -1, -1, null);
-                //Console.WriteLine($"Compressed {fileSize} bytes to {compressedStream.Length} bytes");
-                return compressedStream.ToArray().ToList();
+                MemoryStream uncompressedStream = new MemoryStream(uncompressedData.ToArray());
+                encoder.Code(uncompressedStream, subStream, -1, -1, null);
+                subStream.Position = 0;
+                subStream.CopyTo(compressedStream);
+                return subStream.Length + 5;
             default:
                 throw new ArgumentException($"Unsupported compression type {compressionType}");
         }

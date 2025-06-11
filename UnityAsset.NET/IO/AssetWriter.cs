@@ -7,18 +7,20 @@ public sealed class AssetWriter : BinaryWriter
 {
     public bool BigEndian;
     
+    public long Position
+    {
+        get => BaseStream.Position;
+        set => BaseStream.Position = value;
+    }
+    
     public AssetWriter(Stream stream, bool isBigEndian = true) : base(stream)
     {
         BigEndian = isBigEndian;
     }
     
-    public void AlignStream(int alignment)
+    public AssetWriter(string filePath, bool isBigEndian = true) : base(new FileStream(filePath, FileMode.Create, FileAccess.Write))
     {
-        int offset = (int)BaseStream.Position % alignment;
-        if (offset != 0)
-        {
-            Write(new byte[alignment - offset]);
-        }
+        BigEndian = isBigEndian;
     }
 
     public void Align(int alignment)
@@ -76,11 +78,29 @@ public sealed class AssetWriter : BinaryWriter
         stream.CopyTo(BaseStream);
     }
     
-    public void WriteArray<T>(List<T> array, Action<AssetWriter, T> writer)
+    public void WriteList<T>(List<T> array, Action<AssetWriter, T> writer)
     {
         foreach (var item in array)
         {
             writer(this, item);
+        }
+    }
+    
+    public void WriteListWithCount<T>(List<T> array, Action<AssetWriter, T> writer)
+    {
+        WriteInt32(array.Count);
+        foreach (var item in array)
+        {
+            writer(this, item);
+        }
+    }
+    
+    public void WriteIntArrayWithCount(int[] array)
+    {
+        WriteInt32(array.Length);
+        foreach (var item in array)
+        {
+            WriteInt32(item);
         }
     }
 }

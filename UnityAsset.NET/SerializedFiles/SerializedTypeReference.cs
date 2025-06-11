@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using UnityAsset.NET.IO;
 
-namespace UnityAsset.NET.SerializedFile;
+namespace UnityAsset.NET.SerializedFiles;
 
 public class SerializedTypeReference
 {
@@ -20,18 +20,17 @@ public class SerializedTypeReference
         AsmName = asmName;
     }
     
-    public void ReadMetadata(AssetReader r)
-    {
-        ClassName = r.ReadNullTerminated();
-        Namespace = r.ReadNullTerminated();
-        AsmName = r.ReadNullTerminated();
-    }
+    public static SerializedTypeReference ParseFromReader(AssetReader reader) => new (
+        reader.ReadStringToNull(),
+        reader.ReadStringToNull(),
+        reader.ReadStringToNull()
+    );
 
-    public void Write(AssetWriter w)
+    public void Serialize(AssetWriter writer)
     {
-        w.WriteStringToNull(ClassName);
-        w.WriteStringToNull(Namespace);
-        w.WriteStringToNull(AsmName);
+        writer.WriteStringToNull(ClassName);
+        writer.WriteStringToNull(Namespace);
+        writer.WriteStringToNull(AsmName);
     }
 
     public override string ToString()
