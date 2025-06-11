@@ -186,7 +186,7 @@ public class BundleFile
         Serialize(new AssetWriter(path), infoPacker, dataPacker);
     }
     
-    public void Serialize(AssetWriter writer, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None)
+    public void Serialize(AssetWriter writer, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCNKey = null)
     {
         if (Header == null || DataInfo == null || CabFiles == null)
         {
@@ -226,26 +226,31 @@ public class BundleFile
         var blocksSize = cabStream.Length;
         byte[] uncompressedData = cabStream.ToArray();
         using MemoryStream compressedStream = new MemoryStream();
-        if (dataPacker == CompressionType.Lzma)
+        var defaultChunkSize = dataPacker == CompressionType.Lzma ? UInt32.MaxValue : Setting.DefaultChunkSize;
+        offset = 0;
+        while (blocksSize > 0)
         {
-            var compressedSize = Compression.CompressStream(uncompressedData.AsSpan(), compressedStream, dataPacker);
-            blocksInfo.Add(new StorageBlockInfo((uint)uncompressedData.Length, (UInt32)compressedSize, (StorageBlockFlags)dataPacker));
+            int chunkSize = (int)Math.Min(blocksSize, defaultChunkSize);
+            var compressedSize = Compression.CompressStream(uncompressedData.AsSpan((int)offset, chunkSize), compressedStream, dataPacker);
+            blocksInfo.Add(new StorageBlockInfo((UInt32)chunkSize, (UInt32)compressedSize, (StorageBlockFlags)dataPacker));
+            blocksSize -= chunkSize;
+            offset += chunkSize;
         }
-        else
+        compressedStream.Position = 0;
+
+        UnityCN? unityCn = null;
+        if (unityCNKey != null)
         {
-            offset = 0;
-            while (blocksSize > 0x00020000)
+            unityCn = new UnityCN(unityCNKey);
+            if (dataPacker == CompressionType.Lz4 || dataPacker == CompressionType.Lz4HC)
             {
-                var compressedSize = Compression.CompressStream(uncompressedData.AsSpan((int)offset, 0x00020000), compressedStream, dataPacker);
-                blocksInfo.Add(new StorageBlockInfo(0x00020000, (UInt32)compressedSize, (StorageBlockFlags)dataPacker));
-                blocksSize -= 0x00020000;
-                offset += 0x00020000;
             }
-            var finalCompressedSize = Compression.CompressStream(uncompressedData.AsSpan((int)offset, (int)blocksSize), compressedStream, dataPacker);
-            blocksInfo.Add(new StorageBlockInfo((UInt32)blocksSize, (UInt32)finalCompressedSize, (StorageBlockFlags)dataPacker));
+            else
+            {
+                throw new Exception($"UnityCN Encryption only support Lz4/Lz4HC, but {dataPacker} was set.");
+            }
         }
         
-        compressedStream.Position = 0;
         var dataInfo = new BlocksAndCabsInfo(DataInfo.UncompressedDataHash, blocksInfo, directoryInfo);
         using MemoryStream dataInfoStream = new MemoryStream();
         AssetWriter dataInfoWriter = new AssetWriter(dataInfoStream);
