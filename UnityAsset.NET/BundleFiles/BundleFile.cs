@@ -35,6 +35,7 @@ public class BundleFile
         
         if ((header.Flags & unityCNMask) != 0)
         {
+            if (key == null) key = Setting.DefaultUnityCNKey;
             if (key == null)
             {
                 throw new Exception($"UnityCN key is required for decryption. UnityCN Flag Mask: {unityCNMask}");
@@ -224,7 +225,6 @@ public class BundleFile
             offset += cabSize;
         }
         cabDataBuffer.Seek(0);
-        cabDataBuffer.WriteToFile(@"F:\Rider\UnityAsset.NET\Test\cavn");
 
         var blocksInfo = new List<StorageBlockInfo>();
         var blocksSize = offset;
