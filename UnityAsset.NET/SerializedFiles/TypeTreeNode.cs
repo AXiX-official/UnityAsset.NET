@@ -31,34 +31,36 @@ public class TypeTreeNode
         RefTypeHash = refTypeHash;
     }
 
-    public static TypeTreeNode ParseFromReader(AssetReader r, SerializedFileFormatVersion version) => new(
-        r.ReadUInt16(),
-        r.ReadByte(),
-        (TypeTreeNodeFlags)r.ReadByte(),
-        r.ReadUInt32(),
-        r.ReadUInt32(),
-        r.ReadInt32(),
-        r.ReadUInt32(),
-        r.ReadUInt32(),
-        version >= SerializedFileFormatVersion.Unknown_12 ? r.ReadUInt64() : 0
+    public static TypeTreeNode Parse(ref DataBuffer db, SerializedFileFormatVersion version) => new(
+        db.ReadUInt16(),
+        db.ReadByte(),
+        (TypeTreeNodeFlags)db.ReadByte(),
+        db.ReadUInt32(),
+        db.ReadUInt32(),
+        db.ReadInt32(),
+        db.ReadUInt32(),
+        db.ReadUInt32(),
+        version >= SerializedFileFormatVersion.Unknown_12 ? db.ReadUInt64() : 0
     );
 
-    public void Serialize(AssetWriter writer, SerializedFileFormatVersion version)
+    public void Serialize(ref DataBuffer db, SerializedFileFormatVersion version)
     {
-        writer.WriteUInt16(Vesion);
-        writer.Write(Level);
-        writer.Write((byte)TypeFlags);
-        writer.WriteUInt32(TypeStringOffset);
-        writer.WriteUInt32(NameStringOffset);
-        writer.WriteInt32(ByteSize);
-        writer.WriteUInt32(Index);
-        writer.WriteUInt32(MetaFlags);
+        db.WriteUInt16(Vesion);
+        db.WriteByte(Level);
+        db.WriteByte((byte)TypeFlags);
+        db.WriteUInt32(TypeStringOffset);
+        db.WriteUInt32(NameStringOffset);
+        db.WriteInt32(ByteSize);
+        db.WriteUInt32(Index);
+        db.WriteUInt32(MetaFlags);
         
         if (version >= SerializedFileFormatVersion.Unknown_12)
         {
-            writer.WriteUInt64(RefTypeHash);
+            db.WriteUInt64(RefTypeHash);
         }
     }
+
+    public long SerializeSize => 24;
     
     public override string ToString()
     {

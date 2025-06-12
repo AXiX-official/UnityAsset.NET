@@ -18,18 +18,18 @@ public sealed class CabInfo
         Path = path;
     }
     
-    public static CabInfo ParseFromReader(AssetReader reader) => new (
-        reader.ReadInt64(),
-        reader.ReadInt64(),
-        reader.ReadUInt32(),
-        reader.ReadStringToNull()
+    public static CabInfo Parse(ref DataBuffer db) => new (
+        db.ReadInt64(),
+        db.ReadInt64(),
+        db.ReadUInt32(),
+        db.ReadNullTerminatedString()
     );
     
-    public void Serialize(AssetWriter writer) {
-        writer.WriteInt64(Offset);
-        writer.WriteInt64(Size);
-        writer.WriteUInt32(Flags);
-        writer.WriteStringToNull(Path);
+    public void Serialize(ref DataBuffer db) {
+        db.WriteInt64(Offset);
+        db.WriteInt64(Size);
+        db.WriteUInt32(Flags);
+        db.WriteNullTerminatedString(Path);
     }
 
     public long SerializeSize => 21 + Path.Length;

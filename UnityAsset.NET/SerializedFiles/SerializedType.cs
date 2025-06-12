@@ -32,81 +32,81 @@ public sealed class SerializedType
         TypeReference = typeReference;
     }
     
-    public static SerializedType ParseFromReader(AssetReader reader, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
+    public static SerializedType Parse(ref DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
-        var typeID = reader.ReadInt32();
-        var isStrippedType = version >= RefactoredClassId && reader.ReadBoolean();
-        var scriptTypeIndex = version >= RefactorTypeData ? reader.ReadInt16() : (short)-1;
+        var typeID = db.ReadInt32();
+        var isStrippedType = version >= RefactoredClassId && db.ReadBoolean();
+        var scriptTypeIndex = version >= RefactorTypeData ? db.ReadInt16() : (short)-1;
         Hash128? scriptIdHash = null;
         if ((version < RefactorTypeData && typeID < 0) ||
             (version >= RefactorTypeData && typeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && scriptTypeIndex > 0))
         {
-            scriptIdHash = new Hash128(reader);
+            scriptIdHash = new Hash128(ref db);
         }
-        var typeHash = new Hash128(reader);
+        var typeHash = new Hash128(ref db);
         List<TypeTreeNode>? nodes = null;
         byte[]? stringBufferBytes = null;
         int[]? typeDependencies = null;
         SerializedTypeReference? typeReference = null;
         if (typeTreeEnabled)
         {
-            int typeTreeNodeCount = reader.ReadInt32();
-            int stringBufferLen = reader.ReadInt32();
-            nodes = reader.ReadList(typeTreeNodeCount, (r) => TypeTreeNode.ParseFromReader(r, version));
-            stringBufferBytes = reader.ReadBytes(stringBufferLen);
+            int typeTreeNodeCount = db.ReadInt32();
+            int stringBufferLen = db.ReadInt32();
+            nodes = db.ReadList(typeTreeNodeCount, (ref DataBuffer d) => TypeTreeNode.Parse(ref d, version));
+            stringBufferBytes = db.ReadBytes(stringBufferLen);
             if (version >= StoresTypeDependencies)
             {
                 if (isRefType)
                 {
-                    typeReference = SerializedTypeReference.ParseFromReader(reader);
+                    typeReference = SerializedTypeReference.Parse(ref db);
                 }
                 else
                 {
-                    typeDependencies = reader.ReadIntArray(reader.ReadInt32());
+                    typeDependencies = db.ReadIntArray(db.ReadInt32());
                 }
             }
         }
         return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);
     }
 
-    public void Serialize(AssetWriter writer, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
+    public void Serialize(ref DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
-        writer.WriteInt32(TypeID);
+        db.WriteInt32(TypeID);
         if (version >= RefactoredClassId)
         {
-            writer.WriteBoolean(IsStrippedType);
+            db.WriteBoolean(IsStrippedType);
         }
         if (version >= RefactorTypeData)
         {
-            writer.WriteInt16(ScriptTypeIndex);
+            db.WriteInt16(ScriptTypeIndex);
         }
         if ((version < RefactorTypeData && TypeID < 0) ||
             (version >= RefactorTypeData && TypeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && ScriptTypeIndex > 0))
         {
-            ScriptIdHash?.Write(writer);
+            ScriptIdHash?.Serialize(ref db);
         }
-        TypeHash.Write(writer);
+        TypeHash.Serialize(ref db);
         if (Nodes == null || StringBufferBytes == null)
         {
             throw new NullReferenceException("Nodes or StringBufferBytes is null");
         }
         if (typeTreeEnabled)
         {
-            writer.WriteInt32(Nodes.Count);
-            writer.WriteInt32(StringBufferBytes.Length);
-            writer.WriteList(Nodes, (w, node) => node.Serialize(w, version));
-            writer.Write(StringBufferBytes);
+            db.WriteInt32(Nodes.Count);
+            db.WriteInt32(StringBufferBytes.Length);
+            db.WriteList(Nodes, (ref DataBuffer d, TypeTreeNode node) => node.Serialize(ref d, version));
+            db.WriteBytes(StringBufferBytes);
             if (version >= StoresTypeDependencies)
             {
                 if (!isRefType && TypeDependencies != null)
                 {
-                    writer.WriteIntArrayWithCount(TypeDependencies);
+                    db.WriteIntArrayWithCount(TypeDependencies);
                 }
                 else if(TypeReference != null)
                 {
-                    TypeReference.Serialize(writer);
+                    TypeReference.Serialize(ref db);
                 }
                 else
                 {
@@ -115,6 +115,13 @@ public sealed class SerializedType
             }
         }
     }
+
+    public long SerializeSize => 39 + 
+                                 (Nodes == null || StringBufferBytes == null 
+                                     ? 0 
+                                     : 8 + Nodes.Sum(n => n.SerializeSize) + StringBufferBytes.Length
+                                     + (TypeDependencies == null ? 0 : 4 + TypeDependencies.Length)
+                                     + (TypeReference == null ? 0 : 4 + TypeReference.SerializeSize));
 
     public override string ToString()
     {

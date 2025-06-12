@@ -103,4 +103,35 @@ public static class Compression
                 throw new ArgumentException($"Unsupported compression type {compressionType}");
         }
     }
+    
+    public static long CompressToBytes(ReadOnlySpan<byte> uncompressedData, Span<byte> compressedData, CompressionType compressionType)
+    {
+        switch (compressionType)
+        {
+            case CompressionType.None:
+                uncompressedData.CopyTo(compressedData);
+                return uncompressedData.Length;
+            case CompressionType.Lz4:
+                int compressedSize = LZ4Codec.Encode(uncompressedData, compressedData);
+                return compressedSize;
+            case CompressionType.Lz4HC:
+                int compressedSizeHc = LZ4Codec.Encode(uncompressedData, compressedData, LZ4Level.L12_MAX);
+                return compressedSizeHc;
+            case CompressionType.Lzma:
+                var encoder = new Encoder();
+                MemoryStream compressedStream = new MemoryStream();
+                MemoryStream subStream = new MemoryStream();
+                encoder.WriteCoderProperties(compressedStream);
+                MemoryStream uncompressedStream = new MemoryStream(uncompressedData.ToArray());
+                encoder.Code(uncompressedStream, subStream, -1, -1, null);
+                subStream.Position = 0;
+                subStream.CopyTo(compressedStream);
+                var size = compressedStream.Position;
+                compressedStream.Position = 0;
+                compressedStream.ReadExactly(compressedData.Slice(0, (int)size));
+                return size;
+            default:
+                throw new ArgumentException($"Unsupported compression type {compressionType}");
+        }
+    }
 }

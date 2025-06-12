@@ -14,17 +14,12 @@ public struct GUID128
 
     public bool IsEmpty => data0 == 0 && data1 == 0 && data2 == 0 && data3 == 0;
 
-    public GUID128(AssetReader reader) : this()
+    public GUID128(ref DataBuffer db)
     {
-        Read(reader);
-    }
-
-    public void Read(AssetReader reader)
-    {
-        data0 = reader.ReadUInt32();
-        data1 = reader.ReadUInt32();
-        data2 = reader.ReadUInt32();
-        data3 = reader.ReadUInt32();
+        data0 = db.ReadUInt32();
+        data1 = db.ReadUInt32();
+        data2 = db.ReadUInt32();
+        data3 = db.ReadUInt32();
     }
 
     public uint this[int i]
@@ -128,11 +123,13 @@ public struct GUID128
         };
     }
 
-    public void Write(AssetWriter w)
+    public void Serialize(ref DataBuffer db)
     {
-        w.WriteUInt32(data0);
-        w.WriteUInt32(data1);
-        w.WriteUInt32(data2);
-        w.WriteUInt32(data3);
+        db.WriteUInt32(data0);
+        db.WriteUInt32(data1);
+        db.WriteUInt32(data2);
+        db.WriteUInt32(data3);
     }
+    
+    public long SerializeSize => 16;
 }

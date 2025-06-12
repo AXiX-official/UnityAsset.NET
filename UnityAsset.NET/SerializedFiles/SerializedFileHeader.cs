@@ -26,66 +26,63 @@ public sealed class SerializedFileHeader
         Unknown = unknown;
     }
     
-    public static SerializedFileHeader ParseFromReader(AssetReader r)
+    public static SerializedFileHeader Parse(ref DataBuffer db)
     {
-        var metadataSize = r.ReadUInt32();
-        UInt64 fileSize = r.ReadUInt32();
-        var version = (SerializedFileFormatVersion)r.ReadUInt32();
-        UInt64 dataOffset = r.ReadUInt32();
+        var metadataSize = db.ReadUInt32();
+        UInt64 fileSize = db.ReadUInt32();
+        var version = (SerializedFileFormatVersion)db.ReadUInt32();
+        UInt64 dataOffset = db.ReadUInt32();
 
         if (version < SerializedFileFormatVersion.Unknown_9)
         {
             throw new Exception($"Unsupported version: {version}");
         }
         
-        var endianess = r.ReadBoolean();
-        var reserved = r.ReadBytes(3);
+        var endianess = db.ReadBoolean();
+        var reserved = db.ReadBytes(3);
         Int64 unknown = 0;
         
         if (version >= SerializedFileFormatVersion.LargeFilesSupport)
         {
-            metadataSize = r.ReadUInt32();
-            fileSize = r.ReadUInt64();
-            dataOffset = r.ReadUInt64();
-            unknown = r.ReadInt64(); // unknown
+            metadataSize = db.ReadUInt32();
+            fileSize = db.ReadUInt64();
+            dataOffset = db.ReadUInt64();
+            unknown = db.ReadInt64(); // unknown
         }
         
         return new SerializedFileHeader(metadataSize, fileSize, version, dataOffset, endianess, reserved, unknown);
     }
 
-    public void Serialize(AssetWriter writer)
+    public void Serialize(ref DataBuffer db)
     {
         if (Version >= SerializedFileFormatVersion.LargeFilesSupport)
         {
-            writer.WriteUInt32(0);
-            writer.WriteUInt32(0);
-            writer.WriteUInt32((uint)Version);
-            writer.WriteUInt32(0);
+            db.WriteUInt32(0);
+            db.WriteUInt32(0);
+            db.WriteUInt32((uint)Version);
+            db.WriteUInt32(0);
         }
         else
         {
-            writer.WriteUInt32(MetadataSize);
-            writer.WriteUInt32((uint)FileSize);
-            writer.WriteUInt32((uint)Version);
-            writer.WriteUInt32((uint)DataOffset);
+            db.WriteUInt32(MetadataSize);
+            db.WriteUInt32((uint)FileSize);
+            db.WriteUInt32((uint)Version);
+            db.WriteUInt32((uint)DataOffset);
         }
         
-        writer.WriteBoolean(Endianess);
-        writer.Write(Reserved);
+        db.WriteBoolean(Endianess);
+        db.WriteBytes(Reserved);
 
         if (Version >= SerializedFileFormatVersion.LargeFilesSupport)
         {
-            writer.WriteUInt32(MetadataSize);
-            writer.WriteUInt64(FileSize);
-            writer.WriteUInt64(DataOffset);
-            writer.WriteInt64(Unknown); // unknown
+            db.WriteUInt32(MetadataSize);
+            db.WriteUInt64(FileSize);
+            db.WriteUInt64(DataOffset);
+            db.WriteInt64(Unknown); // unknown
         }
     }
 
-    public long SerializeSize()
-    {
-        return Version >= SerializedFileFormatVersion.LargeFilesSupport ? 20 : 48;
-    }
+    public long SerializeSize() => Version >= SerializedFileFormatVersion.LargeFilesSupport ? 20 : 48;
     
     public override string ToString()
     {

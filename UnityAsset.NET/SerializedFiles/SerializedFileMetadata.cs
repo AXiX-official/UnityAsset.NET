@@ -32,58 +32,65 @@ public sealed class SerializedFileMetadata
         UserInformation = userInformation;
     }
     
-    public static SerializedFileMetadata ParseFromReader(AssetReader reader, SerializedFileFormatVersion version)
+    public static SerializedFileMetadata Parse(ref DataBuffer db, SerializedFileFormatVersion version)
     {
-        var unityVersion = reader.ReadStringToNull();
-        var targetPlatform = (BuildTarget)reader.ReadUInt32();
-        var typeTreeEnabled = version >= SerializedFileFormatVersion.HasTypeTreeHashes && reader.ReadBoolean();
+        var unityVersion = db.ReadNullTerminatedString();
+        var targetPlatform = (BuildTarget)db.ReadUInt32();
+        var typeTreeEnabled = version >= SerializedFileFormatVersion.HasTypeTreeHashes && db.ReadBoolean();
         
-        var types = reader.ReadList<SerializedType>(reader.ReadInt32(), r => SerializedType.ParseFromReader(r, version, typeTreeEnabled, false));
+        var types = db.ReadList(db.ReadInt32(), (ref DataBuffer d) => SerializedType.Parse(ref d, version, typeTreeEnabled, false));
         
-        int assetCount = reader.ReadInt32();
-        reader.Align(4);
-        var assetInfos = reader.ReadList<AssetFileInfo>(assetCount, r => AssetFileInfo.ParseFromReader(r, version));
+        int assetCount = db.ReadInt32();
+        db.Align(4);
+        var assetInfos = db.ReadList(assetCount, (ref DataBuffer d) => AssetFileInfo.Parse(ref d, version));
         foreach (var assetInfo in assetInfos)
         {
             assetInfo.TypeId = assetInfo.GetTypeId(types, version);
         }
         
-        var scriptTypes = reader.ReadList(reader.ReadInt32(), AssetPPtr.ParseFromReader);
+        var scriptTypes = db.ReadList(db.ReadInt32(), AssetPPtr.Parse);
         
-        var externals = reader.ReadList(reader.ReadInt32(), AssetsFileExternal.ParseFromReader);
+        var externals = db.ReadList(db.ReadInt32(), AssetsFileExternal.Parse);
     
         List<SerializedType>? refTypes = version >= SerializedFileFormatVersion.SupportsRefObject ?
-            reader.ReadList<SerializedType>(reader.ReadInt32(), r => SerializedType.ParseFromReader(r, version, typeTreeEnabled, true)) :
+            db.ReadList(db.ReadInt32(), (ref DataBuffer d) => SerializedType.Parse(ref d, version, typeTreeEnabled, true)) :
             null;
         
-        var userInformation = reader.ReadStringToNull();
+        var userInformation = db.ReadNullTerminatedString();
         return new SerializedFileMetadata(unityVersion, targetPlatform, typeTreeEnabled, types, assetInfos, scriptTypes, externals, refTypes, userInformation);
     }
 
-    public void Serialize(AssetWriter writer, SerializedFileFormatVersion version)
+    public void Serialize(ref DataBuffer db, SerializedFileFormatVersion version)
     {
-        writer.WriteStringToNull(UnityVersion);
-        writer.WriteUInt32((UInt32)TargetPlatform);
+        db.WriteNullTerminatedString(UnityVersion);
+        db.WriteUInt32((UInt32)TargetPlatform);
         if (version >= SerializedFileFormatVersion.HasTypeTreeHashes)
         {
-            writer.WriteBoolean(TypeTreeEnabled);
+            db.WriteBoolean(TypeTreeEnabled);
         }
-        writer.WriteListWithCount(Types, (w, type) => type.Serialize(w, version, TypeTreeEnabled, false));
-        writer.WriteInt32(AssetInfos.Count);
-        writer.Align(4);
-        writer.WriteList(AssetInfos, (w, assetInfo) => assetInfo.Serialize(w, version));
-        writer.WriteListWithCount(ScriptTypes, (w, assetPPtr) => assetPPtr.Serialize(w));
-        writer.WriteListWithCount(Externals, (w, external) => external.Serialize(w));
+        db.WriteListWithCount(Types, (ref DataBuffer d, SerializedType type) => type.Serialize(ref d, version, TypeTreeEnabled, false));
+        db.WriteInt32(AssetInfos.Count);
+        db.Align(4);
+        db.WriteList(AssetInfos, (ref DataBuffer d, AssetFileInfo assetInfo) => assetInfo.Serialize(ref d, version));
+        db.WriteListWithCount(ScriptTypes, (ref DataBuffer d, AssetPPtr assetPPtr) => assetPPtr.Serialize(ref d));
+        db.WriteListWithCount(Externals, (ref DataBuffer d, AssetsFileExternal external) => external.Serialize(ref d));
         if (version >= SerializedFileFormatVersion.SupportsRefObject)
         {
             if (RefTypes == null)
             {
                 throw new NullReferenceException("RefTypes is null");
             }
-            writer.WriteListWithCount(RefTypes, (w, type) => type.Serialize(w, version, TypeTreeEnabled, true));
+            db.WriteListWithCount(RefTypes, (ref DataBuffer d, SerializedType type) => type.Serialize(ref d, version, TypeTreeEnabled, true));
         }
-        writer.WriteStringToNull(UserInformation);
+        db.WriteNullTerminatedString(UserInformation);
     }
+    
+    public long SerializeSize => UnityVersion.Length + UserInformation.Length + 27 + 
+                                 Types.Sum(t => t.SerializeSize) + 
+                                 AssetInfos.Sum(a => a.SerializeSize) + 
+                                 ScriptTypes.Sum(s => s.SerializeSize) + 
+                                 Externals.Sum(e => e.SerializeSize) + 
+                                 (RefTypes == null ? 0 : 4 + RefTypes.Sum(r => r.SerializeSize));
     
     public override string ToString()
     {

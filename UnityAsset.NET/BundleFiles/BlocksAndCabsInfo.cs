@@ -1,5 +1,4 @@
-﻿using UnityAsset.NET.Enums;
-using UnityAsset.NET.IO;
+﻿using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.BundleFiles;
 
@@ -18,16 +17,16 @@ public sealed class BlocksAndCabsInfo
         DirectoryInfo = directoryInfo;
     }
 
-    public static BlocksAndCabsInfo ParseFromReader(AssetReader reader) => new (
-        reader.ReadBytes(16),
-        reader.ReadList(reader.ReadInt32(), StorageBlockInfo.ParseFromReader),
-        reader.ReadList(reader.ReadInt32(), CabInfo.ParseFromReader)
+    public static BlocksAndCabsInfo Parse(ref DataBuffer db) => new (
+        db.ReadBytes(16),
+        db.ReadList(db.ReadInt32(), StorageBlockInfo.Parse),
+        db.ReadList(db.ReadInt32(), CabInfo.Parse)
     );
     
-    public void Serialize(AssetWriter writer) {
-        writer.Write(UncompressedDataHash);
-        writer.WriteListWithCount(BlocksInfo, (w, info) => info.Serialize(w));
-        writer.WriteListWithCount(DirectoryInfo, (w, info) => info.Serialize(w));
+    public void Serialize(ref DataBuffer db) {
+        db.WriteBytes(UncompressedDataHash);
+        db.WriteListWithCount(BlocksInfo, (ref DataBuffer d, StorageBlockInfo info) => info.Serialize(ref d));
+        db.WriteListWithCount(DirectoryInfo, (ref DataBuffer d, CabInfo info) => info.Serialize(ref d));
     }
 
     public long SerializeSize => UncompressedDataHash.Length + 8 + 

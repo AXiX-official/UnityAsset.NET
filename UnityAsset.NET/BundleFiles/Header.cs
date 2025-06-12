@@ -29,27 +29,27 @@ public sealed class Header
         Flags = flags;
     }
     
-    public static Header ParseFromReader(AssetReader reader) => new (
-        reader.ReadStringToNull(),
-        reader.ReadUInt32(),
-        reader.ReadStringToNull(),
-        reader.ReadStringToNull(),
-        reader.ReadInt64(),
-        reader.ReadUInt32(),
-        reader.ReadUInt32(),
-        (ArchiveFlags)reader.ReadUInt32()
+    public static Header Parse(ref DataBuffer db) => new (
+        db.ReadNullTerminatedString(),
+        db.ReadUInt32(),
+        db.ReadNullTerminatedString(),
+        db.ReadNullTerminatedString(),
+        db.ReadInt64(),
+        db.ReadUInt32(),
+        db.ReadUInt32(),
+        (ArchiveFlags)db.ReadUInt32()
     );
 
-    public void Serialize(AssetWriter writer) 
+    public void Serialize(ref DataBuffer db) 
     {
-        writer.WriteStringToNull(Signature);
-        writer.WriteUInt32(Version);
-        writer.WriteStringToNull(UnityVersion);
-        writer.WriteStringToNull(UnityRevision);
-        writer.WriteInt64(Size);
-        writer.WriteUInt32(CompressedBlocksInfoSize);
-        writer.WriteUInt32(UncompressedBlocksInfoSize);
-        writer.WriteUInt32((UInt32)Flags);
+        db.WriteNullTerminatedString(Signature);
+        db.WriteUInt32(Version);
+        db.WriteNullTerminatedString(UnityVersion);
+        db.WriteNullTerminatedString(UnityRevision);
+        db.WriteInt64(Size);
+        db.WriteUInt32(CompressedBlocksInfoSize);
+        db.WriteUInt32(UncompressedBlocksInfoSize);
+        db.WriteUInt32((UInt32)Flags);
     }
 
     public long SerializeSize => 27 + Signature.Length + UnityVersion.Length + UnityRevision.Length;

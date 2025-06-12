@@ -14,7 +14,7 @@ public class AssetFileInfo
     public UInt16? ScriptTypeIndex;
     public byte? Stripped;
     public int TypeId;
-    public AssetReader DataReader;
+    public byte[] Data;
     
     public AssetFileInfo(Int64 pathId, UInt64 byteOffset, UInt32 byteSize,
         int typeIdOrIndex, UInt16? oldTypeId, UInt16? scriptTypeIndex, byte? stripped)
@@ -28,22 +28,22 @@ public class AssetFileInfo
         Stripped = stripped;
     }
 
-    public static AssetFileInfo ParseFromReader(AssetReader reader, SerializedFileFormatVersion version)
+    public static AssetFileInfo Parse(ref DataBuffer db, SerializedFileFormatVersion version)
     {
-        reader.Align(4);
+        db.Align(4);
         var pathId = version >= SerializedFileFormatVersion.Unknown_14 ?
-            reader.ReadInt64() : reader.ReadUInt32();
+            db.ReadInt64() : db.ReadUInt32();
         var byteOffset = version >= SerializedFileFormatVersion.LargeFilesSupport ?
-            reader.ReadUInt64() : reader.ReadUInt32();
-        var byteSize = reader.ReadUInt32();
-        var typeIdOrIndex = reader.ReadInt32();
+            db.ReadUInt64() : db.ReadUInt32();
+        var byteSize = db.ReadUInt32();
+        var typeIdOrIndex = db.ReadInt32();
         var oldTypeId = version <= SerializedFileFormatVersion.SupportsStrippedObject ?
-            reader.ReadUInt16() : (UInt16?)null;
+            db.ReadUInt16() : (UInt16?)null;
         var scriptTypeIndex = version <= SerializedFileFormatVersion.RefactoredClassId ?
-            reader.ReadUInt16() : (UInt16?)null;
+            db.ReadUInt16() : (UInt16?)null;
         var stripped = version == SerializedFileFormatVersion.SupportsStrippedObject || 
                         version == SerializedFileFormatVersion.RefactoredClassId ?
-            reader.ReadByte() : (byte?)null;
+            db.ReadByte() : (byte?)null;
         return new AssetFileInfo(pathId, byteOffset, byteSize, typeIdOrIndex, oldTypeId, scriptTypeIndex, stripped);
     }
     
@@ -63,41 +63,43 @@ public class AssetFileInfo
         }
     }
     
-    public void Serialize(AssetWriter writer, SerializedFileFormatVersion version)
+    public void Serialize(ref DataBuffer db, SerializedFileFormatVersion version)
     {
-        writer.Align(4);
+        db.Align(4);
         if (version >= SerializedFileFormatVersion.Unknown_14)
         {
-            writer.WriteInt64(PathId);
+            db.WriteInt64(PathId);
         }
         else
         {
-            writer.WriteInt32((Int32)PathId);
+            db.WriteInt32((Int32)PathId);
         }
         if (version >= SerializedFileFormatVersion.LargeFilesSupport)
         {
-            writer.WriteUInt64(ByteOffset);
+            db.WriteUInt64(ByteOffset);
         }
         else
         {
-            writer.WriteInt32((Int32)ByteOffset);
+            db.WriteInt32((Int32)ByteOffset);
         }
-        writer.WriteUInt32(ByteSize);
-        writer.WriteInt32(TypeIdOrIndex);
+        db.WriteUInt32(ByteSize);
+        db.WriteInt32(TypeIdOrIndex);
         if (version <= SerializedFileFormatVersion.SupportsStrippedObject)
         {
-            writer.WriteUInt16(OldTypeId!.Value);
+            db.WriteUInt16(OldTypeId!.Value);
         }
         if (version <= SerializedFileFormatVersion.RefactoredClassId)
         {
-            writer.WriteUInt16(ScriptTypeIndex!.Value);
+            db.WriteUInt16(ScriptTypeIndex!.Value);
         }
         if (version == SerializedFileFormatVersion.SupportsStrippedObject || 
             version == SerializedFileFormatVersion.RefactoredClassId)
         {
-            writer.Write(Stripped!.Value);
+            db.WriteByte(Stripped!.Value);
         }
     }
+
+    public long SerializeSize => 29;
 
     public override string ToString()
     {

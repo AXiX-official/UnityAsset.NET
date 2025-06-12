@@ -20,18 +20,20 @@ public class SerializedTypeReference
         AsmName = asmName;
     }
     
-    public static SerializedTypeReference ParseFromReader(AssetReader reader) => new (
-        reader.ReadStringToNull(),
-        reader.ReadStringToNull(),
-        reader.ReadStringToNull()
+    public static SerializedTypeReference Parse(ref DataBuffer db) => new (
+        db.ReadNullTerminatedString(),
+        db.ReadNullTerminatedString(),
+        db.ReadNullTerminatedString()
     );
 
-    public void Serialize(AssetWriter writer)
+    public void Serialize(ref DataBuffer db)
     {
-        writer.WriteStringToNull(ClassName);
-        writer.WriteStringToNull(Namespace);
-        writer.WriteStringToNull(AsmName);
+        db.WriteNullTerminatedString(ClassName);
+        db.WriteNullTerminatedString(Namespace);
+        db.WriteNullTerminatedString(AsmName);
     }
+    
+    public long SerializeSize => 3 + ClassName.Length + Namespace.Length + AsmName.Length;
 
     public override string ToString()
     {

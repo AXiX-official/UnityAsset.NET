@@ -32,19 +32,19 @@ public sealed unsafe class UnityCN
 
     private bool isIndexSpecial = true;
 
-    public UnityCN(AssetReader reader, string key)
+    public UnityCN(ref DataBuffer db, string key)
     {
         SetKey(key);
         
-        value = reader.ReadUInt32();
+        value = db.ReadUInt32();
 
-        InfoBytes = reader.ReadBytes(0x10);
-        InfoKey = reader.ReadBytes(0x10);
-        reader.Position += 1;
+        InfoBytes = db.ReadBytes(0x10);
+        InfoKey = db.ReadBytes(0x10);
+        db.Advance(1);
 
-        SignatureBytes = reader.ReadBytes(0x10);
-        SignatureKey = reader.ReadBytes(0x10);
-        reader.Position += 1;
+        SignatureBytes = db.ReadBytes(0x10);
+        SignatureKey = db.ReadBytes(0x10);
+        db.Advance(1);
         
         reset();
         
@@ -120,16 +120,18 @@ public sealed unsafe class UnityCN
         }
     }
     
-    public void Write(AssetWriter writer)
+    public void Serialize(ref DataBuffer db)
     {
-        writer.WriteUInt32(value);
-        writer.Write(InfoBytes);
-        writer.Write(InfoKey);
-        writer.Write((byte)0);
-        writer.Write(SignatureBytes);
-        writer.Write(SignatureKey);
-        writer.Write((byte)0);
+        db.WriteUInt32(value);
+        db.WriteBytes(InfoBytes);
+        db.WriteBytes(InfoKey);
+        db.WriteByte((byte)0);
+        db.WriteBytes(SignatureBytes);
+        db.WriteBytes(SignatureKey);
+        db.WriteByte((byte)0);
     }
+
+    public long SerializeSize => 70;
 
     public bool SetKey(string key)
     {

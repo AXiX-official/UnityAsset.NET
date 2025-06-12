@@ -14,20 +14,22 @@ public class AssetPPtr
         PathId = pathId;
     }
 
-    public static AssetPPtr ParseFromReader(AssetReader reader)
+    public static AssetPPtr Parse(ref DataBuffer db)
     {
-        var fileId = reader.ReadInt32();
-        reader.Align(4);
-        var pathId = reader.ReadInt64();
+        var fileId = db.ReadInt32();
+        db.Align(4);
+        var pathId = db.ReadInt64();
         return new AssetPPtr(fileId, pathId);
     }
 
-    public void Serialize(AssetWriter writer)
+    public void Serialize(ref DataBuffer db)
     {
-        writer.WriteInt32(FileId);
-        writer.Align(4);
-        writer.WriteInt64(PathId);
+        db.WriteInt32(FileId);
+        db.Align(4);
+        db.WriteInt64(PathId);
     }
+
+    public long SerializeSize => 16;
 
     public override string ToString()
     {

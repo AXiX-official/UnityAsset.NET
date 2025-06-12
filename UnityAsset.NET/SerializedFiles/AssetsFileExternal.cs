@@ -22,12 +22,12 @@ public class AssetsFileExternal
         OriginalPathName = originalPathName;
     }
 
-    public static AssetsFileExternal ParseFromReader(AssetReader reader)
+    public static AssetsFileExternal Parse(ref DataBuffer db)
     {
-        var virtualAssetPathName = reader.ReadStringToNull();
-        var guid = new GUID128(reader);
-        var type = (AssetsFileExternalType)reader.ReadInt32();
-        var pathName = reader.ReadStringToNull();
+        var virtualAssetPathName = db.ReadNullTerminatedString();
+        var guid = new GUID128(ref db);
+        var type = (AssetsFileExternalType)db.ReadInt32();
+        var pathName = db.ReadNullTerminatedString();
         var originalPathName = pathName;
         
         // workaround from https://github.com/nesrak1/AssetsTools.NET/blob/main/AssetTools.NET/Standard/AssetsFileFormat/AssetsFileExternal.cs#L51
@@ -46,11 +46,11 @@ public class AssetsFileExternal
         return new AssetsFileExternal(virtualAssetPathName, guid, type, pathName, originalPathName);
     }
 
-    public void Serialize(AssetWriter writer)
+    public void Serialize(ref DataBuffer db)
     {
-        writer.WriteStringToNull(VirtualAssetPathName);
-        Guid.Write(writer);
-        writer.WriteInt32((Int32)Type);
+        db.WriteNullTerminatedString(VirtualAssetPathName);
+        Guid.Serialize(ref db);
+        db.WriteInt32((Int32)Type);
         var toWritePathName = PathName;
         if ((PathName == "Resources/unity_builtin_extra" ||
              PathName == "Resources/unity default resources" ||
@@ -59,8 +59,10 @@ public class AssetsFileExternal
         {
             toWritePathName = OriginalPathName;
         }
-        writer.WriteStringToNull(toWritePathName);
+        db.WriteNullTerminatedString(toWritePathName);
     }
+    
+    public long SerializeSize => 22 + VirtualAssetPathName.Length + Math.Max(OriginalPathName.Length, PathName.Length);
 
     public override string ToString()
     {

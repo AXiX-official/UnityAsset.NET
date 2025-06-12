@@ -24,7 +24,7 @@ public class BundleFile
 
     public string? UnityCNKey;
 
-    public static UnityCN? ParseUnityCN(AssetReader reader, Header header, string? key)
+    public static UnityCN? ParseUnityCN(ref DataBuffer db, Header header, string? key)
     {
         var version = ParseVersion(header);
         var unityCNMask = (version[0] < 2020 || //2020 and earlier
@@ -39,25 +39,18 @@ public class BundleFile
             {
                 throw new Exception($"UnityCN key is required for decryption. UnityCN Flag Mask: {unityCNMask}");
             }
-
-            if (unityCNMask == (ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew))
-            {
-                unityCNMask = ((header.Flags & ArchiveFlags.UnityCNEncryptionNew) != 0) ?
-                    ArchiveFlags.UnityCNEncryptionNew : ArchiveFlags.UnityCNEncryption;
-            }
-            var unityCNInfo = new UnityCN(reader, key);
-            header.Flags &= ~unityCNMask;
+            var unityCNInfo = new UnityCN(ref db, key);
             return unityCNInfo;
         }
 
         return null;
     }
 
-    public static void AlignAfterHeader(AssetReader reader, Header header)
+    public static void AlignAfterHeader(ref DataBuffer db, Header header)
     {
         if (header.Version >= 7)
         {
-            reader.Align(16);
+            db.Align(16);
         }
         else
         {
@@ -65,31 +58,29 @@ public class BundleFile
             if (version[0] == 2019 && version[1] == 4 && version[2] >= 30)
             {
                 // temp fix for 2019.4.x
-                reader.Align(16);
+                db.Align(16);
             }
         }
     }
 
-    public static BlocksAndCabsInfo ParseDataInfo(AssetReader reader, Header header)
+    public static BlocksAndCabsInfo ParseDataInfo(ref DataBuffer db, Header header)
     {
-        byte[] blocksInfoBytes;
+        Span<byte> blocksInfoBytes;
         if ((header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) != 0) //kArchiveBlocksInfoAtTheEnd
         {
-            long position = reader.Position;
-            reader.Position = header.Size - header.CompressedBlocksInfoSize;
-            blocksInfoBytes = reader.ReadBytes((int)header.CompressedBlocksInfoSize);
-            reader.Position = position;
+            var position = db.Position;
+            db.Seek((int)(header.Size - header.CompressedBlocksInfoSize));
+            blocksInfoBytes = db.ReadSpanBytes((int)header.CompressedBlocksInfoSize);
+            db.Seek(position);
         }
         else //0x40 BlocksAndDirectoryInfoCombined
         {
-            blocksInfoBytes = reader.ReadBytes((int)header.CompressedBlocksInfoSize);
+            blocksInfoBytes = db.ReadSpanBytes((int)header.CompressedBlocksInfoSize);
         }
         var compressionType = (CompressionType)(header.Flags & ArchiveFlags.CompressionTypeMask);
-        using MemoryStream blocksInfoUncompressedStream = new MemoryStream((int)header.UncompressedBlocksInfoSize);
-        Compression.DecompressToStream(blocksInfoBytes, blocksInfoUncompressedStream, header.UncompressedBlocksInfoSize, compressionType);
-        using AssetReader blocksInfoReader = new AssetReader(blocksInfoUncompressedStream);
-        
-        var dataInfo = BlocksAndCabsInfo.ParseFromReader(blocksInfoReader);
+        DataBuffer blocksInfoUncompressedData = new DataBuffer((int)header.UncompressedBlocksInfoSize);
+        Compression.DecompressToBytes(blocksInfoBytes, blocksInfoUncompressedData.AsSpan(), compressionType);
+        var dataInfo = BlocksAndCabsInfo.Parse(ref blocksInfoUncompressedData);
         
         var version = ParseVersion(header);
         if (version[0] < 2020 || //2020 and earlier
@@ -103,26 +94,26 @@ public class BundleFile
         {
             if ((header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
             {
-                reader.Align(16);
+                db.Align(16);
             }
         }
         
         return dataInfo;
     }
 
-    public static List<ICabFile> ParseCabFiles(AssetReader reader, BlocksAndCabsInfo dataInfo, UnityCN? unityCN = null)
+    public static List<ICabFile> ParseCabFiles(ref DataBuffer db, BlocksAndCabsInfo dataInfo, UnityCN? unityCN = null)
     {
-        byte[] blocksBuffer = new byte[dataInfo.BlocksInfo.Sum(block => (int)block.UncompressedSize)];
-        int bufferOffset = 0;
+        DataBuffer blocksBuffer = new DataBuffer(dataInfo.BlocksInfo.Sum(block => (int)block.UncompressedSize));
         if (unityCN == null)
         {
             foreach (var blockInfo in dataInfo.BlocksInfo)
             {
                 Compression.DecompressToBytes(
-                    reader.ReadBytes((int)blockInfo.CompressedSize), 
-                    blocksBuffer.AsSpan(bufferOffset, (int)blockInfo.UncompressedSize), 
+                    db.SliceForward((int)blockInfo.CompressedSize), 
+                    blocksBuffer.SliceForward((int)blockInfo.UncompressedSize), 
                     (CompressionType)(blockInfo.Flags & StorageBlockFlags.CompressionTypeMask));
-                bufferOffset += (int)blockInfo.UncompressedSize;
+                db.Advance((int)blockInfo.CompressedSize);
+                blocksBuffer.Advance((int)blockInfo.UncompressedSize);
             }
         }
         else
@@ -133,8 +124,12 @@ public class BundleFile
                 var compressionType = (CompressionType)(blockInfo.Flags & StorageBlockFlags.CompressionTypeMask);
                 if (compressionType == CompressionType.Lz4 || compressionType == CompressionType.Lz4HC)
                 {
-                    unityCN.DecryptAndDecompress(reader.ReadBytes((int)blockInfo.CompressedSize), blocksBuffer.AsSpan(bufferOffset, (int)blockInfo.UncompressedSize), i);
-                    bufferOffset += (int)blockInfo.UncompressedSize;
+                    unityCN.DecryptAndDecompress(
+                        db.SliceForward((int)blockInfo.CompressedSize), 
+                        blocksBuffer.SliceForward((int)blockInfo.UncompressedSize), 
+                        i);
+                    db.Advance((int)blockInfo.CompressedSize);
+                    blocksBuffer.Advance((int)blockInfo.UncompressedSize);
                 }
                 else
                 {
@@ -142,20 +137,20 @@ public class BundleFile
                 }
             }
         }
-        
+        blocksBuffer.Seek(0);
         var cabFiles = new List<ICabFile>();
         foreach (var cab in dataInfo.DirectoryInfo)
         {
-            byte[] buffer = new byte[cab.Size];
-            Array.Copy(blocksBuffer, cab.Offset, buffer, 0, cab.Size);
-            AssetReader cabReader = new AssetReader(buffer);
             if (cab.Path.EndsWith(".resS"))
             {
-                cabFiles.Add(cabReader);
+                cabFiles.Add(new HeapDataBuffer(blocksBuffer.SliceForward((int)cab.Size).ToArray()));
+                blocksBuffer.Advance((int)cab.Size);
             }
             else
             {
-                cabFiles.Add(SerializedFile.ParseFromReader(cabReader));
+                var cabBuffer = blocksBuffer.SliceBuffer((int)cab.Size);
+                cabFiles.Add(SerializedFile.Parse(ref cabBuffer));
+                blocksBuffer.Advance((int)cab.Size);
             }
         }
         return cabFiles;
@@ -169,24 +164,28 @@ public class BundleFile
         CabFiles = cabFiles;
     }
 
-    public BundleFile(AssetReader reader, string? key = null)
+    public BundleFile(ref DataBuffer db, string? key = null)
     {
         UnityCNKey = key;
-        Header = Header.ParseFromReader(reader);
-        UnityCN = ParseUnityCN(reader, Header, UnityCNKey);
-        AlignAfterHeader(reader, Header);
-        DataInfo = ParseDataInfo(reader, Header);
-        CabFiles = ParseCabFiles(reader, DataInfo, UnityCN);
+        Header = Header.Parse(ref db);
+        UnityCN = ParseUnityCN(ref db, Header, UnityCNKey);
+        AlignAfterHeader(ref db, Header);
+        DataInfo = ParseDataInfo(ref db, Header);
+        CabFiles = ParseCabFiles(ref db, DataInfo, UnityCN);
     }
-    
-    public BundleFile(string path, string? key = null) : this(new AssetReader(path), key) {}
-    
-    public void Serialize(string path, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None)
+
+    public BundleFile(string path, string? key = null)
     {
-        Serialize(new AssetWriter(path), infoPacker, dataPacker);
+        var db = DataBuffer.FromFile(path);
+        UnityCNKey = key;
+        Header = Header.Parse(ref db);
+        UnityCN = ParseUnityCN(ref db, Header, UnityCNKey);
+        AlignAfterHeader(ref db, Header);
+        DataInfo = ParseDataInfo(ref db, Header);
+        CabFiles = ParseCabFiles(ref db, DataInfo, UnityCN);
     }
     
-    public void Serialize(AssetWriter writer, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCNKey = null)
+    public void Serialize(ref DataBuffer db, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCNKey = null)
     {
         if (Header == null || DataInfo == null || CabFiles == null)
         {
@@ -194,24 +193,28 @@ public class BundleFile
         }
 
         var directoryInfo = new List<CabInfo>();
-        using MemoryStream cabStream = new MemoryStream();
+        var cabDataBufferCapacity = CabFiles.Sum(c =>
+        {
+            if (c is HeapDataBuffer hdb) return hdb.Capacity;
+            if (c is SerializedFile sf) return sf.SerializeSize;
+            return 0;
+        });
+        DataBuffer cabDataBuffer = new DataBuffer((int)cabDataBufferCapacity);
         Int64 offset = 0;
         for (int i = 0; i < CabFiles.Count; i++)
         {
             Int64 cabSize = 0;
-            if (CabFiles[i] is AssetReader reader)
+            if (CabFiles[i] is HeapDataBuffer hdb)
             {
-                reader.BaseStream.Position = 0;
-                reader.BaseStream.CopyTo(cabStream);
-                cabSize = (int)reader.BaseStream.Length;
+                cabDataBuffer.WriteBytes(hdb.AsSpan());
+                cabSize = hdb.Length;
             }
             else if (CabFiles[i] is SerializedFile sf)
             {
-                AssetWriter w = new AssetWriter(cabStream);
-                w.Position = cabStream.Length;
-                var p = w.Position;
-                sf.Serialize(w);
-                cabSize = w.Position - p;
+                var subBuffer = cabDataBuffer.SliceBufferToEnd();
+                sf.Serialize(ref subBuffer);
+                cabSize = subBuffer.Position;
+                cabDataBuffer.Advance((int)cabSize);
             }
             else
             {
@@ -220,66 +223,93 @@ public class BundleFile
             directoryInfo.Add(new CabInfo(offset, cabSize, DataInfo.DirectoryInfo[i].Flags, DataInfo.DirectoryInfo[i].Path));
             offset += cabSize;
         }
-        cabStream.Position = 0;
+        cabDataBuffer.Seek(0);
+        cabDataBuffer.WriteToFile(@"F:\Rider\UnityAsset.NET\Test\cavn");
 
         var blocksInfo = new List<StorageBlockInfo>();
-        var blocksSize = cabStream.Length;
-        byte[] uncompressedData = cabStream.ToArray();
-        using MemoryStream compressedStream = new MemoryStream();
+        var blocksSize = offset;
+        DataBuffer compressedBlocksDataBuffer = new DataBuffer((int)blocksSize);
         var defaultChunkSize = dataPacker == CompressionType.Lzma ? UInt32.MaxValue : Setting.DefaultChunkSize;
         offset = 0;
         while (blocksSize > 0)
         {
             int chunkSize = (int)Math.Min(blocksSize, defaultChunkSize);
-            var compressedSize = Compression.CompressStream(uncompressedData.AsSpan((int)offset, chunkSize), compressedStream, dataPacker);
+            var compressedSize = Compression.CompressToBytes(cabDataBuffer.Slice((int)offset, chunkSize),
+                compressedBlocksDataBuffer.SliceForward(), dataPacker);
             blocksInfo.Add(new StorageBlockInfo((UInt32)chunkSize, (UInt32)compressedSize, (StorageBlockFlags)dataPacker));
             blocksSize -= chunkSize;
             offset += chunkSize;
+            compressedBlocksDataBuffer.Advance((int)compressedSize);
         }
-        compressedStream.Position = 0;
-
+        compressedBlocksDataBuffer.Seek(0);
+        
         UnityCN? unityCn = null;
+        var version = ParseVersion(Header);
         if (unityCNKey != null)
         {
             unityCn = new UnityCN(unityCNKey);
             if (dataPacker == CompressionType.Lz4 || dataPacker == CompressionType.Lz4HC)
             {
+                for (int i = 0; i < blocksInfo.Count; i++)
+                {
+                    var blockInfo = blocksInfo[i];
+                    blockInfo.Flags |= (StorageBlockFlags)0x100;
+                    unityCn.EncryptBlock(compressedBlocksDataBuffer.SliceForward((int)blockInfo.CompressedSize), (int)blockInfo.CompressedSize, i);
+                    compressedBlocksDataBuffer.Advance((int)blockInfo.CompressedSize);
+                }
+                compressedBlocksDataBuffer.Seek(0);
             }
             else
             {
                 throw new Exception($"UnityCN Encryption only support Lz4/Lz4HC, but {dataPacker} was set.");
             }
         }
+        else if (UnityCNKey != null)
+        {
+            var unityCNMask = (version[0] < 2020 || //2020 and earlier
+                               (version[0] == 2020 && version[1] == 3 && version[2] <= 34) || //2020.3.34 and earlier
+                               (version[0] == 2021 && version[1] == 3 && version[2] <= 2) || //2021.3.2 and earlier
+                               (version[0] == 2022 && version[1] == 3 && version[2] <= 1)) //2022.3.1 and earlier
+                ? ArchiveFlags.BlockInfoNeedPaddingAtStart : ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew;
+            if (unityCNMask == (ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew))
+            {
+                unityCNMask = ((Header.Flags & ArchiveFlags.UnityCNEncryptionNew) != 0) ?
+                    ArchiveFlags.UnityCNEncryptionNew : ArchiveFlags.UnityCNEncryption;
+            }
+            Header.Flags &= ~unityCNMask;
+        }
         
         var dataInfo = new BlocksAndCabsInfo(DataInfo.UncompressedDataHash, blocksInfo, directoryInfo);
-        using MemoryStream dataInfoStream = new MemoryStream();
-        AssetWriter dataInfoWriter = new AssetWriter(dataInfoStream);
-        dataInfo.Serialize(dataInfoWriter);
-        var uncompressedBlocksInfoSize = dataInfoStream.Length;
-        using MemoryStream compressedDataInfoStream = new MemoryStream();
-        var compressedBlocksInfoSize = Compression.CompressStream(dataInfoStream.ToArray(), compressedDataInfoStream, infoPacker);
-        compressedDataInfoStream.Position = 0;
+        DataBuffer dataInfoBuffer = new DataBuffer((int)dataInfo.SerializeSize);
+        dataInfo.Serialize(ref dataInfoBuffer);
+        var uncompressedBlocksInfoSize = dataInfoBuffer.Length;
+        DataBuffer compressedDataInfoBuffer = new DataBuffer(uncompressedBlocksInfoSize);
+        var compressedBlocksInfoSize = Compression.CompressToBytes(dataInfoBuffer.AsSpan(), compressedDataInfoBuffer.AsSpan(), infoPacker);
 
         var header = new Header(Header.Signature, Header.Version, Header.UnityVersion, Header.UnityRevision,
             0, (uint)compressedBlocksInfoSize, (uint)uncompressedBlocksInfoSize,
             (Header.Flags & ~ArchiveFlags.CompressionTypeMask) | (ArchiveFlags)infoPacker);
-        header.Serialize(writer);
-        var version = ParseVersion(header);
+        db.EnsureCapacity((int)(header.SerializeSize + 16 + compressedBlocksInfoSize + compressedBlocksDataBuffer.Length + (unityCn == null ? 0: unityCn.SerializeSize)));
+        header.Serialize(ref db);
+        if (unityCn != null)
+        {
+            unityCn.Serialize(ref db);
+        }
         if (header.Version >= 7)
         {
-            writer.Align(16);
+            db.Align(16);
         }
         else
         {
             if (version[0] == 2019 && version[1] == 4 && version[2] >= 30)
             {
                 // temp fix for 2019.4.x
-                writer.Align(16);
+                db.Align(16);
             }
         }
         if ((header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) == 0) //0x40 BlocksAndDirectoryInfoCombined
         {
-            writer.WriteStream(compressedDataInfoStream);
+            db.WriteBytes(compressedDataInfoBuffer.SliceForward((int)compressedBlocksInfoSize));
         }
         if (version[0] < 2020 || //2020 and earlier
             (version[0] == 2020 && version[1] == 3 && version[2] <= 34) || //2020.3.34 and earlier
@@ -292,20 +322,27 @@ public class BundleFile
         {
             if ((header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
             {
-                writer.Align(16);
+                db.Align(16);
             }
         }
-        writer.WriteStream(compressedStream);
+        db.WriteBytes(compressedBlocksDataBuffer.SliceForward(compressedBlocksDataBuffer.Length));
         if ((header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) != 0) //kArchiveBlocksInfoAtTheEnd
         {
-            writer.WriteStream(compressedDataInfoStream);
+            db.WriteBytes(compressedDataInfoBuffer.SliceForward((int)compressedBlocksInfoSize));
         }
 
-        var size = writer.Position;
+        var size = db.Position;
         header.Size = size;
-        writer.Position = 0;
-        header.Serialize(writer);
-        writer.Flush();
+        db.Seek(0);
+        header.Serialize(ref db);
+    }
+
+    public void Serialize(string path, CompressionType infoPacker = CompressionType.None,
+        CompressionType dataPacker = CompressionType.None, string? unityCNKey = null)
+    {
+        DataBuffer db = new DataBuffer(0);
+        Serialize(ref db, infoPacker, dataPacker, unityCNKey);
+        db.WriteToFile(path);
     }
     
     public static int[] ParseVersion(Header header)

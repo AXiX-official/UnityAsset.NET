@@ -15,37 +15,40 @@ public sealed class SerializedFile : ICabFile
         Metadata = metadata;
     }
     
-    public static SerializedFile ParseFromReader(AssetReader reader)
+    public static SerializedFile Parse(ref DataBuffer db)
     {
-        var header = SerializedFileHeader.ParseFromReader(reader);
-        reader.BigEndian = header.Endianess;
-        var metadata = SerializedFileMetadata.ParseFromReader(reader, header.Version);
-        foreach (var assetInfo in metadata.AssetInfos)
+        var header = SerializedFileHeader.Parse(ref db);
+        db.IsBigEndian = header.Endianess;
+        var metadata = SerializedFileMetadata.Parse(ref db, header.Version);
+        for (int i = 0; i < metadata.AssetInfos.Count; i++)
         {
-            byte[] buffer = new byte[assetInfo.ByteSize];
-            reader.Position = (long)(header.DataOffset + assetInfo.ByteOffset);
-            reader.BaseStream.ReadExactly(buffer, 0, (int)assetInfo.ByteSize);
-            assetInfo.DataReader = new AssetReader(buffer);
+            var assetInfo = metadata.AssetInfos[i];
+            assetInfo.Data =
+                db.AsSpan().Slice((int)(header.DataOffset + assetInfo.ByteOffset), (int)assetInfo.ByteSize).ToArray();
         }
         return new SerializedFile(header, metadata);
     }
 
-    public void Serialize(AssetWriter writer)
+    public void Serialize(ref DataBuffer db)
     {
-        var p = writer.Position;
-        Header.Serialize(writer);
-        writer.BigEndian = Header.Endianess;
-        Metadata.Serialize(writer, Header.Version);
-        var lastAssetInfo = Metadata.AssetInfos.MaxBy(info => info.ByteOffset);
-        writer.Position = p + (long)(Header.DataOffset + lastAssetInfo.ByteOffset + lastAssetInfo.ByteSize);
-        writer.Position = p + (long)Header.DataOffset;
+        db.EnsureCapacity((int)SerializeSize);
+        Header.Serialize(ref db);
+        db.IsBigEndian = Header.Endianess;
+        Metadata.Serialize(ref db, Header.Version);
+        db.Seek((int)Header.DataOffset);
         foreach (var assetInfo in Metadata.AssetInfos)
         {
-            writer.Position = p + (long)(Header.DataOffset + assetInfo.ByteOffset);
-            assetInfo.DataReader.Position = 0;
-            assetInfo.DataReader.BaseStream.CopyTo(writer.BaseStream);
+            db.Seek((int)(Header.DataOffset + assetInfo.ByteOffset));
+            db.WriteBytes(assetInfo.Data);
         }
-        writer.Position = p + (long)(Header.DataOffset + lastAssetInfo.ByteOffset + lastAssetInfo.ByteSize);
+    }
+
+    public long SerializeSize
+    {
+        get {
+            var lastAssetInfo = Metadata.AssetInfos.MaxBy(info => info.ByteOffset);
+            return (long)(Header.DataOffset + lastAssetInfo.ByteOffset + lastAssetInfo.ByteSize);
+        }
     }
 
     public override string ToString()

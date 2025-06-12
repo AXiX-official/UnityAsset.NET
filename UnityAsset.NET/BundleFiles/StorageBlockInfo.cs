@@ -18,16 +18,16 @@ public sealed class StorageBlockInfo
         Flags = flags;
     }
     
-    public static StorageBlockInfo ParseFromReader(AssetReader reader) => new (
-        reader.ReadUInt32(),
-        reader.ReadUInt32(),
-        (StorageBlockFlags)reader.ReadUInt16()
+    public static StorageBlockInfo Parse(ref DataBuffer db) => new (
+        db.ReadUInt32(),
+        db.ReadUInt32(),
+        (StorageBlockFlags)db.ReadUInt16()
     );
     
-    public void Serialize(AssetWriter writer) {
-        writer.WriteUInt32(UncompressedSize);
-        writer.WriteUInt32(CompressedSize);
-        writer.WriteUInt16((UInt16)Flags);
+    public void Serialize(ref DataBuffer db) {
+        db.WriteUInt32(UncompressedSize);
+        db.WriteUInt32(CompressedSize);
+        db.WriteUInt16((UInt16)Flags);
     }
 
     public long SerializeSize => 10;
