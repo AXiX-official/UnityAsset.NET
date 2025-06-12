@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Security.Cryptography;
 
-using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.BundleFiles;
@@ -12,95 +11,91 @@ public sealed unsafe class UnityCN
 {
     private const string Signature = "#$unity3dchina!@";
 
-    private ICryptoTransform Encryptor;
+    private ICryptoTransform _encryptor;
     
-    uint value;
-    
+    public UInt32 Value;
     public readonly byte[] InfoBytes;
     public readonly byte[] InfoKey;
-    
     public readonly byte[] SignatureBytes;
     public readonly byte[] SignatureKey;
 
     public readonly byte[] Index = new byte[0x10];
     public readonly byte[] Sub = new byte[0x10];
     
-    private GCHandle subHandle;
-    private GCHandle indexHandle;
-    private readonly byte* subPtr;
-    private readonly byte* indexPtr;
+    private GCHandle _subHandle;
+    private GCHandle _indexHandle;
+    private readonly byte* _subPtr;
+    private readonly byte* _indexPtr;
 
-    private bool isIndexSpecial = true;
+    private readonly bool _isIndexSpecial = true;
 
     public UnityCN(ref DataBuffer db, string key)
     {
         SetKey(key);
         
-        value = db.ReadUInt32();
-
+        Value = db.ReadUInt32();
         InfoBytes = db.ReadBytes(0x10);
         InfoKey = db.ReadBytes(0x10);
         db.Advance(1);
-
         SignatureBytes = db.ReadBytes(0x10);
         SignatureKey = db.ReadBytes(0x10);
         db.Advance(1);
         
-        reset();
+        Reset();
         
         for (int i = 0; i < Index.Length; i++)
         {
             if (Index[i] != i)
             {
-                isIndexSpecial = false;
+                _isIndexSpecial = false;
                 break;
             }
         }
         
-        subHandle = GCHandle.Alloc(Sub, GCHandleType.Pinned);
-        indexHandle = GCHandle.Alloc(Index, GCHandleType.Pinned);
+        _subHandle = GCHandle.Alloc(Sub, GCHandleType.Pinned);
+        _indexHandle = GCHandle.Alloc(Index, GCHandleType.Pinned);
 
-        subPtr = (byte*)subHandle.AddrOfPinnedObject();
-        indexPtr = (byte*)indexHandle.AddrOfPinnedObject();
+        _subPtr = (byte*)_subHandle.AddrOfPinnedObject();
+        _indexPtr = (byte*)_indexHandle.AddrOfPinnedObject();
     }
     
     ~UnityCN()
     {
-        if (subHandle.IsAllocated) subHandle.Free();
-        if (indexHandle.IsAllocated) indexHandle.Free();
+        if (_subHandle.IsAllocated) _subHandle.Free();
+        if (_indexHandle.IsAllocated) _indexHandle.Free();
     }
 
     public UnityCN(string key)
     {
         SetKey(key);
 
-        value = 0;
+        Value = 0;
         
         InfoBytes = [0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0xA6, 0xB1, 0xDE, 0x48, 0x9E, 0x2B, 0x53, 0x5C];
         InfoKey = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10];
-        EncryptKey(InfoKey, InfoBytes);
+        XorWithKey(InfoKey, InfoBytes);
         
         SignatureKey = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10];
         SignatureBytes = Encoding.UTF8.GetBytes(Signature);
-        EncryptKey(SignatureKey, SignatureBytes);
+        XorWithKey(SignatureKey, SignatureBytes);
         
-        reset();
+        Reset();
         
-        subHandle = GCHandle.Alloc(Sub, GCHandleType.Pinned);
-        indexHandle = GCHandle.Alloc(Index, GCHandleType.Pinned);
+        _subHandle = GCHandle.Alloc(Sub, GCHandleType.Pinned);
+        _indexHandle = GCHandle.Alloc(Index, GCHandleType.Pinned);
 
-        subPtr = (byte*)subHandle.AddrOfPinnedObject();
-        indexPtr = (byte*)indexHandle.AddrOfPinnedObject();
+        _subPtr = (byte*)_subHandle.AddrOfPinnedObject();
+        _indexPtr = (byte*)_indexHandle.AddrOfPinnedObject();
     }
 
-    public void reset()
+    public void Reset()
     {
         var infoBytes = (byte[])InfoBytes.Clone();
         var infoKey = (byte[])InfoKey.Clone();
         var signatureBytes = (byte[])SignatureBytes.Clone();
         var signatureKey = (byte[])SignatureKey.Clone();
         
-        DecryptKey(signatureKey, signatureBytes);
+        XorWithKey(signatureKey, signatureBytes);
 
         var str = Encoding.UTF8.GetString(signatureBytes);
         if (str != Signature)
@@ -108,11 +103,16 @@ public sealed unsafe class UnityCN
             throw new Exception($"Invalid Signature, Expected {Signature} but found {str} instead");
         }
         
-        DecryptKey(infoKey, infoBytes);
-
-        infoBytes = infoBytes.ToUInt4Array();
-        infoBytes.AsSpan(0, 0x10).CopyTo(Index);
-        var subBytes = infoBytes.AsSpan(0x10, 0x10);
+        XorWithKey(infoKey, infoBytes);
+        var buffer = new byte[infoBytes.Length * 2];
+        for (var i = 0; i < infoBytes.Length; i++)
+        {
+            var idx = i * 2;
+            buffer[idx] = (byte)(infoBytes[i] >> 4);
+            buffer[idx + 1] = (byte)(infoBytes[i] & 0xF);
+        }
+        buffer.AsSpan(0, 0x10).CopyTo(Index);
+        var subBytes = buffer.AsSpan(0x10, 0x10);
         for (var i = 0; i < subBytes.Length; i++)
         {
             var idx = (i % 4 * 4) + (i / 4);
@@ -122,33 +122,26 @@ public sealed unsafe class UnityCN
     
     public void Serialize(ref DataBuffer db)
     {
-        db.WriteUInt32(value);
+        db.WriteUInt32(Value);
         db.WriteBytes(InfoBytes);
         db.WriteBytes(InfoKey);
-        db.WriteByte((byte)0);
+        db.WriteByte(0);
         db.WriteBytes(SignatureBytes);
         db.WriteBytes(SignatureKey);
-        db.WriteByte((byte)0);
+        db.WriteByte(0);
     }
 
     public long SerializeSize => 70;
 
-    public bool SetKey(string key)
+    public void SetKey(string key)
     {
-        try
-        {
-            using var aes = Aes.Create();
-            aes.Mode = CipherMode.ECB;
-            aes.Key = Convert.FromHexString(key);
+        if (key.Length != 32 && key.Length != 16)
+            throw new ArgumentException("key must be 32 or 16 characters long");
+        using var aes = Aes.Create();
+        aes.Mode = CipherMode.ECB;
+        aes.Key = Convert.FromHexString(key);
 
-            Encryptor = aes.CreateEncryptor();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"[UnityCN] Invalid key !!\n{e.Message}");
-            return false;
-        }
-        return true;
+        _encryptor = aes.CreateEncryptor();
     }
     
     public void DecryptAndDecompress(ReadOnlySpan<byte> compressedData, Span<byte> decompressedData, int index)
@@ -163,7 +156,7 @@ public sealed unsafe class UnityCN
             while (s < sourceEnd)
             {
                 var innerIndex = index;
-                var token = DecryptByteSp(*s++, innerIndex++);
+                var token = DecryptByteUnsafe(*s++, innerIndex++);
                 var literalLength = token >> 4;
                 var matchLength = token & 0xF;
                 if (literalLength != 0xF)
@@ -182,7 +175,7 @@ public sealed unsafe class UnityCN
                     int b;
                     do
                     {
-                        b = DecryptByteSp(*s++, innerIndex++);
+                        b = DecryptByteUnsafe(*s++, innerIndex++);
                         literalLength += b;
                     } while (b == 0xFF);
                     Buffer.MemoryCopy(s, t, literalLength, literalLength);
@@ -194,14 +187,14 @@ public sealed unsafe class UnityCN
                 if (s == sourceEnd && matchLength == 0) break;
                 if (s >= sourceEnd) throw new Exception("Invalid compressed data");
                 
-                var offset = (int)DecryptByteSp(*s++, innerIndex++);
-                offset |= DecryptByteSp(*s++, innerIndex++) << 8;
+                var offset = (int)DecryptByteUnsafe(*s++, innerIndex++);
+                offset |= DecryptByteUnsafe(*s++, innerIndex++) << 8;
                 if (matchLength == 0xF)
                 {
                     int b;
                     do
                     {
-                        b = DecryptByteSp(*s++, innerIndex++);
+                        b = DecryptByteUnsafe(*s++, innerIndex++);
                         matchLength += b;
                     } while (b == 0xFF);
                 }
@@ -236,16 +229,6 @@ public sealed unsafe class UnityCN
         }
     }
     
-    [Obsolete("This method is obsolete. Use DecryptAndDecompress instead.")]
-    public void DecryptBlock(Span<byte> bytes, int size, int index)
-    {
-        var offset = 0;
-        while (offset < size)
-        {
-            offset += Decrypt(bytes[offset..], index++, size - offset);
-        }
-    }
-    
     public void EncryptBlock(Span<byte> bytes, int size, int index)
     {
         var offset = 0;
@@ -254,25 +237,12 @@ public sealed unsafe class UnityCN
             offset += Encrypt(bytes[offset..], index++, size - offset);
         }
     }
-
-    private void DecryptKey(byte[] key, byte[] data)
-    {
-        if (Encryptor != null)
-        {
-            key = Encryptor.TransformFinalBlock(key, 0, key.Length);
-            for (int i = 0; i < 0x10; i++)
-                data[i] ^= key[i];
-        }
-    }
     
-    private void EncryptKey(byte[] key, byte[] data)
+    private void XorWithKey(byte[] key, byte[] data)
     {
-        if (Encryptor != null)
-        {
-            key = Encryptor.TransformFinalBlock(key, 0, key.Length);
-            for (int i = 0; i < 0x10; i++)
-                data[i] ^= key[i];
-        }
+        key = _encryptor.TransformFinalBlock(key, 0, key.Length);
+        for (int i = 0; i < 0x10; i++)
+            data[i] ^= key[i];
     }
 
     private int DecryptByte(Span<byte> bytes, ref int offset, ref int index)
@@ -288,27 +258,17 @@ public sealed unsafe class UnityCN
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private byte DecryptByteUnsafe(byte b, int index)
     {
-        var mb = subPtr[index & 3]
-                 + subPtr[((index >> 2) & 3) + 4]
-                 + subPtr[((index >> 4) & 3) + 8]
-                 + subPtr[((byte)index >> 6) + 12];
-        return (byte)((indexPtr[b & 0xF] - mb) & 0xF | (indexPtr[b >> 4] - mb) << 4);
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private byte DecryptByteSp(byte b, int index)
-    {
-        var mb = subPtr[index & 3]
-                 + subPtr[((index >> 2) & 3) + 4]
-                 + subPtr[((index >> 4) & 3) + 8]
-                 + subPtr[((byte)index >> 6) + 12];
-        if (isIndexSpecial)
+        var mb = _subPtr[index & 3]
+                 + _subPtr[((index >> 2) & 3) + 4]
+                 + _subPtr[((index >> 4) & 3) + 8]
+                 + _subPtr[((byte)index >> 6) + 12];
+        if (_isIndexSpecial)
         {
             return (byte)(((b & 0xF) - mb) & 0xF | ((b >> 4) - mb) << 4);
         }
         else
         {
-            return (byte)((indexPtr[b & 0xF] - mb) & 0xF | (indexPtr[b >> 4] - mb) << 4);
+            return (byte)((_indexPtr[b & 0xF] - mb) & 0xF | (_indexPtr[b >> 4] - mb) << 4);
         }
     }
     
@@ -322,15 +282,11 @@ public sealed unsafe class UnityCN
         
         int i = 0;
         while (((Index[i] - b) & 0xF) != low && i < 0x10)
-        {
             i++;
-        }
         low = i;
         i = 0;
         while (((Index[i] - b) & 0xF) != high && i < 0x10)
-        {
             i++;
-        }
         high = i;
 
         bytes[offset] = (byte)(low | (high << 4));
