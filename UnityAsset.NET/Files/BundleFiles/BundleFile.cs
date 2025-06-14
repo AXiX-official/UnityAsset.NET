@@ -140,6 +140,8 @@ public class BundleFile
         var db = DataBuffer.FromFile(path);
         UnityCnKey = key;
         Header = Header.Parse(ref db);
+        if (string.IsNullOrEmpty(Header.UnityRevision))
+            Header.UnityRevision = Setting.DefaultUnityVerion;
         UnityCnInfo = ParseUnityCnInfo(ref db, Header, UnityCnKey);
         AlignAfterHeader(ref db, Header);
         DataInfo = ParseDataInfo(ref db, Header);

@@ -291,7 +291,7 @@ public ref struct DataBuffer
     
     public string ReadNullTerminatedString(int maxLength = 32767)
     {
-        var span = AsSpan().Slice(Position);
+        var span = SliceForward();
         int nullTerminator = span.IndexOf((byte)0);
         if (nullTerminator < 0 || nullTerminator > maxLength)
             nullTerminator = maxLength;

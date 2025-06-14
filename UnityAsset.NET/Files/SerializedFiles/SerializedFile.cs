@@ -13,6 +13,8 @@ public sealed class SerializedFile : IFile
     {
         Header = header;
         Metadata = metadata;
+        if (string.IsNullOrEmpty(Metadata.UnityVersion))
+            Metadata.UnityVersion = Setting.DefaultUnityVerion;
         Assets = assets;
     }
     
