@@ -33,9 +33,9 @@ public sealed class SerializedFileHeader
         var version = (SerializedFileFormatVersion)db.ReadUInt32();
         UInt64 dataOffset = db.ReadUInt32();
 
-        if (version < SerializedFileFormatVersion.Unknown_9)
+        if (version < SerializedFileFormatVersion.RefactorTypeData)
         {
-            throw new Exception($"Unsupported version: {version}");
+            throw new Exception($"Unsupported version: {version}. Only support 2017.x or later.");
         }
         
         var endianess = db.ReadBoolean();

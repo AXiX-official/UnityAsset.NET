@@ -35,9 +35,9 @@ public sealed class StorageBlockInfo
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("uncompressedSize: 0x{0:X8} | ", UncompressedSize);
-        sb.AppendFormat("compressedSize: 0x{0:X8} | ", CompressedSize);
-        sb.AppendFormat("flags: 0x{0:X4}", (int)Flags);
+        sb.Append($"UncompressedSize: 0x{UncompressedSize:X8} | ");
+        sb.Append($"CompressedSize: 0x{CompressedSize:X8} | ");
+        sb.Append($"Flags: 0x{(int)Flags:X4}");
         return sb.ToString();
     }
 }

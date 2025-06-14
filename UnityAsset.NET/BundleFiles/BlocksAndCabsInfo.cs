@@ -1,4 +1,5 @@
-﻿using UnityAsset.NET.IO;
+﻿using System.Text;
+using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.BundleFiles;
 
@@ -32,4 +33,21 @@ public sealed class BlocksAndCabsInfo
     public long SerializeSize => UncompressedDataHash.Length + 8 + 
                                  BlocksInfo.Sum(item => item.SerializeSize) + 
                                  DirectoryInfo.Sum(item => item.SerializeSize);
+    
+    public override string ToString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"UncompressedDataHash: {BitConverter.ToString(UncompressedDataHash)}");
+        for (int i = 0; i  < BlocksInfo.Count; ++i)
+        {
+            sb.Append($"Block {i}: {BlocksInfo[i]}");
+        }
+        sb.AppendLine();
+        for (int i = 0; i  < DirectoryInfo.Count; ++i)
+        {
+            sb.Append($"Directory {i}: {DirectoryInfo[i]}");
+        }
+        sb.AppendLine();
+        return sb.ToString();
+    }
 }

@@ -37,10 +37,10 @@ public sealed class CabInfo
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("offset: 0x{0:X8} | ", Offset);
-        sb.AppendFormat("size: 0x{0:X8} | ", Size);
-        sb.AppendFormat("flags: {0} | ", Flags);
-        sb.AppendFormat("path: {0}", Path);
+        sb.Append($"Offset: 0x{Offset:X8} | ");
+        sb.Append($"Size: 0x{Size:X8} | ");
+        sb.Append($"Flags: {Flags} | ");
+        sb.Append($"Path: {Path}");
         return sb.ToString();
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using UnityAsset.NET.IO;
 
-namespace UnityAsset.NET;
+namespace UnityAsset.NET.SerializedFiles;
 
 public struct Hash128
 {

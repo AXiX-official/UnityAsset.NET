@@ -14,11 +14,12 @@ public sealed class SerializedType
     public Hash128 TypeHash;
     public bool IsRefType;
     public List<TypeTreeNode>? Nodes;
+    public TypeTreeNode? TypeTree;
     public byte[]? StringBufferBytes;
     public int[]? TypeDependencies;
     public SerializedTypeReference? TypeReference;
     
-    public SerializedType(Int32 typeId, bool isStrippedType, Int16 scriptTypeIndex, Hash128? scriptIdHash, Hash128 typeHash, bool isRefType, List<TypeTreeNode>? nodes, byte[]? stringBufferBytes, int[]? typeDependencies, SerializedTypeReference? typeReference)
+    public SerializedType(Int32 typeId, bool isStrippedType, Int16 scriptTypeIndex, Hash128? scriptIdHash, Hash128 typeHash, bool isRefType, List<TypeTreeNode>? nodes, byte[]? stringBufferBytes, TypeTreeNode? typeTree, int[]? typeDependencies, SerializedTypeReference? typeReference)
     {
         TypeID = typeId;
         IsStrippedType = isStrippedType;
@@ -27,6 +28,7 @@ public sealed class SerializedType
         TypeHash = typeHash;
         IsRefType = isRefType;
         Nodes = nodes;
+        TypeTree = typeTree;
         StringBufferBytes = stringBufferBytes;
         TypeDependencies = typeDependencies;
         TypeReference = typeReference;
@@ -35,11 +37,10 @@ public sealed class SerializedType
     public static SerializedType Parse(ref DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
         var typeID = db.ReadInt32();
-        var isStrippedType = version >= RefactoredClassId && db.ReadBoolean();
-        var scriptTypeIndex = version >= RefactorTypeData ? db.ReadInt16() : (short)-1;
+        var isStrippedType = db.ReadBoolean();
+        var scriptTypeIndex = db.ReadInt16();
         Hash128? scriptIdHash = null;
-        if ((version < RefactorTypeData && typeID < 0) ||
-            (version >= RefactorTypeData && typeID == (int)AssetClassID.MonoBehaviour) ||
+        if ((version >= RefactorTypeData && typeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && scriptTypeIndex > 0))
         {
             scriptIdHash = new Hash128(ref db);
@@ -47,14 +48,40 @@ public sealed class SerializedType
         var typeHash = new Hash128(ref db);
         List<TypeTreeNode>? nodes = null;
         byte[]? stringBufferBytes = null;
+        TypeTreeNode? typeTree = null;
         int[]? typeDependencies = null;
         SerializedTypeReference? typeReference = null;
         if (typeTreeEnabled)
         {
             int typeTreeNodeCount = db.ReadInt32();
             int stringBufferLen = db.ReadInt32();
-            nodes = db.ReadList(typeTreeNodeCount, (ref DataBuffer d) => TypeTreeNode.Parse(ref d, version));
+            nodes = db.ReadList(typeTreeNodeCount, TypeTreeNode.Parse);
             stringBufferBytes = db.ReadBytes(stringBufferLen);
+            DataBuffer sdb = new DataBuffer(stringBufferBytes, canGrow: false);
+            for (int i = 0; i < typeTreeNodeCount; i++)
+            {
+                var node = nodes[i];
+                node.Name = ReadString(ref sdb, node.NameStringOffset);
+                node.Type = ReadString(ref sdb, node.TypeStringOffset);
+            }
+            if (nodes[0].Level != 0)
+            {
+                throw new Exception(
+                    $"The first node of TypeTreeNodes should have a level of 0 but gets {nodes[0].Level}");
+            }
+            var parent = nodes[0];
+            for (int i = 1; i < typeTreeNodeCount; i++)
+            {
+                while (nodes[i].Level <= parent.Level)
+                {
+                    parent = parent.Parent;
+                }
+                nodes[i].Parent = parent;
+                parent.Children ??= new ();
+                parent.Children.Add(nodes[i]);
+                parent = nodes[i];
+            }
+            typeTree = nodes[0];
             if (version >= StoresTypeDependencies)
             {
                 if (isRefType)
@@ -67,22 +94,30 @@ public sealed class SerializedType
                 }
             }
         }
-        return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);
+        return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeTree, typeDependencies, typeReference);
+    }
+
+    private static string ReadString(ref DataBuffer db, uint value)
+    {
+        if ((value & 0x80000000) == 0)
+        {
+            db.Seek((int)value);
+            return db.ReadNullTerminatedString();
+        }
+        var offset = value & 0x7FFFFFFF;
+        if (CommonString.StringBuffer.TryGetValue(offset, out var str))
+        {
+            return str;
+        }
+        return offset.ToString();
     }
 
     public void Serialize(ref DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
         db.WriteInt32(TypeID);
-        if (version >= RefactoredClassId)
-        {
-            db.WriteBoolean(IsStrippedType);
-        }
-        if (version >= RefactorTypeData)
-        {
-            db.WriteInt16(ScriptTypeIndex);
-        }
-        if ((version < RefactorTypeData && TypeID < 0) ||
-            (version >= RefactorTypeData && TypeID == (int)AssetClassID.MonoBehaviour) ||
+        db.WriteBoolean(IsStrippedType);
+        db.WriteInt16(ScriptTypeIndex);
+        if ((version >= RefactorTypeData && TypeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && ScriptTypeIndex > 0))
         {
             ScriptIdHash?.Serialize(ref db);
@@ -96,7 +131,7 @@ public sealed class SerializedType
         {
             db.WriteInt32(Nodes.Count);
             db.WriteInt32(StringBufferBytes.Length);
-            db.WriteList(Nodes, (ref DataBuffer d, TypeTreeNode node) => node.Serialize(ref d, version));
+            db.WriteList(Nodes, (ref DataBuffer d, TypeTreeNode node) => node.Serialize(ref d));
             db.WriteBytes(StringBufferBytes);
             if (version >= StoresTypeDependencies)
             {

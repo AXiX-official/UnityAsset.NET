@@ -18,30 +18,30 @@ public class BundleFile
     /// </summary>
     public BlocksAndCabsInfo? DataInfo;
 
-    public List<ICabFile>? CabFiles;
+    public List<CabFileWrapper>? CabFiles;
 
-    public UnityCN? UnityCN;
+    public UnityCN? UnityCnInfo;
 
-    public string? UnityCNKey;
+    public string? UnityCnKey;
 
-    public static UnityCN? ParseUnityCN(ref DataBuffer db, Header header, string? key)
+    public static UnityCN? ParseUnityCnInfo(ref DataBuffer db, Header header, string? key)
     {
         var version = ParseVersion(header);
-        var unityCNMask = (version[0] < 2020 || //2020 and earlier
+        var unityCnMask = (version[0] < 2020 || //2020 and earlier
             (version[0] == 2020 && version[1] == 3 && version[2] <= 34) || //2020.3.34 and earlier
             (version[0] == 2021 && version[1] == 3 && version[2] <= 2) || //2021.3.2 and earlier
             (version[0] == 2022 && version[1] == 3 && version[2] <= 1)) //2022.3.1 and earlier
             ? ArchiveFlags.BlockInfoNeedPaddingAtStart : ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew;
         
-        if ((header.Flags & unityCNMask) != 0)
+        if ((header.Flags & unityCnMask) != 0)
         {
             if (key == null) key = Setting.DefaultUnityCNKey;
             if (key == null)
             {
-                throw new Exception($"UnityCN key is required for decryption. UnityCN Flag Mask: {unityCNMask}");
+                throw new Exception($"UnityCN key is required for decryption. UnityCN Flag Mask: {unityCnMask}");
             }
-            var unityCNInfo = new UnityCN(ref db, key);
-            return unityCNInfo;
+            var unityCnInfo = new UnityCN(ref db, key);
+            return unityCnInfo;
         }
 
         return null;
@@ -102,10 +102,10 @@ public class BundleFile
         return dataInfo;
     }
 
-    public static List<ICabFile> ParseCabFiles(ref DataBuffer db, BlocksAndCabsInfo dataInfo, UnityCN? unityCN = null)
+    public static List<CabFileWrapper> ParseCabFiles(ref DataBuffer db, BlocksAndCabsInfo dataInfo, UnityCN? unityCnInfo = null)
     {
         DataBuffer blocksBuffer = new DataBuffer(dataInfo.BlocksInfo.Sum(block => (int)block.UncompressedSize));
-        if (unityCN == null)
+        if (unityCnInfo == null)
         {
             foreach (var blockInfo in dataInfo.BlocksInfo)
             {
@@ -125,7 +125,7 @@ public class BundleFile
                 var compressionType = (CompressionType)(blockInfo.Flags & StorageBlockFlags.CompressionTypeMask);
                 if (compressionType == CompressionType.Lz4 || compressionType == CompressionType.Lz4HC)
                 {
-                    unityCN.DecryptAndDecompress(
+                    unityCnInfo.DecryptAndDecompress(
                         db.SliceForward((int)blockInfo.CompressedSize), 
                         blocksBuffer.SliceForward((int)blockInfo.UncompressedSize), 
                         i);
@@ -139,27 +139,27 @@ public class BundleFile
             }
         }
         blocksBuffer.Seek(0);
-        var cabFiles = new List<ICabFile>();
+        var cabFiles = new List<CabFileWrapper>();
         foreach (var cab in dataInfo.DirectoryInfo)
         {
             if (cab.Path.EndsWith(".resS"))
             {
-                cabFiles.Add(new HeapDataBuffer(blocksBuffer.SliceForward((int)cab.Size).ToArray()));
+                cabFiles.Add(new CabFileWrapper(new HeapDataBuffer(blocksBuffer.SliceForward((int)cab.Size).ToArray()), cab));
                 blocksBuffer.Advance((int)cab.Size);
             }
             else
             {
                 var cabBuffer = blocksBuffer.SliceBuffer((int)cab.Size);
-                cabFiles.Add(SerializedFile.Parse(ref cabBuffer));
+                cabFiles.Add(new CabFileWrapper(SerializedFile.Parse(ref cabBuffer), cab));
                 blocksBuffer.Advance((int)cab.Size);
             }
         }
         return cabFiles;
     }
 
-    public BundleFile(Header header, BlocksAndCabsInfo dataInfo, List<ICabFile> cabFiles, string? key = null)
+    public BundleFile(Header header, BlocksAndCabsInfo dataInfo, List<CabFileWrapper> cabFiles, string? key = null)
     {
-        UnityCNKey = key;
+        UnityCnKey = key;
         Header = header;
         DataInfo = dataInfo;
         CabFiles = cabFiles;
@@ -167,26 +167,26 @@ public class BundleFile
 
     public BundleFile(ref DataBuffer db, string? key = null)
     {
-        UnityCNKey = key;
+        UnityCnKey = key;
         Header = Header.Parse(ref db);
-        UnityCN = ParseUnityCN(ref db, Header, UnityCNKey);
+        UnityCnInfo = ParseUnityCnInfo(ref db, Header, UnityCnKey);
         AlignAfterHeader(ref db, Header);
         DataInfo = ParseDataInfo(ref db, Header);
-        CabFiles = ParseCabFiles(ref db, DataInfo, UnityCN);
+        CabFiles = ParseCabFiles(ref db, DataInfo, UnityCnInfo);
     }
 
     public BundleFile(string path, string? key = null)
     {
         var db = DataBuffer.FromFile(path);
-        UnityCNKey = key;
+        UnityCnKey = key;
         Header = Header.Parse(ref db);
-        UnityCN = ParseUnityCN(ref db, Header, UnityCNKey);
+        UnityCnInfo = ParseUnityCnInfo(ref db, Header, UnityCnKey);
         AlignAfterHeader(ref db, Header);
         DataInfo = ParseDataInfo(ref db, Header);
-        CabFiles = ParseCabFiles(ref db, DataInfo, UnityCN);
+        CabFiles = ParseCabFiles(ref db, DataInfo, UnityCnInfo);
     }
     
-    public void Serialize(ref DataBuffer db, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCNKey = null)
+    public void Serialize(ref DataBuffer db, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
     {
         if (Header == null || DataInfo == null || CabFiles == null)
         {
@@ -196,30 +196,29 @@ public class BundleFile
         var directoryInfo = new List<CabInfo>();
         var cabDataBufferCapacity = CabFiles.Sum(c =>
         {
-            if (c is HeapDataBuffer hdb) return hdb.Capacity;
-            if (c is SerializedFile sf) return sf.SerializeSize;
+            if (c.File is HeapDataBuffer hdb) return hdb.Capacity;
+            if (c.File is SerializedFile sf) return sf.SerializeSize;
             return 0;
         });
         DataBuffer cabDataBuffer = new DataBuffer((int)cabDataBufferCapacity);
         Int64 offset = 0;
         for (int i = 0; i < CabFiles.Count; i++)
         {
-            Int64 cabSize = 0;
-            if (CabFiles[i] is HeapDataBuffer hdb)
+            Int64 cabSize;
+            switch (CabFiles[i].File)
             {
-                cabDataBuffer.WriteBytes(hdb.AsSpan());
-                cabSize = hdb.Length;
-            }
-            else if (CabFiles[i] is SerializedFile sf)
-            {
-                var subBuffer = cabDataBuffer.SliceBufferToEnd();
-                sf.Serialize(ref subBuffer);
-                cabSize = subBuffer.Position;
-                cabDataBuffer.Advance((int)cabSize);
-            }
-            else
-            {
-                throw new Exception($"Unexpect type cab");
+                case HeapDataBuffer hdb:
+                    cabDataBuffer.WriteBytes(hdb.AsSpan());
+                    cabSize = hdb.Length;
+                    break;
+                case SerializedFile sf:
+                    var subBuffer = cabDataBuffer.SliceBufferToEnd();
+                    sf.Serialize(ref subBuffer);
+                    cabDataBuffer.Advance(subBuffer.Position);
+                    cabSize = subBuffer.Position;
+                    break;
+                default:
+                    throw new Exception($"Unexpected type: {CabFiles[i].File.GetType().Name}");
             }
             directoryInfo.Add(new CabInfo(offset, cabSize, DataInfo.DirectoryInfo[i].Flags, DataInfo.DirectoryInfo[i].Path));
             offset += cabSize;
@@ -243,18 +242,18 @@ public class BundleFile
         }
         compressedBlocksDataBuffer.Seek(0);
         
-        UnityCN? unityCn = null;
+        UnityCN? unityCnInfo = null;
         var version = ParseVersion(Header);
-        if (unityCNKey != null)
+        if (unityCnKey != null)
         {
-            unityCn = new UnityCN(unityCNKey);
+            unityCnInfo = new UnityCN(unityCnKey);
             if (dataPacker == CompressionType.Lz4 || dataPacker == CompressionType.Lz4HC)
             {
                 for (int i = 0; i < blocksInfo.Count; i++)
                 {
                     var blockInfo = blocksInfo[i];
                     blockInfo.Flags |= (StorageBlockFlags)0x100;
-                    unityCn.EncryptBlock(compressedBlocksDataBuffer.SliceForward((int)blockInfo.CompressedSize), (int)blockInfo.CompressedSize, i);
+                    unityCnInfo.EncryptBlock(compressedBlocksDataBuffer.SliceForward((int)blockInfo.CompressedSize), (int)blockInfo.CompressedSize, i);
                     compressedBlocksDataBuffer.Advance((int)blockInfo.CompressedSize);
                 }
                 compressedBlocksDataBuffer.Seek(0);
@@ -264,19 +263,19 @@ public class BundleFile
                 throw new Exception($"UnityCN Encryption only support Lz4/Lz4HC, but {dataPacker} was set.");
             }
         }
-        else if (UnityCNKey != null)
+        else if (UnityCnKey != null)
         {
-            var unityCNMask = (version[0] < 2020 || //2020 and earlier
+            var unityCnMask = (version[0] < 2020 || //2020 and earlier
                                (version[0] == 2020 && version[1] == 3 && version[2] <= 34) || //2020.3.34 and earlier
                                (version[0] == 2021 && version[1] == 3 && version[2] <= 2) || //2021.3.2 and earlier
                                (version[0] == 2022 && version[1] == 3 && version[2] <= 1)) //2022.3.1 and earlier
                 ? ArchiveFlags.BlockInfoNeedPaddingAtStart : ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew;
-            if (unityCNMask == (ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew))
+            if (unityCnMask == (ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew))
             {
-                unityCNMask = ((Header.Flags & ArchiveFlags.UnityCNEncryptionNew) != 0) ?
+                unityCnMask = ((Header.Flags & ArchiveFlags.UnityCNEncryptionNew) != 0) ?
                     ArchiveFlags.UnityCNEncryptionNew : ArchiveFlags.UnityCNEncryption;
             }
-            Header.Flags &= ~unityCNMask;
+            Header.Flags &= ~unityCnMask;
         }
         
         var dataInfo = new BlocksAndCabsInfo(DataInfo.UncompressedDataHash, blocksInfo, directoryInfo);
@@ -289,11 +288,11 @@ public class BundleFile
         var header = new Header(Header.Signature, Header.Version, Header.UnityVersion, Header.UnityRevision,
             0, (uint)compressedBlocksInfoSize, (uint)uncompressedBlocksInfoSize,
             (Header.Flags & ~ArchiveFlags.CompressionTypeMask) | (ArchiveFlags)infoPacker);
-        db.EnsureCapacity((int)(header.SerializeSize + 16 + compressedBlocksInfoSize + compressedBlocksDataBuffer.Length + (unityCn == null ? 0: unityCn.SerializeSize)));
+        db.EnsureCapacity((int)(header.SerializeSize + 16 + compressedBlocksInfoSize + compressedBlocksDataBuffer.Length + (unityCnInfo == null ? 0: unityCnInfo.SerializeSize)));
         header.Serialize(ref db);
-        if (unityCn != null)
+        if (unityCnInfo != null)
         {
-            unityCn.Serialize(ref db);
+            unityCnInfo.Serialize(ref db);
         }
         if (header.Version >= 7)
         {
@@ -338,10 +337,10 @@ public class BundleFile
     }
 
     public void Serialize(string path, CompressionType infoPacker = CompressionType.None,
-        CompressionType dataPacker = CompressionType.None, string? unityCNKey = null)
+        CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
     {
         DataBuffer db = new DataBuffer(0);
-        Serialize(ref db, infoPacker, dataPacker, unityCNKey);
+        Serialize(ref db, infoPacker, dataPacker, unityCnKey);
         db.WriteToFile(path);
     }
     

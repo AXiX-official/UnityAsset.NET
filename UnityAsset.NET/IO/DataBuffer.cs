@@ -9,7 +9,7 @@ public ref struct DataBuffer
     private int _position;
     private int _size;
     private bool _bigEndian;
-    private bool _canGrow;
+    public bool CanGrow;
     
     public int Position => _position;
     public int Length => _size;
@@ -21,22 +21,22 @@ public ref struct DataBuffer
         set => _bigEndian = value;
     }
 
-    public DataBuffer(Memory<byte> data, bool bigEndian = true)
+    public DataBuffer(Memory<byte> data, bool bigEndian = true, bool canGrow = true)
     {
         _data = data;
         _position = 0;
         _size = data.Length;
         _bigEndian = bigEndian;
-        _canGrow = true;
+        CanGrow = canGrow;
     }
     
-    public DataBuffer(int size, bool bigEndian = true)
+    public DataBuffer(int size, bool bigEndian = true, bool canGrow = true)
     {
         _data = new byte[size];
         _position = 0;
         _size = 0;
         _bigEndian = bigEndian;
-        _canGrow = true;
+        CanGrow = canGrow;
     }
 
 
@@ -92,17 +92,16 @@ public ref struct DataBuffer
     {
         if (_position + requiredSize > Capacity)
         {
-            if (_canGrow)
+            if (CanGrow)
             {
                 int newCapacity = Math.Max(_data.Length * 2, _position + requiredSize);
                 var newData = new byte[newCapacity];
                 _data.Slice(0, _size).CopyTo(newData);
                 _data = newData;
-                _canGrow = true;
             }
             else
             {
-                if (!_canGrow) throw new InvalidOperationException("Sliced buffer cannot grow");
+                if (!CanGrow) throw new InvalidOperationException("Sliced buffer cannot grow");
             }
         }
     }
@@ -119,11 +118,10 @@ public ref struct DataBuffer
             throw new ArgumentOutOfRangeException(nameof(start), "The specified range is out of bounds.");
         }
 
-        return new DataBuffer(_data.Slice(start, length), _bigEndian)
+        return new DataBuffer(_data.Slice(start, length), _bigEndian, false)
         {
             _position = 0,
             _size = length,
-            _canGrow = false
         };
     }
     
@@ -134,11 +132,10 @@ public ref struct DataBuffer
             throw new ArgumentOutOfRangeException(nameof(length), "The specified range is out of bounds.");
         }
 
-        return new DataBuffer(_data.Slice(_position, length), _bigEndian)
+        return new DataBuffer(_data.Slice(_position, length), _bigEndian, false)
         {
             _position = 0,
             _size = length,
-            _canGrow = false
         };
     }
     

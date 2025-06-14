@@ -1,5 +1,5 @@
 ﻿using System.Text;
-
+using UnityAsset.NET.BundleFiles;
 using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.SerializedFiles;
@@ -8,11 +8,13 @@ public sealed class SerializedFile : ICabFile
 {
     public SerializedFileHeader Header;
     public SerializedFileMetadata Metadata;
+    public List<Asset> Assets;
     
-    public SerializedFile(SerializedFileHeader header, SerializedFileMetadata metadata)
+    public SerializedFile(SerializedFileHeader header, SerializedFileMetadata metadata, List<Asset> assets)
     {
         Header = header;
         Metadata = metadata;
+        Assets = assets;
     }
     
     public static SerializedFile Parse(ref DataBuffer db)
@@ -20,13 +22,13 @@ public sealed class SerializedFile : ICabFile
         var header = SerializedFileHeader.Parse(ref db);
         db.IsBigEndian = header.Endianess;
         var metadata = SerializedFileMetadata.Parse(ref db, header.Version);
+        var assets = new List<Asset>();
         for (int i = 0; i < metadata.AssetInfos.Count; i++)
         {
             var assetInfo = metadata.AssetInfos[i];
-            assetInfo.Data =
-                db.AsSpan().Slice((int)(header.DataOffset + assetInfo.ByteOffset), (int)assetInfo.ByteSize).ToArray();
+            assets.Add(new Asset(assetInfo, new HeapDataBuffer(db.AsSpan().Slice((int)(header.DataOffset + assetInfo.ByteOffset), (int)assetInfo.ByteSize).ToArray(), header.Endianess)));
         }
-        return new SerializedFile(header, metadata);
+        return new SerializedFile(header, metadata, assets);
     }
 
     public void Serialize(ref DataBuffer db)
@@ -36,11 +38,18 @@ public sealed class SerializedFile : ICabFile
         db.IsBigEndian = Header.Endianess;
         Metadata.Serialize(ref db, Header.Version);
         db.Seek((int)Header.DataOffset);
-        foreach (var assetInfo in Metadata.AssetInfos)
+        foreach (var asset in Assets)
         {
-            db.Seek((int)(Header.DataOffset + assetInfo.ByteOffset));
-            db.WriteBytes(assetInfo.Data);
+            db.Seek((int)(Header.DataOffset + asset.Info.ByteOffset));
+            db.WriteBytes(asset.RawData.AsSpan());
         }
+    }
+    
+    public void Serialize(string path)
+    {
+        DataBuffer db = new DataBuffer(0);
+        Serialize(ref db);
+        db.WriteToFile(path);
     }
 
     public long SerializeSize

@@ -244,16 +244,6 @@ public sealed unsafe class UnityCN
         for (int i = 0; i < 0x10; i++)
             data[i] ^= key[i];
     }
-
-    private int DecryptByte(Span<byte> bytes, ref int offset, ref int index)
-    {
-        var b = Sub[((index >> 2) & 3) + 4] + Sub[index & 3] + Sub[((index >> 4) & 3) + 8] + Sub[((byte)index >> 6) + 12];
-        bytes[offset] = (byte)((Index[bytes[offset] & 0xF] - b) & 0xF | (Index[bytes[offset] >> 4] - b) << 4) ;
-        b = bytes[offset];
-        offset++;
-        index++;
-        return b;
-    }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private byte DecryptByteUnsafe(byte b, int index)
@@ -293,43 +283,6 @@ public sealed unsafe class UnityCN
         offset++;
         index++;
         return currentByte;
-    }
-
-    private int Decrypt(Span<byte> bytes, int index, int remaining)
-    {
-        var offset = 0;
-
-        var curByte = DecryptByte(bytes, ref offset, ref index);
-        var byteHigh = curByte >> 4;
-        var byteLow = curByte & 0xF;
-
-        if (byteHigh == 0xF)
-        {
-            int b;
-            do
-            {
-                b = DecryptByte(bytes, ref offset, ref index);
-                byteHigh += b;
-            } while (b == 0xFF);
-        }
-
-        offset += byteHigh;
-
-        if (offset < remaining)
-        {
-            DecryptByte(bytes, ref offset, ref index);
-            DecryptByte(bytes, ref offset, ref index);
-            if (byteLow == 0xF)
-            {
-                int b;
-                do
-                {
-                    b = DecryptByte(bytes, ref offset, ref index);
-                } while (b == 0xFF);
-            }
-        }
-
-        return offset;
     }
     
     private int Encrypt(Span<byte> bytes, int index, int remaining)

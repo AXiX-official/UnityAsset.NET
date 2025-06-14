@@ -9,7 +9,7 @@ public class HeapDataBuffer : ICabFile
     private int _position;
     private int _size;
     private bool _bigEndian;
-    private bool _canGrow;
+    public bool CanGrow;
     
     public int Position => _position;
     public int Length => _size;
@@ -21,22 +21,22 @@ public class HeapDataBuffer : ICabFile
         set => _bigEndian = value;
     }
 
-    public HeapDataBuffer(Memory<byte> data, bool bigEndian = true)
+    public HeapDataBuffer(Memory<byte> data, bool bigEndian = true, bool canGrow = true)
     {
         _data = data;
         _position = 0;
         _size = data.Length;
         _bigEndian = bigEndian;
-        _canGrow = true;
+        CanGrow = canGrow;
     }
     
-    public HeapDataBuffer(int size, bool bigEndian = true)
+    public HeapDataBuffer(int size, bool bigEndian = true, bool canGrow = true)
     {
         _data = new byte[size];
         _position = 0;
         _size = 0;
         _bigEndian = bigEndian;
-        _canGrow = true;
+        CanGrow = canGrow;
     }
 
 
@@ -92,17 +92,16 @@ public class HeapDataBuffer : ICabFile
     {
         if (_position + requiredSize > Capacity)
         {
-            if (_canGrow)
+            if (CanGrow)
             {
                 int newCapacity = Math.Max(_data.Length * 2, _position + requiredSize);
                 var newData = new byte[newCapacity];
                 _data.Slice(0, _size).CopyTo(newData);
                 _data = newData;
-                _canGrow = true;
             }
             else
             {
-                if (!_canGrow) throw new InvalidOperationException("Sliced buffer cannot grow");
+                if (!CanGrow) throw new InvalidOperationException("Sliced buffer cannot grow");
             }
         }
     }
@@ -119,11 +118,10 @@ public class HeapDataBuffer : ICabFile
             throw new ArgumentOutOfRangeException(nameof(start), "The specified range is out of bounds.");
         }
 
-        return new HeapDataBuffer(_data.Slice(start, length), _bigEndian)
+        return new HeapDataBuffer(_data.Slice(start, length), _bigEndian, false)
         {
             _position = 0,
             _size = length,
-            _canGrow = false
         };
     }
     
@@ -134,11 +132,10 @@ public class HeapDataBuffer : ICabFile
             throw new ArgumentOutOfRangeException(nameof(length), "The specified range is out of bounds.");
         }
 
-        return new HeapDataBuffer(_data.Slice(_position, length), _bigEndian)
+        return new HeapDataBuffer(_data.Slice(_position, length), _bigEndian, false)
         {
             _position = 0,
             _size = length,
-            _canGrow = false
         };
     }
     
@@ -189,6 +186,26 @@ public class HeapDataBuffer : ICabFile
         EnsureCapacity(1);
         var span = ReadSpanBytes(1);
         span[0] = value ? (byte)1 : (byte)0;
+    }
+    
+    public sbyte ReadInt8()
+    {
+        return (sbyte)ReadByte();
+    }
+    
+    public void WriteInt8(sbyte value)
+    {
+        WriteByte((byte)value);
+    }
+    
+    public byte ReadUInt8()
+    {
+        return ReadByte();
+    }
+    
+    public void WriteUInt8(byte value)
+    {
+        WriteByte(value);
     }
 
     public Int16 ReadInt16()
@@ -287,6 +304,38 @@ public class HeapDataBuffer : ICabFile
             BinaryPrimitives.WriteUInt64LittleEndian(span, value);
     }
     
+    public float ReadFloat()
+    {
+        var span = ReadSpanBytes(4);
+        return IsBigEndian ? BinaryPrimitives.ReadSingleBigEndian(span) : BinaryPrimitives.ReadSingleLittleEndian(span);
+    }
+    
+    public void WriteFloat4(float value)
+    {
+        EnsureCapacity(4);
+        var span = ReadSpanBytes(4);
+        if (IsBigEndian)
+            BinaryPrimitives.WriteSingleBigEndian(span, value);
+        else
+            BinaryPrimitives.WriteSingleLittleEndian(span, value);
+    }
+    
+    public double ReadDouble()
+    {
+        var span = ReadSpanBytes(8);
+        return IsBigEndian ? BinaryPrimitives.ReadDoubleBigEndian(span) : BinaryPrimitives.ReadDoubleLittleEndian(span);
+    }
+    
+    public void WriteDouble(double value)
+    {
+        EnsureCapacity(8);
+        var span = ReadSpanBytes(8);
+        if (IsBigEndian)
+            BinaryPrimitives.WriteDoubleBigEndian(span, value);
+        else
+            BinaryPrimitives.WriteDoubleLittleEndian(span, value);
+    }
+    
     public string ReadNullTerminatedString(int maxLength = 32767)
     {
         var span = AsSpan().Slice(Position);
@@ -305,6 +354,29 @@ public class HeapDataBuffer : ICabFile
         var span = ReadSpanBytes(byteCount + 1);
         Encoding.UTF8.GetBytes(value, span);
         span[byteCount] = 0;
+    }
+    
+    public string ReadAlignedString()
+    {
+        var result = "";
+        var length = ReadInt32();
+        if (length > 0)
+        {
+            var stringData = ReadBytes(length);
+            result = Encoding.UTF8.GetString(stringData);
+        }
+        Align(4);
+        return result;
+    }
+    
+    public void WriteAlignedString(string value)
+    {
+        var byteCount = Encoding.UTF8.GetByteCount(value);
+        EnsureCapacity(byteCount + 8);
+        WriteInt32(byteCount);
+        var span = ReadSpanBytes(byteCount);
+        Encoding.UTF8.GetBytes(value, span);
+        Align(4);
     }
 
     public List<T> ReadList<T>(int count, Func<HeapDataBuffer, T> constructor)

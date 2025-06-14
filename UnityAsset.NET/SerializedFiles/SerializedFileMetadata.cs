@@ -36,26 +36,16 @@ public sealed class SerializedFileMetadata
     {
         var unityVersion = db.ReadNullTerminatedString();
         var targetPlatform = (BuildTarget)db.ReadUInt32();
-        var typeTreeEnabled = version >= SerializedFileFormatVersion.HasTypeTreeHashes && db.ReadBoolean();
-        
+        var typeTreeEnabled = db.ReadBoolean();
         var types = db.ReadList(db.ReadInt32(), (ref DataBuffer d) => SerializedType.Parse(ref d, version, typeTreeEnabled, false));
-        
         int assetCount = db.ReadInt32();
         db.Align(4);
-        var assetInfos = db.ReadList(assetCount, (ref DataBuffer d) => AssetFileInfo.Parse(ref d, version));
-        foreach (var assetInfo in assetInfos)
-        {
-            assetInfo.TypeId = assetInfo.GetTypeId(types, version);
-        }
-        
+        var assetInfos = db.ReadList(assetCount, (ref DataBuffer d) => AssetFileInfo.Parse(ref d, version, types));
         var scriptTypes = db.ReadList(db.ReadInt32(), AssetPPtr.Parse);
-        
         var externals = db.ReadList(db.ReadInt32(), AssetsFileExternal.Parse);
-    
         List<SerializedType>? refTypes = version >= SerializedFileFormatVersion.SupportsRefObject ?
             db.ReadList(db.ReadInt32(), (ref DataBuffer d) => SerializedType.Parse(ref d, version, typeTreeEnabled, true)) :
             null;
-        
         var userInformation = db.ReadNullTerminatedString();
         return new SerializedFileMetadata(unityVersion, targetPlatform, typeTreeEnabled, types, assetInfos, scriptTypes, externals, refTypes, userInformation);
     }
@@ -64,10 +54,7 @@ public sealed class SerializedFileMetadata
     {
         db.WriteNullTerminatedString(UnityVersion);
         db.WriteUInt32((UInt32)TargetPlatform);
-        if (version >= SerializedFileFormatVersion.HasTypeTreeHashes)
-        {
-            db.WriteBoolean(TypeTreeEnabled);
-        }
+        db.WriteBoolean(TypeTreeEnabled);
         db.WriteListWithCount(Types, (ref DataBuffer d, SerializedType type) => type.Serialize(ref d, version, TypeTreeEnabled, false));
         db.WriteInt32(AssetInfos.Count);
         db.Align(4);
