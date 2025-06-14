@@ -2,7 +2,7 @@
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
 
-namespace UnityAsset.NET.SerializedFiles;
+namespace UnityAsset.NET.Files.SerializedFiles;
 
 public sealed class SerializedFileHeader
 {
@@ -34,9 +34,7 @@ public sealed class SerializedFileHeader
         UInt64 dataOffset = db.ReadUInt32();
 
         if (version < SerializedFileFormatVersion.RefactorTypeData)
-        {
             throw new Exception($"Unsupported version: {version}. Only support 2017.x or later.");
-        }
         
         var endianess = db.ReadBoolean();
         var reserved = db.ReadBytes(3);

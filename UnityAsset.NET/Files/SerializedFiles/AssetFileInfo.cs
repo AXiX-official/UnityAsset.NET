@@ -2,7 +2,7 @@
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
 
-namespace UnityAsset.NET.SerializedFiles;
+namespace UnityAsset.NET.Files.SerializedFiles;
 
 public class AssetFileInfo
 {
@@ -31,9 +31,7 @@ public class AssetFileInfo
         var byteSize = db.ReadUInt32();
         var typeIdOrIndex = db.ReadInt32();
         if (typeIdOrIndex >= types.Count)
-        {
             throw new IndexOutOfRangeException("TypeIndex is larger than type tree count!");
-        }
         var type = types[typeIdOrIndex];
         return new AssetFileInfo(pathId, byteOffset, byteSize, typeIdOrIndex, type);
     }
@@ -43,13 +41,9 @@ public class AssetFileInfo
         db.Align(4);
         db.WriteInt64(PathId);
         if (version >= SerializedFileFormatVersion.LargeFilesSupport)
-        {
             db.WriteUInt64(ByteOffset);
-        }
         else
-        {
             db.WriteInt32((Int32)ByteOffset);
-        }
         db.WriteUInt32(ByteSize);
         db.WriteInt32(TypeIdOrIndex);
     }

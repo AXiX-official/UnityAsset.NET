@@ -1,4 +1,5 @@
-﻿namespace UnityAsset.NET;
+﻿using System.Runtime.CompilerServices;
+namespace UnityAsset.NET;
 
 public static class CRC32
 {
@@ -491,17 +492,17 @@ public static class CRC32
         71007118, 2857626143, 1470763626, 4190274555, 3490330377, 2120394392, 4035494306, 1591758899, 1999168705,
         3644880208, 616140069, 2328960180, 2736367686, 225524183
     ];
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static byte HIBYTE(uint X) => (byte)((X >> 8) & 0xFF);
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static byte LOBYTE(uint X) => (byte)(X & 0xFF);
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint HIWORD(uint X) => (X >> 16) & 0xFFFF;
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint LOWORD(uint X) => X & 0xFFFF;
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint MAKEWORD(uint X, uint Y) => (Y << 8) | X;
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint MAKELONG(uint X, uint Y) => (Y << 16) | X;
     
     private static byte RF(uint X)
@@ -515,13 +516,13 @@ public static class CRC32
         }
         return 0;
     }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static byte F(uint X) => HIBYTE(HIWORD(Crc32Table[X]));
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static byte G(uint X) => LOBYTE(HIWORD(Crc32Table[X]));
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static byte H(uint X) => HIBYTE(LOWORD(Crc32Table[X]));
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static byte I(uint X) => LOBYTE(LOWORD(Crc32Table[X]));
 
     public static byte[] rCRC(uint targetCrc, uint originalCrc)
@@ -552,7 +553,7 @@ public static class CRC32
         return new byte[] { d, c, b, a };
     }
     
-    public static uint CalculateCRC32(byte[] data, uint initialCrc = 0)
+    public static uint CalculateCRC32(ReadOnlySpan<byte> data, uint initialCrc = 0)
     {
         uint crc = ~initialCrc;
         var len = data.Length;
@@ -575,11 +576,5 @@ public static class CRC32
             crc = FastTable[(crc ^ data[p++]) & 0xFF] ^ crc >> 8;
         }
         return ~crc;
-    }
-    
-    public static uint CalculateCRC32(Stream data, uint initialCrc = 0)
-    {
-        data.Position = 0;
-        return CalculateCRC32(new BinaryReader(data).ReadBytes((int)data.Length), initialCrc);
     }
 }

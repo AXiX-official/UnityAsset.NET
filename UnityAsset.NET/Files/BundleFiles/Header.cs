@@ -2,7 +2,7 @@
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
 
-namespace UnityAsset.NET.BundleFiles;
+namespace UnityAsset.NET.Files.BundleFiles;
 
 public sealed class Header
 {

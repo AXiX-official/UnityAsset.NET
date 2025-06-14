@@ -2,8 +2,7 @@
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
 
-
-namespace UnityAsset.NET.SerializedFiles;
+namespace UnityAsset.NET.Files.SerializedFiles;
 
 public sealed class SerializedFileMetadata
 {
@@ -64,9 +63,7 @@ public sealed class SerializedFileMetadata
         if (version >= SerializedFileFormatVersion.SupportsRefObject)
         {
             if (RefTypes == null)
-            {
                 throw new NullReferenceException("RefTypes is null");
-            }
             db.WriteListWithCount(RefTypes, (ref DataBuffer d, SerializedType type) => type.Serialize(ref d, version, TypeTreeEnabled, true));
         }
         db.WriteNullTerminatedString(UserInformation);

@@ -1,4 +1,4 @@
-﻿namespace UnityAsset.NET.SerializedFiles;
+﻿namespace UnityAsset.NET.Files.SerializedFiles;
 
 public class CommonString
 {

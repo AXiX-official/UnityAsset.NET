@@ -2,7 +2,7 @@
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
 
-namespace UnityAsset.NET.SerializedFiles;
+namespace UnityAsset.NET.Files.SerializedFiles;
 
 public class AssetsFileExternal
 {
@@ -31,18 +31,12 @@ public class AssetsFileExternal
         var originalPathName = pathName;
         
         // workaround from https://github.com/nesrak1/AssetsTools.NET/blob/main/AssetTools.NET/Standard/AssetsFileFormat/AssetsFileExternal.cs#L51
-        if (pathName == "resources/unity_builtin_extra")
-        {
+        if (pathName == "resources/unity_builtin_extra") 
             pathName = "Resources/unity_builtin_extra";
-        }
         else if (pathName == "library/unity default resources" || pathName == "Library/unity default resources")
-        {
             pathName = "Resources/unity default resources";
-        }
         else if (pathName == "library/unity editor resources" || pathName == "Library/unity editor resources")
-        {
             pathName = "Resources/unity editor resources";
-        }
         return new AssetsFileExternal(virtualAssetPathName, guid, type, pathName, originalPathName);
     }
 
@@ -56,9 +50,7 @@ public class AssetsFileExternal
              PathName == "Resources/unity default resources" ||
              PathName == "Resources/unity editor resources")
             && OriginalPathName != string.Empty)
-        {
             toWritePathName = OriginalPathName;
-        }
         db.WriteNullTerminatedString(toWritePathName);
     }
     

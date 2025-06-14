@@ -1,11 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Security.Cryptography;
-
+using System.Text;
 using UnityAsset.NET.IO;
 
-namespace UnityAsset.NET.BundleFiles;
+namespace UnityAsset.NET.Files.BundleFiles;
 
 public sealed unsafe class UnityCN
 {

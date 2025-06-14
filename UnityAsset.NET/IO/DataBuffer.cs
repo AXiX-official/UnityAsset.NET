@@ -1,4 +1,5 @@
-﻿using System.Buffers.Binary;
+﻿using System.Runtime.CompilerServices;
+using System.Buffers.Binary;
 using System.Text;
 
 namespace UnityAsset.NET.IO;
@@ -38,21 +39,25 @@ public ref struct DataBuffer
         _bigEndian = bigEndian;
         CanGrow = canGrow;
     }
-
-
-    public Span<byte> AsSpan() => _data.Span;
-    public Memory<byte> AsMemory() => _data;
-    public  Span<byte> Slice(int start, int size) => AsSpan().Slice(start, size);
-    public  Span<byte> SliceForward(int size) => AsSpan().Slice(_position, size);
-    public Span<byte> SliceForward() => AsSpan().Slice(_position);
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> AsSpan() => _data.Span;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Memory<byte> AsMemory() => _data;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public  Span<byte> Slice(int start, int size) => AsSpan().Slice(start, size);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public  Span<byte> SliceForward(int size) => AsSpan().Slice(_position, size);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<byte> SliceForward() => AsSpan().Slice(_position);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Span<byte> ReadSpanBytes(int count)
     {
         var span = SliceForward(count);
         Advance(count);
         return span;
     }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Advance(int count)
     {
         _position += count;
@@ -65,7 +70,7 @@ public ref struct DataBuffer
             _size = _position;
         }
     }
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Rewind(int count)
     { 
         _position -= count;
@@ -74,7 +79,7 @@ public ref struct DataBuffer
             throw new IndexOutOfRangeException();
         }
     }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Seek(int offset)
     {
         if (offset < 0 || offset > _data.Length)

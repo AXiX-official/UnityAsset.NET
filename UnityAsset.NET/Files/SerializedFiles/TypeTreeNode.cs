@@ -2,7 +2,7 @@
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
 
-namespace UnityAsset.NET.SerializedFiles;
+namespace UnityAsset.NET.Files.SerializedFiles;
 
 public class TypeTreeNode
 {

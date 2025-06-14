@@ -1,9 +1,10 @@
 ﻿using System.Buffers.Binary;
 using System.Text;
+using UnityAsset.NET.Files;
 
 namespace UnityAsset.NET.IO;
 
-public class HeapDataBuffer : ICabFile
+public class HeapDataBuffer : IFile
 {
     private Memory<byte> _data;
     private int _position;

@@ -1,16 +1,16 @@
 ﻿using System.Text;
 using UnityAsset.NET.IO;
 
-namespace UnityAsset.NET.BundleFiles;
+namespace UnityAsset.NET.Files.BundleFiles;
 
-public sealed class CabInfo
+public sealed class FileEntry
 {
     public Int64 Offset;
     public Int64 Size;
     public UInt32 Flags;
     public string Path;
 
-    public CabInfo(Int64 offset, Int64 size, UInt32 flags, string path)
+    public FileEntry(Int64 offset, Int64 size, UInt32 flags, string path)
     {
         Offset = offset;
         Size = size;
@@ -18,7 +18,7 @@ public sealed class CabInfo
         Path = path;
     }
     
-    public static CabInfo Parse(ref DataBuffer db) => new (
+    public static FileEntry Parse(ref DataBuffer db) => new (
         db.ReadInt64(),
         db.ReadInt64(),
         db.ReadUInt32(),

@@ -1,9 +1,9 @@
 ﻿using System.Text;
-using static UnityAsset.NET.Enums.SerializedFileFormatVersion;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
+using static UnityAsset.NET.Enums.SerializedFileFormatVersion;
 
-namespace UnityAsset.NET.SerializedFiles;
+namespace UnityAsset.NET.Files.SerializedFiles;
 
 public sealed class SerializedType
 {
@@ -42,9 +42,7 @@ public sealed class SerializedType
         Hash128? scriptIdHash = null;
         if ((version >= RefactorTypeData && typeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && scriptTypeIndex > 0))
-        {
             scriptIdHash = new Hash128(ref db);
-        }
         var typeHash = new Hash128(ref db);
         List<TypeTreeNode>? nodes = null;
         byte[]? stringBufferBytes = null;
@@ -65,17 +63,13 @@ public sealed class SerializedType
                 node.Type = ReadString(ref sdb, node.TypeStringOffset);
             }
             if (nodes[0].Level != 0)
-            {
                 throw new Exception(
                     $"The first node of TypeTreeNodes should have a level of 0 but gets {nodes[0].Level}");
-            }
             var parent = nodes[0];
             for (int i = 1; i < typeTreeNodeCount; i++)
             {
                 while (nodes[i].Level <= parent.Level)
-                {
                     parent = parent.Parent;
-                }
                 nodes[i].Parent = parent;
                 parent.Children ??= new ();
                 parent.Children.Add(nodes[i]);
@@ -85,13 +79,9 @@ public sealed class SerializedType
             if (version >= StoresTypeDependencies)
             {
                 if (isRefType)
-                {
                     typeReference = SerializedTypeReference.Parse(ref db);
-                }
                 else
-                {
                     typeDependencies = db.ReadIntArray(db.ReadInt32());
-                }
             }
         }
         return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeTree, typeDependencies, typeReference);
@@ -106,9 +96,7 @@ public sealed class SerializedType
         }
         var offset = value & 0x7FFFFFFF;
         if (CommonString.StringBuffer.TryGetValue(offset, out var str))
-        {
             return str;
-        }
         return offset.ToString();
     }
 
@@ -119,14 +107,10 @@ public sealed class SerializedType
         db.WriteInt16(ScriptTypeIndex);
         if ((version >= RefactorTypeData && TypeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && ScriptTypeIndex > 0))
-        {
             ScriptIdHash?.Serialize(ref db);
-        }
         TypeHash.Serialize(ref db);
         if (Nodes == null || StringBufferBytes == null)
-        {
             throw new NullReferenceException("Nodes or StringBufferBytes is null");
-        }
         if (typeTreeEnabled)
         {
             db.WriteInt32(Nodes.Count);
@@ -136,17 +120,11 @@ public sealed class SerializedType
             if (version >= StoresTypeDependencies)
             {
                 if (!isRefType && TypeDependencies != null)
-                {
                     db.WriteIntArrayWithCount(TypeDependencies);
-                }
                 else if(TypeReference != null)
-                {
                     TypeReference.Serialize(ref db);
-                }
                 else
-                {
                     throw new NullReferenceException($"{(isRefType ? "TypeReference" : "TypeDependencies")} is null");
-                }
             }
         }
     }
@@ -174,9 +152,7 @@ public sealed class SerializedType
         sb.AppendFormat("TypeReference: {0} | ", TypeReference);
         sb.AppendLine("Nodes:");
         foreach (var node in Nodes)
-        {
             sb.AppendLine(node.ToString());
-        }
         sb.AppendLine();
         sb.AppendLine("End of Serialized Type");
         return sb.ToString();

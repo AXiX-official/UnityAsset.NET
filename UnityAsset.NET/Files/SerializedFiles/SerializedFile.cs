@@ -1,10 +1,9 @@
 ﻿using System.Text;
-using UnityAsset.NET.BundleFiles;
 using UnityAsset.NET.IO;
 
-namespace UnityAsset.NET.SerializedFiles;
+namespace UnityAsset.NET.Files.SerializedFiles;
 
-public sealed class SerializedFile : ICabFile
+public sealed class SerializedFile : IFile
 {
     public SerializedFileHeader Header;
     public SerializedFileMetadata Metadata;
@@ -26,7 +25,7 @@ public sealed class SerializedFile : ICabFile
         for (int i = 0; i < metadata.AssetInfos.Count; i++)
         {
             var assetInfo = metadata.AssetInfos[i];
-            assets.Add(new Asset(assetInfo, new HeapDataBuffer(db.AsSpan().Slice((int)(header.DataOffset + assetInfo.ByteOffset), (int)assetInfo.ByteSize).ToArray(), header.Endianess)));
+            assets.Add(new Asset(assetInfo, new HeapDataBuffer(db.Slice((int)(header.DataOffset + assetInfo.ByteOffset), (int)assetInfo.ByteSize).ToArray(), header.Endianess)));
         }
         return new SerializedFile(header, metadata, assets);
     }
@@ -63,7 +62,6 @@ public sealed class SerializedFile : ICabFile
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine("Serialized File:");
         sb.AppendLine(Header.ToString());
         sb.AppendLine(Metadata.ToString());
         return sb.ToString();

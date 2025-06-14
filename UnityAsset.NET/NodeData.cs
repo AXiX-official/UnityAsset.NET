@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
+using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
-using UnityAsset.NET.SerializedFiles;
 
 namespace UnityAsset.NET;
 
@@ -192,7 +192,7 @@ public class NodeData
         }
         else
         {
-            sb.Append($"Value: {Value}");
+            sb.AppendLine($"Value: {Value}");
         }
         return sb.ToString();
     }
