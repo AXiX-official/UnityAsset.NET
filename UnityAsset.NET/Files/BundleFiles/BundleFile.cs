@@ -17,7 +17,7 @@ public class BundleFile
     /// </summary>
     public BlocksAndDirectoryInfo? DataInfo;
     /// <summary>
-    /// SerializedFiles and BinaryFiles
+    /// SerializedFiles and BinaryData
     /// </summary>
     public List<FileWrapper>? Files;
     /// <summary>
@@ -102,15 +102,17 @@ public class BundleFile
         var crc32 = CRC32.CalculateCRC32(blocksBuffer.AsSpan());
         
         var files = new List<FileWrapper>();
-        foreach (var cab in dataInfo.DirectoryInfo)
+        foreach (var dir in dataInfo.DirectoryInfo)
         {
-            if (cab.Path.EndsWith(".resS"))
-                files.Add(new FileWrapper(new HeapDataBuffer(blocksBuffer.ReadSpanBytes((int)cab.Size).ToArray()), cab));
+            if (dir.Path.StartsWith("CAB-") && !dir.Path.EndsWith(".resS"))
+            {
+                var cabBuffer = blocksBuffer.SliceBuffer((int)dir.Size);
+                files.Add(new FileWrapper(SerializedFile.Parse(ref cabBuffer), dir));
+                blocksBuffer.Advance((int)dir.Size);
+            }
             else
             {
-                var cabBuffer = blocksBuffer.SliceBuffer((int)cab.Size);
-                files.Add(new FileWrapper(SerializedFile.Parse(ref cabBuffer), cab));
-                blocksBuffer.Advance((int)cab.Size);
+                files.Add(new FileWrapper(new HeapDataBuffer(blocksBuffer.ReadSpanBytes((int)dir.Size).ToArray()), dir));
             }
         }
 
