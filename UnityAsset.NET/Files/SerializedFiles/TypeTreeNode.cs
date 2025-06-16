@@ -35,7 +35,7 @@ public class TypeTreeNode
         RefTypeHash = refTypeHash;
     }
 
-    public static TypeTreeNode Parse(ref DataBuffer db) => new(
+    public static TypeTreeNode Parse(DataBuffer db) => new(
         db.ReadUInt16(),
         db.ReadByte(),
         (TypeTreeNodeFlags)db.ReadByte(),
@@ -47,7 +47,7 @@ public class TypeTreeNode
         db.ReadUInt64()
     );
 
-    public void Serialize(ref DataBuffer db)
+    public void Serialize(DataBuffer db)
     {
         db.WriteUInt16(Vesion);
         db.WriteByte(Level);

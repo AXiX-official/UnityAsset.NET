@@ -14,7 +14,7 @@ public class AssetPPtr
         PathId = pathId;
     }
 
-    public static AssetPPtr Parse(ref DataBuffer db)
+    public static AssetPPtr Parse(DataBuffer db)
     {
         var fileId = db.ReadInt32();
         db.Align(4);
@@ -22,7 +22,7 @@ public class AssetPPtr
         return new AssetPPtr(fileId, pathId);
     }
 
-    public void Serialize(ref DataBuffer db)
+    public void Serialize(DataBuffer db)
     {
         db.WriteInt32(FileId);
         db.Align(4);

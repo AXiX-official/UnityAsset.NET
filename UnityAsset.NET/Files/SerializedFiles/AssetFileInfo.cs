@@ -22,7 +22,7 @@ public class AssetFileInfo
         Type = type;
     }
 
-    public static AssetFileInfo Parse(ref DataBuffer db, SerializedFileFormatVersion version, List<SerializedType> types)
+    public static AssetFileInfo Parse(DataBuffer db, SerializedFileFormatVersion version, List<SerializedType> types)
     {
         db.Align(4);
         var pathId = db.ReadInt64();
@@ -36,7 +36,7 @@ public class AssetFileInfo
         return new AssetFileInfo(pathId, byteOffset, byteSize, typeIdOrIndex, type);
     }
     
-    public void Serialize(ref DataBuffer db, SerializedFileFormatVersion version)
+    public void Serialize(DataBuffer db, SerializedFileFormatVersion version)
     {
         db.Align(4);
         db.WriteInt64(PathId);

@@ -11,7 +11,7 @@ public struct Hash128
     {
         this.data = data;
     }
-    public Hash128(ref DataBuffer db)
+    public Hash128(DataBuffer db)
     {
         data = db.ReadBytes(16);
     }
@@ -47,7 +47,7 @@ public struct Hash128
         return new Hash128() { data = new byte[16] };
     }
     
-    public void Serialize(ref DataBuffer db)
+    public void Serialize(DataBuffer db)
     {
         db.WriteBytes(data);
     }

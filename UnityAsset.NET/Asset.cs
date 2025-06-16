@@ -7,13 +7,13 @@ namespace UnityAsset.NET;
 public class Asset
 { 
     public AssetFileInfo Info;
-    public HeapDataBuffer RawData;
+    public DataBuffer RawData;
     public NodeData NodeData;
 
-    public Asset(AssetFileInfo info, HeapDataBuffer hdb)
+    public Asset(AssetFileInfo info, DataBuffer db)
     {
         Info = info;
-        RawData = hdb;
+        RawData = db;
         var nodeDataList = new List<NodeData>();
         for (int i = 0; i < info.Type.Nodes.Count; i++)
         {
@@ -36,7 +36,7 @@ public class Asset
         for (int i = 0; i < nodeDataList.Count; i++)
         {
             var node = nodeDataList[i];
-            node.Value = NodeData.ReadValue(nodeDataList, hdb, ref i);
+            node.Value = NodeData.ReadValue(nodeDataList, db, ref i);
         }
         NodeData = nodeDataList[0];
     }

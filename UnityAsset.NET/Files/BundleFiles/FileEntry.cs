@@ -18,14 +18,14 @@ public sealed class FileEntry
         Path = path;
     }
     
-    public static FileEntry Parse(ref DataBuffer db) => new (
+    public static FileEntry Parse(DataBuffer db) => new (
         db.ReadInt64(),
         db.ReadInt64(),
         db.ReadUInt32(),
         db.ReadNullTerminatedString()
     );
     
-    public void Serialize(ref DataBuffer db) {
+    public void Serialize(DataBuffer db) {
         db.WriteInt64(Offset);
         db.WriteInt64(Size);
         db.WriteUInt32(Flags);

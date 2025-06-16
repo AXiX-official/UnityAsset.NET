@@ -31,7 +31,7 @@ public class BundleFile
 
     public uint Crc32;
 
-    public static UnityCN? ParseUnityCnInfo(ref DataBuffer db, Header header, string? key)
+    public static UnityCN? ParseUnityCnInfo(DataBuffer db, Header header, string? key)
     {
         var unityCnMask = VersionJudge1(ParseVersion(header)) 
             ? ArchiveFlags.BlockInfoNeedPaddingAtStart 
@@ -42,12 +42,12 @@ public class BundleFile
             key ??= Setting.DefaultUnityCNKey;
             if (key == null)
                 throw new Exception($"UnityCN key is required for decryption. UnityCN Flag Mask: {unityCnMask}");
-            return new UnityCN(ref db, key);
+            return new UnityCN(db, key);
         }
         return null;
     }
 
-    public static void AlignAfterHeader(ref DataBuffer db, Header header)
+    public static void AlignAfterHeader(DataBuffer db, Header header)
     {
         if (header.Version >= 7)
             db.Align(16);
@@ -59,21 +59,21 @@ public class BundleFile
         }
     }
 
-    public static BlocksAndDirectoryInfo ParseDataInfo(ref DataBuffer db, Header header)
+    public static BlocksAndDirectoryInfo ParseDataInfo(DataBuffer db, Header header)
     {
         Span<byte> blocksInfoBytes = (header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) == 0
             ? db.ReadSpanBytes((int)header.CompressedBlocksInfoSize)
-            : db[(int)(header.Size - header.CompressedBlocksInfoSize)..(int)(header.Size)];
+            : db[(int)(header.Size - header.CompressedBlocksInfoSize)..(int)header.Size];
         var compressionType = (CompressionType)(header.Flags & ArchiveFlags.CompressionTypeMask);
         DataBuffer blocksInfoUncompressedData = new DataBuffer((int)header.UncompressedBlocksInfoSize);
         Compression.DecompressToBytes(blocksInfoBytes, blocksInfoUncompressedData.AsSpan(), compressionType);
-        var dataInfo = BlocksAndDirectoryInfo.Parse(ref blocksInfoUncompressedData);
+        var dataInfo = BlocksAndDirectoryInfo.Parse(blocksInfoUncompressedData);
         if (!VersionJudge1(ParseVersion(header)) && (header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
             db.Align(16);
         return dataInfo;
     }
 
-    public static (List<FileWrapper>, uint) ParseFiles(ref DataBuffer db, BlocksAndDirectoryInfo dataInfo, UnityCN? unityCnInfo = null)
+    public static (List<FileWrapper>, uint) ParseFiles(DataBuffer db, BlocksAndDirectoryInfo dataInfo, UnityCN? unityCnInfo = null)
     {
         DataBuffer blocksBuffer = new DataBuffer(dataInfo.BlocksInfo.Sum(block => (int)block.UncompressedSize));
         if (unityCnInfo == null)
@@ -107,12 +107,12 @@ public class BundleFile
             if (dir.Path.StartsWith("CAB-") && !dir.Path.EndsWith(".resS"))
             {
                 var cabBuffer = blocksBuffer.SliceBuffer((int)dir.Size);
-                files.Add(new FileWrapper(SerializedFile.Parse(ref cabBuffer), dir));
+                files.Add(new FileWrapper(SerializedFile.Parse(cabBuffer), dir));
                 blocksBuffer.Advance((int)dir.Size);
             }
             else
             {
-                files.Add(new FileWrapper(new HeapDataBuffer(blocksBuffer.ReadSpanBytes((int)dir.Size).ToArray()), dir));
+                files.Add(new FileWrapper(new DataBuffer(blocksBuffer.ReadSpanBytes((int)dir.Size).ToArray()), dir));
             }
         }
 
@@ -127,37 +127,26 @@ public class BundleFile
         Files = files;
     }
 
-    public BundleFile(ref DataBuffer db, string? key = null)
+    public BundleFile(DataBuffer db, string? key = null)
     {
         UnityCnKey = key;
-        Header = Header.Parse(ref db);
-        UnityCnInfo = ParseUnityCnInfo(ref db, Header, UnityCnKey);
-        AlignAfterHeader(ref db, Header);
-        DataInfo = ParseDataInfo(ref db, Header);
-        (Files, Crc32) = ParseFiles(ref db, DataInfo, UnityCnInfo);
+        Header = Header.Parse(db);
+        UnityCnInfo = ParseUnityCnInfo(db, Header, UnityCnKey);
+        AlignAfterHeader(db, Header);
+        DataInfo = ParseDataInfo(db, Header);
+        (Files, Crc32) = ParseFiles(db, DataInfo, UnityCnInfo);
     }
 
-    public BundleFile(string path, string? key = null)
-    {
-        var db = DataBuffer.FromFile(path);
-        UnityCnKey = key;
-        Header = Header.Parse(ref db);
-        if (string.IsNullOrEmpty(Header.UnityRevision))
-            Header.UnityRevision = Setting.DefaultUnityVerion;
-        UnityCnInfo = ParseUnityCnInfo(ref db, Header, UnityCnKey);
-        AlignAfterHeader(ref db, Header);
-        DataInfo = ParseDataInfo(ref db, Header);
-        (Files, Crc32) = ParseFiles(ref db, DataInfo, UnityCnInfo);
-    }
+    public BundleFile(string path, string? key = null) : this(DataBuffer.FromFile(path), key) {}
     
-    public void Serialize(ref DataBuffer db, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
+    public void Serialize(DataBuffer db, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
     {
         if (Header == null || DataInfo == null || Files == null)
             throw new NullReferenceException("BundleFile has not read completely");
         var directoryInfo = new List<FileEntry>();
         var filesCapacity = Files.Sum(c =>
         {
-            if (c.File is HeapDataBuffer hdb) return hdb.Capacity;
+            if (c.File is DataBuffer hdb) return hdb.Capacity;
             if (c.File is SerializedFile sf) return sf.SerializeSize;
             return 0;
         });
@@ -168,13 +157,13 @@ public class BundleFile
             Int64 cabSize;
             switch (file.File)
             {
-                case HeapDataBuffer hdb:
-                    filesBuffer.WriteBytes(hdb.AsSpan());
-                    cabSize = hdb.Length;
+                case DataBuffer dataBuffer:
+                    filesBuffer.WriteBytes(dataBuffer.AsSpan());
+                    cabSize = dataBuffer.Length;
                     break;
                 case SerializedFile sf:
                     var subBuffer = filesBuffer.SliceBufferToEnd();
-                    sf.Serialize(ref subBuffer);
+                    sf.Serialize(subBuffer);
                     filesBuffer.Advance(subBuffer.Position);
                     cabSize = subBuffer.Position;
                     break;
@@ -234,7 +223,7 @@ public class BundleFile
         
         var dataInfo = new BlocksAndDirectoryInfo(DataInfo.UncompressedDataHash, blocksInfo, directoryInfo);
         DataBuffer dataInfoBuffer = new DataBuffer((int)dataInfo.SerializeSize);
-        dataInfo.Serialize(ref dataInfoBuffer);
+        dataInfo.Serialize(dataInfoBuffer);
         var uncompressedBlocksInfoSize = dataInfoBuffer.Length;
         DataBuffer compressedDataInfoBuffer = new DataBuffer(uncompressedBlocksInfoSize);
         var compressedBlocksInfoSize = Compression.CompressToBytes(dataInfoBuffer.AsSpan(), compressedDataInfoBuffer.AsSpan(), infoPacker);
@@ -243,9 +232,9 @@ public class BundleFile
             0, (uint)compressedBlocksInfoSize, (uint)uncompressedBlocksInfoSize,
             (Header.Flags & ~ArchiveFlags.CompressionTypeMask) | (ArchiveFlags)infoPacker);
         db.EnsureCapacity((int)(header.SerializeSize + 16 + compressedBlocksInfoSize + compressedBlocksDataBuffer.Length + unityCnInfo?.SerializeSize ?? 0));
-        header.Serialize(ref db);
+        header.Serialize(db);
         if (unityCnInfo != null)
-            unityCnInfo.Serialize(ref db);
+            unityCnInfo.Serialize(db);
         if (header.Version >= 7)
             db.Align(16);
         else // temp fix for 2019.4.x
@@ -263,14 +252,14 @@ public class BundleFile
         var size = db.Position;
         header.Size = size;
         db.Seek(0);
-        header.Serialize(ref db);
+        header.Serialize(db);
     }
 
     public void Serialize(string path, CompressionType infoPacker = CompressionType.None,
         CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
     {
         DataBuffer db = new DataBuffer(0);
-        Serialize(ref db, infoPacker, dataPacker, unityCnKey);
+        Serialize(db, infoPacker, dataPacker, unityCnKey);
         db.WriteToFile(path);
     }
     

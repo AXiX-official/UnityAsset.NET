@@ -17,7 +17,7 @@ public static class BundleFileExtension
         if (bf.Crc32 != newCrc32)
         {
             var patchBytes = CRC32.rCRC(newCrc32, bf.Crc32);
-            bf.Files.Add(new FileWrapper(new HeapDataBuffer(patchBytes), new FileEntry(0, 4, 0, "crc32-patch-data")));
+            bf.Files.Add(new FileWrapper(new DataBuffer(patchBytes), new FileEntry(0, 4, 0, "crc32-patch-data")));
         }
     }
 }

@@ -20,13 +20,13 @@ public class SerializedTypeReference
         AsmName = asmName;
     }
     
-    public static SerializedTypeReference Parse(ref DataBuffer db) => new (
+    public static SerializedTypeReference Parse(DataBuffer db) => new (
         db.ReadNullTerminatedString(),
         db.ReadNullTerminatedString(),
         db.ReadNullTerminatedString()
     );
 
-    public void Serialize(ref DataBuffer db)
+    public void Serialize(DataBuffer db)
     {
         db.WriteNullTerminatedString(ClassName);
         db.WriteNullTerminatedString(Namespace);

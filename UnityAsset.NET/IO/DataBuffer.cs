@@ -1,10 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 using System.Text;
+using UnityAsset.NET.Files;
 
 namespace UnityAsset.NET.IO;
 
-public ref struct DataBuffer
+public class DataBuffer : IFile
 {
     private Memory<byte> _data;
     private int _position;
@@ -40,24 +40,17 @@ public ref struct DataBuffer
         CanGrow = canGrow;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Span<byte> AsSpan() => _data.Span;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Memory<byte> AsMemory() => _data;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public  Span<byte> Slice(int start, int size) => AsSpan().Slice(start, size);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public  Span<byte> SliceForward(int size) => AsSpan().Slice(_position, size);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Span<byte> SliceForward() => AsSpan().Slice(_position);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Span<byte> ReadSpanBytes(int count)
     {
         var span = SliceForward(count);
         Advance(count);
         return span;
     }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Advance(int count)
     {
         _position += count;
@@ -70,7 +63,6 @@ public ref struct DataBuffer
             _size = _position;
         }
     }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Rewind(int count)
     { 
         _position -= count;
@@ -79,7 +71,6 @@ public ref struct DataBuffer
             throw new IndexOutOfRangeException();
         }
     }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Seek(int offset)
     {
         if (offset < 0 || offset > _data.Length)
@@ -109,11 +100,6 @@ public ref struct DataBuffer
                 if (!CanGrow) throw new InvalidOperationException("Sliced buffer cannot grow");
             }
         }
-    }
-    
-    public HeapDataBuffer ToHeapBuffer()
-    {
-        return new HeapDataBuffer(AsMemory().ToArray());
     }
     
     public DataBuffer SliceBuffer(int start, int length)
@@ -191,6 +177,26 @@ public ref struct DataBuffer
         EnsureCapacity(1);
         var span = ReadSpanBytes(1);
         span[0] = value ? (byte)1 : (byte)0;
+    }
+    
+    public sbyte ReadInt8()
+    {
+        return (sbyte)ReadByte();
+    }
+    
+    public void WriteInt8(sbyte value)
+    {
+        WriteByte((byte)value);
+    }
+    
+    public byte ReadUInt8()
+    {
+        return ReadByte();
+    }
+    
+    public void WriteUInt8(byte value)
+    {
+        WriteByte(value);
     }
 
     public Int16 ReadInt16()
@@ -289,6 +295,38 @@ public ref struct DataBuffer
             BinaryPrimitives.WriteUInt64LittleEndian(span, value);
     }
     
+    public float ReadFloat()
+    {
+        var span = ReadSpanBytes(4);
+        return IsBigEndian ? BinaryPrimitives.ReadSingleBigEndian(span) : BinaryPrimitives.ReadSingleLittleEndian(span);
+    }
+    
+    public void WriteFloat(float value)
+    {
+        EnsureCapacity(4);
+        var span = ReadSpanBytes(4);
+        if (IsBigEndian)
+            BinaryPrimitives.WriteSingleBigEndian(span, value);
+        else
+            BinaryPrimitives.WriteSingleLittleEndian(span, value);
+    }
+    
+    public double ReadDouble()
+    {
+        var span = ReadSpanBytes(8);
+        return IsBigEndian ? BinaryPrimitives.ReadDoubleBigEndian(span) : BinaryPrimitives.ReadDoubleLittleEndian(span);
+    }
+    
+    public void WriteDouble(double value)
+    {
+        EnsureCapacity(8);
+        var span = ReadSpanBytes(8);
+        if (IsBigEndian)
+            BinaryPrimitives.WriteDoubleBigEndian(span, value);
+        else
+            BinaryPrimitives.WriteDoubleLittleEndian(span, value);
+    }
+    
     public string ReadNullTerminatedString(int maxLength = 32767)
     {
         var span = SliceForward();
@@ -309,33 +347,53 @@ public ref struct DataBuffer
         span[byteCount] = 0;
     }
     
-    public delegate T DataBufferConstructor<T>(ref DataBuffer db);
-    public delegate void DataBufferSerializer<T>(ref DataBuffer db, T value);
+    public string ReadAlignedString()
+    {
+        var result = "";
+        var length = ReadInt32();
+        if (length > 0)
+        {
+            var stringData = ReadBytes(length);
+            result = Encoding.UTF8.GetString(stringData);
+        }
+        Align(4);
+        return result;
+    }
+    
+    public void WriteAlignedString(string value)
+    {
+        var byteCount = Encoding.UTF8.GetByteCount(value);
+        EnsureCapacity(byteCount + 8);
+        WriteInt32(byteCount);
+        var span = ReadSpanBytes(byteCount);
+        Encoding.UTF8.GetBytes(value, span);
+        Align(4);
+    }
 
-    public List<T> ReadList<T>(int count, DataBufferConstructor<T> constructor)
+    public List<T> ReadList<T>(int count, Func<DataBuffer, T> constructor)
     {
         var list = new List<T>(count);
         for (int i = 0; i < count; i++)
         {
-            list.Add(constructor(ref this));
+            list.Add(constructor(this));
         }
         return list;
     }
     
-    public void WriteList<T>(List<T> array, DataBufferSerializer<T> writer)
+    public void WriteList<T>(List<T> array, Action<DataBuffer, T> writer)
     {
         foreach (var item in array)
         {
-            writer(ref this, item);
+            writer(this, item);
         }
     }
     
-    public void WriteListWithCount<T>(List<T> array, DataBufferSerializer<T> writer)
+    public void WriteListWithCount<T>(List<T> array, Action<DataBuffer, T> writer)
     {
         WriteInt32(array.Count);
         foreach (var item in array)
         {
-            writer(ref this, item);
+            writer(this, item);
         }
     }
 

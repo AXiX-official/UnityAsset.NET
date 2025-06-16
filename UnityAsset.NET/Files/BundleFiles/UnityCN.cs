@@ -28,7 +28,7 @@ public sealed unsafe class UnityCN
 
     private readonly bool _isIndexSpecial = true;
 
-    public UnityCN(ref DataBuffer db, string key)
+    public UnityCN(DataBuffer db, string key)
     {
         SetKey(key);
         
@@ -119,7 +119,7 @@ public sealed unsafe class UnityCN
         }
     }
     
-    public void Serialize(ref DataBuffer db)
+    public void Serialize(DataBuffer db)
     {
         db.WriteUInt32(Value);
         db.WriteBytes(InfoBytes);

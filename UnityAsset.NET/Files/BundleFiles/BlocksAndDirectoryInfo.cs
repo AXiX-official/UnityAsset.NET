@@ -18,16 +18,16 @@ public sealed class BlocksAndDirectoryInfo
         DirectoryInfo = directoryInfo;
     }
 
-    public static BlocksAndDirectoryInfo Parse(ref DataBuffer db) => new (
+    public static BlocksAndDirectoryInfo Parse(DataBuffer db) => new (
         db.ReadBytes(16),
         db.ReadList(db.ReadInt32(), StorageBlockInfo.Parse),
         db.ReadList(db.ReadInt32(), FileEntry.Parse)
     );
     
-    public void Serialize(ref DataBuffer db) {
+    public void Serialize(DataBuffer db) {
         db.WriteBytes(UncompressedDataHash);
-        db.WriteListWithCount(BlocksInfo, (ref DataBuffer d, StorageBlockInfo info) => info.Serialize(ref d));
-        db.WriteListWithCount(DirectoryInfo, (ref DataBuffer d, FileEntry info) => info.Serialize(ref d));
+        db.WriteListWithCount(BlocksInfo, (DataBuffer d, StorageBlockInfo info) => info.Serialize(d));
+        db.WriteListWithCount(DirectoryInfo, (DataBuffer d, FileEntry info) => info.Serialize(d));
     }
 
     public long SerializeSize => UncompressedDataHash.Length + 8 + 

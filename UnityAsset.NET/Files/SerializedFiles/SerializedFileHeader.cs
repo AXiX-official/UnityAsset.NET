@@ -26,7 +26,7 @@ public sealed class SerializedFileHeader
         Unknown = unknown;
     }
     
-    public static SerializedFileHeader Parse(ref DataBuffer db)
+    public static SerializedFileHeader Parse(DataBuffer db)
     {
         var metadataSize = db.ReadUInt32();
         UInt64 fileSize = db.ReadUInt32();
@@ -51,7 +51,7 @@ public sealed class SerializedFileHeader
         return new SerializedFileHeader(metadataSize, fileSize, version, dataOffset, endianess, reserved, unknown);
     }
 
-    public void Serialize(ref DataBuffer db)
+    public void Serialize(DataBuffer db)
     {
         if (Version >= SerializedFileFormatVersion.LargeFilesSupport)
         {

@@ -17,13 +17,13 @@ public sealed class StorageBlockInfo
         Flags = flags;
     }
     
-    public static StorageBlockInfo Parse(ref DataBuffer db) => new (
+    public static StorageBlockInfo Parse(DataBuffer db) => new (
         db.ReadUInt32(),
         db.ReadUInt32(),
         (StorageBlockFlags)db.ReadUInt16()
     );
     
-    public void Serialize(ref DataBuffer db) {
+    public void Serialize(DataBuffer db) {
         db.WriteUInt32(UncompressedSize);
         db.WriteUInt32(CompressedSize);
         db.WriteUInt16((UInt16)Flags);

@@ -22,10 +22,10 @@ public class AssetsFileExternal
         OriginalPathName = originalPathName;
     }
 
-    public static AssetsFileExternal Parse(ref DataBuffer db)
+    public static AssetsFileExternal Parse(DataBuffer db)
     {
         var virtualAssetPathName = db.ReadNullTerminatedString();
-        var guid = new GUID128(ref db);
+        var guid = new GUID128(db);
         var type = (AssetsFileExternalType)db.ReadInt32();
         var pathName = db.ReadNullTerminatedString();
         var originalPathName = pathName;
@@ -40,10 +40,10 @@ public class AssetsFileExternal
         return new AssetsFileExternal(virtualAssetPathName, guid, type, pathName, originalPathName);
     }
 
-    public void Serialize(ref DataBuffer db)
+    public void Serialize(DataBuffer db)
     {
         db.WriteNullTerminatedString(VirtualAssetPathName);
-        Guid.Serialize(ref db);
+        Guid.Serialize(db);
         db.WriteInt32((Int32)Type);
         var toWritePathName = PathName;
         if ((PathName == "Resources/unity_builtin_extra" ||

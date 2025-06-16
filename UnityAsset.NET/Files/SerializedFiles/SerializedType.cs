@@ -34,7 +34,7 @@ public sealed class SerializedType
         TypeReference = typeReference;
     }
     
-    public static SerializedType Parse(ref DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
+    public static SerializedType Parse(DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
         var typeID = db.ReadInt32();
         var isStrippedType = db.ReadBoolean();
@@ -42,8 +42,8 @@ public sealed class SerializedType
         Hash128? scriptIdHash = null;
         if ((version >= RefactorTypeData && typeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && scriptTypeIndex > 0))
-            scriptIdHash = new Hash128(ref db);
-        var typeHash = new Hash128(ref db);
+            scriptIdHash = new Hash128(db);
+        var typeHash = new Hash128(db);
         List<TypeTreeNode>? nodes = null;
         byte[]? stringBufferBytes = null;
         TypeTreeNode? typeTree = null;
@@ -59,8 +59,8 @@ public sealed class SerializedType
             for (int i = 0; i < typeTreeNodeCount; i++)
             {
                 var node = nodes[i];
-                node.Name = ReadString(ref sdb, node.NameStringOffset);
-                node.Type = ReadString(ref sdb, node.TypeStringOffset);
+                node.Name = ReadString(sdb, node.NameStringOffset);
+                node.Type = ReadString(sdb, node.TypeStringOffset);
             }
             if (nodes[0].Level != 0)
                 throw new Exception(
@@ -79,7 +79,7 @@ public sealed class SerializedType
             if (version >= StoresTypeDependencies)
             {
                 if (isRefType)
-                    typeReference = SerializedTypeReference.Parse(ref db);
+                    typeReference = SerializedTypeReference.Parse(db);
                 else
                     typeDependencies = db.ReadIntArray(db.ReadInt32());
             }
@@ -87,7 +87,7 @@ public sealed class SerializedType
         return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeTree, typeDependencies, typeReference);
     }
 
-    private static string ReadString(ref DataBuffer db, uint value)
+    private static string ReadString(DataBuffer db, uint value)
     {
         if ((value & 0x80000000) == 0)
         {
@@ -100,29 +100,29 @@ public sealed class SerializedType
         return offset.ToString();
     }
 
-    public void Serialize(ref DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
+    public void Serialize(DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
         db.WriteInt32(TypeID);
         db.WriteBoolean(IsStrippedType);
         db.WriteInt16(ScriptTypeIndex);
         if ((version >= RefactorTypeData && TypeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && ScriptTypeIndex > 0))
-            ScriptIdHash?.Serialize(ref db);
-        TypeHash.Serialize(ref db);
+            ScriptIdHash?.Serialize(db);
+        TypeHash.Serialize(db);
         if (Nodes == null || StringBufferBytes == null)
             throw new NullReferenceException("Nodes or StringBufferBytes is null");
         if (typeTreeEnabled)
         {
             db.WriteInt32(Nodes.Count);
             db.WriteInt32(StringBufferBytes.Length);
-            db.WriteList(Nodes, (ref DataBuffer d, TypeTreeNode node) => node.Serialize(ref d));
+            db.WriteList(Nodes, (DataBuffer d, TypeTreeNode node) => node.Serialize(d));
             db.WriteBytes(StringBufferBytes);
             if (version >= StoresTypeDependencies)
             {
                 if (!isRefType && TypeDependencies != null)
                     db.WriteIntArrayWithCount(TypeDependencies);
                 else if(TypeReference != null)
-                    TypeReference.Serialize(ref db);
+                    TypeReference.Serialize(db);
                 else
                     throw new NullReferenceException($"{(isRefType ? "TypeReference" : "TypeDependencies")} is null");
             }

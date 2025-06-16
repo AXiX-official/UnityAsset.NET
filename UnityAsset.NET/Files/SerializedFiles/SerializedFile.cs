@@ -18,26 +18,26 @@ public sealed class SerializedFile : IFile
         Assets = assets;
     }
     
-    public static SerializedFile Parse(ref DataBuffer db)
+    public static SerializedFile Parse(DataBuffer db)
     {
-        var header = SerializedFileHeader.Parse(ref db);
+        var header = SerializedFileHeader.Parse(db);
         db.IsBigEndian = header.Endianess;
-        var metadata = SerializedFileMetadata.Parse(ref db, header.Version);
+        var metadata = SerializedFileMetadata.Parse(db, header.Version);
         var assets = new List<Asset>();
         for (int i = 0; i < metadata.AssetInfos.Count; i++)
         {
             var assetInfo = metadata.AssetInfos[i];
-            assets.Add(new Asset(assetInfo, new HeapDataBuffer(db.Slice((int)(header.DataOffset + assetInfo.ByteOffset), (int)assetInfo.ByteSize).ToArray(), header.Endianess)));
+            assets.Add(new Asset(assetInfo, new DataBuffer(db.Slice((int)(header.DataOffset + assetInfo.ByteOffset), (int)assetInfo.ByteSize).ToArray(), header.Endianess)));
         }
         return new SerializedFile(header, metadata, assets);
     }
 
-    public void Serialize(ref DataBuffer db)
+    public void Serialize(DataBuffer db)
     {
         db.EnsureCapacity((int)SerializeSize);
-        Header.Serialize(ref db);
+        Header.Serialize(db);
         db.IsBigEndian = Header.Endianess;
-        Metadata.Serialize(ref db, Header.Version);
+        Metadata.Serialize(db, Header.Version);
         db.Seek((int)Header.DataOffset);
         foreach (var asset in Assets)
         {
@@ -49,7 +49,7 @@ public sealed class SerializedFile : IFile
     public void Serialize(string path)
     {
         DataBuffer db = new DataBuffer(0);
-        Serialize(ref db);
+        Serialize(db);
         db.WriteToFile(path);
     }
 

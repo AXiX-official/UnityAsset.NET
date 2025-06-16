@@ -14,7 +14,7 @@ public struct GUID128
 
     public bool IsEmpty => data0 == 0 && data1 == 0 && data2 == 0 && data3 == 0;
 
-    public GUID128(ref DataBuffer db)
+    public GUID128(DataBuffer db)
     {
         data0 = db.ReadUInt32();
         data1 = db.ReadUInt32();
@@ -123,7 +123,7 @@ public struct GUID128
         };
     }
 
-    public void Serialize(ref DataBuffer db)
+    public void Serialize(DataBuffer db)
     {
         db.WriteUInt32(data0);
         db.WriteUInt32(data1);

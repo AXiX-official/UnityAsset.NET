@@ -35,7 +35,7 @@ public class NodeData
         MetaFlags = typeTreeNode.MetaFlags;
     }
     
-    public static object ReadValue(List<NodeData> m_Nodes, HeapDataBuffer hdb, ref int i)
+    public static object ReadValue(List<NodeData> m_Nodes, DataBuffer db, ref int i)
     {
         object value;
         var node = m_Nodes[i];
@@ -43,51 +43,51 @@ public class NodeData
         switch (node.Type)
         {
             case "SInt8":
-                value = hdb.ReadInt8();
+                value = db.ReadInt8();
                 break;
             case "UInt8":
-                value = hdb.ReadUInt8();
+                value = db.ReadUInt8();
                 break;
             case "char":
-                value = BitConverter.ToChar(hdb.ReadBytes(2), 0);
+                value = BitConverter.ToChar(db.ReadBytes(2), 0);
                 break;
             case "short":
             case "SInt16":
-                value = hdb.ReadInt16();
+                value = db.ReadInt16();
                 break;
             case "UInt16":
             case "unsigned short":
-                value = hdb.ReadUInt16();
+                value = db.ReadUInt16();
                 break;
             case "int":
             case "SInt32":
-                value = hdb.ReadInt32();
+                value = db.ReadInt32();
                 break;
             case "UInt32":
             case "unsigned int":
             case "Type*":
-                value = hdb.ReadUInt32();
+                value = db.ReadUInt32();
                 break;
             case "long long":
             case "SInt64":
-                value = hdb.ReadInt64();
+                value = db.ReadInt64();
                 break;
             case "UInt64":
             case "unsigned long long":
             case "FileSize":
-                value = hdb.ReadUInt64();
+                value = db.ReadUInt64();
                 break;
             case "float":
-                value = hdb.ReadFloat();
+                value = db.ReadFloat();
                 break;
             case "double":
-                value = hdb.ReadDouble();
+                value = db.ReadDouble();
                 break;
             case "bool":
-                value = hdb.ReadBoolean();
+                value = db.ReadBoolean();
                 break;
             case "string":
-                value = hdb.ReadAlignedString();
+                value = db.ReadAlignedString();
                 var toSkip = GetNodes(m_Nodes, i);
                 i += toSkip.Count - 1;
                 break;
@@ -100,21 +100,21 @@ public class NodeData
                     var first = GetNodes(map, 4);
                     var next = 4 + first.Count;
                     var second = GetNodes(map, next);
-                    var size = hdb.ReadInt32();
+                    var size = db.ReadInt32();
                     var dic = new List<KeyValuePair<object, object>>();
                     for (int j = 0; j < size; j++)
                     {
                         int tmp1 = 0;
                         int tmp2 = 0;
-                        dic.Add(new KeyValuePair<object, object>(ReadValue(first, hdb, ref tmp1), ReadValue(second, hdb, ref tmp2)));
+                        dic.Add(new KeyValuePair<object, object>(ReadValue(first, db, ref tmp1), ReadValue(second, db, ref tmp2)));
                     }
                     value = dic;
                     break;
                 }
             case "TypelessData":
                 {
-                    var size = hdb.ReadInt32();
-                    value = hdb.ReadBytes(size);
+                    var size = db.ReadInt32();
+                    value = db.ReadBytes(size);
                     i += 2;
                     break;
                 }
@@ -126,12 +126,12 @@ public class NodeData
                             align = true;
                         var vector = GetNodes(m_Nodes, i);
                         i += vector.Count - 1;
-                        var size = hdb.ReadInt32();
+                        var size = db.ReadInt32();
                         var list = new List<object>();
                         for (int j = 0; j < size; j++)
                         {
                             int tmp = 3;
-                            list.Add(ReadValue(vector, hdb, ref tmp));
+                            list.Add(ReadValue(vector, db, ref tmp));
                         }
                         value = list;
                         break;
@@ -145,7 +145,7 @@ public class NodeData
                         {
                             var classmember = @class[j];
                             var name = classmember.Name;
-                            var subValue = ReadValue(@class, hdb, ref j);
+                            var subValue = ReadValue(@class, db, ref j);
                             classmember.Value = subValue;
                             obj[name] = subValue;
                         }
@@ -155,7 +155,7 @@ public class NodeData
                 }
         }
         if (align)
-            hdb.Align(4);
+            db.Align(4);
         return value;
     }
     

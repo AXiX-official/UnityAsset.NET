@@ -29,7 +29,7 @@ public sealed class Header
         Flags = flags;
     }
     
-    public static Header Parse(ref DataBuffer db) => new (
+    public static Header Parse(DataBuffer db) => new (
         db.ReadNullTerminatedString(),
         db.ReadUInt32(),
         db.ReadNullTerminatedString(),
@@ -40,7 +40,7 @@ public sealed class Header
         (ArchiveFlags)db.ReadUInt32()
     );
 
-    public void Serialize(ref DataBuffer db) 
+    public void Serialize(DataBuffer db) 
     {
         db.WriteNullTerminatedString(Signature);
         db.WriteUInt32(Version);
