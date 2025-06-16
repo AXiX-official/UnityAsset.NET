@@ -17,8 +17,6 @@ public class TypeTreeNode
     public UInt64 RefTypeHash;
     public string Type;
     public string Name;
-    public TypeTreeNode? Parent;
-    public List<TypeTreeNode>? Children;
     
     public TypeTreeNode(UInt16 vesion, byte level, TypeTreeNodeFlags typeFlags,
         UInt32 typeStringOffset, UInt32 nameStringOffset, Int32 byteSize, UInt32 index, UInt32 metaFlags,

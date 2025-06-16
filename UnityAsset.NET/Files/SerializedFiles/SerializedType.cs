@@ -16,12 +16,11 @@ public sealed class SerializedType
     public Hash128 TypeHash;
     public bool IsRefType;
     public List<TypeTreeNode>? Nodes;
-    public TypeTreeNode? TypeTree;
     public byte[]? StringBufferBytes;
     public int[]? TypeDependencies;
     public SerializedTypeReference? TypeReference;
     
-    public SerializedType(Int32 typeId, bool isStrippedType, Int16 scriptTypeIndex, Hash128? scriptIdHash, Hash128 typeHash, bool isRefType, List<TypeTreeNode>? nodes, byte[]? stringBufferBytes, TypeTreeNode? typeTree, int[]? typeDependencies, SerializedTypeReference? typeReference)
+    public SerializedType(Int32 typeId, bool isStrippedType, Int16 scriptTypeIndex, Hash128? scriptIdHash, Hash128 typeHash, bool isRefType, List<TypeTreeNode>? nodes, byte[]? stringBufferBytes, int[]? typeDependencies, SerializedTypeReference? typeReference)
     {
         TypeID = typeId;
         IsStrippedType = isStrippedType;
@@ -30,7 +29,6 @@ public sealed class SerializedType
         TypeHash = typeHash;
         IsRefType = isRefType;
         Nodes = nodes;
-        TypeTree = typeTree;
         StringBufferBytes = stringBufferBytes;
         TypeDependencies = typeDependencies;
         TypeReference = typeReference;
@@ -67,17 +65,6 @@ public sealed class SerializedType
             if (nodes[0].Level != 0)
                 throw new Exception(
                     $"The first node of TypeTreeNodes should have a level of 0 but gets {nodes[0].Level}");
-            var parent = nodes[0];
-            for (int i = 1; i < typeTreeNodeCount; i++)
-            {
-                while (nodes[i].Level <= parent.Level)
-                    parent = parent.Parent;
-                nodes[i].Parent = parent;
-                parent.Children ??= new ();
-                parent.Children.Add(nodes[i]);
-                parent = nodes[i];
-            }
-            typeTree = nodes[0];
             if (version >= StoresTypeDependencies)
             {
                 if (isRefType)
@@ -86,7 +73,7 @@ public sealed class SerializedType
                     typeDependencies = db.ReadIntArray(db.ReadInt32());
             }
         }
-        return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeTree, typeDependencies, typeReference);
+        return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);
     }
 
     private static string ReadString(DataBuffer db, uint value)

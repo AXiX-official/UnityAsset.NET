@@ -363,7 +363,7 @@ public class DataBuffer : IFile
         return byteCount + 1;
     }
     
-    public string ReadAlignedString()
+    public string ReadSizedString()
     {
         var result = "";
         var length = ReadInt32();
@@ -372,11 +372,10 @@ public class DataBuffer : IFile
             var stringData = ReadBytes(length);
             result = Encoding.UTF8.GetString(stringData);
         }
-        Align(4);
         return result;
     }
     
-    public int WriteAlignedString(string value)
+    public int WriteSizedString(string value)
     {
         var byteCount = Encoding.UTF8.GetByteCount(value);
         EnsureCapacity(byteCount + 8);
