@@ -23,10 +23,11 @@ public sealed class StorageBlockInfo
         (StorageBlockFlags)db.ReadUInt16()
     );
     
-    public void Serialize(DataBuffer db) {
+    public int Serialize(DataBuffer db) {
         db.WriteUInt32(UncompressedSize);
         db.WriteUInt32(CompressedSize);
         db.WriteUInt16((UInt16)Flags);
+        return 10;
     }
 
     public long SerializeSize => 10;

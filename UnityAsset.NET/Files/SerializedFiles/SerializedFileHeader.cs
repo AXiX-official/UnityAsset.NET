@@ -51,33 +51,36 @@ public sealed class SerializedFileHeader
         return new SerializedFileHeader(metadataSize, fileSize, version, dataOffset, endianess, reserved, unknown);
     }
 
-    public void Serialize(DataBuffer db)
+    public int Serialize(DataBuffer db)
     {
+        int size = 0;
         if (Version >= SerializedFileFormatVersion.LargeFilesSupport)
         {
-            db.WriteUInt32(0);
-            db.WriteUInt32(0);
-            db.WriteUInt32((uint)Version);
-            db.WriteUInt32(0);
+            size += db.WriteUInt32(0);
+            size += db.WriteUInt32(0);
+            size += db.WriteUInt32((uint)Version);
+            size += db.WriteUInt32(0);
         }
         else
         {
-            db.WriteUInt32(MetadataSize);
-            db.WriteUInt32((uint)FileSize);
-            db.WriteUInt32((uint)Version);
-            db.WriteUInt32((uint)DataOffset);
+            size += db.WriteUInt32(MetadataSize);
+            size += db.WriteUInt32((uint)FileSize);
+            size += db.WriteUInt32((uint)Version);
+            size += db.WriteUInt32((uint)DataOffset);
         }
         
-        db.WriteBoolean(Endianess);
-        db.WriteBytes(Reserved);
+        size += db.WriteBoolean(Endianess);
+        size += db.WriteBytes(Reserved);
 
         if (Version >= SerializedFileFormatVersion.LargeFilesSupport)
         {
-            db.WriteUInt32(MetadataSize);
-            db.WriteUInt64(FileSize);
-            db.WriteUInt64(DataOffset);
-            db.WriteInt64(Unknown); // unknown
+            size += db.WriteUInt32(MetadataSize);
+            size += db.WriteUInt64(FileSize);
+            size += db.WriteUInt64(DataOffset);
+            size += db.WriteInt64(Unknown); // unknown
         }
+
+        return size;
     }
 
     public long SerializeSize() => Version >= SerializedFileFormatVersion.LargeFilesSupport ? 20 : 48;

@@ -26,11 +26,13 @@ public class SerializedTypeReference
         db.ReadNullTerminatedString()
     );
 
-    public void Serialize(DataBuffer db)
+    public int Serialize(DataBuffer db)
     {
-        db.WriteNullTerminatedString(ClassName);
-        db.WriteNullTerminatedString(Namespace);
-        db.WriteNullTerminatedString(AsmName);
+        int size = 0;
+        size += db.WriteNullTerminatedString(ClassName);
+        size += db.WriteNullTerminatedString(Namespace);
+        size += db.WriteNullTerminatedString(AsmName);
+        return size;
     }
     
     public long SerializeSize => 3 + ClassName.Length + Namespace.Length + AsmName.Length;

@@ -119,7 +119,7 @@ public sealed unsafe class UnityCN
         }
     }
     
-    public void Serialize(DataBuffer db)
+    public int Serialize(DataBuffer db)
     {
         db.WriteUInt32(Value);
         db.WriteBytes(InfoBytes);
@@ -128,6 +128,7 @@ public sealed unsafe class UnityCN
         db.WriteBytes(SignatureBytes);
         db.WriteBytes(SignatureKey);
         db.WriteByte(0);
+        return 70;
     }
 
     public long SerializeSize => 70;

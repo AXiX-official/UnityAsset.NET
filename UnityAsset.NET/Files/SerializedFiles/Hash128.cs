@@ -20,13 +20,9 @@ public struct Hash128
     {
         if (data == null)
             return true;
-            
-        for (int i = 0; i < data.Length; i++)
-        {
-            if (data[i] != 0)
+        foreach (var b in data.AsSpan())
+            if (b != 0)
                 return false;
-        }
-
         return true;
     }
 
@@ -34,7 +30,7 @@ public struct Hash128
     {
         StringBuilder hex = new StringBuilder(data.Length * 2);
 
-        foreach (byte b in data)
+        foreach (byte b in data.AsSpan())
         {
             hex.AppendFormat("{0:x2}", b);
         }
@@ -44,11 +40,11 @@ public struct Hash128
 
     public static Hash128 NewBlankHash()
     {
-        return new Hash128() { data = new byte[16] };
+        return new Hash128 { data = new byte[16] };
     }
     
-    public void Serialize(DataBuffer db)
+    public int Serialize(DataBuffer db)
     {
-        db.WriteBytes(data);
+        return db.WriteBytes(data);
     }
 }

@@ -22,11 +22,13 @@ public class AssetPPtr
         return new AssetPPtr(fileId, pathId);
     }
 
-    public void Serialize(DataBuffer db)
+    public int Serialize(DataBuffer db)
     {
-        db.WriteInt32(FileId);
-        db.Align(4);
-        db.WriteInt64(PathId);
+        int size = 0;
+        size += db.WriteInt32(FileId);
+        size += db.Align(4);
+        size += db.WriteInt64(PathId);
+        return size;
     }
 
     public long SerializeSize => 16;

@@ -25,11 +25,14 @@ public sealed class FileEntry
         db.ReadNullTerminatedString()
     );
     
-    public void Serialize(DataBuffer db) {
-        db.WriteInt64(Offset);
-        db.WriteInt64(Size);
-        db.WriteUInt32(Flags);
-        db.WriteNullTerminatedString(Path);
+    public int Serialize(DataBuffer db)
+    {
+        int size = 0;
+        size += db.WriteInt64(Offset);
+        size += db.WriteInt64(Size);
+        size += db.WriteUInt32(Flags);
+        size += db.WriteNullTerminatedString(Path);
+        return size;
     }
 
     public long SerializeSize => 21 + Path.Length;

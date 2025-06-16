@@ -47,7 +47,7 @@ public class TypeTreeNode
         db.ReadUInt64()
     );
 
-    public void Serialize(DataBuffer db)
+    public int Serialize(DataBuffer db)
     {
         db.WriteUInt16(Vesion);
         db.WriteByte(Level);
@@ -58,6 +58,7 @@ public class TypeTreeNode
         db.WriteUInt32(Index);
         db.WriteUInt32(MetaFlags); 
         db.WriteUInt64(RefTypeHash);
+        return 32;
     }
 
     public long SerializeSize => 32;

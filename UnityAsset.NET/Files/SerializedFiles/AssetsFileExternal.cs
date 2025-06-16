@@ -40,18 +40,20 @@ public class AssetsFileExternal
         return new AssetsFileExternal(virtualAssetPathName, guid, type, pathName, originalPathName);
     }
 
-    public void Serialize(DataBuffer db)
+    public int Serialize(DataBuffer db)
     {
-        db.WriteNullTerminatedString(VirtualAssetPathName);
-        Guid.Serialize(db);
-        db.WriteInt32((Int32)Type);
+        int size = 0;
+        size += db.WriteNullTerminatedString(VirtualAssetPathName);
+        size += Guid.Serialize(db);
+        size += db.WriteInt32((Int32)Type);
         var toWritePathName = PathName;
         if ((PathName == "Resources/unity_builtin_extra" ||
              PathName == "Resources/unity default resources" ||
              PathName == "Resources/unity editor resources")
             && OriginalPathName != string.Empty)
             toWritePathName = OriginalPathName;
-        db.WriteNullTerminatedString(toWritePathName);
+        size += db.WriteNullTerminatedString(toWritePathName);
+        return size;
     }
     
     public long SerializeSize => 22 + VirtualAssetPathName.Length + Math.Max(OriginalPathName.Length, PathName.Length);

@@ -1,5 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using UnityAsset.NET.Enums;
+using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files.BundleFiles;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
@@ -77,16 +79,17 @@ public class BundleFile
     {
         DataBuffer blocksBuffer = new DataBuffer(dataInfo.BlocksInfo.Sum(block => (int)block.UncompressedSize));
         if (unityCnInfo == null)
-            foreach (var blockInfo in dataInfo.BlocksInfo)
+            foreach (var blockInfo in dataInfo.BlocksInfo.AsReadOnlySpan())
                 Compression.DecompressToBytes(
                     db.ReadSpanBytes((int)blockInfo.CompressedSize), 
                     blocksBuffer.ReadSpanBytes((int)blockInfo.UncompressedSize), 
                     (CompressionType)(blockInfo.Flags & StorageBlockFlags.CompressionTypeMask));
         else
         {
-            for (int i = 0; i < dataInfo.BlocksInfo.Count; i++)
+            var blocksInfoSpan = dataInfo.BlocksInfo.AsReadOnlySpan();
+            for (int i = 0; i < blocksInfoSpan.Length; i++)
             {
-                var blockInfo = dataInfo.BlocksInfo[i];
+                var blockInfo = blocksInfoSpan[i];
                 var compressionType = (CompressionType)(blockInfo.Flags & StorageBlockFlags.CompressionTypeMask);
                 if (compressionType == CompressionType.Lz4 || compressionType == CompressionType.Lz4HC)
                     unityCnInfo.DecryptAndDecompress(
@@ -102,19 +105,8 @@ public class BundleFile
         var crc32 = CRC32.CalculateCRC32(blocksBuffer.AsSpan());
         
         var files = new List<FileWrapper>();
-        foreach (var dir in dataInfo.DirectoryInfo)
-        {
-            if (dir.Path.StartsWith("CAB-") && !dir.Path.EndsWith(".resS"))
-            {
-                var cabBuffer = blocksBuffer.SliceBuffer((int)dir.Size);
-                files.Add(new FileWrapper(SerializedFile.Parse(cabBuffer), dir));
-                blocksBuffer.Advance((int)dir.Size);
-            }
-            else
-            {
-                files.Add(new FileWrapper(new DataBuffer(blocksBuffer.ReadSpanBytes((int)dir.Size).ToArray()), dir));
-            }
-        }
+        foreach (var dir in dataInfo.DirectoryInfo.AsReadOnlySpan())
+            files.Add(new FileWrapper(new DataBuffer(blocksBuffer.ReadSpanBytes((int)dir.Size).ToArray()), dir));
 
         return (files, crc32);
     }
@@ -137,9 +129,18 @@ public class BundleFile
         (Files, Crc32) = ParseFiles(db, DataInfo, UnityCnInfo);
     }
 
+    /// <summary>
+    /// Parses only the BundleFile container structure without further parsing the contained SerializedFile format.
+    /// </summary>
+    /// <remarks>
+    /// This method stops at the BundleFile level and does not process the internal SerializedFile structures.
+    /// If you need full parsing including SerializedFile format conversion, use <see cref="BundleFileExtensions.ParseFilesWithTypeConversion"/> instead.
+    /// </remarks>
+    /// <param name="path">The file path to the BundleFile</param>
+    /// <param name="key">Optional decryption key</param>
     public BundleFile(string path, string? key = null) : this(DataBuffer.FromFile(path), key) {}
     
-    public void Serialize(DataBuffer db, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
+    public int Serialize(DataBuffer db, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
     {
         if (Header == null || DataInfo == null || Files == null)
             throw new NullReferenceException("BundleFile has not read completely");
@@ -152,20 +153,17 @@ public class BundleFile
         });
         DataBuffer filesBuffer = new DataBuffer((int)filesCapacity);
         Int64 offset = 0;
-        foreach (var file in Files)
+        foreach (var file in Files.AsReadOnlySpan())
         {
-            Int64 cabSize;
+            int cabSize;
             switch (file.File)
             {
                 case DataBuffer dataBuffer:
-                    filesBuffer.WriteBytes(dataBuffer.AsSpan());
-                    cabSize = dataBuffer.Length;
+                    cabSize = filesBuffer.WriteBytes(dataBuffer.AsSpan());
                     break;
                 case SerializedFile sf:
-                    var subBuffer = filesBuffer.SliceBufferToEnd();
-                    sf.Serialize(subBuffer);
-                    filesBuffer.Advance(subBuffer.Position);
-                    cabSize = subBuffer.Position;
+                    cabSize = sf.Serialize(filesBuffer.SliceBufferToEnd());
+                    filesBuffer.Advance(cabSize);
                     break;
                 default:
                     throw new Exception($"Unexpected type: {file.File.GetType().Name}");
@@ -199,9 +197,10 @@ public class BundleFile
             unityCnInfo = new UnityCN(unityCnKey);
             if (dataPacker == CompressionType.Lz4 || dataPacker == CompressionType.Lz4HC)
             {
-                for (int i = 0; i < blocksInfo.Count; i++)
+                var blocksInfoSpan = blocksInfo.AsSpan();
+                for (int i = 0; i < blocksInfoSpan.Length; i++)
                 {
-                    var blockInfo = blocksInfo[i];
+                    var blockInfo = blocksInfoSpan[i];
                     blockInfo.Flags |= (StorageBlockFlags)0x100;
                     unityCnInfo.EncryptBlock(compressedBlocksDataBuffer.ReadSpanBytes((int)blockInfo.CompressedSize), (int)blockInfo.CompressedSize, i);
                 }
@@ -232,35 +231,46 @@ public class BundleFile
             0, (uint)compressedBlocksInfoSize, (uint)uncompressedBlocksInfoSize,
             (Header.Flags & ~ArchiveFlags.CompressionTypeMask) | (ArchiveFlags)infoPacker);
         db.EnsureCapacity((int)(header.SerializeSize + 16 + compressedBlocksInfoSize + compressedBlocksDataBuffer.Length + unityCnInfo?.SerializeSize ?? 0));
-        header.Serialize(db);
+        int size = 0;
+        size += header.Serialize(db);
         if (unityCnInfo != null)
-            unityCnInfo.Serialize(db);
+            size += unityCnInfo.Serialize(db);
         if (header.Version >= 7)
-            db.Align(16);
+            size += db.Align(16);
         else // temp fix for 2019.4.x
-        {
             if (version[0] == 2019 && version[1] == 4 && version[2] >= 30)
-                db.Align(16);
-        }
+                size += db.Align(16);
         if ((header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) == 0) //0x40 BlocksAndDirectoryInfoCombined
-            db.WriteBytes(compressedDataInfoBuffer.SliceForward((int)compressedBlocksInfoSize));
+            size += db.WriteBytes(compressedDataInfoBuffer.SliceForward((int)compressedBlocksInfoSize));
         if (!VersionJudge1(version) &&(header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
-            db.Align(16);
-        db.WriteBytes(compressedBlocksDataBuffer.SliceForward(compressedBlocksDataBuffer.Length));
+            size += db.Align(16);
+        size += db.WriteBytes(compressedBlocksDataBuffer.SliceForward(compressedBlocksDataBuffer.Length));
         if ((header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) != 0) //kArchiveBlocksInfoAtTheEnd
-            db.WriteBytes(compressedDataInfoBuffer.SliceForward((int)compressedBlocksInfoSize));
-        var size = db.Position;
+            size += db.WriteBytes(compressedDataInfoBuffer.SliceForward((int)compressedBlocksInfoSize));
         header.Size = size;
         db.Seek(0);
         header.Serialize(db);
+        return size;
     }
 
-    public void Serialize(string path, CompressionType infoPacker = CompressionType.None,
+    public int Serialize(string path, CompressionType infoPacker = CompressionType.None,
         CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
     {
         DataBuffer db = new DataBuffer(0);
-        Serialize(db, infoPacker, dataPacker, unityCnKey);
-        db.WriteToFile(path);
+        int size = Serialize(db, infoPacker, dataPacker, unityCnKey);
+        db.WriteToFile(path, size);
+        return size;
+    }
+    
+    public override string ToString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"Header: {Header}");
+        sb.AppendLine($"DataInfo: {DataInfo}");
+        var filesSpan = Files.AsSpan();
+        for (int i = 0; i  < filesSpan.Length; ++i)
+            sb.AppendLine($"File {i}: {filesSpan[i]}");
+        return sb.ToString();
     }
     
     public static int[] ParseVersion(Header header)

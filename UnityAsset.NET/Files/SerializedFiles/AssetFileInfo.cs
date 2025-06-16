@@ -36,16 +36,18 @@ public class AssetFileInfo
         return new AssetFileInfo(pathId, byteOffset, byteSize, typeIdOrIndex, type);
     }
     
-    public void Serialize(DataBuffer db, SerializedFileFormatVersion version)
+    public int Serialize(DataBuffer db, SerializedFileFormatVersion version)
     {
-        db.Align(4);
-        db.WriteInt64(PathId);
+        int size = 0;
+        size += db.Align(4);
+        size += db.WriteInt64(PathId);
         if (version >= SerializedFileFormatVersion.LargeFilesSupport)
-            db.WriteUInt64(ByteOffset);
+            size += db.WriteUInt64(ByteOffset);
         else
-            db.WriteInt32((Int32)ByteOffset);
-        db.WriteUInt32(ByteSize);
-        db.WriteInt32(TypeIdOrIndex);
+            size += db.WriteInt32((Int32)ByteOffset);
+        size += db.WriteUInt32(ByteSize);
+        size += db.WriteInt32(TypeIdOrIndex);
+        return size;
     }
 
     public long SerializeSize => 28;

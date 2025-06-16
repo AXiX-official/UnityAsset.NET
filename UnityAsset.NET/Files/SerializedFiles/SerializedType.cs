@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices;
+using System.Text;
 using UnityAsset.NET.Enums;
+using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
 using static UnityAsset.NET.Enums.SerializedFileFormatVersion;
 
@@ -100,33 +102,35 @@ public sealed class SerializedType
         return offset.ToString();
     }
 
-    public void Serialize(DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
+    public int Serialize(DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
-        db.WriteInt32(TypeID);
-        db.WriteBoolean(IsStrippedType);
-        db.WriteInt16(ScriptTypeIndex);
+        int size = 0;
+        size += db.WriteInt32(TypeID);
+        size += db.WriteBoolean(IsStrippedType);
+        size += db.WriteInt16(ScriptTypeIndex);
         if ((version >= RefactorTypeData && TypeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && ScriptTypeIndex > 0))
-            ScriptIdHash?.Serialize(db);
-        TypeHash.Serialize(db);
+            size += ScriptIdHash?.Serialize(db) ?? 0;
+        size += TypeHash.Serialize(db);
         if (Nodes == null || StringBufferBytes == null)
             throw new NullReferenceException("Nodes or StringBufferBytes is null");
         if (typeTreeEnabled)
         {
-            db.WriteInt32(Nodes.Count);
-            db.WriteInt32(StringBufferBytes.Length);
-            db.WriteList(Nodes, (DataBuffer d, TypeTreeNode node) => node.Serialize(d));
-            db.WriteBytes(StringBufferBytes);
+            size += db.WriteInt32(Nodes.Count);
+            size += db.WriteInt32(StringBufferBytes.Length);
+            size += db.WriteList(Nodes, (DataBuffer d, TypeTreeNode node) => node.Serialize(d));
+            size += db.WriteBytes(StringBufferBytes);
             if (version >= StoresTypeDependencies)
             {
                 if (!isRefType && TypeDependencies != null)
-                    db.WriteIntArrayWithCount(TypeDependencies);
+                    size += db.WriteIntArrayWithCount(TypeDependencies);
                 else if(TypeReference != null)
                     TypeReference.Serialize(db);
                 else
                     throw new NullReferenceException($"{(isRefType ? "TypeReference" : "TypeDependencies")} is null");
             }
         }
+        return size;
     }
 
     public long SerializeSize => 39 + 
@@ -151,7 +155,7 @@ public sealed class SerializedType
         sb.AppendFormat("TypeDependencies: {0} | ", TypeDependencies?.Length);
         sb.AppendFormat("TypeReference: {0} | ", TypeReference);
         sb.AppendLine("Nodes:");
-        foreach (var node in Nodes)
+        foreach (var node in Nodes.AsSpan())
             sb.AppendLine(node.ToString());
         sb.AppendLine();
         sb.AppendLine("End of Serialized Type");

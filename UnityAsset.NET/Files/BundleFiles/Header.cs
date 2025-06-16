@@ -40,16 +40,18 @@ public sealed class Header
         (ArchiveFlags)db.ReadUInt32()
     );
 
-    public void Serialize(DataBuffer db) 
+    public int Serialize(DataBuffer db)
     {
-        db.WriteNullTerminatedString(Signature);
-        db.WriteUInt32(Version);
-        db.WriteNullTerminatedString(UnityVersion);
-        db.WriteNullTerminatedString(UnityRevision);
-        db.WriteInt64(Size);
-        db.WriteUInt32(CompressedBlocksInfoSize);
-        db.WriteUInt32(UncompressedBlocksInfoSize);
-        db.WriteUInt32((UInt32)Flags);
+        int size = 0;
+        size += db.WriteNullTerminatedString(Signature);
+        size += db.WriteUInt32(Version);
+        size += db.WriteNullTerminatedString(UnityVersion);
+        size += db.WriteNullTerminatedString(UnityRevision);
+        size += db.WriteInt64(Size);
+        size += db.WriteUInt32(CompressedBlocksInfoSize);
+        size += db.WriteUInt32(UncompressedBlocksInfoSize);
+        size += db.WriteUInt32((UInt32)Flags);
+        return size;
     }
 
     public long SerializeSize => 27 + Signature.Length + UnityVersion.Length + UnityRevision.Length;

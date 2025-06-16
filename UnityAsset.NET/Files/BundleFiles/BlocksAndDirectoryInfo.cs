@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices;
+using System.Text;
+using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.Files.BundleFiles;
@@ -24,10 +26,13 @@ public sealed class BlocksAndDirectoryInfo
         db.ReadList(db.ReadInt32(), FileEntry.Parse)
     );
     
-    public void Serialize(DataBuffer db) {
-        db.WriteBytes(UncompressedDataHash);
-        db.WriteListWithCount(BlocksInfo, (DataBuffer d, StorageBlockInfo info) => info.Serialize(d));
-        db.WriteListWithCount(DirectoryInfo, (DataBuffer d, FileEntry info) => info.Serialize(d));
+    public int Serialize(DataBuffer db)
+    {
+        int size = 0;
+        size += db.WriteBytes(UncompressedDataHash);
+        size += db.WriteListWithCount(BlocksInfo, (d, info) => info.Serialize(d));
+        size += db.WriteListWithCount(DirectoryInfo, (d, info) => info.Serialize(d));
+        return size;
     }
 
     public long SerializeSize => UncompressedDataHash.Length + 8 + 
@@ -38,12 +43,12 @@ public sealed class BlocksAndDirectoryInfo
     {
         StringBuilder sb = new StringBuilder();
         sb.AppendLine($"UncompressedDataHash: {BitConverter.ToString(UncompressedDataHash)}");
-        for (int i = 0; i  < BlocksInfo.Count; ++i)
-            sb.Append($"Block {i}: {BlocksInfo[i]}");
-        sb.AppendLine();
-        for (int i = 0; i  < DirectoryInfo.Count; ++i)
-            sb.Append($"Directory {i}: {DirectoryInfo[i]}");
-        sb.AppendLine();
+        var blockInfoSpan = BlocksInfo.AsSpan();
+        for (int i = 0; i  < blockInfoSpan.Length; ++i)
+            sb.AppendLine($"Block {i}: {blockInfoSpan[i]}");
+        var directoryInfoSpan = DirectoryInfo.AsSpan();
+        for (int i = 0; i  < directoryInfoSpan.Length; ++i)
+            sb.AppendLine($"Directory {i}: {directoryInfoSpan[i]}");
         return sb.ToString();
     }
 }

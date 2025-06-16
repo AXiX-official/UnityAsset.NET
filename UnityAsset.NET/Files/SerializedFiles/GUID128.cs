@@ -123,12 +123,13 @@ public struct GUID128
         };
     }
 
-    public void Serialize(DataBuffer db)
+    public int Serialize(DataBuffer db)
     {
         db.WriteUInt32(data0);
         db.WriteUInt32(data1);
         db.WriteUInt32(data2);
         db.WriteUInt32(data3);
+        return 16;
     }
     
     public long SerializeSize => 16;

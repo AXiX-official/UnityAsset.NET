@@ -1,5 +1,6 @@
 ﻿using System.Buffers.Binary;
 using System.Text;
+using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files;
 
 namespace UnityAsset.NET.IO;
@@ -150,20 +151,23 @@ public class DataBuffer : IFile
         return new DataBuffer(buffer, bigEndian);
     }
     
-    public void WriteToFile(string filePath)
+    public void WriteToFile(string filePath, int size)
     {
-        byte[] data = AsMemory().Slice(0, _size).ToArray();
+        byte[] data = AsMemory().Slice(0, size).ToArray();
         File.WriteAllBytes(filePath, data);
     }
     
-    public void Align(int alignment)
+    public int Align(int alignment)
     {
         var offset = Position % alignment;
         if (offset != 0)
         {
             EnsureCapacity(alignment - offset);
             Advance(alignment - offset);
+            return alignment - offset;
         }
+
+        return 0;
     }
 
     public Boolean ReadBoolean()
@@ -172,11 +176,12 @@ public class DataBuffer : IFile
         return span[0] != 0;
     }
     
-    public void WriteBoolean(Boolean value)
+    public int WriteBoolean(Boolean value)
     {
         EnsureCapacity(1);
         var span = ReadSpanBytes(1);
         span[0] = value ? (byte)1 : (byte)0;
+        return 1;
     }
     
     public sbyte ReadInt8()
@@ -184,9 +189,10 @@ public class DataBuffer : IFile
         return (sbyte)ReadByte();
     }
     
-    public void WriteInt8(sbyte value)
+    public int WriteInt8(sbyte value)
     {
         WriteByte((byte)value);
+        return 1;
     }
     
     public byte ReadUInt8()
@@ -194,9 +200,10 @@ public class DataBuffer : IFile
         return ReadByte();
     }
     
-    public void WriteUInt8(byte value)
+    public int WriteUInt8(byte value)
     {
         WriteByte(value);
+        return 1;
     }
 
     public Int16 ReadInt16()
@@ -205,7 +212,7 @@ public class DataBuffer : IFile
         return IsBigEndian ? BinaryPrimitives.ReadInt16BigEndian(span) : BinaryPrimitives.ReadInt16LittleEndian(span);
     }
     
-    public void WriteInt16(Int16 value)
+    public int WriteInt16(Int16 value)
     {
         EnsureCapacity(2);
         var span = ReadSpanBytes(2);
@@ -213,6 +220,7 @@ public class DataBuffer : IFile
             BinaryPrimitives.WriteInt16BigEndian(span, value);
         else
             BinaryPrimitives.WriteInt16LittleEndian(span, value);
+        return 2;
     }
     
     public UInt16 ReadUInt16()
@@ -221,7 +229,7 @@ public class DataBuffer : IFile
         return IsBigEndian ? BinaryPrimitives.ReadUInt16BigEndian(span) : BinaryPrimitives.ReadUInt16LittleEndian(span);
     }
     
-    public void WriteUInt16(UInt16 value)
+    public int WriteUInt16(UInt16 value)
     {
         EnsureCapacity(2);
         var span = ReadSpanBytes(2);
@@ -229,6 +237,7 @@ public class DataBuffer : IFile
             BinaryPrimitives.WriteUInt16BigEndian(span, value);
         else
             BinaryPrimitives.WriteUInt16LittleEndian(span, value);
+        return 2;
     }
     
     public Int32 ReadInt32()
@@ -237,7 +246,7 @@ public class DataBuffer : IFile
         return IsBigEndian ? BinaryPrimitives.ReadInt32BigEndian(span) : BinaryPrimitives.ReadInt32LittleEndian(span);
     }
     
-    public void WriteInt32(Int32 value)
+    public int WriteInt32(Int32 value)
     {
         EnsureCapacity(4);
         var span = ReadSpanBytes(4);
@@ -245,6 +254,7 @@ public class DataBuffer : IFile
             BinaryPrimitives.WriteInt32BigEndian(span, value);
         else
             BinaryPrimitives.WriteInt32LittleEndian(span, value);
+        return 4;
     }
     
     public UInt32 ReadUInt32()
@@ -253,7 +263,7 @@ public class DataBuffer : IFile
         return IsBigEndian ? BinaryPrimitives.ReadUInt32BigEndian(span) : BinaryPrimitives.ReadUInt32LittleEndian(span);
     }
     
-    public void WriteUInt32(UInt32 value)
+    public int WriteUInt32(UInt32 value)
     {
         EnsureCapacity(4);
         var span = ReadSpanBytes(4);
@@ -261,6 +271,7 @@ public class DataBuffer : IFile
             BinaryPrimitives.WriteUInt32BigEndian(span, value);
         else
             BinaryPrimitives.WriteUInt32LittleEndian(span, value);
+        return 4;
     }
     
     public Int64 ReadInt64()
@@ -269,7 +280,7 @@ public class DataBuffer : IFile
         return IsBigEndian ? BinaryPrimitives.ReadInt64BigEndian(span) : BinaryPrimitives.ReadInt64LittleEndian(span);
     }
     
-    public void WriteInt64(Int64 value)
+    public int WriteInt64(Int64 value)
     {
         EnsureCapacity(8);
         var span = ReadSpanBytes(8);
@@ -277,6 +288,7 @@ public class DataBuffer : IFile
             BinaryPrimitives.WriteInt64BigEndian(span, value);
         else
             BinaryPrimitives.WriteInt64LittleEndian(span, value);
+        return 8;
     }
     
     public UInt64 ReadUInt64()
@@ -285,7 +297,7 @@ public class DataBuffer : IFile
         return IsBigEndian ? BinaryPrimitives.ReadUInt64BigEndian(span) : BinaryPrimitives.ReadUInt64LittleEndian(span);
     }
     
-    public void WriteUInt64(UInt64 value)
+    public int WriteUInt64(UInt64 value)
     {
         EnsureCapacity(8);
         var span = ReadSpanBytes(8);
@@ -293,6 +305,7 @@ public class DataBuffer : IFile
             BinaryPrimitives.WriteUInt64BigEndian(span, value);
         else
             BinaryPrimitives.WriteUInt64LittleEndian(span, value);
+        return 8;
     }
     
     public float ReadFloat()
@@ -301,7 +314,7 @@ public class DataBuffer : IFile
         return IsBigEndian ? BinaryPrimitives.ReadSingleBigEndian(span) : BinaryPrimitives.ReadSingleLittleEndian(span);
     }
     
-    public void WriteFloat(float value)
+    public int WriteFloat(float value)
     {
         EnsureCapacity(4);
         var span = ReadSpanBytes(4);
@@ -309,6 +322,7 @@ public class DataBuffer : IFile
             BinaryPrimitives.WriteSingleBigEndian(span, value);
         else
             BinaryPrimitives.WriteSingleLittleEndian(span, value);
+        return 4;
     }
     
     public double ReadDouble()
@@ -317,7 +331,7 @@ public class DataBuffer : IFile
         return IsBigEndian ? BinaryPrimitives.ReadDoubleBigEndian(span) : BinaryPrimitives.ReadDoubleLittleEndian(span);
     }
     
-    public void WriteDouble(double value)
+    public int WriteDouble(double value)
     {
         EnsureCapacity(8);
         var span = ReadSpanBytes(8);
@@ -325,6 +339,7 @@ public class DataBuffer : IFile
             BinaryPrimitives.WriteDoubleBigEndian(span, value);
         else
             BinaryPrimitives.WriteDoubleLittleEndian(span, value);
+        return 8;
     }
     
     public string ReadNullTerminatedString(int maxLength = 32767)
@@ -338,13 +353,14 @@ public class DataBuffer : IFile
         return Encoding.UTF8.GetString(strBytes);
     }
     
-    public void WriteNullTerminatedString(string value)
+    public int WriteNullTerminatedString(string value)
     {
         var byteCount = Encoding.UTF8.GetByteCount(value);
         EnsureCapacity(byteCount + 1);
         var span = ReadSpanBytes(byteCount + 1);
         Encoding.UTF8.GetBytes(value, span);
         span[byteCount] = 0;
+        return byteCount + 1;
     }
     
     public string ReadAlignedString()
@@ -360,7 +376,7 @@ public class DataBuffer : IFile
         return result;
     }
     
-    public void WriteAlignedString(string value)
+    public int WriteAlignedString(string value)
     {
         var byteCount = Encoding.UTF8.GetByteCount(value);
         EnsureCapacity(byteCount + 8);
@@ -368,6 +384,7 @@ public class DataBuffer : IFile
         var span = ReadSpanBytes(byteCount);
         Encoding.UTF8.GetBytes(value, span);
         Align(4);
+        return 4 + byteCount;
     }
 
     public List<T> ReadList<T>(int count, Func<DataBuffer, T> constructor)
@@ -380,21 +397,25 @@ public class DataBuffer : IFile
         return list;
     }
     
-    public void WriteList<T>(List<T> array, Action<DataBuffer, T> writer)
+    public int WriteList<T>(List<T> array, Func<DataBuffer, T, int> writer)
     {
-        foreach (var item in array)
+        int size = 0;
+        foreach (var item in array.AsReadOnlySpan())
         {
-            writer(this, item);
+            size += writer(this, item);
         }
+        return size;
     }
     
-    public void WriteListWithCount<T>(List<T> array, Action<DataBuffer, T> writer)
+    public int WriteListWithCount<T>(List<T> array, Func<DataBuffer, T, int> writer)
     {
-        WriteInt32(array.Count);
-        foreach (var item in array)
+        int size = 0;
+        size += WriteInt32(array.Count);
+        foreach (var item in array.AsReadOnlySpan())
         {
-            writer(this, item);
+            size += writer(this, item);
         }
+        return size;
     }
 
     public byte ReadByte()
@@ -402,11 +423,12 @@ public class DataBuffer : IFile
         return ReadSpanBytes(1)[0];
     }
     
-    public void WriteByte(byte b)
+    public int WriteByte(byte b)
     {
         EnsureCapacity(1);
         var span = ReadSpanBytes(1);
         span[0] = b;
+        return 1;
     }
 
     public byte[] ReadBytes(int count)
@@ -414,20 +436,20 @@ public class DataBuffer : IFile
         return ReadSpanBytes(count).ToArray();
     }
 
-    public void WriteBytes(byte[] data)
+    public int WriteBytes(byte[] data)
     {
         var len = data.Length;
         EnsureCapacity(len);
-        var span = ReadSpanBytes(len);
-        data.AsSpan().CopyTo(span);
+        data.AsSpan().CopyTo(ReadSpanBytes(len));
+        return len;
     }
     
-    public void WriteBytes(Span<byte> data)
+    public int WriteBytes(Span<byte> data)
     {
         var len = data.Length;
         EnsureCapacity(len);
-        var span = ReadSpanBytes(len);
-        data.CopyTo(span);
+        data.CopyTo(ReadSpanBytes(len));
+        return len;
     }
     
     public int[] ReadIntArray(int count)
@@ -440,12 +462,13 @@ public class DataBuffer : IFile
         return array;
     }
     
-    public void WriteIntArrayWithCount(int[] array)
+    public int WriteIntArrayWithCount(int[] array)
     {
         WriteInt32(array.Length);
-        foreach (var item in array)
+        foreach (var item in array.AsSpan())
         {
             WriteInt32(item);
         }
+        return 4 + 4 * array.Length;
     }
 }

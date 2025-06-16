@@ -16,7 +16,7 @@ Only support Unity 2017.x or later.
 ### BundleFile
 
 - [x] Parse/Serialize
-- [ ] Patch
+- [x] Patch
 - [x] Calculate/Patch crc32
 
 ### SerializedFile
