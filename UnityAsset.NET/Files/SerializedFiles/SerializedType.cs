@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
+using K4os.Compression.LZ4.Internal;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
@@ -34,16 +35,16 @@ public sealed class SerializedType
         TypeReference = typeReference;
     }
     
-    public static SerializedType Parse(DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
+    public static SerializedType Parse(IReader reader, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
-        var typeID = db.ReadInt32();
-        var isStrippedType = db.ReadBoolean();
-        var scriptTypeIndex = db.ReadInt16();
+        var typeID = reader.ReadInt32();
+        var isStrippedType = reader.ReadBoolean();
+        var scriptTypeIndex = reader.ReadInt16();
         Hash128? scriptIdHash = null;
         if ((version >= RefactorTypeData && typeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && scriptTypeIndex > 0))
-            scriptIdHash = new Hash128(db);
-        var typeHash = new Hash128(db);
+            scriptIdHash = new Hash128(reader);
+        var typeHash = new Hash128(reader);
         List<TypeTreeNode>? nodes = null;
         byte[]? stringBufferBytes = null;
         TypeTreeNode? typeTree = null;
@@ -51,16 +52,16 @@ public sealed class SerializedType
         SerializedTypeReference? typeReference = null;
         if (typeTreeEnabled)
         {
-            int typeTreeNodeCount = db.ReadInt32();
-            int stringBufferLen = db.ReadInt32();
-            nodes = db.ReadList(typeTreeNodeCount, TypeTreeNode.Parse);
-            stringBufferBytes = db.ReadBytes(stringBufferLen);
-            DataBuffer sdb = new DataBuffer(stringBufferBytes, canGrow: false);
+            int typeTreeNodeCount = reader.ReadInt32();
+            int stringBufferLen = reader.ReadInt32();
+            nodes = reader.ReadList(typeTreeNodeCount, TypeTreeNode.Parse);
+            stringBufferBytes = reader.ReadBytes(stringBufferLen);
+            MemoryBinaryIO sr = MemoryBinaryIO.Create(stringBufferBytes);
             for (int i = 0; i < typeTreeNodeCount; i++)
             {
                 var node = nodes[i];
-                node.Name = ReadString(sdb, node.NameStringOffset);
-                node.Type = ReadString(sdb, node.TypeStringOffset);
+                node.Name = ReadString(sr, node.NameStringOffset);
+                node.Type = ReadString(sr, node.TypeStringOffset);
             }
             if (nodes[0].Level != 0)
                 throw new Exception(
@@ -68,20 +69,24 @@ public sealed class SerializedType
             if (version >= StoresTypeDependencies)
             {
                 if (isRefType)
-                    typeReference = SerializedTypeReference.Parse(db);
+                    typeReference = SerializedTypeReference.Parse(reader);
                 else
-                    typeDependencies = db.ReadIntArray(db.ReadInt32());
+                    typeDependencies = reader.ReadIntArray(reader.ReadInt32());
             }
+        }
+        else
+        {
+            throw new Exception($"Unexpected typeTreeEnabled false.");
         }
         return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);
     }
 
-    private static string ReadString(DataBuffer db, uint value)
+    private static string ReadString(IReader reader, uint value)
     {
         if ((value & 0x80000000) == 0)
         {
-            db.Seek((int)value);
-            return db.ReadNullTerminatedString();
+            reader.Seek((int)value);
+            return reader.ReadNullTerminatedString();
         }
         var offset = value & 0x7FFFFFFF;
         if (CommonString.StringBuffer.TryGetValue(offset, out var str))
@@ -89,35 +94,33 @@ public sealed class SerializedType
         return offset.ToString();
     }
 
-    public int Serialize(DataBuffer db, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
+    public void Serialize(IWriter writer, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
-        int size = 0;
-        size += db.WriteInt32(TypeID);
-        size += db.WriteBoolean(IsStrippedType);
-        size += db.WriteInt16(ScriptTypeIndex);
+        writer.WriteInt32(TypeID);
+        writer.WriteBoolean(IsStrippedType);
+        writer.WriteInt16(ScriptTypeIndex);
         if ((version >= RefactorTypeData && TypeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && ScriptTypeIndex > 0))
-            size += ScriptIdHash?.Serialize(db) ?? 0;
-        size += TypeHash.Serialize(db);
+            ScriptIdHash?.Serialize(writer);
+        TypeHash.Serialize(writer);
         if (Nodes == null || StringBufferBytes == null)
             throw new NullReferenceException("Nodes or StringBufferBytes is null");
         if (typeTreeEnabled)
         {
-            size += db.WriteInt32(Nodes.Count);
-            size += db.WriteInt32(StringBufferBytes.Length);
-            size += db.WriteList(Nodes, (DataBuffer d, TypeTreeNode node) => node.Serialize(d));
-            size += db.WriteBytes(StringBufferBytes);
+            writer.WriteInt32(Nodes.Count);
+            writer.WriteInt32(StringBufferBytes.Length);
+            writer.WriteList(Nodes, (w, node) => node.Serialize(w));
+            writer.WriteBytes(StringBufferBytes);
             if (version >= StoresTypeDependencies)
             {
                 if (!isRefType && TypeDependencies != null)
-                    size += db.WriteIntArrayWithCount(TypeDependencies);
+                    writer.WriteIntArrayWithCount(TypeDependencies);
                 else if(TypeReference != null)
-                    TypeReference.Serialize(db);
+                    TypeReference.Serialize(writer);
                 else
                     throw new NullReferenceException($"{(isRefType ? "TypeReference" : "TypeDependencies")} is null");
             }
         }
-        return size;
     }
 
     public long SerializeSize => 39 + 

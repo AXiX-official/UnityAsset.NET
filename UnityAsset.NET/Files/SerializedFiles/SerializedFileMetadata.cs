@@ -31,44 +31,42 @@ public sealed class SerializedFileMetadata
         UserInformation = userInformation;
     }
     
-    public static SerializedFileMetadata Parse(DataBuffer db, SerializedFileFormatVersion version)
+    public static SerializedFileMetadata Parse(IReader reader, SerializedFileFormatVersion version)
     {
-        var unityVersion = db.ReadNullTerminatedString();
-        var targetPlatform = (BuildTarget)db.ReadUInt32();
-        var typeTreeEnabled = db.ReadBoolean();
-        var types = db.ReadList(db.ReadInt32(), d => SerializedType.Parse(d, version, typeTreeEnabled, false));
-        int assetCount = db.ReadInt32();
-        db.Align(4);
-        var assetInfos = db.ReadList(assetCount, d => AssetFileInfo.Parse(d, version, types));
-        var scriptTypes = db.ReadList(db.ReadInt32(), AssetPPtr.Parse);
-        var externals = db.ReadList(db.ReadInt32(), AssetsFileExternal.Parse);
+        var unityVersion = reader.ReadNullTerminatedString();
+        var targetPlatform = (BuildTarget)reader.ReadUInt32();
+        var typeTreeEnabled = reader.ReadBoolean();
+        var types = reader.ReadList(reader.ReadInt32(), r => SerializedType.Parse(r, version, typeTreeEnabled, false));
+        int assetCount = reader.ReadInt32();
+        reader.Align(4);
+        var assetInfos = reader.ReadList(assetCount, r => AssetFileInfo.Parse(r, version, types));
+        var scriptTypes = reader.ReadList(reader.ReadInt32(), AssetPPtr.Parse);
+        var externals = reader.ReadList(reader.ReadInt32(), AssetsFileExternal.Parse);
         List<SerializedType>? refTypes = version >= SerializedFileFormatVersion.SupportsRefObject ?
-            db.ReadList(db.ReadInt32(), d => SerializedType.Parse(d, version, typeTreeEnabled, true)) :
+            reader.ReadList(reader.ReadInt32(), r => SerializedType.Parse(r, version, typeTreeEnabled, true)) :
             null;
-        var userInformation = db.ReadNullTerminatedString();
+        var userInformation = reader.ReadNullTerminatedString();
         return new SerializedFileMetadata(unityVersion, targetPlatform, typeTreeEnabled, types, assetInfos, scriptTypes, externals, refTypes, userInformation);
     }
 
-    public int Serialize(DataBuffer db, SerializedFileFormatVersion version)
+    public void Serialize(IWriter writer, SerializedFileFormatVersion version)
     {
-        int size = 0;
-        size += db.WriteNullTerminatedString(UnityVersion);
-        size += db.WriteUInt32((UInt32)TargetPlatform);
-        size += db.WriteBoolean(TypeTreeEnabled);
-        size += db.WriteListWithCount(Types, (d, type) => type.Serialize(d, version, TypeTreeEnabled, false));
-        size += db.WriteInt32(AssetInfos.Count);
-        size += db.Align(4);
-        size += db.WriteList(AssetInfos, (d, assetInfo) => assetInfo.Serialize(d, version));
-        size += db.WriteListWithCount(ScriptTypes, (d, assetPPtr) => assetPPtr.Serialize(d));
-        size += db.WriteListWithCount(Externals, (d, external) => external.Serialize(d));
+        writer.WriteNullTerminatedString(UnityVersion);
+        writer.WriteUInt32((UInt32)TargetPlatform);
+        writer.WriteBoolean(TypeTreeEnabled);
+        writer.WriteListWithCount(Types, (d, type) => type.Serialize(d, version, TypeTreeEnabled, false));
+        writer.WriteInt32(AssetInfos.Count);
+        writer.Align(4);
+        writer.WriteList(AssetInfos, (d, assetInfo) => assetInfo.Serialize(d, version));
+        writer.WriteListWithCount(ScriptTypes, (d, assetPPtr) => assetPPtr.Serialize(d));
+        writer.WriteListWithCount(Externals, (d, external) => external.Serialize(d));
         if (version >= SerializedFileFormatVersion.SupportsRefObject)
         {
             if (RefTypes == null)
                 throw new NullReferenceException("RefTypes is null");
-            size += db.WriteListWithCount(RefTypes, (d, type) => type.Serialize(d, version, TypeTreeEnabled, true));
+            writer.WriteListWithCount(RefTypes, (d, type) => type.Serialize(d, version, TypeTreeEnabled, true));
         }
-        size += db.WriteNullTerminatedString(UserInformation);
-        return size;
+        writer.WriteNullTerminatedString(UserInformation);
     }
     
     public long SerializeSize => UnityVersion.Length + UserInformation.Length + 27 + 

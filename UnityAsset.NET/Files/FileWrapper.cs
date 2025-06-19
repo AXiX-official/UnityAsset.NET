@@ -13,5 +13,6 @@ public class FileWrapper
         Info = info;
     }
 
+    // TODO: Better detect
     public bool CanBeSerializedFile => Info.Path.StartsWith("CAB-") && !Info.Path.EndsWith(".resS");
 }

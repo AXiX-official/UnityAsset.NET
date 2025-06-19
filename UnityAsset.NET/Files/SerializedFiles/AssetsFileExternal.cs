@@ -22,12 +22,12 @@ public class AssetsFileExternal
         OriginalPathName = originalPathName;
     }
 
-    public static AssetsFileExternal Parse(DataBuffer db)
+    public static AssetsFileExternal Parse(IReader reader)
     {
-        var virtualAssetPathName = db.ReadNullTerminatedString();
-        var guid = new GUID128(db);
-        var type = (AssetsFileExternalType)db.ReadInt32();
-        var pathName = db.ReadNullTerminatedString();
+        var virtualAssetPathName = reader.ReadNullTerminatedString();
+        var guid = new GUID128(reader);
+        var type = (AssetsFileExternalType)reader.ReadInt32();
+        var pathName = reader.ReadNullTerminatedString();
         var originalPathName = pathName;
         
         // workaround from https://github.com/nesrak1/AssetsTools.NET/blob/main/AssetTools.NET/Standard/AssetsFileFormat/AssetsFileExternal.cs#L51
@@ -40,20 +40,18 @@ public class AssetsFileExternal
         return new AssetsFileExternal(virtualAssetPathName, guid, type, pathName, originalPathName);
     }
 
-    public int Serialize(DataBuffer db)
+    public void Serialize(IWriter writer)
     {
-        int size = 0;
-        size += db.WriteNullTerminatedString(VirtualAssetPathName);
-        size += Guid.Serialize(db);
-        size += db.WriteInt32((Int32)Type);
+        writer.WriteNullTerminatedString(VirtualAssetPathName);
+        Guid.Serialize(writer);
+        writer.WriteInt32((Int32)Type);
         var toWritePathName = PathName;
         if ((PathName == "Resources/unity_builtin_extra" ||
              PathName == "Resources/unity default resources" ||
              PathName == "Resources/unity editor resources")
             && OriginalPathName != string.Empty)
             toWritePathName = OriginalPathName;
-        size += db.WriteNullTerminatedString(toWritePathName);
-        return size;
+        writer.WriteNullTerminatedString(toWritePathName);
     }
     
     public long SerializeSize => 22 + VirtualAssetPathName.Length + Math.Max(OriginalPathName.Length, PathName.Length);

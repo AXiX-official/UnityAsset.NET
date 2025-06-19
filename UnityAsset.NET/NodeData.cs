@@ -26,69 +26,69 @@ public class NodeData
         Parent = parent;
     }
     
-    public NodeData(DataBuffer db, List<TypeTreeNode> nodes, TypeTreeNode current, NodeData? parent = null)
+    public NodeData(IReader reader, List<TypeTreeNode> nodes, TypeTreeNode current, NodeData? parent = null)
     {
         Level = current.Level;
         Type = current.Type;
         Name = current.Name;
         MetaFlags = current.MetaFlags;
         Parent = parent;
-        Value = ReadValue(db, nodes, current);
+        Value = ReadValue(reader, nodes, current);
     }
     
-    public static object ReadValue(DataBuffer db, List<TypeTreeNode> nodes, TypeTreeNode current)
+    public static object ReadValue(IReader reader, List<TypeTreeNode> nodes, TypeTreeNode current)
     {
         object value;
         var align = current.RequiresAlign();
         switch (current.Type)
         {
             case "SInt8":
-                value = db.ReadInt8();
+                value = reader.ReadInt8();
                 break;
             case "UInt8":
-                value = db.ReadUInt8();
+                value = reader.ReadUInt8();
                 break;
             case "char":
-                value = BitConverter.ToChar(db.ReadBytes(2), 0);
+                value = BitConverter.ToChar(reader.ReadBytes(2), 0);
                 break;
             case "short":
             case "SInt16":
-                value = db.ReadInt16();
+                value = reader.ReadInt16();
                 break;
             case "UInt16":
             case "unsigned short":
-                value = db.ReadUInt16();
+                value = reader.ReadUInt16();
                 break;
             case "int":
             case "SInt32":
-                value = db.ReadInt32();
+                value = reader.ReadInt32();
                 break;
             case "UInt32":
             case "unsigned int":
             case "Type*":
-                value = db.ReadUInt32();
+                value = reader.ReadUInt32();
                 break;
             case "long long":
             case "SInt64":
-                value = db.ReadInt64();
+                value = reader.ReadInt64();
                 break;
             case "UInt64":
             case "unsigned long long":
             case "FileSize":
-                value = db.ReadUInt64();
+                value = reader.ReadUInt64();
                 break;
             case "float":
-                value = db.ReadFloat();
+                value = reader.ReadFloat();
                 break;
             case "double":
-                value = db.ReadDouble();
+                value = reader.ReadDouble();
                 break;
             case "bool":
-                value = db.ReadBoolean();
+                value = reader.ReadBoolean();
                 break;
             case "string":
                 align |= current.Children(nodes)?[0].RequiresAlign()?? false;
-                value = db.ReadSizedString();
+                value = reader.ReadSizedString();
                 break;
             case "map":
             {
@@ -96,19 +96,19 @@ public class NodeData
                 align |= pair?.RequiresAlign() ?? false;
                 var first = pair.Children(nodes)?[0];
                 var second = pair.Children(nodes)?[1];
-                var size = db.ReadInt32();
+                var size = reader.ReadInt32();
                 var dic = new List<KeyValuePair<object, object>>();
                 for (int j = 0; j < size; j++)
                 {
-                    dic.Add(new KeyValuePair<object, object>(ReadValue(db, nodes, first), ReadValue(db, nodes, second)));
+                    dic.Add(new KeyValuePair<object, object>(ReadValue(reader, nodes, first), ReadValue(reader, nodes, second)));
                 }
                 value = dic;
                 break;
                 }
             case "TypelessData":
                 {
-                    var size = db.ReadInt32();
-                    value = db.ReadBytes(size);
+                    var size = reader.ReadInt32();
+                    value = reader.ReadBytes(size);
                     break;
                 }
             default:
@@ -117,7 +117,7 @@ public class NodeData
                     {
                         var vector = current.Children(nodes)[0];
                         align |= vector.RequiresAlign();
-                        var size = db.ReadInt32();
+                        var size = reader.ReadInt32();
                         if (size == 0)
                         {
                             value = null;
@@ -127,7 +127,7 @@ public class NodeData
                         var array_node = vector.Children(nodes)[1];
                         for (int j = 0; j < size; j++)
                         {
-                            list.Add(new NodeData(db, nodes, array_node));
+                            list.Add(new NodeData(reader, nodes, array_node));
                         }
                         value = list;
                         break;
@@ -140,7 +140,7 @@ public class NodeData
                         {
                             var classmember = @class[j];
                             var name = classmember.Name;
-                            obj.Add(new NodeData(db, nodes, @class[j]));
+                            obj.Add(new NodeData(reader, nodes, @class[j]));
                         }
                         value = obj;
                         break;
@@ -148,7 +148,7 @@ public class NodeData
                 }
         }
         if (align)
-            db.Align(4);
+            reader.Align(4);
         return value;
     }
 

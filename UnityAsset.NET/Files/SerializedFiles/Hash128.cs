@@ -11,9 +11,9 @@ public struct Hash128
     {
         this.data = data;
     }
-    public Hash128(DataBuffer db)
+    public Hash128(IReader reader)
     {
-        data = db.ReadBytes(16);
+        data = reader.ReadBytes(16);
     }
 
     public bool IsZero()
@@ -43,8 +43,5 @@ public struct Hash128
         return new Hash128 { data = new byte[16] };
     }
     
-    public int Serialize(DataBuffer db)
-    {
-        return db.WriteBytes(data);
-    }
+    public void Serialize(IWriter writer) => writer.WriteBytes(data);
 }

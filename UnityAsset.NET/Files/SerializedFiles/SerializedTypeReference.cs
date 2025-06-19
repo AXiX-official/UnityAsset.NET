@@ -20,19 +20,17 @@ public class SerializedTypeReference
         AsmName = asmName;
     }
     
-    public static SerializedTypeReference Parse(DataBuffer db) => new (
-        db.ReadNullTerminatedString(),
-        db.ReadNullTerminatedString(),
-        db.ReadNullTerminatedString()
+    public static SerializedTypeReference Parse(IReader reader) => new (
+        reader.ReadNullTerminatedString(),
+        reader.ReadNullTerminatedString(),
+        reader.ReadNullTerminatedString()
     );
 
-    public int Serialize(DataBuffer db)
+    public void Serialize(IWriter writer)
     {
-        int size = 0;
-        size += db.WriteNullTerminatedString(ClassName);
-        size += db.WriteNullTerminatedString(Namespace);
-        size += db.WriteNullTerminatedString(AsmName);
-        return size;
+        writer.WriteNullTerminatedString(ClassName);
+        writer.WriteNullTerminatedString(Namespace);
+        writer.WriteNullTerminatedString(AsmName);
     }
     
     public long SerializeSize => 3 + ClassName.Length + Namespace.Length + AsmName.Length;

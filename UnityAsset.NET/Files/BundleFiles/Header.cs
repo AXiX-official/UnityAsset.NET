@@ -29,29 +29,27 @@ public sealed class Header
         Flags = flags;
     }
     
-    public static Header Parse(DataBuffer db) => new (
-        db.ReadNullTerminatedString(),
-        db.ReadUInt32(),
-        db.ReadNullTerminatedString(),
-        db.ReadNullTerminatedString(),
-        db.ReadInt64(),
-        db.ReadUInt32(),
-        db.ReadUInt32(),
-        (ArchiveFlags)db.ReadUInt32()
+    public static Header Parse(IReader reader) => new (
+        reader.ReadNullTerminatedString(),
+        reader.ReadUInt32(),
+        reader.ReadNullTerminatedString(),
+        reader.ReadNullTerminatedString(),
+        reader.ReadInt64(),
+        reader.ReadUInt32(),
+        reader.ReadUInt32(),
+        (ArchiveFlags)reader.ReadUInt32()
     );
 
-    public int Serialize(DataBuffer db)
+    public void Serialize(IWriter writer)
     {
-        int size = 0;
-        size += db.WriteNullTerminatedString(Signature);
-        size += db.WriteUInt32(Version);
-        size += db.WriteNullTerminatedString(UnityVersion);
-        size += db.WriteNullTerminatedString(UnityRevision);
-        size += db.WriteInt64(Size);
-        size += db.WriteUInt32(CompressedBlocksInfoSize);
-        size += db.WriteUInt32(UncompressedBlocksInfoSize);
-        size += db.WriteUInt32((UInt32)Flags);
-        return size;
+        writer.WriteNullTerminatedString(Signature);
+        writer.WriteUInt32(Version);
+        writer.WriteNullTerminatedString(UnityVersion);
+        writer.WriteNullTerminatedString(UnityRevision);
+        writer.WriteInt64(Size);
+        writer.WriteUInt32(CompressedBlocksInfoSize);
+        writer.WriteUInt32(UncompressedBlocksInfoSize);
+        writer.WriteUInt32((UInt32)Flags);
     }
 
     public long SerializeSize => 27 + Signature.Length + UnityVersion.Length + UnityRevision.Length;

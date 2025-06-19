@@ -20,23 +20,25 @@ public sealed class SerializedFile : IFile
         Assets = assets;
     }
     
-    public static SerializedFile Parse(DataBuffer db)
+    public static SerializedFile Parse(IReader reader)
     {
-        var header = SerializedFileHeader.Parse(db);
-        db.IsBigEndian = header.Endianess;
-        var metadata = SerializedFileMetadata.Parse(db, header.Version);
+        if (reader is FileEntryStreamReader streamReader)
+            streamReader.Seek(0);
+        var header = SerializedFileHeader.Parse(reader);
+        reader = reader.CastEndian(header.Endianness);
+        var metadata = SerializedFileMetadata.Parse(reader, header.Version);
         var assets = new List<Asset>();
         foreach (var assetInfo in metadata.AssetInfos.AsSpan())
-            assets.Add(new Asset(assetInfo, new DataBuffer(db.Slice((int)(header.DataOffset + assetInfo.ByteOffset), (int)assetInfo.ByteSize).ToArray(), header.Endianess)));
+            assets.Add(new Asset(assetInfo, MemoryBinaryIO.Create(reader.ReadOnlySlice((int)(header.DataOffset + assetInfo.ByteOffset), (int)assetInfo.ByteSize).ToArray(), endian : header.Endianness)));
         return new SerializedFile(header, metadata, assets);
     }
 
-    public int Serialize(DataBuffer db)
+    /*public int Serialize(DataBuffer db)
     {
         var pos = db.Position;
         db.EnsureCapacity((int)SerializeSize);
         Header.Serialize(db);
-        db.IsBigEndian = Header.Endianess;
+        db.IsBigEndian = Header.Endianness;
         Metadata.Serialize(db, Header.Version);
         db.Seek((int)Header.DataOffset);
         var assetsSpan = Assets.AsSpan();
@@ -55,7 +57,7 @@ public sealed class SerializedFile : IFile
         int size = Serialize(db);
         db.WriteToFile(path, size);
         return size;
-    }
+    }*/
 
     public long SerializeSize
     {

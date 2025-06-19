@@ -14,21 +14,19 @@ public class AssetPPtr
         PathId = pathId;
     }
 
-    public static AssetPPtr Parse(DataBuffer db)
+    public static AssetPPtr Parse(IReader reader)
     {
-        var fileId = db.ReadInt32();
-        db.Align(4);
-        var pathId = db.ReadInt64();
+        var fileId = reader.ReadInt32();
+        reader.Align(4);
+        var pathId = reader.ReadInt64();
         return new AssetPPtr(fileId, pathId);
     }
 
-    public int Serialize(DataBuffer db)
+    public void Serialize(IWriter writer)
     {
-        int size = 0;
-        size += db.WriteInt32(FileId);
-        size += db.Align(4);
-        size += db.WriteInt64(PathId);
-        return size;
+        writer.WriteInt32(FileId);
+        writer.Align(4);
+        writer.WriteInt64(PathId);
     }
 
     public long SerializeSize => 16;

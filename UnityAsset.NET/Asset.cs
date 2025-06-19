@@ -7,13 +7,13 @@ namespace UnityAsset.NET;
 public class Asset
 { 
     public AssetFileInfo Info;
-    public DataBuffer RawData;
+    public IReader RawData;
     public NodeData NodeData;
 
-    public Asset(AssetFileInfo info, DataBuffer db)
+    public Asset(AssetFileInfo info, IReader reader)
     {
         Info = info;
-        RawData = db;
-        NodeData = new NodeData(db, info.Type.Nodes, info.Type.Nodes[0]);
+        RawData = reader;
+        NodeData = new NodeData(reader, info.Type.Nodes, info.Type.Nodes[0]);
     }
 }

@@ -15,8 +15,18 @@ public static class BundleFileExtensions
         for (int i = 0; i < filesSpan.Length; i++)
         {
             ref var file = ref filesSpan[i];
-            if (file is { File: DataBuffer db, CanBeSerializedFile: true })
-                    file = new FileWrapper(SerializedFile.Parse(db), file.Info);
+            if (file is { File: IReader reader, CanBeSerializedFile: true })
+            {
+                try
+                {
+                    file = new FileWrapper(SerializedFile.Parse(reader), file.Info);
+                    Console.WriteLine($"File {file.Info.Path} loaded.");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error loading file {file.Info.Path}: {e.Message}");
+                }
+            }
         }
     }
     
@@ -26,12 +36,12 @@ public static class BundleFileExtensions
             .SelectMany(file => ((SerializedFile)file.File).Assets)
             .ToList();
 
-    public static void PatchCrc32(this BundleFile bf, uint newCrc32)
+    /*public static void PatchCrc32(this BundleFile bf, uint newCrc32)
     {
         if (bf.Crc32 != newCrc32)
         {
             var patchBytes = CRC32.rCRC(newCrc32, bf.Crc32);
             bf.Files.Add(new FileWrapper(new DataBuffer(patchBytes), new FileEntry(0, 4, 0, "crc32-patch-data")));
         }
-    }
+    }*/
 }

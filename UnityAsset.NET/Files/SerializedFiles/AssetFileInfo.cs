@@ -22,32 +22,30 @@ public class AssetFileInfo
         Type = type;
     }
 
-    public static AssetFileInfo Parse(DataBuffer db, SerializedFileFormatVersion version, List<SerializedType> types)
+    public static AssetFileInfo Parse(IReader reader, SerializedFileFormatVersion version, List<SerializedType> types)
     {
-        db.Align(4);
-        var pathId = db.ReadInt64();
+        reader.Align(4);
+        var pathId = reader.ReadInt64();
         var byteOffset = version >= SerializedFileFormatVersion.LargeFilesSupport ?
-            db.ReadUInt64() : db.ReadUInt32();
-        var byteSize = db.ReadUInt32();
-        var typeIdOrIndex = db.ReadInt32();
+            reader.ReadUInt64() : reader.ReadUInt32();
+        var byteSize = reader.ReadUInt32();
+        var typeIdOrIndex = reader.ReadInt32();
         if (typeIdOrIndex >= types.Count)
             throw new IndexOutOfRangeException("TypeIndex is larger than type tree count!");
         var type = types[typeIdOrIndex];
         return new AssetFileInfo(pathId, byteOffset, byteSize, typeIdOrIndex, type);
     }
     
-    public int Serialize(DataBuffer db, SerializedFileFormatVersion version)
+    public void Serialize(IWriter writer, SerializedFileFormatVersion version)
     {
-        int size = 0;
-        size += db.Align(4);
-        size += db.WriteInt64(PathId);
+        writer.Align(4);
+        writer.WriteInt64(PathId);
         if (version >= SerializedFileFormatVersion.LargeFilesSupport)
-            size += db.WriteUInt64(ByteOffset);
+            writer.WriteUInt64(ByteOffset);
         else
-            size += db.WriteInt32((Int32)ByteOffset);
-        size += db.WriteUInt32(ByteSize);
-        size += db.WriteInt32(TypeIdOrIndex);
-        return size;
+            writer.WriteInt32((Int32)ByteOffset);
+        writer.WriteUInt32(ByteSize);
+        writer.WriteInt32(TypeIdOrIndex);
     }
 
     public long SerializeSize => 28;

@@ -6,7 +6,7 @@ namespace UnityAsset.NET.Files.SerializedFiles;
 
 public class TypeTreeNode
 {
-    public UInt16 Vesion;
+    public UInt16 Version;
     public byte Level;
     public TypeTreeNodeFlags TypeFlags;
     public UInt32 TypeStringOffset;
@@ -18,11 +18,11 @@ public class TypeTreeNode
     public string Type;
     public string Name;
     
-    public TypeTreeNode(UInt16 vesion, byte level, TypeTreeNodeFlags typeFlags,
+    public TypeTreeNode(UInt16 version, byte level, TypeTreeNodeFlags typeFlags,
         UInt32 typeStringOffset, UInt32 nameStringOffset, Int32 byteSize, UInt32 index, UInt32 metaFlags,
         UInt64 refTypeHash = 0)
     {
-        Vesion = vesion;
+        Version = version;
         Level = level;
         TypeFlags = typeFlags;
         TypeStringOffset = typeStringOffset;
@@ -33,30 +33,29 @@ public class TypeTreeNode
         RefTypeHash = refTypeHash;
     }
 
-    public static TypeTreeNode Parse(DataBuffer db) => new(
-        db.ReadUInt16(),
-        db.ReadByte(),
-        (TypeTreeNodeFlags)db.ReadByte(),
-        db.ReadUInt32(),
-        db.ReadUInt32(),
-        db.ReadInt32(),
-        db.ReadUInt32(),
-        db.ReadUInt32(),
-        db.ReadUInt64()
+    public static TypeTreeNode Parse(IReader reader) => new(
+        reader.ReadUInt16(),
+        reader.ReadByte(),
+        (TypeTreeNodeFlags)reader.ReadByte(),
+        reader.ReadUInt32(),
+        reader.ReadUInt32(),
+        reader.ReadInt32(),
+        reader.ReadUInt32(),
+        reader.ReadUInt32(),
+        reader.ReadUInt64()
     );
 
-    public int Serialize(DataBuffer db)
+    public void Serialize(IWriter writer)
     {
-        db.WriteUInt16(Vesion);
-        db.WriteByte(Level);
-        db.WriteByte((byte)TypeFlags);
-        db.WriteUInt32(TypeStringOffset);
-        db.WriteUInt32(NameStringOffset);
-        db.WriteInt32(ByteSize);
-        db.WriteUInt32(Index);
-        db.WriteUInt32(MetaFlags); 
-        db.WriteUInt64(RefTypeHash);
-        return 32;
+        writer.WriteUInt16(Version);
+        writer.WriteByte(Level);
+        writer.WriteByte((byte)TypeFlags);
+        writer.WriteUInt32(TypeStringOffset);
+        writer.WriteUInt32(NameStringOffset);
+        writer.WriteInt32(ByteSize);
+        writer.WriteUInt32(Index);
+        writer.WriteUInt32(MetaFlags); 
+        writer.WriteUInt64(RefTypeHash);
     }
 
     public long SerializeSize => 32;
@@ -64,7 +63,7 @@ public class TypeTreeNode
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.Append($"Version: {Vesion} | ");
+        sb.Append($"Version: {Version} | ");
         sb.Append($"Level: {Level} | ");
         sb.Append($"TypeFlags: {TypeFlags} | ");
         sb.Append($"TypeStringOffset: {TypeStringOffset} | ");

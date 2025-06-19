@@ -18,21 +18,19 @@ public sealed class FileEntry
         Path = path;
     }
     
-    public static FileEntry Parse(DataBuffer db) => new (
-        db.ReadInt64(),
-        db.ReadInt64(),
-        db.ReadUInt32(),
-        db.ReadNullTerminatedString()
+    public static FileEntry Parse(IReader reader) => new (
+        reader.ReadInt64(),
+        reader.ReadInt64(),
+        reader.ReadUInt32(),
+        reader.ReadNullTerminatedString()
     );
     
-    public int Serialize(DataBuffer db)
+    public void Serialize(IWriter writer)
     {
-        int size = 0;
-        size += db.WriteInt64(Offset);
-        size += db.WriteInt64(Size);
-        size += db.WriteUInt32(Flags);
-        size += db.WriteNullTerminatedString(Path);
-        return size;
+        writer.WriteInt64(Offset);
+        writer.WriteInt64(Size);
+        writer.WriteUInt32(Flags);
+        writer.WriteNullTerminatedString(Path);
     }
 
     public long SerializeSize => 21 + Path.Length;

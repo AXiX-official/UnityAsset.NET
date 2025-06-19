@@ -20,19 +20,17 @@ public sealed class BlocksAndDirectoryInfo
         DirectoryInfo = directoryInfo;
     }
 
-    public static BlocksAndDirectoryInfo Parse(DataBuffer db) => new (
-        db.ReadBytes(16),
-        db.ReadList(db.ReadInt32(), StorageBlockInfo.Parse),
-        db.ReadList(db.ReadInt32(), FileEntry.Parse)
+    public static BlocksAndDirectoryInfo Parse(IReader reader) => new (
+        reader.ReadBytes(16),
+        reader.ReadList(reader.ReadInt32(), StorageBlockInfo.Parse),
+        reader.ReadList(reader.ReadInt32(), FileEntry.Parse)
     );
     
-    public int Serialize(DataBuffer db)
+    public void Serialize(IWriter writer)
     {
-        int size = 0;
-        size += db.WriteBytes(UncompressedDataHash);
-        size += db.WriteListWithCount(BlocksInfo, (d, info) => info.Serialize(d));
-        size += db.WriteListWithCount(DirectoryInfo, (d, info) => info.Serialize(d));
-        return size;
+        writer.WriteBytes(UncompressedDataHash);
+        writer.WriteListWithCount(BlocksInfo, (w, info) => info.Serialize(w));
+        writer.WriteListWithCount(DirectoryInfo, (w, info) => info.Serialize(w));
     }
 
     public long SerializeSize => UncompressedDataHash.Length + 8 + 

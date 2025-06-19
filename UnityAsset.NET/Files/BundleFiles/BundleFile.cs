@@ -5,6 +5,7 @@ using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files.BundleFiles;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
+using StreamReader = UnityAsset.NET.IO.StreamReader;
 
 namespace UnityAsset.NET.Files;
 
@@ -33,7 +34,7 @@ public class BundleFile
 
     public uint Crc32;
 
-    public static UnityCN? ParseUnityCnInfo(DataBuffer db, Header header, string? key)
+    public static UnityCN? ParseUnityCnInfo(IReader reader, Header header, string? key)
     {
         var unityCnMask = VersionJudge1(ParseVersion(header)) 
             ? ArchiveFlags.BlockInfoNeedPaddingAtStart 
@@ -44,45 +45,45 @@ public class BundleFile
             key ??= Setting.DefaultUnityCNKey;
             if (key == null)
                 throw new Exception($"UnityCN key is required for decryption. UnityCN Flag Mask: {unityCnMask}");
-            return new UnityCN(db, key);
+            return new UnityCN(reader, key);
         }
         return null;
     }
 
-    public static void AlignAfterHeader(DataBuffer db, Header header)
+    public static void AlignAfterHeader(IReader reader, Header header)
     {
         if (header.Version >= 7)
-            db.Align(16);
+            reader.Align(16);
         else // temp fix for 2019.4.x
         {
             var version = ParseVersion(header);
             if (version[0] == 2019 && version[1] == 4 && version[2] >= 30)
-                db.Align(16);
+                reader.Align(16);
         }
     }
 
-    public static BlocksAndDirectoryInfo ParseDataInfo(DataBuffer db, Header header)
+    public static BlocksAndDirectoryInfo ParseDataInfo(IReader reader, Header header)
     {
-        Span<byte> blocksInfoBytes = (header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) == 0
-            ? db.ReadSpanBytes((int)header.CompressedBlocksInfoSize)
-            : db[(int)(header.Size - header.CompressedBlocksInfoSize)..(int)header.Size];
+        var blocksInfoBytes = (header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) == 0 
+            ? reader.ReadOnlySpanBytes((int)header.CompressedBlocksInfoSize) 
+            : reader.ReadOnlySlice((int)(header.Size - header.CompressedBlocksInfoSize), (int)header.CompressedBlocksInfoSize);
         var compressionType = (CompressionType)(header.Flags & ArchiveFlags.CompressionTypeMask);
-        DataBuffer blocksInfoUncompressedData = new DataBuffer((int)header.UncompressedBlocksInfoSize);
-        Compression.DecompressToBytes(blocksInfoBytes, blocksInfoUncompressedData.AsSpan(), compressionType);
+        MemoryBinaryIO blocksInfoUncompressedData = MemoryBinaryIO.Create((int)header.UncompressedBlocksInfoSize);
+        Compression.DecompressToBytes(blocksInfoBytes, blocksInfoUncompressedData.AsWritableSpan, compressionType);
         var dataInfo = BlocksAndDirectoryInfo.Parse(blocksInfoUncompressedData);
         if (!VersionJudge1(ParseVersion(header)) && (header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
-            db.Align(16);
+            reader.Align(16);
         return dataInfo;
     }
 
-    public static (List<FileWrapper>, uint) ParseFiles(DataBuffer db, BlocksAndDirectoryInfo dataInfo, UnityCN? unityCnInfo = null)
+    public static (List<FileWrapper>, uint) ParseFiles(IReader reader, BlocksAndDirectoryInfo dataInfo, UnityCN? unityCnInfo = null)
     {
-        DataBuffer blocksBuffer = new DataBuffer(dataInfo.BlocksInfo.Sum(block => (int)block.UncompressedSize));
+        MemoryBinaryIO blocksBuffer = MemoryBinaryIO.Create(dataInfo.BlocksInfo.Sum(block => (int)block.UncompressedSize));
         if (unityCnInfo == null)
             foreach (var blockInfo in dataInfo.BlocksInfo.AsReadOnlySpan())
                 Compression.DecompressToBytes(
-                    db.ReadSpanBytes((int)blockInfo.CompressedSize), 
-                    blocksBuffer.ReadSpanBytes((int)blockInfo.UncompressedSize), 
+                    reader.ReadOnlySpanBytes((int)blockInfo.CompressedSize), 
+                    blocksBuffer.GetWritableSpan((int)blockInfo.UncompressedSize), 
                     (CompressionType)(blockInfo.Flags & StorageBlockFlags.CompressionTypeMask));
         else
         {
@@ -93,8 +94,8 @@ public class BundleFile
                 var compressionType = (CompressionType)(blockInfo.Flags & StorageBlockFlags.CompressionTypeMask);
                 if (compressionType == CompressionType.Lz4 || compressionType == CompressionType.Lz4HC)
                     unityCnInfo.DecryptAndDecompress(
-                        db.ReadSpanBytes((int)blockInfo.CompressedSize), 
-                        blocksBuffer.ReadSpanBytes((int)blockInfo.UncompressedSize), 
+                        reader.ReadOnlySpanBytes((int)blockInfo.CompressedSize), 
+                        blocksBuffer.GetWritableSpan((int)blockInfo.UncompressedSize), 
                         i);
                 else
                     throw new IOException($"Unsupported compression type {compressionType} for UnityCN");
@@ -102,13 +103,25 @@ public class BundleFile
         }
         blocksBuffer.Seek(0);
 
-        var crc32 = CRC32.CalculateCRC32(blocksBuffer.AsSpan());
+        var crc32 = CRC32.CalculateCRC32(blocksBuffer.AsReadOnlySpan);
         
         var files = new List<FileWrapper>();
         foreach (var dir in dataInfo.DirectoryInfo.AsReadOnlySpan())
-            files.Add(new FileWrapper(new DataBuffer(blocksBuffer.ReadSpanBytes((int)dir.Size).ToArray()), dir));
+            files.Add(new FileWrapper(MemoryBinaryIO.Create(blocksBuffer.ReadOnlySpanBytes((int)dir.Size).ToArray()), dir));
 
         return (files, crc32);
+    }
+    
+    // crc calculate disabled
+    public static (List<FileWrapper>, uint) LazyParseFiles(StreamReader reader, BlocksAndDirectoryInfo dataInfo, UnityCN? unityCnInfo = null)
+    {
+        var blockStream = new BlockStream(dataInfo.BlocksInfo, reader, unityCnInfo);
+        //var crc32 = CRC32.CalculateCRC32(blocksBuffer.AsReadOnlySpan);
+        var files = new List<FileWrapper>();
+        foreach (var dir in dataInfo.DirectoryInfo.AsReadOnlySpan())
+            files.Add(new FileWrapper(new FileEntryStreamReader(blockStream, dir), dir));
+
+        return (files, 0);
     }
 
     public BundleFile(Header header, BlocksAndDirectoryInfo dataInfo, List<FileWrapper> files, string? key = null)
@@ -119,14 +132,14 @@ public class BundleFile
         Files = files;
     }
 
-    public BundleFile(DataBuffer db, string? key = null)
+    public BundleFile(IReader reader, string? key = null)
     {
         UnityCnKey = key;
-        Header = Header.Parse(db);
-        UnityCnInfo = ParseUnityCnInfo(db, Header, UnityCnKey);
-        AlignAfterHeader(db, Header);
-        DataInfo = ParseDataInfo(db, Header);
-        (Files, Crc32) = ParseFiles(db, DataInfo, UnityCnInfo);
+        Header = Header.Parse(reader);
+        UnityCnInfo = ParseUnityCnInfo(reader, Header, UnityCnKey);
+        AlignAfterHeader(reader, Header);
+        DataInfo = ParseDataInfo(reader, Header);
+        (Files, Crc32) = (reader is StreamReader streamReader) ? LazyParseFiles(streamReader, DataInfo, UnityCnInfo) : ParseFiles(reader, DataInfo, UnityCnInfo);
     }
 
     /// <summary>
@@ -138,28 +151,28 @@ public class BundleFile
     /// </remarks>
     /// <param name="path">The file path to the BundleFile</param>
     /// <param name="key">Optional decryption key</param>
-    public BundleFile(string path, string? key = null) : this(DataBuffer.FromFile(path), key) {}
+    public BundleFile(string path, string? key = null) : this(new FileStreamReader(path), key) {}
     
-    public int Serialize(DataBuffer db, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
+    /*public void Serialize(IWriter writer, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
     {
         if (Header == null || DataInfo == null || Files == null)
             throw new NullReferenceException("BundleFile has not read completely");
         var directoryInfo = new List<FileEntry>();
         var filesCapacity = Files.Sum(c =>
         {
-            if (c.File is DataBuffer hdb) return hdb.Capacity;
+            if (c.File is IReader r) return r.Length;
             if (c.File is SerializedFile sf) return sf.SerializeSize;
             return 0;
         });
-        DataBuffer filesBuffer = new DataBuffer((int)filesCapacity);
+        MemoryBinaryIO filesBuffer = MemoryBinaryIO.Create((int)filesCapacity);
         Int64 offset = 0;
         foreach (var file in Files.AsReadOnlySpan())
         {
             int cabSize;
             switch (file.File)
             {
-                case DataBuffer dataBuffer:
-                    cabSize = filesBuffer.WriteBytes(dataBuffer.AsSpan());
+                case IReader r:
+                    cabSize = filesBuffer.WriteBytes(r.);
                     break;
                 case SerializedFile sf:
                     cabSize = sf.Serialize(filesBuffer.SliceBufferToEnd());
@@ -182,14 +195,14 @@ public class BundleFile
             int chunkSize = (int)Math.Min(blocksSize, defaultChunkSize);
             var compressedSize = Compression.CompressToBytes(
                 filesBuffer.ReadSpanBytes(chunkSize),
-                compressedBlocksDataBuffer.SliceForward(), 
+                compressedBlocksDataBuffer.SliceForward(),
                 dataPacker);
             blocksInfo.Add(new StorageBlockInfo((UInt32)chunkSize, (UInt32)compressedSize, (StorageBlockFlags)dataPacker));
             blocksSize -= chunkSize;
             compressedBlocksDataBuffer.Advance((int)compressedSize);
         }
         compressedBlocksDataBuffer.Seek(0);
-        
+
         UnityCN? unityCnInfo = null;
         var version = ParseVersion(Header);
         if (unityCnKey != null)
@@ -212,14 +225,14 @@ public class BundleFile
         else if (UnityCnKey != null)
         {
             var unityCnMask = VersionJudge1(version)
-                ? ArchiveFlags.BlockInfoNeedPaddingAtStart 
+                ? ArchiveFlags.BlockInfoNeedPaddingAtStart
                 : ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew;
             if (unityCnMask == (ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew))
                 unityCnMask = (Header.Flags & ArchiveFlags.UnityCNEncryptionNew) != 0 ?
                     ArchiveFlags.UnityCNEncryptionNew : ArchiveFlags.UnityCNEncryption;
             Header.Flags &= ~unityCnMask;
         }
-        
+
         var dataInfo = new BlocksAndDirectoryInfo(DataInfo.UncompressedDataHash, blocksInfo, directoryInfo);
         DataBuffer dataInfoBuffer = new DataBuffer((int)dataInfo.SerializeSize);
         dataInfo.Serialize(dataInfoBuffer);
@@ -230,37 +243,37 @@ public class BundleFile
         var header = new Header(Header.Signature, Header.Version, Header.UnityVersion, Header.UnityRevision,
             0, (uint)compressedBlocksInfoSize, (uint)uncompressedBlocksInfoSize,
             (Header.Flags & ~ArchiveFlags.CompressionTypeMask) | (ArchiveFlags)infoPacker);
-        db.EnsureCapacity((int)(header.SerializeSize + 16 + compressedBlocksInfoSize + compressedBlocksDataBuffer.Length + unityCnInfo?.SerializeSize ?? 0));
+        writer.EnsureCapacity((int)(header.SerializeSize + 16 + compressedBlocksInfoSize + compressedBlocksDataBuffer.Length + unityCnInfo?.SerializeSize ?? 0));
         int size = 0;
-        size += header.Serialize(db);
+        size += header.Serialize(writer);
         if (unityCnInfo != null)
-            size += unityCnInfo.Serialize(db);
+            size += unityCnInfo.Serialize(writer);
         if (header.Version >= 7)
-            size += db.Align(16);
+            size += writer.Align(16);
         else // temp fix for 2019.4.x
             if (version[0] == 2019 && version[1] == 4 && version[2] >= 30)
-                size += db.Align(16);
+                size += writer.Align(16);
         if ((header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) == 0) //0x40 BlocksAndDirectoryInfoCombined
-            size += db.WriteBytes(compressedDataInfoBuffer.SliceForward((int)compressedBlocksInfoSize));
+            size += writer.WriteBytes(compressedDataInfoBuffer.SliceForward((int)compressedBlocksInfoSize));
         if (!VersionJudge1(version) &&(header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
-            size += db.Align(16);
-        size += db.WriteBytes(compressedBlocksDataBuffer.SliceForward(compressedBlocksDataBuffer.Length));
+            size += writer.Align(16);
+        size += writer.WriteBytes(compressedBlocksDataBuffer.SliceForward(compressedBlocksDataBuffer.Length));
         if ((header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) != 0) //kArchiveBlocksInfoAtTheEnd
-            size += db.WriteBytes(compressedDataInfoBuffer.SliceForward((int)compressedBlocksInfoSize));
+            size += writer.WriteBytes(compressedDataInfoBuffer.SliceForward((int)compressedBlocksInfoSize));
         header.Size = size;
-        db.Seek(0);
-        header.Serialize(db);
+        writer.Seek(0);
+        header.Serialize(writer);
         return size;
-    }
+    }*/
 
-    public int Serialize(string path, CompressionType infoPacker = CompressionType.None,
+    /*public int Serialize(string path, CompressionType infoPacker = CompressionType.None,
         CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
     {
         DataBuffer db = new DataBuffer(0);
         int size = Serialize(db, infoPacker, dataPacker, unityCnKey);
         db.WriteToFile(path, size);
         return size;
-    }
+    }*/
     
     public override string ToString()
     {
