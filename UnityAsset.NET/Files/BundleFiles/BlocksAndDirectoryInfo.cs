@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Text;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
 
@@ -26,7 +25,7 @@ public sealed class BlocksAndDirectoryInfo
         reader.ReadList(reader.ReadInt32(), FileEntry.Parse)
     );
     
-    public void Serialize(IWriter writer)
+    /*public void Serialize(IWriter writer)
     {
         writer.WriteBytes(UncompressedDataHash);
         writer.WriteListWithCount(BlocksInfo, (w, info) => info.Serialize(w));
@@ -35,7 +34,7 @@ public sealed class BlocksAndDirectoryInfo
 
     public long SerializeSize => UncompressedDataHash.Length + 8 + 
                                  BlocksInfo.Sum(item => item.SerializeSize) + 
-                                 DirectoryInfo.Sum(item => item.SerializeSize);
+                                 DirectoryInfo.Sum(item => item.SerializeSize);*/
     
     public override string ToString()
     {

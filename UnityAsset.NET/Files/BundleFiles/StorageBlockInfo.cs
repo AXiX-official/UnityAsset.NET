@@ -23,13 +23,13 @@ public sealed class StorageBlockInfo
         (StorageBlockFlags)reader.ReadUInt16()
     );
     
-    public void Serialize(IWriter writer) {
+    /*public void Serialize(IWriter writer) {
         writer.WriteUInt32(UncompressedSize);
         writer.WriteUInt32(CompressedSize);
         writer.WriteUInt16((UInt16)Flags);
     }
 
-    public long SerializeSize => 10;
+    public long SerializeSize => 10;*/
 
     public override string ToString()
     {

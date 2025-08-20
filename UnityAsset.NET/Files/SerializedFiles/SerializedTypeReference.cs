@@ -5,11 +5,11 @@ namespace UnityAsset.NET.Files.SerializedFiles;
 
 public class SerializedTypeReference
 {
-    public string ClassName;
+    public string ClassName = String.Empty;
 
-    public string Namespace;
+    public string Namespace = String.Empty;
     
-    public string AsmName;
+    public string AsmName = String.Empty;
     
     public SerializedTypeReference() { }
     
@@ -26,14 +26,14 @@ public class SerializedTypeReference
         reader.ReadNullTerminatedString()
     );
 
-    public void Serialize(IWriter writer)
+    /*public void Serialize(IWriter writer)
     {
         writer.WriteNullTerminatedString(ClassName);
         writer.WriteNullTerminatedString(Namespace);
         writer.WriteNullTerminatedString(AsmName);
     }
     
-    public long SerializeSize => 3 + ClassName.Length + Namespace.Length + AsmName.Length;
+    public long SerializeSize => 3 + ClassName.Length + Namespace.Length + AsmName.Length;*/
 
     public override string ToString()
     {

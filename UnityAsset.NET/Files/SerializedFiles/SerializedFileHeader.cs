@@ -52,7 +52,7 @@ public sealed class SerializedFileHeader
         return new SerializedFileHeader(metadataSize, fileSize, version, dataOffset, endianness, reserved, unknown);
     }
 
-    public void Serialize(IWriter writer)
+    /*public void Serialize(IWriter writer)
     {
         if (Version >= SerializedFileFormatVersion.LargeFilesSupport)
         {
@@ -82,7 +82,7 @@ public sealed class SerializedFileHeader
     }
 
     public long SerializeSize() => Version >= SerializedFileFormatVersion.LargeFilesSupport ? 20 : 48;
-    
+    */
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();

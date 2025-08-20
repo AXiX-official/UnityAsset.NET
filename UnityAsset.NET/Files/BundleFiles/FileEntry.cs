@@ -25,7 +25,7 @@ public sealed class FileEntry
         reader.ReadNullTerminatedString()
     );
     
-    public void Serialize(IWriter writer)
+    /*public void Serialize(IWriter writer)
     {
         writer.WriteInt64(Offset);
         writer.WriteInt64(Size);
@@ -33,7 +33,7 @@ public sealed class FileEntry
         writer.WriteNullTerminatedString(Path);
     }
 
-    public long SerializeSize => 21 + Path.Length;
+    public long SerializeSize => 21 + Path.Length;*/
     
     public override string ToString()
     {

@@ -1,7 +1,7 @@
-﻿using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Text;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
+using UnityAsset.NET.IO.Reader;
 
 namespace UnityAsset.NET.Files.SerializedFiles;
 
@@ -23,41 +23,48 @@ public sealed class SerializedFile : IFile
     public static SerializedFile Parse(IReader reader)
     {
         if (reader is FileEntryStreamReader streamReader)
+        {
             streamReader.Seek(0);
+        }
         var header = SerializedFileHeader.Parse(reader);
-        reader = reader.CastEndian(header.Endianness);
+        reader.Endian = header.Endianness;
         var metadata = SerializedFileMetadata.Parse(reader, header.Version);
+        if (metadata.UnityVersion == "0.0.0")
+        {
+            metadata.UnityVersion = Setting.DefaultUnityVerion;
+        }
         var assets = new List<Asset>();
         foreach (var assetInfo in metadata.AssetInfos.AsSpan())
-            assets.Add(new Asset(assetInfo, MemoryBinaryIO.Create(reader.ReadOnlySlice((int)(header.DataOffset + assetInfo.ByteOffset), (int)assetInfo.ByteSize).ToArray(), endian : header.Endianness)));
+        {
+            reader.Seek((int)(header.DataOffset + assetInfo.ByteOffset));
+            assets.Add(new Asset(assetInfo, new MemoryReader(reader.ReadBytes((int)assetInfo.ByteSize), endian : header.Endianness)));
+        }
         return new SerializedFile(header, metadata, assets);
     }
 
-    /*public int Serialize(DataBuffer db)
+    /*public void Serialize(IWriter writer)
     {
-        var pos = db.Position;
-        db.EnsureCapacity((int)SerializeSize);
-        Header.Serialize(db);
-        db.IsBigEndian = Header.Endianness;
-        Metadata.Serialize(db, Header.Version);
-        db.Seek((int)Header.DataOffset);
+        if (writer is MemoryBinaryIO mbio)
+            mbio.EnsureCapacity((int)SerializeSize);
+        Header.Serialize(writer);
+        writer.Endian = Header.Endianness;
+        Metadata.Serialize(writer, Header.Version);
+        writer.Seek((int)Header.DataOffset);
         var assetsSpan = Assets.AsSpan();
         assetsSpan.Sort((a, b) => a.Info.ByteOffset.CompareTo(b.Info.ByteOffset));
         foreach (var asset in assetsSpan)
         {
-            db.Seek((int)(Header.DataOffset + asset.Info.ByteOffset));
-            db.WriteBytes(asset.RawData.AsSpan());
+            writer.Seek((int)(Header.DataOffset + asset.Info.ByteOffset));
+            asset.RawData.Position = 0;
+            writer.WriteBytes(asset.RawData.ReadBytes((int)asset.RawData.Length));
         }
-        return db.Position - pos;
     }
     
-    public int Serialize(string path)
+    public void Serialize(string path)
     {
-        DataBuffer db = new DataBuffer(0);
-        int size = Serialize(db);
-        db.WriteToFile(path, size);
-        return size;
-    }*/
+        using FileStreamWriter fsw = new FileStreamWriter(path);
+        Serialize(fsw);
+    }
 
     public long SerializeSize
     {
@@ -65,7 +72,7 @@ public sealed class SerializedFile : IFile
             var lastAssetInfo = Metadata.AssetInfos.MaxBy(info => info.ByteOffset);
             return (long)(Header.DataOffset + lastAssetInfo.ByteOffset + lastAssetInfo.ByteSize);
         }
-    }
+    }*/
 
     public override string ToString()
     {

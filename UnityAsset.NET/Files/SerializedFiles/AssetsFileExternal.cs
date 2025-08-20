@@ -40,7 +40,7 @@ public class AssetsFileExternal
         return new AssetsFileExternal(virtualAssetPathName, guid, type, pathName, originalPathName);
     }
 
-    public void Serialize(IWriter writer)
+    /*public void Serialize(IWriter writer)
     {
         writer.WriteNullTerminatedString(VirtualAssetPathName);
         Guid.Serialize(writer);
@@ -52,7 +52,7 @@ public class AssetsFileExternal
             && OriginalPathName != string.Empty)
             toWritePathName = OriginalPathName;
         writer.WriteNullTerminatedString(toWritePathName);
-    }
+    }*/
     
     public long SerializeSize => 22 + VirtualAssetPathName.Length + Math.Max(OriginalPathName.Length, PathName.Length);
 

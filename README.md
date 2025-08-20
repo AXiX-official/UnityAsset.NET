@@ -5,7 +5,14 @@
 [![MIT](https://img.shields.io/github/license/AXiX-official/UnityAsset.NET)](https://github.com/AXiX-official/UnityAsset.NET/master/LICENSE)
 [![NuGet Stats](https://img.shields.io/nuget/v/UnityAsset.NET.svg)](https://www.nuget.org/packages/UnityAsset.NET)
 
-A work-in-progress .NET library for parsing/serializing/patching Unity Engine asset files.
+> 🚨 Major Breaking Changes in v0.2.0 🚨
+>
+> This version introduces a complete, low-level refactoring with major breaking changes.
+> The API is not compatible with older versions (v0.1.x). 
+> This update aims to build a foundation that is more performant, type-safe, and provides a cleaner API.
+> Please read the notes below carefully before upgrading.
+
+A .NET library undergoing active refactoring, currently focused on high-performance parsing and reading of Unity Engine asset files.
 
 Only support Unity 2017.x or later.
 
@@ -15,19 +22,22 @@ Only support Unity 2017.x or later.
 
 ### BundleFile
 
-- [x] Parse/Serialize
-- [x] Patch
-- [x] Calculate/Patch crc32
+- [x] Parsing and Reading
+- [ ] ~~Serialization~~ (Temporarily removed, will be re-introduced with a new API in a future version)
+- [ ] ~~Patching~~ (Will be re-introduced in a future version)
+- [ ] Calculate/Patch crc32
 
 ### SerializedFile
 
-- [x] Parse/Serialize
-- [ ] Patch
+- [x] Parsing and Reading
+- [ ] ~~Serialization~~ (Temporarily removed)
+- [ ] ~~Patching~~ (Temporarily removed)
 
 ### Asset
 
-- [x] Parse/Serialize
-- [ ] Patch
+- [x] Parsing based on TypeTree
+- [ ] ~~Serialization~~ (Temporarily removed)
+- [ ] ~~Patching~~ (Temporarily removed)
 
 ## Examples
 
@@ -47,8 +57,9 @@ or
 BundleFile bf = new BundleFile( @"path to your bundlefile", "XxecodrPeGaka2e6");
 ```
 
-To remove Unity CN Encryption form File, you can simply save `BundleFile` without key
+~~To remove Unity CN Encryption form File, you can simply save `BundleFile` without key~~
 ```csharp
+// Temporarily removed
 bf.Serialize(@"path to save file", CompressionType.Lz4HC, CompressionType.Lz4HC);
 ```
 
@@ -58,6 +69,12 @@ Some `BundleFile`'s version may be stripped, to load those file you can set a sp
 ```csharp
 Setting.DefaultUnityVerion = "2020.3.48f1"
 ```
+
+## Roadmap
+
+- [ ] v0.3: More Asset Class Interface.
+- [ ] v0.4: Re-architect and re-implement a robust and flexible serialization API.
+- [ ] v0.5: Re-introduce patching capabilities based on the new object model.
 
 ## Credits
 

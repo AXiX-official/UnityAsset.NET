@@ -1,9 +1,8 @@
-﻿using System.Runtime.InteropServices;
-using System.Text;
-using K4os.Compression.LZ4.Internal;
+﻿using System.Text;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
+using UnityAsset.NET.IO.Reader;
 using static UnityAsset.NET.Enums.SerializedFileFormatVersion;
 
 namespace UnityAsset.NET.Files.SerializedFiles;
@@ -16,12 +15,12 @@ public sealed class SerializedType
     public Hash128? ScriptIdHash;
     public Hash128 TypeHash;
     public bool IsRefType;
-    public List<TypeTreeNode>? Nodes;
+    public List<TypeTreeNode> Nodes = new List<TypeTreeNode>();
     public byte[]? StringBufferBytes;
     public int[]? TypeDependencies;
     public SerializedTypeReference? TypeReference;
     
-    public SerializedType(Int32 typeId, bool isStrippedType, Int16 scriptTypeIndex, Hash128? scriptIdHash, Hash128 typeHash, bool isRefType, List<TypeTreeNode>? nodes, byte[]? stringBufferBytes, int[]? typeDependencies, SerializedTypeReference? typeReference)
+    public SerializedType(Int32 typeId, bool isStrippedType, Int16 scriptTypeIndex, Hash128? scriptIdHash, Hash128 typeHash, bool isRefType, List<TypeTreeNode> nodes, byte[]? stringBufferBytes, int[]? typeDependencies, SerializedTypeReference? typeReference)
     {
         TypeID = typeId;
         IsStrippedType = isStrippedType;
@@ -43,11 +42,12 @@ public sealed class SerializedType
         Hash128? scriptIdHash = null;
         if ((version >= RefactorTypeData && typeID == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && scriptTypeIndex > 0))
-            scriptIdHash = new Hash128(reader);
+        {
+            scriptIdHash = new Hash128(reader); 
+        }
         var typeHash = new Hash128(reader);
-        List<TypeTreeNode>? nodes = null;
-        byte[]? stringBufferBytes = null;
-        TypeTreeNode? typeTree = null;
+        List<TypeTreeNode> nodes;
+        byte[]? stringBufferBytes;
         int[]? typeDependencies = null;
         SerializedTypeReference? typeReference = null;
         if (typeTreeEnabled)
@@ -56,16 +56,20 @@ public sealed class SerializedType
             int stringBufferLen = reader.ReadInt32();
             nodes = reader.ReadList(typeTreeNodeCount, TypeTreeNode.Parse);
             stringBufferBytes = reader.ReadBytes(stringBufferLen);
-            MemoryBinaryIO sr = MemoryBinaryIO.Create(stringBufferBytes);
+            MemoryReader sr = new MemoryReader(stringBufferBytes);
             for (int i = 0; i < typeTreeNodeCount; i++)
             {
                 var node = nodes[i];
                 node.Name = ReadString(sr, node.NameStringOffset);
                 node.Type = ReadString(sr, node.TypeStringOffset);
             }
+
             if (nodes[0].Level != 0)
+            {
                 throw new Exception(
                     $"The first node of TypeTreeNodes should have a level of 0 but gets {nodes[0].Level}");
+            }
+            
             if (version >= StoresTypeDependencies)
             {
                 if (isRefType)
@@ -94,7 +98,7 @@ public sealed class SerializedType
         return offset.ToString();
     }
 
-    public void Serialize(IWriter writer, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
+    /*public void Serialize(IWriter writer, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
         writer.WriteInt32(TypeID);
         writer.WriteBoolean(IsStrippedType);
@@ -129,7 +133,7 @@ public sealed class SerializedType
                                      : 8 + Nodes.Sum(n => n.SerializeSize) + StringBufferBytes.Length
                                      + (TypeDependencies == null ? 0 : 4 + TypeDependencies.Length)
                                      + (TypeReference == null ? 0 : 4 + TypeReference.SerializeSize));
-
+    */
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();
@@ -141,14 +145,13 @@ public sealed class SerializedType
         sb.AppendFormat("TypeHash: {0} | ", TypeHash);
         sb.AppendFormat("IsRefType: {0} | ", IsRefType);
         sb.AppendFormat("Nodes: {0} | ", Nodes.Count);
-        sb.AppendFormat("StringBufferBytes: {0} | ", StringBufferBytes.Length);
-        sb.AppendFormat("TypeDependencies: {0} | ", TypeDependencies?.Length);
+        sb.AppendFormat("StringBufferBytes: {0} | ", StringBufferBytes?.Length ?? 0);
+        sb.AppendFormat("TypeDependencies: {0} | ", TypeDependencies?.Length ?? 0);
         sb.AppendFormat("TypeReference: {0} | ", TypeReference);
         sb.AppendLine("Nodes:");
         foreach (var node in Nodes.AsSpan())
             sb.AppendLine(node.ToString());
         sb.AppendLine();
-        sb.AppendLine("End of Serialized Type");
         return sb.ToString();
     }
 }

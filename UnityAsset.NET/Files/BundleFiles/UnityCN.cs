@@ -30,7 +30,13 @@ public sealed unsafe class UnityCN
 
     public UnityCN(IReader reader, string key)
     {
-        SetKey(key);
+        if (key.Length != 32 && key.Length != 16)
+            throw new ArgumentException("key must be 32 or 16 characters long");
+        using var aes = Aes.Create();
+        aes.Mode = CipherMode.ECB;
+        aes.Key = Convert.FromHexString(key);
+
+        _encryptor = aes.CreateEncryptor();
         
         Value = reader.ReadUInt32();
         InfoBytes = reader.ReadBytes(0x10);
@@ -66,7 +72,13 @@ public sealed unsafe class UnityCN
 
     public UnityCN(string key)
     {
-        SetKey(key);
+        if (key.Length != 32 && key.Length != 16)
+            throw new ArgumentException("key must be 32 or 16 characters long");
+        using var aes = Aes.Create();
+        aes.Mode = CipherMode.ECB;
+        aes.Key = Convert.FromHexString(key);
+
+        _encryptor = aes.CreateEncryptor();
 
         Value = 0;
         
@@ -87,7 +99,7 @@ public sealed unsafe class UnityCN
         _indexPtr = (byte*)_indexHandle.AddrOfPinnedObject();
     }
 
-    public void Reset()
+    private void Reset()
     {
         var infoBytes = (byte[])InfoBytes.Clone();
         var infoKey = (byte[])InfoKey.Clone();
@@ -119,7 +131,7 @@ public sealed unsafe class UnityCN
         }
     }
     
-    public void Serialize(IWriter writer)
+    /*public void Serialize(IWriter writer)
     {
         writer.WriteUInt32(Value);
         writer.WriteBytes(InfoBytes);
@@ -130,17 +142,58 @@ public sealed unsafe class UnityCN
         writer.WriteByte(0);
     }
 
-    public long SerializeSize => 70;
-
-    public void SetKey(string key)
+    public long SerializeSize => 70;*/
+    
+    public void DecryptBlock(Span<byte> bytes, int size, int index)
     {
-        if (key.Length != 32 && key.Length != 16)
-            throw new ArgumentException("key must be 32 or 16 characters long");
-        using var aes = Aes.Create();
-        aes.Mode = CipherMode.ECB;
-        aes.Key = Convert.FromHexString(key);
+        var offset = 0;
+        while (offset < size)
+        {
+            offset += Decrypt(bytes[offset..], index++, size - offset);
+        }
+    }
+    
+    private int Decrypt(Span<byte> bytes, int index, int remaining)
+    {
+        fixed (byte* ptr = &bytes.GetPinnableReference())
+        {
+            byte* p = ptr;
+            while (p - ptr < remaining)
+            {
+                var innerIndex = index;
+                var token = DecryptByteUnsafe(p++, innerIndex++);
+                var literalLength = token >> 4;
+                var matchLength = token & 0xF;
 
-        _encryptor = aes.CreateEncryptor();
+                if (literalLength == 0xF)
+                {
+                    int b;
+                    do
+                    {
+                        b = DecryptByteUnsafe(p++, innerIndex++);
+                        literalLength += b;
+                    } while (b == 0xFF);
+                }
+
+                p += literalLength;
+                if (p - ptr == remaining && matchLength == 0) break;
+                if (p - ptr >= remaining) throw new Exception("Invalid compressed data");
+                    
+                DecryptByteUnsafe(p++, innerIndex++);
+                DecryptByteUnsafe(p++, innerIndex++);
+                if (matchLength == 0xF)
+                {
+                    int b;
+                    do
+                    {
+                        b = DecryptByteUnsafe(p++, innerIndex++);
+                    } while (b == 0xFF);
+                }
+                index++;
+            }
+
+            return  (int)(p - ptr);
+        }
     }
     
     public void DecryptAndDecompress(ReadOnlySpan<byte> compressedData, Span<byte> decompressedData, int index)
@@ -155,7 +208,7 @@ public sealed unsafe class UnityCN
             while (s < sourceEnd)
             {
                 var innerIndex = index;
-                var token = DecryptByteUnsafe(*s++, innerIndex++);
+                var token = DecryptByteUnsafe(s++, innerIndex++);
                 var literalLength = token >> 4;
                 var matchLength = token & 0xF;
                 if (literalLength != 0xF)
@@ -174,7 +227,7 @@ public sealed unsafe class UnityCN
                     int b;
                     do
                     {
-                        b = DecryptByteUnsafe(*s++, innerIndex++);
+                        b = DecryptByteUnsafe(s++, innerIndex++);
                         literalLength += b;
                     } while (b == 0xFF);
                     Buffer.MemoryCopy(s, t, literalLength, literalLength);
@@ -186,14 +239,14 @@ public sealed unsafe class UnityCN
                 if (s == sourceEnd && matchLength == 0) break;
                 if (s >= sourceEnd) throw new Exception("Invalid compressed data");
                 
-                var offset = (int)DecryptByteUnsafe(*s++, innerIndex++);
-                offset |= DecryptByteUnsafe(*s++, innerIndex++) << 8;
+                var offset = (int)DecryptByteUnsafe(s++, innerIndex++);
+                offset |= DecryptByteUnsafe(s++, innerIndex++) << 8;
                 if (matchLength == 0xF)
                 {
                     int b;
                     do
                     {
-                        b = DecryptByteUnsafe(*s++, innerIndex++);
+                        b = DecryptByteUnsafe(s++, innerIndex++);
                         matchLength += b;
                     } while (b == 0xFF);
                 }
@@ -245,20 +298,17 @@ public sealed unsafe class UnityCN
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private byte DecryptByteUnsafe(byte b, int index)
+    private byte DecryptByteUnsafe(byte* p, int index)
     {
+        var b = *p;
         var mb = _subPtr[index & 3]
                  + _subPtr[((index >> 2) & 3) + 4]
                  + _subPtr[((index >> 4) & 3) + 8]
                  + _subPtr[((byte)index >> 6) + 12];
-        if (_isIndexSpecial)
-        {
-            return (byte)(((b & 0xF) - mb) & 0xF | ((b >> 4) - mb) << 4);
-        }
-        else
-        {
-            return (byte)((_indexPtr[b & 0xF] - mb) & 0xF | (_indexPtr[b >> 4] - mb) << 4);
-        }
+        *p = _isIndexSpecial ?
+            (byte)(((b & 0xF) - mb) & 0xF | ((b >> 4) - mb) << 4) :
+            (byte)((_indexPtr[b & 0xF] - mb) & 0xF | (_indexPtr[b >> 4] - mb) << 4);
+        return *p;
     }
     
     private int EncryptByte(Span<byte> bytes, ref int offset, ref int index)

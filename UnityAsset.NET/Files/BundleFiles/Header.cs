@@ -9,7 +9,7 @@ public sealed class Header
     public string Signature;
     public UInt32 Version;
     public string UnityVersion;
-    public string UnityRevision;
+    public UnityRevision UnityRevision;
     public Int64 Size;
     public UInt32 CompressedBlocksInfoSize;
     public UInt32 UncompressedBlocksInfoSize;
@@ -40,7 +40,7 @@ public sealed class Header
         (ArchiveFlags)reader.ReadUInt32()
     );
 
-    public void Serialize(IWriter writer)
+    /*public void Serialize(IWriter writer)
     {
         writer.WriteNullTerminatedString(Signature);
         writer.WriteUInt32(Version);
@@ -52,7 +52,7 @@ public sealed class Header
         writer.WriteUInt32((UInt32)Flags);
     }
 
-    public long SerializeSize => 27 + Signature.Length + UnityVersion.Length + UnityRevision.Length;
+    public long SerializeSize => 27 + Signature.Length + UnityVersion.Length + UnityRevision.Length;*/
 
     public override string ToString()
     {

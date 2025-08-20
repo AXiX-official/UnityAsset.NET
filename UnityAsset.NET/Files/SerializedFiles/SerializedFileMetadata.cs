@@ -36,20 +36,38 @@ public sealed class SerializedFileMetadata
         var unityVersion = reader.ReadNullTerminatedString();
         var targetPlatform = (BuildTarget)reader.ReadUInt32();
         var typeTreeEnabled = reader.ReadBoolean();
-        var types = reader.ReadList(reader.ReadInt32(), r => SerializedType.Parse(r, version, typeTreeEnabled, false));
+        if (!typeTreeEnabled)
+        {
+            throw new Exception($"Unexpected typeTreeEnabled false.");
+        }
+        var types = reader.ReadList(
+            reader.ReadInt32(), 
+            r => SerializedType.Parse(r, version, typeTreeEnabled, false)
+            );
         int assetCount = reader.ReadInt32();
         reader.Align(4);
-        var assetInfos = reader.ReadList(assetCount, r => AssetFileInfo.Parse(r, version, types));
-        var scriptTypes = reader.ReadList(reader.ReadInt32(), AssetPPtr.Parse);
-        var externals = reader.ReadList(reader.ReadInt32(), AssetsFileExternal.Parse);
+        var assetInfos = reader.ReadList(
+            assetCount, 
+            r => AssetFileInfo.Parse(r, version, types)
+            );
+        var scriptTypes = reader.ReadList(
+            reader.ReadInt32(), 
+            AssetPPtr.Parse
+            );
+        var externals = reader.ReadList(
+            reader.ReadInt32(), 
+            AssetsFileExternal.Parse
+            );
         List<SerializedType>? refTypes = version >= SerializedFileFormatVersion.SupportsRefObject ?
-            reader.ReadList(reader.ReadInt32(), r => SerializedType.Parse(r, version, typeTreeEnabled, true)) :
+            reader.ReadList(
+                reader.ReadInt32(), 
+                r => SerializedType.Parse(r, version, typeTreeEnabled, true)) :
             null;
         var userInformation = reader.ReadNullTerminatedString();
         return new SerializedFileMetadata(unityVersion, targetPlatform, typeTreeEnabled, types, assetInfos, scriptTypes, externals, refTypes, userInformation);
     }
 
-    public void Serialize(IWriter writer, SerializedFileFormatVersion version)
+    /*public void Serialize(IWriter writer, SerializedFileFormatVersion version)
     {
         writer.WriteNullTerminatedString(UnityVersion);
         writer.WriteUInt32((UInt32)TargetPlatform);
@@ -75,7 +93,7 @@ public sealed class SerializedFileMetadata
                                  ScriptTypes.Sum(s => s.SerializeSize) + 
                                  Externals.Sum(e => e.SerializeSize) + 
                                  (RefTypes == null ? 0 : 4 + RefTypes.Sum(r => r.SerializeSize));
-    
+    */
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();

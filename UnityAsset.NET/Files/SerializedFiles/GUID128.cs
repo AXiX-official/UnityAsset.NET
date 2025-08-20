@@ -123,13 +123,13 @@ public struct GUID128
         };
     }
 
-    public void Serialize(IWriter writer)
+    /*public void Serialize(IWriter writer)
     {
         writer.WriteUInt32(data0);
         writer.WriteUInt32(data1);
         writer.WriteUInt32(data2);
         writer.WriteUInt32(data3);
-    }
+    }*/
     
     public long SerializeSize => 16;
 }

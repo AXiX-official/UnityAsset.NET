@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using UnityAsset.NET.Enums;
+using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.Files.SerializedFiles;
@@ -15,8 +16,9 @@ public class TypeTreeNode
     public UInt32 Index;
     public UInt32 MetaFlags;
     public UInt64 RefTypeHash;
-    public string Type;
-    public string Name;
+    public string Type = String.Empty;
+    public string Name = String.Empty;
+    private long? hash64;
     
     public TypeTreeNode(UInt16 version, byte level, TypeTreeNodeFlags typeFlags,
         UInt32 typeStringOffset, UInt32 nameStringOffset, Int32 byteSize, UInt32 index, UInt32 metaFlags,
@@ -45,7 +47,7 @@ public class TypeTreeNode
         reader.ReadUInt64()
     );
 
-    public void Serialize(IWriter writer)
+    /*public void Serialize(IWriter writer)
     {
         writer.WriteUInt16(Version);
         writer.WriteByte(Level);
@@ -58,7 +60,7 @@ public class TypeTreeNode
         writer.WriteUInt64(RefTypeHash);
     }
 
-    public long SerializeSize => 32;
+    public long SerializeSize => 32;*/
     
     public override string ToString()
     {
@@ -75,5 +77,28 @@ public class TypeTreeNode
         sb.Append($"MetaFlags: {MetaFlags} | ");
         sb.Append($"RefTypeHash: {RefTypeHash}");
         return sb.ToString();
+    }
+
+    public long GetHash64Code(List<TypeTreeNode> nodes)
+    {
+        if (hash64 != null)
+            return hash64.Value;
+        
+        const ulong prime = 1099511628211;
+        const ulong offset = 14695981039346656037;
+        
+        ulong hash = offset;
+        
+        hash = (hash ^ (ulong)Type.GetHashCode()) * prime;
+        hash = (hash ^ MetaFlags) * prime;
+
+        foreach (var child in this.Children(nodes))
+        {
+            long childHash = child.GetHash64Code(nodes);
+            hash = (hash ^ (ulong)childHash) * prime;
+        }
+        
+        hash64 = (long)hash;
+        return hash64.Value;
     }
 }

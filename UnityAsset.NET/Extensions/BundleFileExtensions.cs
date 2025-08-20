@@ -17,15 +17,7 @@ public static class BundleFileExtensions
             ref var file = ref filesSpan[i];
             if (file is { File: IReader reader, CanBeSerializedFile: true })
             {
-                try
-                {
-                    file = new FileWrapper(SerializedFile.Parse(reader), file.Info);
-                    Console.WriteLine($"File {file.Info.Path} loaded.");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error loading file {file.Info.Path}: {e.Message}");
-                }
+                file = new FileWrapper(SerializedFile.Parse(reader), file.Info);
             }
         }
     }

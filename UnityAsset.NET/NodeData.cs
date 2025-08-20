@@ -87,15 +87,15 @@ public class NodeData
                 value = reader.ReadBoolean();
                 break;
             case "string":
-                align |= current.Children(nodes)?[0].RequiresAlign()?? false;
+                align |= current.Children(nodes)[0].RequiresAlign();
                 value = reader.ReadSizedString();
                 break;
             case "map":
             {
-                var pair = current.Children(nodes)?[0].Children(nodes)?[1];
-                align |= pair?.RequiresAlign() ?? false;
-                var first = pair.Children(nodes)?[0];
-                var second = pair.Children(nodes)?[1];
+                var pair = current.Children(nodes)[0].Children(nodes)[1];
+                align |= pair.RequiresAlign();
+                var first = pair.Children(nodes)[0];
+                var second = pair.Children(nodes)[1];
                 var size = reader.ReadInt32();
                 var dic = new List<KeyValuePair<object, object>>();
                 for (int j = 0; j < size; j++)
@@ -120,7 +120,7 @@ public class NodeData
                         var size = reader.ReadInt32();
                         if (size == 0)
                         {
-                            value = null;
+                            value = new List<NodeData>();
                             break;
                         }
                         var list = new List<NodeData>();
@@ -147,6 +147,7 @@ public class NodeData
                     }
                 }
         }
+        Console.WriteLine($"{current.Type} {current.Name}: pos: {reader.Position}, align: {align}");
         if (align)
             reader.Align(4);
         return value;
