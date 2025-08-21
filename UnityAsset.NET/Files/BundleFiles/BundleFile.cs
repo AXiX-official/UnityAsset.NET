@@ -2,6 +2,7 @@
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files.BundleFiles;
+using UnityAsset.NET.FileSystem;
 //using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
@@ -153,7 +154,7 @@ public class BundleFile
         Files = files;
     }
 
-    public BundleFile(IReader reader, string? key = null)
+    public BundleFile(IReader reader, string? key = null, bool lazyLoad = true)
     {
         UnityCnKey = key;
         Header = Header.Parse(reader);
@@ -164,7 +165,14 @@ public class BundleFile
         UnityCnInfo = ParseUnityCnInfo(reader, Header, UnityCnKey);
         AlignAfterHeader(reader, Header);
         DataInfo = ParseDataInfo(reader, Header);
-        (Files, Crc32) = (reader is CustomStreamReader streamReader) ? LazyParseFiles(streamReader, DataInfo, UnityCnInfo) : ParseFiles(reader, DataInfo, UnityCnInfo);
+        if (!lazyLoad)
+        {
+            (Files, Crc32) = ParseFiles(reader, DataInfo, UnityCnInfo);
+        }
+        else
+        {
+            (Files, Crc32) = (reader is CustomStreamReader streamReader) ? LazyParseFiles(streamReader, DataInfo, UnityCnInfo) : ParseFiles(reader, DataInfo, UnityCnInfo);
+        }
     }
 
     /// <summary>
@@ -176,7 +184,50 @@ public class BundleFile
     /// </remarks>
     /// <param name="path">The file path to the BundleFile</param>
     /// <param name="key">Optional decryption key</param>
-    public BundleFile(string path, string? key = null) : this(new FileStreamReader(path), key) {}
+    /// <param name="lazyLoad"></param>
+    public BundleFile(string path, string? key = null, bool lazyLoad = true)
+    {
+        FileStreamReader reader = new FileStreamReader(path);
+        UnityCnKey = key;
+        Header = Header.Parse(reader);
+        if (Header.UnityRevision == "0.0.0")
+        {
+            Header.UnityRevision = Setting.DefaultUnityVerion;
+        }
+        UnityCnInfo = ParseUnityCnInfo(reader, Header, UnityCnKey);
+        AlignAfterHeader(reader, Header);
+        DataInfo = ParseDataInfo(reader, Header);
+        if (!lazyLoad)
+        {
+            (Files, Crc32) = ParseFiles(reader, DataInfo, UnityCnInfo);
+        }
+        else
+        {
+            (Files, Crc32) = LazyParseFiles(reader, DataInfo, UnityCnInfo);
+        }
+    }
+    
+    public BundleFile(IVirtualFile file, string? key = null, bool lazyLoad = true)
+    {
+        CustomStreamReader reader = new CustomStreamReader(file.Stream);
+        UnityCnKey = key;
+        Header = Header.Parse(reader);
+        if (Header.UnityRevision == "0.0.0")
+        {
+            Header.UnityRevision = Setting.DefaultUnityVerion;
+        }
+        UnityCnInfo = ParseUnityCnInfo(reader, Header, UnityCnKey);
+        AlignAfterHeader(reader, Header);
+        DataInfo = ParseDataInfo(reader, Header);
+        if (!lazyLoad)
+        {
+            (Files, Crc32) = ParseFiles(reader, DataInfo, UnityCnInfo);
+        }
+        else
+        {
+            (Files, Crc32) = LazyParseFiles(reader, DataInfo, UnityCnInfo);
+        }
+    }
     
     /*public void Serialize(MemoryBinaryIO writer, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
     {

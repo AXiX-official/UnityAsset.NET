@@ -14,9 +14,9 @@ public class TypelessData : IAsset
         data = reader.ReadList(size, r => r.ReadUInt8());
     }
     
-    public string ToPlainText(string indent = "")
+    public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "")
     {
-        var sb = new StringBuilder();
+        sb ??= new StringBuilder();
         sb.AppendLine($"{indent}    int size = {size}");
         sb.AppendLine($"{indent}    vector data");
         sb.AppendLine($"{indent}        Array Array");
@@ -26,6 +26,8 @@ public class TypelessData : IAsset
             sb.AppendLine($"{indent}            [{i}]");
             sb.AppendLine($"{indent}            byte = {data[i]}");
         }
-        return sb.ToString();
+        return sb;
     }
+
+    public string ClassName => "TypelessData";
 }

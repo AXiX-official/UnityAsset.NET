@@ -3,7 +3,7 @@ using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.Files.SerializedFiles;
 
-public struct Hash128
+public struct Hash128 : IEquatable<Hash128>
 {
     public byte[] data; //16 bytes
 
@@ -41,6 +41,27 @@ public struct Hash128
     public static Hash128 NewBlankHash()
     {
         return new Hash128 { data = new byte[16] };
+    }
+    
+    public bool Equals(Hash128 other)
+    {
+        if (ReferenceEquals(data, other.data)) return true;
+        if (data is null || other.data is null) return false;
+        return data.AsSpan().SequenceEqual(other.data.AsSpan());
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Hash128 other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        if (data == null || data.Length < 4)
+        {
+            return 0;
+        }
+        return BitConverter.ToInt32(data, 0);
     }
     
     //public void Serialize(IWriter writer) => writer.WriteBytes(data);

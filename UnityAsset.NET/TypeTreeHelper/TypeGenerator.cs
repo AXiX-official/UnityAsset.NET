@@ -9,20 +9,16 @@ public class TypeGenerator
     private readonly StringBuilder sb = new();
     private Dictionary<long, string> _hashToClassNameMap = new();
     private Queue<TypeTreeNode> _classToGen = new();
+
+    public void CleanCache()
+    {
+        _hashToClassNameMap.Clear();
+    }
     
     public string Generate(List<TypeTreeNode> nodes)
     {
         sb.Clear();
         _classToGen.Clear();
-
-        sb.AppendLine("using System;");
-        sb.AppendLine("using System.Text;");
-        sb.AppendLine("using System.Collections.Generic;");
-        sb.AppendLine("using UnityAsset.NET.IO;");
-        sb.AppendLine("using UnityAsset.NET.TypeTreeHelper;");
-        sb.AppendLine("using UnityAsset.NET.TypeTreeHelper.Specialized;");
-        sb.AppendLine();
-        sb.AppendLine("namespace UnityAsset.NET.RuntimeType;");
 
         _classToGen.Enqueue(nodes[0]);
 
@@ -52,11 +48,13 @@ public class TypeGenerator
         sb.AppendLine($"public class {className} : {interfaceName}");
         sb.AppendLine($"{{");
 
+        sb.AppendLine($"    public string ClassName => \"{current.Type}\";");
+
         foreach (var fieldNode in children)
         {
+            sb.AppendLine($"    [OriginalName(\"{fieldNode.Name}\")]");
             if (!IsPrimitive(fieldNode.Type))
             {
-                sb.AppendLine($"    [OriginalName(\"{fieldNode.Type}\")]");
                 var filedHash64 = fieldNode.GetHash64Code(nodes);
                 if (_hashToClassNameMap.TryGetValue(filedHash64, out var filedName))
                 {
@@ -86,6 +84,15 @@ public class TypeGenerator
                 {
                     _classToGen.Enqueue(dataNode);
                 }
+                // ugly patch
+                else if (dataNode.Type == "vector")
+                {
+                    var subDataNode = dataNode.Children(nodes)[0].Children(nodes)[1];
+                    if (!IsPrimitive(subDataNode.Type) && !_hashToClassNameMap.ContainsKey(subDataNode.GetHash64Code(nodes)))
+                    {
+                        _classToGen.Enqueue(subDataNode);
+                    }
+                }
             }
             else if (fieldNode.Type == "map")
             {
@@ -100,6 +107,15 @@ public class TypeGenerator
                 if (!IsPrimitive(valueType.Type) && !_hashToClassNameMap.ContainsKey(valueType.GetHash64Code(nodes)))
                 {
                     _classToGen.Enqueue(valueType);
+                }
+                // ugly patch
+                else if (valueType.Type == "vector")
+                {
+                    var subDataNode = valueType.Children(nodes)[0].Children(nodes)[1];
+                    if (!IsPrimitive(subDataNode.Type) && !_hashToClassNameMap.ContainsKey(subDataNode.GetHash64Code(nodes)))
+                    {
+                        _classToGen.Enqueue(subDataNode);
+                    }
                 }
             }
         }
@@ -144,9 +160,9 @@ public class TypeGenerator
     private void GenerateToPlainTextMethod(TypeTreeNode current, List<TypeTreeNode> children, List<TypeTreeNode> nodes)
     {
         sb.AppendLine();
-        sb.AppendLine($"    public string ToPlainText(string indent = \"\")");
+        sb.AppendLine($"    public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = \"\")");
         sb.AppendLine($"    {{");
-        sb.AppendLine($"        var sb = new StringBuilder();");
+        sb.AppendLine($"        sb ??= new StringBuilder();");
         sb.AppendLine($"        var childIndent = indent + \"    \";");
 
         if (current == nodes[0])
@@ -158,7 +174,7 @@ public class TypeGenerator
         {
             sb.Append(GetToPlainTextMethod(fieldNode, nodes, "        ", SanitizeName(fieldNode.Name)));
         }
-        sb.AppendLine($"        return sb.ToString();");
+        sb.AppendLine($"        return sb;");
         sb.AppendLine($"    }}");
     }
 
@@ -201,7 +217,7 @@ public class TypeGenerator
             else if (current.Type == "TypelessData")
             {
                 subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{current.Type} {current.Name}\");");
-                subSb.AppendLine($"{indent}sb.Append({valueName}.ToPlainText(childIndent));");
+                subSb.AppendLine($"{indent}{valueName}.ToPlainText(sb, childIndent);");
             }
             else if (current.Type == "string")
             {
@@ -215,7 +231,7 @@ public class TypeGenerator
         else
         {
             subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{current.Type} {current.Name}\");");
-            subSb.AppendLine($"{indent}sb.Append({valueName}.ToPlainText(childIndent));");
+            subSb.AppendLine($"{indent}{valueName}.ToPlainText(sb, childIndent);");
         }
 
         return subSb.ToString();

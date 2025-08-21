@@ -1,6 +1,10 @@
-﻿namespace UnityAsset.NET.TypeTreeHelper;
+﻿using System.Text;
+
+namespace UnityAsset.NET.TypeTreeHelper;
 
 public interface IAsset
 {
-    public string ToPlainText(string indent = "");
+    public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "");
+    
+    public string ClassName { get; }
 }
