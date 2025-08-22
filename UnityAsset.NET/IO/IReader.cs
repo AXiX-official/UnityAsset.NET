@@ -7,6 +7,21 @@ namespace UnityAsset.NET.IO;
 
 public interface IReader : ISeek, IFile
 {
+    public new void Align(int alignment)
+    {
+        var offset = Position % alignment;
+        if (offset != 0)
+        {
+            if (Position + alignment - offset >= Length)
+            {
+                Seek(Length - 1);
+            }
+            else
+            {
+                Seek(Position + alignment - offset);
+            }
+        }
+    }
     public Endianness Endian { get; set; }
     public long Length { get; }
     public byte ReadByte();
