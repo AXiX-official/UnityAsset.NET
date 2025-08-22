@@ -119,12 +119,16 @@ public static class AssemblyManager
             var typeSourceCode = TypeGenerator.Generate(type.Nodes);
             if (WriteGeneratedCodeToDisk)
             {
-                File.WriteAllText(Path.Combine(GeneratedCodePath, $"{type.Nodes[0].Type}.cs"), typeSourceCode);
+                var root = type.Nodes[0];
+                var rootHash64 = root.GetHash64Code(type.Nodes);
+                File.WriteAllText(Path.Combine(GeneratedCodePath, $"{TypeGenerator.SanitizeName($"{root.Type}_{rootHash64}")}.cs"), typeSourceCode);
             }
             sourceBuilder.AppendLine(typeSourceCode);
         }
         
         var fullSourceCode = sourceBuilder.ToString();
+        Directory.CreateDirectory(AssemblyCachePath);
+        File.WriteAllText(CachedSourcePath, fullSourceCode);
         
         var syntaxTree = CSharpSyntaxTree.ParseText(fullSourceCode);
         var compilation = CSharpCompilation.Create(
@@ -160,9 +164,6 @@ public static class AssemblyManager
                     errorBuilder.AppendLine($"Error {diagnostic.Id}: {diagnostic.GetMessage()} at line {lineNumber}, column {charPosition} in {lineSpan.Path}");
                 }
                 errorBuilder.AppendLine();
-
-                Directory.CreateDirectory(AssemblyCachePath);
-                File.WriteAllText(CachedSourcePath, fullSourceCode);
             
                 throw new InvalidOperationException(errorBuilder.ToString());
             }
@@ -186,13 +187,13 @@ public static class AssemblyManager
         }
     }
 
-    public static Type? GetType(SerializedType type)
+    public static Type GetType(SerializedType type)
     {
         if (TypeCache.TryGetValue(type.TypeHash.ToString(), out var cachedType))
         {
             return cachedType;
         }
 
-        throw new Exception($"Unexpected type: {type.Nodes[0].Type}");
+        throw new Exception($"Unexpected type: {type}");
     }
 }

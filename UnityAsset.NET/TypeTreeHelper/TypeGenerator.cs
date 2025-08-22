@@ -53,7 +53,35 @@ public class TypeGenerator
         foreach (var fieldNode in children)
         {
             sb.AppendLine($"    [OriginalName(\"{fieldNode.Name}\")]");
-            if (!IsPrimitive(fieldNode.Type))
+            if (IsPrimitive(fieldNode.Type))
+            {
+                sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
+            }
+            else if (IsVector(fieldNode, nodes))
+            {
+                sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
+                var dataNode = fieldNode.Children(nodes)[0].Children(nodes)[1];
+                if (!IsPrimitive(dataNode.Type) && !_hashToClassNameMap.ContainsKey(dataNode.GetHash64Code(nodes)))
+                {
+                    _classToGen.Enqueue(dataNode);
+                }
+            }
+            else if (IsMap(fieldNode, nodes))
+            {
+                sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
+                var pair = fieldNode.Children(nodes)[0].Children(nodes)[1].Children(nodes);
+                var keyType = pair[0];
+                var valueType = pair[1];
+                if (!IsPrimitive(keyType.Type) && !_hashToClassNameMap.ContainsKey(keyType.GetHash64Code(nodes)))
+                {
+                    _classToGen.Enqueue(keyType);
+                }
+                if (!IsPrimitive(valueType.Type) && !_hashToClassNameMap.ContainsKey(valueType.GetHash64Code(nodes)))
+                {
+                    _classToGen.Enqueue(valueType);
+                }
+            }
+            else
             {
                 var filedHash64 = fieldNode.GetHash64Code(nodes);
                 if (_hashToClassNameMap.TryGetValue(filedHash64, out var filedName))
@@ -66,59 +94,10 @@ public class TypeGenerator
                     _classToGen.Enqueue(fieldNode);
                 }
             }
-            else
-            {
-                sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
-            }
         }
 
         GenerateConstructor(className, children, nodes);
         GenerateToPlainTextMethod(current, children, nodes);
-        
-        foreach (var fieldNode in children)
-        {
-            if (fieldNode.Type == "vector")
-            {
-                var dataNode = fieldNode.Children(nodes)[0].Children(nodes)[1];
-                if (!IsPrimitive(dataNode.Type) && !_hashToClassNameMap.ContainsKey(dataNode.GetHash64Code(nodes)))
-                {
-                    _classToGen.Enqueue(dataNode);
-                }
-                // ugly patch
-                else if (dataNode.Type == "vector")
-                {
-                    var subDataNode = dataNode.Children(nodes)[0].Children(nodes)[1];
-                    if (!IsPrimitive(subDataNode.Type) && !_hashToClassNameMap.ContainsKey(subDataNode.GetHash64Code(nodes)))
-                    {
-                        _classToGen.Enqueue(subDataNode);
-                    }
-                }
-            }
-            else if (fieldNode.Type == "map")
-            {
-                var pair = fieldNode.Children(nodes)[0].Children(nodes)[1].Children(nodes);
-                var keyType = pair[0];
-                var valueType = pair[1];
-                if (!IsPrimitive(keyType.Type) && !_hashToClassNameMap.ContainsKey(keyType.GetHash64Code(nodes)))
-                {
-                    _classToGen.Enqueue(keyType);
-                }
-                
-                if (!IsPrimitive(valueType.Type) && !_hashToClassNameMap.ContainsKey(valueType.GetHash64Code(nodes)))
-                {
-                    _classToGen.Enqueue(valueType);
-                }
-                // ugly patch
-                else if (valueType.Type == "vector")
-                {
-                    var subDataNode = valueType.Children(nodes)[0].Children(nodes)[1];
-                    if (!IsPrimitive(subDataNode.Type) && !_hashToClassNameMap.ContainsKey(subDataNode.GetHash64Code(nodes)))
-                    {
-                        _classToGen.Enqueue(subDataNode);
-                    }
-                }
-            }
-        }
         
         sb.AppendLine($"}}");
     }
@@ -131,7 +110,7 @@ public class TypeGenerator
         foreach (var fieldNode in children)
         {
             sb.Append($"        {SanitizeName(fieldNode.Name)} = ");
-            if (IsPrimitive(fieldNode.Type))
+            if (IsPrimitive(fieldNode.Type) || IsVector(fieldNode, nodes) || IsMap(fieldNode, nodes))
             {
                 sb.Append(GetFieldConstructor(fieldNode, nodes));
             }
@@ -183,38 +162,7 @@ public class TypeGenerator
         var subSb = new StringBuilder();
         if (IsPrimitive(current.Type))
         {
-            if (current.Type == "vector")
-            {
-                var dataNode = current.Children(nodes)[0].Children(nodes)[1];
-                subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{current.Type} {current.Name}\");");
-                subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}    Array Array\");");
-                subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}    int size = {{{valueName}.Count}}\");");
-                subSb.AppendLine($"{indent}for (int {current.Name}Count = 0; {current.Name}Count < {valueName}.Count; {current.Name}Count++)");
-                subSb.AppendLine($"{indent}{{");
-                subSb.AppendLine($"{indent}    sb.AppendLine($\"{{childIndent}}        [{{{current.Name}Count}}]\");");
-                subSb.AppendLine($"{indent}    var {current.Name}childIndentBackUp = childIndent;");
-                subSb.AppendLine($"{indent}    childIndent = $\"{{childIndent}}        \";");
-                subSb.Append(GetToPlainTextMethod(dataNode, nodes, indent + "    ", $"{valueName}[{current.Name}Count]"));
-                subSb.AppendLine($"{indent}    childIndent = {current.Name}childIndentBackUp;");
-                subSb.AppendLine($"{indent}}}");
-            }
-            else if (current.Type == "map")
-            {
-                var pair = current.Children(nodes)[0].Children(nodes)[1].Children(nodes);
-                var keyType = pair[0];
-                var valueType = pair[1];
-                subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{current.Type} {current.Name}\");");
-                subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}    Array Array\");");
-                subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}    int size = {{{valueName}.Count}}\");");
-                subSb.AppendLine($"{indent}for (int {current.Name}Count = 0; {current.Name}Count < {current.Name}.Count; {current.Name}Count++)");
-                subSb.AppendLine($"{indent}{{");
-                subSb.AppendLine($"{indent}    sb.AppendLine($\"{{childIndent}}        [{{{current.Name}Count}}]\");");
-                subSb.AppendLine($"{indent}    sb.AppendLine($\"{{childIndent}}        pair data\");");
-                subSb.Append(GetToPlainTextMethod(keyType, nodes, indent + "        ", $"{valueName}[{current.Name}Count].Key"));
-                subSb.Append(GetToPlainTextMethod(valueType, nodes, indent + "        ", $"{valueName}[{current.Name}Count].Value"));
-                subSb.AppendLine($"{indent}}}");
-            }
-            else if (current.Type == "TypelessData")
+            if (current.Type == "TypelessData")
             {
                 subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{current.Type} {current.Name}\");");
                 subSb.AppendLine($"{indent}{valueName}.ToPlainText(sb, childIndent);");
@@ -227,6 +175,37 @@ public class TypeGenerator
             {
                 subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{current.Type} {current.Name} = {{{valueName}}}\");");
             }
+        }
+        else if (IsVector(current, nodes))
+        {
+            var dataNode = current.Children(nodes)[0].Children(nodes)[1];
+            subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{current.Type} {current.Name}\");");
+            subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}    Array Array\");");
+            subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}    int size = {{{valueName}.Count}}\");");
+            subSb.AppendLine($"{indent}for (int {current.Name}Count = 0; {current.Name}Count < {valueName}.Count; {current.Name}Count++)");
+            subSb.AppendLine($"{indent}{{");
+            subSb.AppendLine($"{indent}    sb.AppendLine($\"{{childIndent}}        [{{{current.Name}Count}}]\");");
+            subSb.AppendLine($"{indent}    var {current.Name}childIndentBackUp = childIndent;");
+            subSb.AppendLine($"{indent}    childIndent = $\"{{childIndent}}        \";");
+            subSb.Append(GetToPlainTextMethod(dataNode, nodes, indent + "    ", $"{valueName}[{current.Name}Count]"));
+            subSb.AppendLine($"{indent}    childIndent = {current.Name}childIndentBackUp;");
+            subSb.AppendLine($"{indent}}}");
+        }
+        else if (IsMap(current, nodes))
+        {
+            var pair = current.Children(nodes)[0].Children(nodes)[1].Children(nodes);
+            var keyType = pair[0];
+            var valueType = pair[1];
+            subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{current.Type} {current.Name}\");");
+            subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}    Array Array\");");
+            subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}    int size = {{{valueName}.Count}}\");");
+            subSb.AppendLine($"{indent}for (int {current.Name}Count = 0; {current.Name}Count < {current.Name}.Count; {current.Name}Count++)");
+            subSb.AppendLine($"{indent}{{");
+            subSb.AppendLine($"{indent}    sb.AppendLine($\"{{childIndent}}        [{{{current.Name}Count}}]\");");
+            subSb.AppendLine($"{indent}    sb.AppendLine($\"{{childIndent}}        pair data\");");
+            subSb.Append(GetToPlainTextMethod(keyType, nodes, indent + "        ", $"{valueName}[{current.Name}Count].Key"));
+            subSb.Append(GetToPlainTextMethod(valueType, nodes, indent + "        ", $"{valueName}[{current.Name}Count].Value"));
+            subSb.AppendLine($"{indent}}}");
         }
         else
         {
@@ -241,6 +220,36 @@ public class TypeGenerator
     {
         if (!IsPrimitive(current.Type))
         {
+            if (IsVector(current, nodes))
+            {
+                var dataNode = current.Children(nodes)[0].Children(nodes)[1];
+                var hash64 = dataNode.GetHash64Code(nodes);
+                string constructor = 
+                    IsPrimitive(dataNode.Type) 
+                        ? $"r => {GetFieldConstructor(dataNode, nodes).Replace("reader", "r")}"
+                        : $"r => new {SanitizeName($"{dataNode.Type}_{hash64}")}(r)";
+                
+                return $"reader.ReadListWithAlign(reader.ReadInt32(), {constructor}, {dataNode.RequiresAlign(nodes).ToString().ToLower()})";
+            }
+
+            if (IsMap(current, nodes))
+            {
+                var pair = current.Children(nodes)[0].Children(nodes)[1].Children(nodes);
+                var keyType = pair[0];
+                var valueType = pair[1];
+                var keyHash64 = keyType.GetHash64Code(nodes);
+                var valueHash64 = valueType.GetHash64Code(nodes);
+                string keyConstructor = 
+                    IsPrimitive(keyType.Type) 
+                        ? $"r => {GetFieldConstructor(keyType, nodes).Replace("reader", "r")}"
+                        : $"r => new {SanitizeName($"{keyType.Type}_{keyHash64}")}(r)";
+                string valueConstructor = 
+                    IsPrimitive(valueType.Type) 
+                        ? $"r => {GetFieldConstructor(valueType, nodes).Replace("reader", "r")}"
+                        : $"r => new {SanitizeName($"{valueType.Type}_{valueHash64}")}(r)";
+                return $"reader.ReadMapWithAlign(reader.ReadInt32(), {keyConstructor}, {valueConstructor}, {keyType.RequiresAlign(nodes).ToString().ToLower()}, {valueType.RequiresAlign(nodes).ToString().ToLower()})";
+            }
+            
             return $"new {SanitizeName(current.Type)}(reader)";
         }
         
@@ -282,34 +291,6 @@ public class TypeGenerator
                 return "reader.ReadSizedString()";
             case "TypelessData" :
                 return "new TypelessData(reader);";
-            case "vector":
-            {
-                var dataNode = current.Children(nodes)[0].Children(nodes)[1];
-                var hash64 = dataNode.GetHash64Code(nodes);
-                string constructor = 
-                    IsPrimitive(dataNode.Type) 
-                        ? $"r => {GetFieldConstructor(dataNode, nodes).Replace("reader", "r")}"
-                        : $"r => new {SanitizeName($"{dataNode.Type}_{hash64}")}(r)";
-                
-                return $"reader.ReadListWithAlign(reader.ReadInt32(), {constructor}, {dataNode.RequiresAlign(nodes).ToString().ToLower()})";
-            }
-            case "map":
-            {
-                var pair = current.Children(nodes)[0].Children(nodes)[1].Children(nodes);
-                var keyType = pair[0];
-                var valueType = pair[1];
-                var keyHash64 = keyType.GetHash64Code(nodes);
-                var valueHash64 = valueType.GetHash64Code(nodes);
-                string keyConstructor = 
-                    IsPrimitive(keyType.Type) 
-                        ? $"r => {GetFieldConstructor(keyType, nodes).Replace("reader", "r")}"
-                        : $"r => new {SanitizeName($"{keyType.Type}_{keyHash64}")}(r)";
-                string valueConstructor = 
-                    IsPrimitive(valueType.Type) 
-                        ? $"r => {GetFieldConstructor(valueType, nodes).Replace("reader", "r")}"
-                        : $"r => new {SanitizeName($"{valueType.Type}_{valueHash64}")}(r)";
-                return $"reader.ReadMapWithAlign(reader.ReadInt32(), {keyConstructor}, {valueConstructor}, {keyType.RequiresAlign(nodes).ToString().ToLower()}, {valueType.RequiresAlign(nodes).ToString().ToLower()})";
-            }
             default: throw new NotSupportedException($"Unity type not supported: {current.Type}");
         }
     }
@@ -318,6 +299,34 @@ public class TypeGenerator
     {
         if (!IsPrimitive(current.Type))
         {
+            if (IsVector(current, nodes))
+            {
+                var dataNode = current.Children(nodes)[0].Children(nodes)[1];
+                var hash64 = dataNode.GetHash64Code(nodes);
+                return 
+                    IsPrimitive(dataNode.Type) 
+                        ? $"List<{GetCSharpType(dataNode, nodes)}>" 
+                        : $"List<{SanitizeName($"{dataNode.Type}_{hash64}")}>" ;
+            }
+
+            if (IsMap(current, nodes))
+            {
+                var pair = current.Children(nodes)[0].Children(nodes)[1].Children(nodes);
+                var keyType = pair[0];
+                var valueType = pair[1];
+                var keyHash64 = keyType.GetHash64Code(nodes);
+                var valueHash64 = valueType.GetHash64Code(nodes);
+                string keyName = 
+                    IsPrimitive(keyType.Type) 
+                        ? SanitizeName(keyType.Type)
+                        : SanitizeName($"{keyType.Type}_{keyHash64}");
+                string valueName = 
+                    IsPrimitive(valueType.Type) 
+                        ? SanitizeName(valueType.Type)
+                        : SanitizeName($"{valueType.Type}_{valueHash64}");
+                return $"List<KeyValuePair<{keyName}, {valueName}>>";
+            }
+            
             return SanitizeName(current.Type);
         }
 
@@ -359,32 +368,6 @@ public class TypeGenerator
                 return "string";
             case "TypelessData" :
                 return "TypelessData";
-            case "vector":
-            {
-                var dataNode = current.Children(nodes)[0].Children(nodes)[1];
-                var hash64 = dataNode.GetHash64Code(nodes);
-                return 
-                    IsPrimitive(dataNode.Type) 
-                        ? $"List<{GetCSharpType(dataNode, nodes)}>" 
-                        : $"List<{SanitizeName($"{dataNode.Type}_{hash64}")}>" ;
-            }
-            case "map":
-            {
-                var pair = current.Children(nodes)[0].Children(nodes)[1].Children(nodes);
-                var keyType = pair[0];
-                var valueType = pair[1];
-                var keyHash64 = keyType.GetHash64Code(nodes);
-                var valueHash64 = valueType.GetHash64Code(nodes);
-                string keyName = 
-                    IsPrimitive(keyType.Type) 
-                        ? SanitizeName(keyType.Type)
-                        : SanitizeName($"{keyType.Type}_{keyHash64}");
-                string valueName = 
-                    IsPrimitive(valueType.Type) 
-                        ? SanitizeName(valueType.Type)
-                        : SanitizeName($"{valueType.Type}_{valueHash64}");
-                return $"List<KeyValuePair<{keyName}, {valueName}>>";
-            }
             default: throw new NotSupportedException($"Unity type not supported: {current.Type}");
         }
     }
@@ -393,9 +376,22 @@ public class TypeGenerator
     {
         return unityType switch
         { 
-            "SInt8" or "UInt8" or "char" or "short" or "SInt16" or "UInt16" or "unsigned short" or "int" or "SInt32" or "UInt32" or "unsigned int" or "Type*" or "long long" or "SInt64" or "UInt64" or "unsigned long long" or "FileSize" or "float" or "double" or "bool" or "string" or "vector" or "map" or "TypelessData" => true,
+            "SInt8" or "UInt8" or "char" or "short" or "SInt16" or "UInt16" or "unsigned short" or "int" or "SInt32" or "UInt32" or "unsigned int" or "Type*" or "long long" or "SInt64" or "UInt64" or "unsigned long long" or "FileSize" or "float" or "double" or "bool" or "string" or "TypelessData" => true,
             _ => false
         };
+    }
+
+    private static bool IsVector(TypeTreeNode current, List<TypeTreeNode> nodes)
+    {
+        if (current.Type == "vector") return true;
+        if (current.Children(nodes)[0].Type == "Array") return true;
+        return false;
+    }
+    
+    private static bool IsMap(TypeTreeNode current, List<TypeTreeNode> nodes)
+    {
+        if (current.Type == "map") return true;
+        return false;
     }
 
     public static string SanitizeName(string name)

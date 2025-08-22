@@ -18,7 +18,7 @@ public class TypeTreeNode
     public UInt64 RefTypeHash;
     public string Type = String.Empty;
     public string Name = String.Empty;
-    private long? hash64;
+    private long? hash64 = null;
     
     public TypeTreeNode(UInt16 version, byte level, TypeTreeNodeFlags typeFlags,
         UInt32 typeStringOffset, UInt32 nameStringOffset, Int32 byteSize, UInt32 index, UInt32 metaFlags,
@@ -89,7 +89,7 @@ public class TypeTreeNode
         
         ulong hash = offset;
         
-        hash = (hash ^ (ulong)Type.GetHashCode()) * prime;
+        hash = (hash ^ Type.GetStableHashCode()) * prime;
         hash = (hash ^ MetaFlags) * prime;
 
         foreach (var child in this.Children(nodes))
