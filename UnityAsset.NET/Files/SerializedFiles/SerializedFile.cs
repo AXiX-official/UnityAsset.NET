@@ -22,10 +22,7 @@ public sealed class SerializedFile : IFile
     
     public static SerializedFile Parse(IReader reader)
     {
-        if (reader is FileEntryStreamReader streamReader)
-        {
-            streamReader.Seek(0);
-        }
+        reader.Seek(0);
         var header = SerializedFileHeader.Parse(reader);
         reader.Endian = header.Endianness;
         var metadata = SerializedFileMetadata.Parse(reader, header.Version);
@@ -37,7 +34,7 @@ public sealed class SerializedFile : IFile
         foreach (var assetInfo in metadata.AssetInfos.AsSpan())
         {
             reader.Seek((int)(header.DataOffset + assetInfo.ByteOffset));
-            assets.Add(new Asset(assetInfo, new MemoryReader(reader.ReadBytes((int)assetInfo.ByteSize), endian : header.Endianness)));
+            assets.Add(new Asset(assetInfo, new SlicedReader(reader, (long)(header.DataOffset + assetInfo.ByteOffset),assetInfo.ByteSize)));
         }
         return new SerializedFile(header, metadata, assets);
     }

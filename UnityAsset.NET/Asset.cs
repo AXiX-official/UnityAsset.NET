@@ -18,6 +18,7 @@ public class Asset
         {
             if (value == null)
             {
+                RawData.Seek(0);
                 value = UnityObjectFactory.Create(Info.Type, RawData);;
             }
             return value;
