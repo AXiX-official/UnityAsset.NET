@@ -361,7 +361,9 @@ public class TypeGenerator
     private static bool IsVector(TypeTreeNode current, List<TypeTreeNode> nodes)
     {
         if (current.Type == "vector") return true;
-        if (current.Children(nodes)[0].Type == "Array") return true;
+        var children = current.Children(nodes);
+        if (children.Count == 0) return false;
+        if (children[0].Type == "Array") return true;
         return false;
     }
     

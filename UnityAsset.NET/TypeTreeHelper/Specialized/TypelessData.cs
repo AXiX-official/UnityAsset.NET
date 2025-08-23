@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using UnityAsset.NET.Classes;
 using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.TypeTreeHelper.Specialized;

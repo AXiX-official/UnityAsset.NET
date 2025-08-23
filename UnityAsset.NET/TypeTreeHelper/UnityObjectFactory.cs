@@ -1,4 +1,5 @@
-﻿using UnityAsset.NET.Files.SerializedFiles;
+﻿using UnityAsset.NET.Classes;
+using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.TypeTreeHelper;
