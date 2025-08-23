@@ -223,11 +223,7 @@ public class TypeGenerator
             if (IsVector(current, nodes))
             {
                 var dataNode = current.Children(nodes)[0].Children(nodes)[1];
-                var hash64 = dataNode.GetHash64Code(nodes);
-                string constructor = 
-                    IsPrimitive(dataNode.Type) 
-                        ? $"r => {GetFieldConstructor(dataNode, nodes).Replace("reader", "r")}"
-                        : $"r => new {SanitizeName($"{dataNode.Type}_{hash64}")}(r)";
+                string constructor = $"r => {GetFieldConstructor(dataNode, nodes).Replace("reader", "r")}";
                 
                 return $"reader.ReadListWithAlign(reader.ReadInt32(), {constructor}, {dataNode.RequiresAlign(nodes).ToString().ToLower()})";
             }
@@ -237,20 +233,14 @@ public class TypeGenerator
                 var pair = current.Children(nodes)[0].Children(nodes)[1].Children(nodes);
                 var keyType = pair[0];
                 var valueType = pair[1];
-                var keyHash64 = keyType.GetHash64Code(nodes);
-                var valueHash64 = valueType.GetHash64Code(nodes);
-                string keyConstructor = 
-                    IsPrimitive(keyType.Type) 
-                        ? $"r => {GetFieldConstructor(keyType, nodes).Replace("reader", "r")}"
-                        : $"r => new {SanitizeName($"{keyType.Type}_{keyHash64}")}(r)";
-                string valueConstructor = 
-                    IsPrimitive(valueType.Type) 
-                        ? $"r => {GetFieldConstructor(valueType, nodes).Replace("reader", "r")}"
-                        : $"r => new {SanitizeName($"{valueType.Type}_{valueHash64}")}(r)";
+                string keyConstructor = $"r => {GetFieldConstructor(keyType, nodes).Replace("reader", "r")}";
+                string valueConstructor = $"r => {GetFieldConstructor(valueType, nodes).Replace("reader", "r")}";
                 return $"reader.ReadMapWithAlign(reader.ReadInt32(), {keyConstructor}, {valueConstructor}, {keyType.RequiresAlign(nodes).ToString().ToLower()}, {valueType.RequiresAlign(nodes).ToString().ToLower()})";
             }
             
-            return $"new {SanitizeName(current.Type)}(reader)";
+            var hash64 = current.GetHash64Code(nodes);
+            var typeName = $"{current.Type}_{hash64}";
+            return $"new {SanitizeName(typeName)}(reader)";
         }
         
         switch(current.Type)
@@ -302,11 +292,7 @@ public class TypeGenerator
             if (IsVector(current, nodes))
             {
                 var dataNode = current.Children(nodes)[0].Children(nodes)[1];
-                var hash64 = dataNode.GetHash64Code(nodes);
-                return 
-                    IsPrimitive(dataNode.Type) 
-                        ? $"List<{GetCSharpType(dataNode, nodes)}>" 
-                        : $"List<{SanitizeName($"{dataNode.Type}_{hash64}")}>" ;
+                return $"List<{GetCSharpType(dataNode, nodes)}>";
             }
 
             if (IsMap(current, nodes))
@@ -314,20 +300,11 @@ public class TypeGenerator
                 var pair = current.Children(nodes)[0].Children(nodes)[1].Children(nodes);
                 var keyType = pair[0];
                 var valueType = pair[1];
-                var keyHash64 = keyType.GetHash64Code(nodes);
-                var valueHash64 = valueType.GetHash64Code(nodes);
-                string keyName = 
-                    IsPrimitive(keyType.Type) 
-                        ? SanitizeName(keyType.Type)
-                        : SanitizeName($"{keyType.Type}_{keyHash64}");
-                string valueName = 
-                    IsPrimitive(valueType.Type) 
-                        ? SanitizeName(valueType.Type)
-                        : SanitizeName($"{valueType.Type}_{valueHash64}");
-                return $"List<KeyValuePair<{keyName}, {valueName}>>";
+                return $"List<KeyValuePair<{GetCSharpType(keyType, nodes)}, {GetCSharpType(valueType, nodes)}>>";
             }
-            
-            return SanitizeName(current.Type);
+
+            var hash64 = current.GetHash64Code(nodes);
+            return SanitizeName($"{current.Type}_{hash64}");
         }
 
         switch(current.Type)
