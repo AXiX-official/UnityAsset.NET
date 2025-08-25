@@ -41,13 +41,13 @@ public sealed class SerializedType
         var scriptTypeIndex = reader.ReadInt16();
         Hash128? scriptIdHash = null;
         if ((version >= RefactorTypeData && typeID == (int)AssetClassID.MonoBehaviour) ||
-            (isRefType && scriptTypeIndex > 0))
+            (isRefType && scriptTypeIndex >= 0))
         {
             scriptIdHash = new Hash128(reader); 
         }
         var typeHash = new Hash128(reader);
-        List<TypeTreeNode> nodes;
-        byte[]? stringBufferBytes;
+        List<TypeTreeNode> nodes = new List<TypeTreeNode>();
+        byte[]? stringBufferBytes = null;
         int[]? typeDependencies = null;
         SerializedTypeReference? typeReference = null;
         if (typeTreeEnabled)

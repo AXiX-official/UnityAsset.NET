@@ -117,6 +117,8 @@ public static class AssemblyManager
 
         foreach (var type in typesToGenerate)
         {
+            if (type.Nodes.Count == 0)
+                continue;
             var typeSourceCode = TypeGenerator.Generate(type.Nodes);
             if (WriteGeneratedCodeToDisk)
             {
@@ -176,6 +178,8 @@ public static class AssemblyManager
             var assembly = _loadContext.LoadFromStream(ms);
             foreach (var type in typesToGenerate)
             {
+                if (type.Nodes.Count == 0)
+                    continue;
                 var root = type.Nodes[0];
                 var rootHash64 = root.GetHash64Code(type.Nodes);
                 var generatedType = assembly.GetType($"UnityAsset.NET.RuntimeType.{TypeGenerator.SanitizeName($"{root.Type}_{rootHash64}")}");

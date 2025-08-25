@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.CodeAnalysis.CSharp;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files.SerializedFiles;
 
@@ -19,6 +20,9 @@ public class TypeGenerator
     {
         sb.Clear();
         _classToGen.Clear();
+
+        if (nodes.Count == 0)
+            return string.Empty;
 
         _classToGen.Enqueue(nodes[0]);
 
@@ -43,8 +47,7 @@ public class TypeGenerator
         var children = current.Children(nodes);
 
         sb.AppendLine($"[OriginalName(\"{current.Type}\")]");
-        bool hasNameField = children.Any(node => node.Name == "m_Name");
-        string interfaceName = hasNameField ? "INamedAsset" : "IAsset";
+        string interfaceName = GetInterfaceName(current, nodes);
         sb.AppendLine($"public class {className} : {interfaceName}");
         sb.AppendLine($"{{");
 
@@ -101,6 +104,21 @@ public class TypeGenerator
         
         sb.AppendLine($"}}");
     }
+
+    private string GetInterfaceName(TypeTreeNode current, List<TypeTreeNode> nodes)
+    {
+        switch (current.Type)
+        {
+            case "Texture2D" :
+                return "ITexture2D";
+            default:
+            {
+                bool hasNameField = current.Children(nodes).Any(node => node.Name == "m_Name");
+                return hasNameField ? "INamedAsset" : "IAsset";
+            }
+        }
+    }
+    
 
     private void GenerateConstructor(string className, List<TypeTreeNode> children, List<TypeTreeNode> nodes)
     {
@@ -162,7 +180,7 @@ public class TypeGenerator
         var subSb = new StringBuilder();
         if (IsPrimitive(current.Type))
         {
-            if (current.Type == "TypelessData")
+            if (current.Type == "TypelessData" || current.Type == "StreamingInfo")
             {
                 subSb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{current.Type} {current.Name}\");");
                 subSb.AppendLine($"{indent}{valueName}.ToPlainText(sb, childIndent);");
@@ -281,6 +299,8 @@ public class TypeGenerator
                 return "reader.ReadSizedString()";
             case "TypelessData" :
                 return "new TypelessData(reader);";
+            case "StreamingInfo" :
+                return "new StreamingInfo(reader);";
             default: throw new NotSupportedException($"Unity type not supported: {current.Type}");
         }
     }
@@ -345,6 +365,8 @@ public class TypeGenerator
                 return "string";
             case "TypelessData" :
                 return "TypelessData";
+            case "StreamingInfo" :
+                return "StreamingInfo";
             default: throw new NotSupportedException($"Unity type not supported: {current.Type}");
         }
     }
@@ -353,7 +375,7 @@ public class TypeGenerator
     {
         return unityType switch
         { 
-            "SInt8" or "UInt8" or "char" or "short" or "SInt16" or "UInt16" or "unsigned short" or "int" or "SInt32" or "UInt32" or "unsigned int" or "Type*" or "long long" or "SInt64" or "UInt64" or "unsigned long long" or "FileSize" or "float" or "double" or "bool" or "string" or "TypelessData" => true,
+            "SInt8" or "UInt8" or "char" or "short" or "SInt16" or "UInt16" or "unsigned short" or "int" or "SInt32" or "UInt32" or "unsigned int" or "Type*" or "long long" or "SInt64" or "UInt64" or "unsigned long long" or "FileSize" or "float" or "double" or "bool" or "string" or "TypelessData" or "StreamingInfo" => true,
             _ => false
         };
     }
@@ -371,6 +393,35 @@ public class TypeGenerator
     {
         if (current.Type == "map") return true;
         return false;
+    }
+    
+    public static bool IsKeyword(string word)
+    {
+        if (string.IsNullOrEmpty(word))
+            return false;
+        
+        var kind = SyntaxFacts.GetKeywordKind(word);
+        return kind != SyntaxKind.None;
+    }
+
+    public static bool IsReservedKeyword(string word)
+    {
+        if (string.IsNullOrEmpty(word))
+            return false;
+        
+        var kind = SyntaxFacts.GetKeywordKind(word);
+        return kind != SyntaxKind.None && 
+               SyntaxFacts.IsReservedKeyword(kind);
+    }
+
+    public static bool IsContextualKeyword(string word)
+    {
+        if (string.IsNullOrEmpty(word))
+            return false;
+        
+        var kind = SyntaxFacts.GetKeywordKind(word);
+        return kind != SyntaxKind.None && 
+               SyntaxFacts.IsContextualKeyword(kind);
     }
 
     public static string SanitizeName(string name)
@@ -396,6 +447,11 @@ public class TypeGenerator
                 sanitized.Append('_');
             }
         }
-        return sanitized.ToString();
+        var fixedName = sanitized.ToString();
+        if (IsReservedKeyword(fixedName) || IsContextualKeyword(fixedName))
+        {
+            return "@" + fixedName;
+        }
+        return fixedName;
     }
 }
