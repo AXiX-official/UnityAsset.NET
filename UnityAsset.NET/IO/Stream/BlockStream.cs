@@ -99,7 +99,7 @@ public class BlockStream : System.IO.Stream
 
             if (_unityCnInfo == null)
             {
-                Compression.DecompressToBytes(compressedData, _uncompressedBuffer, block.CompressionType);
+                Compression.DecompressToBytes(compressedData, _uncompressedBuffer.AsSpan(0, (int)block.UncompressedSize), block.CompressionType);
             }
             else
             {
