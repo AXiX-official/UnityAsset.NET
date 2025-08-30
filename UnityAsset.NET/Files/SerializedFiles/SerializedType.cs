@@ -3,6 +3,7 @@ using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
+using UnityAsset.NET.TypeTreeHelper;
 using static UnityAsset.NET.Enums.SerializedFileFormatVersion;
 
 namespace UnityAsset.NET.Files.SerializedFiles;
@@ -15,7 +16,7 @@ public sealed class SerializedType
     public Hash128? ScriptIdHash;
     public Hash128 TypeHash;
     public bool IsRefType;
-    public List<TypeTreeNode> Nodes = new List<TypeTreeNode>();
+    public List<TypeTreeNode> Nodes;
     public byte[]? StringBufferBytes;
     public int[]? TypeDependencies;
     public SerializedTypeReference? TypeReference;
@@ -28,7 +29,7 @@ public sealed class SerializedType
         ScriptIdHash = scriptIdHash;
         TypeHash = typeHash;
         IsRefType = isRefType;
-        Nodes = nodes;
+        Nodes = TypeTreeCache.GetOrAddNodes(typeHash, nodes);
         StringBufferBytes = stringBufferBytes;
         TypeDependencies = typeDependencies;
         TypeReference = typeReference;

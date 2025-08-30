@@ -10,7 +10,7 @@ using UnityAsset.NET.IO.Stream;
 
 namespace UnityAsset.NET.Files;
 
-public class BundleFile
+public class BundleFile : IFile
 {
     /// <summary>
     /// BundleFile's Header
@@ -82,6 +82,10 @@ public class BundleFile
         MemoryReader blocksInfoUncompressedData = new MemoryReader((int)header.UncompressedBlocksInfoSize);
         Compression.DecompressToBytes(blocksInfoBytes, blocksInfoUncompressedData.AsWritableSpan, compressionType);
         var dataInfo = BlocksAndDirectoryInfo.Parse(blocksInfoUncompressedData);
+        if (dataInfo.BlocksInfo.Any(blockInfo => blockInfo.UncompressedSize > int.MaxValue))
+        {
+            throw new Exception("Block size too large.");
+        }
         if (!UnityCNVersionJudge(header.UnityRevision) && (header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
             reader.Align(16);
         return dataInfo;

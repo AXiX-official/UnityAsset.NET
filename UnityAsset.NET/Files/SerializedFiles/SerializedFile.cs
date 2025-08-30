@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using UnityAsset.NET.Extensions;
+using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
 
@@ -18,6 +19,23 @@ public sealed class SerializedFile : IFile
         if (string.IsNullOrEmpty(Metadata.UnityVersion))
             Metadata.UnityVersion = Setting.DefaultUnityVerion;
         Assets = assets;
+    }
+
+    public SerializedFile(IVirtualFile file)
+    {
+        CustomStreamReader reader = new CustomStreamReader(file.Stream);
+        reader.Seek(0);
+        Header = SerializedFileHeader.Parse(reader);
+        reader.Endian = Header.Endianness;
+        Metadata = SerializedFileMetadata.Parse(reader, Header.Version);
+        if (string.IsNullOrEmpty(Metadata.UnityVersion))
+            Metadata.UnityVersion = Setting.DefaultUnityVerion;
+        Assets = new List<Asset>();
+        foreach (var assetInfo in Metadata.AssetInfos.AsSpan())
+        {
+            reader.Seek((int)(Header.DataOffset + assetInfo.ByteOffset));
+            Assets.Add(new Asset(assetInfo, new SlicedReader(reader, (long)(Header.DataOffset + assetInfo.ByteOffset),assetInfo.ByteSize)));
+        }
     }
     
     public static SerializedFile Parse(IReader reader)
