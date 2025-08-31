@@ -15,6 +15,8 @@ public class AssetManager
     private IFileSystem _fileSystem;
     
     private readonly ConcurrentDictionary<string, IFile> _loadedFiles;
+    
+    public BuildTarget? BuildTarget { get; private set; }
 
     public AssetManager(IFileSystem? fileSystem)
     {
@@ -78,6 +80,16 @@ public class AssetManager
                         types.AddRange(serializedFile.Metadata.Types);
                         break;
                     }
+                }
+            }
+            
+            if (BuildTarget == null)
+            {
+                var file = _loadedFiles.Values
+                    .FirstOrDefault(file => file is SerializedFile);
+                if (file is SerializedFile sf)
+                {
+                    BuildTarget = sf.Metadata.TargetPlatform;
                 }
             }
 

@@ -41,6 +41,20 @@ public interface IReader : ISeek, IFile
             ? BinaryPrimitives.ReadUInt16BigEndian(ReadBytes(2))
             : BinaryPrimitives.ReadUInt16LittleEndian(ReadBytes(2));
     }
+    public uint ReverseInt(uint value)
+    {
+        value = (value >> 16) | (value << 16);
+        return ((value & 0xFF00FF00) >> 8) | ((value & 0x00FF00FF) << 8);
+    }
+    public uint ReadUInt24()
+    {
+        unchecked
+        {
+            return Endian == Endianness.BigEndian 
+                ? ReverseInt(BitConverter.ToUInt32(new byte[] { 0 }.Concat(ReadBytes(3)).ToArray(), 0)) 
+                : BitConverter.ToUInt32(ReadBytes(3).Concat(new byte[] { 0 }).ToArray(), 0);
+        }
+    }
     public Int32 ReadInt32()
     {
         return Endian == Endianness.BigEndian 

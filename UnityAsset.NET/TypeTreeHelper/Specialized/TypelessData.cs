@@ -6,13 +6,13 @@ namespace UnityAsset.NET.TypeTreeHelper.Specialized;
 
 public class TypelessData : IAsset
 {
-    public Int32 size;
-    public List<byte> data;
+    public Int32 size { get; }
+    public byte[] data { get; }
     
     public TypelessData(IReader reader)
     {
         size = reader.ReadInt32();
-        data = reader.ReadList(size, r => r.ReadUInt8());
+        data = reader.ReadBytes(size);
     }
     
     public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "")
@@ -21,8 +21,8 @@ public class TypelessData : IAsset
         sb.AppendLine($"{indent}    int size = {size}");
         sb.AppendLine($"{indent}    vector data");
         sb.AppendLine($"{indent}        Array Array");
-        sb.AppendLine($"{indent}        int size = {data.Count}");
-        for (int i = 0; i < data.Count; i++)
+        sb.AppendLine($"{indent}        int size = {data.Length}");
+        for (int i = 0; i < data.Length; i++)
         {
             sb.AppendLine($"{indent}            [{i}]");
             sb.AppendLine($"{indent}            byte = {data[i]}");
