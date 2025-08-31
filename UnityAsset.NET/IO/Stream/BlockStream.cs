@@ -97,14 +97,12 @@ public class BlockStream : System.IO.Stream
                 _uncompressedBuffer = new byte[block.UncompressedSize];
             }
 
-            if (_unityCnInfo == null)
+            if (_unityCnInfo != null && (block.CompressionType == CompressionType.Lz4 || block.CompressionType == CompressionType.Lz4HC))
             {
-                Compression.DecompressToBytes(compressedData, _uncompressedBuffer.AsSpan(0, (int)block.UncompressedSize), block.CompressionType);
+                _unityCnInfo.DecryptBlock(compressedData, compressedData.Length, blockIndex);
             }
-            else
-            {
-                _unityCnInfo.DecryptAndDecompress(compressedData, _uncompressedBuffer, blockIndex);
-            }
+            
+            Compression.DecompressToBytes(compressedData, _uncompressedBuffer.AsSpan(0, (int)block.UncompressedSize), block.CompressionType);
             
             _currentBlockData?.Dispose();
             _currentBlockData = new MemoryStream(_uncompressedBuffer, 0, (int)block.UncompressedSize, false, true);
