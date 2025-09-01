@@ -126,10 +126,12 @@ public class TypeGenerator
         {
             switch (current.Type)
             {
-                case "Texture2D" :
-                    return "ITexture2D";
                 case "Mesh" :
                     return "IMesh";
+                case "TextAsset" :
+                    return "ITextAsset";
+                case "Texture2D" :
+                    return "ITexture2D";
                 default:
                 {
                     bool hasNameField = current.Children(nodes).Any(node => node.Name == "m_Name");
