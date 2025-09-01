@@ -1,4 +1,4 @@
-﻿namespace UnityAsset.NET.Classes;
+﻿namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
 public interface INamedAsset : IAsset
 {

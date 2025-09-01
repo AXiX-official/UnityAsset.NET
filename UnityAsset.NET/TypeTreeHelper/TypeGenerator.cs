@@ -56,7 +56,7 @@ public class TypeGenerator
         foreach (var fieldNode in children)
         {
             sb.AppendLine($"    [OriginalName(\"{fieldNode.Name}\")]");
-            if (IsPrimitive(fieldNode.Type))
+            if (IsPrimitive(fieldNode.Type) || PreDefinedHelper.IsPreDefinedType(fieldNode.Type))
             {
                 sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
             }
@@ -64,7 +64,7 @@ public class TypeGenerator
             {
                 sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
                 var dataNode = fieldNode.Children(nodes)[0].Children(nodes)[1];
-                if (!IsPrimitive(dataNode.Type) && !_hashToClassNameMap.ContainsKey(dataNode.GetHash64Code(nodes)))
+                if (!IsPrimitive(dataNode.Type) && !_hashToClassNameMap.ContainsKey(dataNode.GetHash64Code(nodes)) && !PreDefinedHelper.IsPreDefinedType(dataNode.Type))
                 {
                     _classToGen.Enqueue(dataNode);
                 }
@@ -75,11 +75,11 @@ public class TypeGenerator
                 var pair = fieldNode.Children(nodes)[0].Children(nodes)[1].Children(nodes);
                 var keyType = pair[0];
                 var valueType = pair[1];
-                if (!IsPrimitive(keyType.Type) && !_hashToClassNameMap.ContainsKey(keyType.GetHash64Code(nodes)))
+                if (!IsPrimitive(keyType.Type) && !_hashToClassNameMap.ContainsKey(keyType.GetHash64Code(nodes)) && !PreDefinedHelper.IsPreDefinedType(keyType.Type))
                 {
                     _classToGen.Enqueue(keyType);
                 }
-                if (!IsPrimitive(valueType.Type) && !_hashToClassNameMap.ContainsKey(valueType.GetHash64Code(nodes)))
+                if (!IsPrimitive(valueType.Type) && !_hashToClassNameMap.ContainsKey(valueType.GetHash64Code(nodes)) && !PreDefinedHelper.IsPreDefinedType(valueType.Type))
                 {
                     _classToGen.Enqueue(valueType);
                 }
@@ -87,13 +87,28 @@ public class TypeGenerator
             else
             {
                 var filedHash64 = fieldNode.GetHash64Code(nodes);
+                var filedInterfaceName = $"I{fieldNode.Type}";
                 if (_hashToClassNameMap.TryGetValue(filedHash64, out var filedName))
                 {
-                    sb.AppendLine($"    public {filedName} {SanitizeName(fieldNode.Name)} {{ get; }}");
+                    if (PreDefinedHelper.IsPreDefinedInterface(filedInterfaceName))
+                    {
+                        sb.AppendLine($"    public {filedInterfaceName} {SanitizeName(fieldNode.Name)} {{ get; }}");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"    public {filedName} {SanitizeName(fieldNode.Name)} {{ get; }}");
+                    }
                 }
                 else
                 {
-                    sb.AppendLine($"    public {SanitizeName($"{fieldNode.Type}_{filedHash64}")} {SanitizeName(fieldNode.Name)} {{ get; }}");
+                    if (PreDefinedHelper.IsPreDefinedInterface(filedInterfaceName))
+                    {
+                        sb.AppendLine($"    public {filedInterfaceName} {SanitizeName(fieldNode.Name)} {{ get; }}");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"    public {SanitizeName($"{fieldNode.Type}_{filedHash64}")} {SanitizeName(fieldNode.Name)} {{ get; }}");
+                    }
                     _classToGen.Enqueue(fieldNode);
                 }
             }
@@ -107,16 +122,29 @@ public class TypeGenerator
 
     private string GetInterfaceName(TypeTreeNode current, List<TypeTreeNode> nodes)
     {
-        switch (current.Type)
+        if (current.Level == 0)
         {
-            case "Texture2D" :
-                return "ITexture2D";
-            default:
+            switch (current.Type)
             {
-                bool hasNameField = current.Children(nodes).Any(node => node.Name == "m_Name");
-                return hasNameField ? "INamedAsset" : "IAsset";
+                case "Texture2D" :
+                    return "ITexture2D";
+                case "Mesh" :
+                    return "IMesh";
+                default:
+                {
+                    bool hasNameField = current.Children(nodes).Any(node => node.Name == "m_Name");
+                    return hasNameField ? "INamedAsset" : "IAsset";
+                }
             }
         }
+
+        var interfaceName = $"I{current.Type}";
+        if (PreDefinedHelper.IsPreDefinedInterface(interfaceName))
+        {
+            return interfaceName;
+        }
+
+        return "IUnityType";
     }
     
 
@@ -128,7 +156,7 @@ public class TypeGenerator
         foreach (var fieldNode in children)
         {
             sb.Append($"        {SanitizeName(fieldNode.Name)} = ");
-            if (IsPrimitive(fieldNode.Type) || IsVector(fieldNode, nodes) || IsMap(fieldNode, nodes))
+            if (IsPrimitive(fieldNode.Type) || IsVector(fieldNode, nodes) || IsMap(fieldNode, nodes) || PreDefinedHelper.IsPreDefinedType(fieldNode.Type))
             {
                 sb.Append(GetFieldConstructor(fieldNode, nodes));
             }
@@ -238,12 +266,19 @@ public class TypeGenerator
     {
         if (!IsPrimitive(current.Type))
         {
+            if (PreDefinedHelper.IsPreDefinedType(current.Type))
+            {
+                return $"new {current.Type}(reader)";
+            }
+            
             if (IsVector(current, nodes))
             {
                 var dataNode = current.Children(nodes)[0].Children(nodes)[1];
                 string constructor = $"r => {GetFieldConstructor(dataNode, nodes).Replace("reader", "r")}";
                 
-                return $"reader.ReadListWithAlign(reader.ReadInt32(), {constructor}, {dataNode.RequiresAlign(nodes).ToString().ToLower()})";
+                var dataNodeInterfaceName = $"I{dataNode.Type}";
+                var genericTypeArgument = PreDefinedHelper.IsPreDefinedInterface(dataNodeInterfaceName) ? $"<{dataNodeInterfaceName}>" : $"";
+                return $"reader.ReadListWithAlign{genericTypeArgument}(reader.ReadInt32(), {constructor}, {dataNode.RequiresAlign(nodes).ToString().ToLower()})";
             }
 
             if (IsMap(current, nodes))
@@ -297,10 +332,6 @@ public class TypeGenerator
                 return "reader.ReadBoolean()";
             case "string" :
                 return "reader.ReadSizedString()";
-            case "TypelessData" :
-                return "new TypelessData(reader);";
-            case "StreamingInfo" :
-                return "new StreamingInfo(reader);";
             default: throw new NotSupportedException($"Unity type not supported: {current.Type}");
         }
     }
@@ -309,6 +340,17 @@ public class TypeGenerator
     {
         if (!IsPrimitive(current.Type))
         {
+            if (PreDefinedHelper.IsPreDefinedType(current.Type))
+            {
+                return current.Type;
+            }
+            
+            var interfaceName = $"I{current.Type}";
+            if (PreDefinedHelper.IsPreDefinedInterface(interfaceName))
+            {
+                return interfaceName;
+            }
+            
             if (IsVector(current, nodes))
             {
                 var dataNode = current.Children(nodes)[0].Children(nodes)[1];
@@ -363,10 +405,6 @@ public class TypeGenerator
                 return "bool";
             case "string" :
                 return "string";
-            case "TypelessData" :
-                return "TypelessData";
-            case "StreamingInfo" :
-                return "StreamingInfo";
             default: throw new NotSupportedException($"Unity type not supported: {current.Type}");
         }
     }
@@ -375,8 +413,8 @@ public class TypeGenerator
     {
         return unityType switch
         { 
-            "SInt8" or "UInt8" or "char" or "short" or "SInt16" or "UInt16" or "unsigned short" or "int" or "SInt32" or "UInt32" or "unsigned int" or "Type*" or "long long" or "SInt64" or "UInt64" or "unsigned long long" or "FileSize" or "float" or "double" or "bool" or "string" or "TypelessData" or "StreamingInfo" => true,
-            _ => false
+            "SInt8" or "UInt8" or "char" or "short" or "SInt16" or "UInt16" or "unsigned short" or "int" or "SInt32" or "UInt32" or "unsigned int" or "Type*" or "long long" or "SInt64" or "UInt64" or "unsigned long long" or "FileSize" or "float" or "double" or "bool" or "string" => true,
+            _ => false,
         };
     }
 

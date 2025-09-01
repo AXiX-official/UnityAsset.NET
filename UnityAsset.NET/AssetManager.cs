@@ -6,7 +6,8 @@ using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.TypeTreeHelper;
-using UnityAsset.NET.TypeTreeHelper.Specialized;
+using UnityAsset.NET.TypeTreeHelper.PreDefined;
+using UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
 
 namespace UnityAsset.NET;
 

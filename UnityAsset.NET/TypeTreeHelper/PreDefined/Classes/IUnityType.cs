@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace UnityAsset.NET.Classes;
+namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
-public interface IAsset
+public interface IUnityType
 {
     public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "");
     

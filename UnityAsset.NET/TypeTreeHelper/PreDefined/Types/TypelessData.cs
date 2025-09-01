@@ -1,10 +1,10 @@
 ﻿using System.Text;
-using UnityAsset.NET.Classes;
 using UnityAsset.NET.IO;
+using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
-namespace UnityAsset.NET.TypeTreeHelper.Specialized;
+namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
 
-public class TypelessData : IAsset
+public class TypelessData  : IPreDefinedType
 {
     public Int32 size { get; }
     public byte[] data { get; }

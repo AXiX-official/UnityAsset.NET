@@ -1,7 +1,7 @@
 ﻿namespace UnityAsset.NET.TypeTreeHelper;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
-public class OriginalNameAttribute : Attribute
+public sealed class OriginalNameAttribute : Attribute
 {
     public string Name { get; }
 

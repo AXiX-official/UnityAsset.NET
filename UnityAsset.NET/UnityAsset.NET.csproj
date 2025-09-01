@@ -46,5 +46,8 @@
     <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
         <PackageReference Include="AssetRipper.TextureDecoder" Version="2.3.0" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Classes\" />
+    </ItemGroup>
 
 </Project>

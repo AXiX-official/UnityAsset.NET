@@ -8,8 +8,10 @@ using AssetRipper.TextureDecoder.Pvrtc;
 using AssetRipper.TextureDecoder.Rgb;
 using AssetRipper.TextureDecoder.Rgb.Formats;
 using AssetRipper.TextureDecoder.Yuy2;
-using UnityAsset.NET.Classes;
 using UnityAsset.NET.Enums;
+using UnityAsset.NET.Extensions;
+using UnityAsset.NET.TypeTreeHelper;
+using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
 namespace UnityAsset.NET.TextureHelper;
 
@@ -63,17 +65,21 @@ public static class TextureHelper
             }
         }
 
-        if (assetManager.BuildTarget == BuildTarget.Switch && tex.m_PlatformBlob.Count >= 12)
+        if (assetManager.BuildTarget == BuildTarget.Switch)
         {
-            var gobsPerBlock = 1 << BinaryPrimitives.ReadInt32LittleEndian(tex.m_PlatformBlob[8..12].ToArray());
-            if (gobsPerBlock > 1)
+            var m_PlatformBlob = tex.GetPropertyByOriginalName<List<byte>>("m_PlatformBlob");
+            if (m_PlatformBlob.Count >= 12)
             {
-                if (format == TextureFormat.RGB24)
-                    format = TextureFormat.RGBA32;
-                else if (format == TextureFormat.BGR24)
-                    format = TextureFormat.BGRA32;
-                
-                //
+                var gobsPerBlock = 1 << BinaryPrimitives.ReadInt32LittleEndian(m_PlatformBlob[8..12].ToArray());
+                if (gobsPerBlock > 1)
+                {
+                    if (format == TextureFormat.RGB24)
+                        format = TextureFormat.RGBA32;
+                    else if (format == TextureFormat.BGR24)
+                        format = TextureFormat.BGRA32;
+            
+                    //
+                }
             }
         }
         

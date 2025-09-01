@@ -103,9 +103,11 @@ public static class AssemblyManager
         sourceBuilder.AppendLine("using System.Text;");
         sourceBuilder.AppendLine("using System.Collections.Generic;");
         sourceBuilder.AppendLine("using UnityAsset.NET.IO;");
-        sourceBuilder.AppendLine("using UnityAsset.NET.Classes;");
         sourceBuilder.AppendLine("using UnityAsset.NET.TypeTreeHelper;");
-        sourceBuilder.AppendLine("using UnityAsset.NET.TypeTreeHelper.Specialized;");
+        sourceBuilder.AppendLine("using UnityAsset.NET.TypeTreeHelper.PreDefined;");
+        sourceBuilder.AppendLine("using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;");
+        sourceBuilder.AppendLine("using UnityAsset.NET.TypeTreeHelper.PreDefined.Types;");
+        sourceBuilder.AppendLine("using UnityAsset.NET.TypeTreeHelper.PreDefined.Interfaces;");
         sourceBuilder.AppendLine();
         sourceBuilder.AppendLine("namespace UnityAsset.NET.RuntimeType;");
         sourceBuilder.AppendLine();
