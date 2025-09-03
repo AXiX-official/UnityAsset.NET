@@ -1,9 +1,6 @@
-﻿// based on https://github.com/nesrak1/AssetsTools.NET/tree/dev/AssetsTools.NET.Texture/TextureDecoders
-
-using AssetRipper.TextureDecoder.Dxt;
+﻿using AssetRipper.TextureDecoder.Dxt;
 using AssetRipper.TextureDecoder.Etc;
 using UnityAsset.NET.Enums;
-using UnityAsset.NET.TextureHelper.CrnUnity;
 using UnityAsset.NET.TextureHelper.Crunch;
 
 namespace UnityAsset.NET.TextureHelper;
