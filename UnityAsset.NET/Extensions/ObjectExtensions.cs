@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using UnityAsset.NET.TypeTreeHelper;
 
 namespace UnityAsset.NET.Extensions;
@@ -25,5 +26,28 @@ public static class ObjectExtensions
             return typedValue;
         
         throw new InvalidCastException($"Property '{originalName}' is not of type {typeof(T).Name}");
+    }
+    
+    public static bool TryGetPropertyByOriginalName<T>(this object obj, string originalName, [NotNullWhen(true)] out T? value)
+    {
+        value = default;
+
+        var property = obj.GetType()
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .FirstOrDefault(p => p.GetCustomAttribute<OriginalNameAttribute>()?.Name == originalName);
+
+        if (property == null)
+        {
+            return false;
+        }
+
+        var propertyValue = property.GetValue(obj);
+        if (propertyValue is T typedValue)
+        {
+            value = typedValue;
+            return true;
+        }
+
+        return false;
     }
 }

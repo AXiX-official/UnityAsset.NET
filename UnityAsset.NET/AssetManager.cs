@@ -17,6 +17,7 @@ public class AssetManager
     
     private readonly ConcurrentDictionary<string, IFile> _loadedFiles;
     
+    public UnityRevision? Version { get; private set; }
     public BuildTarget? BuildTarget { get; private set; }
 
     public AssetManager(IFileSystem? fileSystem)
@@ -84,14 +85,12 @@ public class AssetManager
                 }
             }
             
-            if (BuildTarget == null)
+            var firstFile = _loadedFiles.Values
+                .FirstOrDefault(file => file is SerializedFile);
+            if (firstFile is SerializedFile firstSerializedFile)
             {
-                var file = _loadedFiles.Values
-                    .FirstOrDefault(file => file is SerializedFile);
-                if (file is SerializedFile sf)
-                {
-                    BuildTarget = sf.Metadata.TargetPlatform;
-                }
+                BuildTarget = firstSerializedFile.Metadata.TargetPlatform;
+                Version = firstSerializedFile.Metadata.UnityVersion;
             }
 
             if (types.Count > 0)

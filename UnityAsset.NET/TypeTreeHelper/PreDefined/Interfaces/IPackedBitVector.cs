@@ -6,5 +6,4 @@ public interface IPackedBitVector : IPreDefinedInterface
 {
     public UInt32 m_NumItems { get; }
     public List<byte> m_Data { get; }
-    public byte m_BitSize { get; }
 }
