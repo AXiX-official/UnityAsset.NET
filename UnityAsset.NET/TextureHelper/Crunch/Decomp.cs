@@ -1,5 +1,4 @@
-﻿using System.Buffers.Binary;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace UnityAsset.NET.TextureHelper.Crunch;
@@ -53,19 +52,61 @@ public static partial class Crunch
         }
     }
     
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public unsafe struct EndianPackedUint
+    {
+        private fixed byte data[4];
+        
+        private UInt32 Value
+        {
+            get
+            {
+                fixed (byte* ptr = data)
+                {
+                    return *(UInt32*)ptr;
+                }
+            }
+            set
+            {
+                fixed (byte* ptr = data)
+                {
+                    *(UInt32*)ptr = value;
+                }
+            }
+        }
+
+        public byte this[int index]
+        {
+            get => data[index];
+            set => data[index] = value;
+        }
+
+        public EndianPackedUint(UInt32 value)
+        {
+            Value = value;
+        }
+        
+        public static implicit operator EndianPackedUint(UInt32 value)
+        {
+            return new EndianPackedUint(value);
+        }
+        
+        public static implicit operator UInt32(EndianPackedUint value)
+        {
+            return value.Value;
+        }
+    }
+    
     public class Palette {
-        // crn_packed_uint<3> m_ofs;
-        public PackedUint ofs;
-        // crn_packed_uint<3> m_size;
-        public PackedUint size;
-        // crn_packed_uint<2> m_num;
-        public PackedUint num;
+        public PackedUint Ofs;
+        public PackedUint Size;
+        public PackedUint Num;
 
         public Palette(ReadOnlySpan<byte> data)
         {
-            ofs = new PackedUint(data[0..], 3);
-            size = new PackedUint(data[3..], 3);
-            num = new PackedUint(data[6..], 2);
+            Ofs = new PackedUint(data[0..], 3);
+            Size = new PackedUint(data[3..], 3);
+            Num = new PackedUint(data[6..], 2);
         }
     }
     

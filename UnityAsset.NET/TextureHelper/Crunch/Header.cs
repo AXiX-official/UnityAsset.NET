@@ -2,39 +2,23 @@
 
 public static partial class Crunch
 {
-    public const UInt32 HeaderMinSize = 74;
-    
     public class Header {
-        // crn_packed_uint<2>    m_sig;
-        // crn_packed_uint<2>    m_header_size;
-        // crn_packed_uint<2>    m_header_crc16;
         public PackedUint Sig;
         public PackedUint HeaderSize;
         public PackedUint HeaderCrc16;
         
-        // crn_packed_uint<4>    m_data_size;
-        // crn_packed_uint<2>    m_data_crc16;
         public PackedUint DataSize;
         public PackedUint DataCrc16;
-
-        // crn_packed_uint<2>    m_width;
-        // crn_packed_uint<2>    m_height;
+        
         public PackedUint Width;
         public PackedUint Height;
         
-        // crn_packed_uint<1>    m_levels;
-        // crn_packed_uint<1>    m_faces;
         public PackedUint Levels;
         public PackedUint Faces;
         
-        // crn_packed_uint<1>    m_format;
-        // crn_packed_uint<2>    m_flags;
         public PackedUint Format;
         public PackedUint Flags;
         
-        // crn_packed_uint<4>    m_reserved;
-        // crn_packed_uint<4>    m_userdata0;
-        // crn_packed_uint<4>    m_userdata1;
         public PackedUint Reserved;
         public PackedUint Userdata0;
         public PackedUint Userdata1;
@@ -45,13 +29,9 @@ public static partial class Crunch
         public Palette AlphaEndpoints;
         public Palette AlphaSelectors;
         
-        // crn_packed_uint<2>    m_tables_size;
-        // crn_packed_uint<3>    m_tables_ofs;
         public PackedUint TablesSize;
         public PackedUint TablesOfs;
         
-        // m_level_ofs[] is actually an array of offsets: m_level_ofs[m_levels]
-        // crn_packed_uint<4>    m_level_ofs[1];
         public PackedUint[] LevelOfs;
 
         public UInt32 BytesPerBlock => (CrnFmt)(UInt32)Format switch
@@ -70,7 +50,7 @@ public static partial class Crunch
                 throw new Exception("Header data is too small");
             
             Sig = new PackedUint(data[0..], 2);
-            if (Sig != CRNSIG_VALUE)
+            if (Sig != SigValue)
                 throw new Exception("Invalid CRN signature");
             HeaderSize = new PackedUint(data[2..], 2);
             if (HeaderSize < HeaderMinSize || HeaderSize > data.Length)

@@ -1,61 +1,65 @@
-﻿using System.Diagnostics;
+﻿using System.Buffers;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace UnityAsset.NET.TextureHelper.Crunch;
 
 public static partial class Crunch
 {
-    internal sealed class StaticHuffmanDataModel
+    private sealed class StaticHuffmanDataModel : IDisposable
     {
-        public UInt32 TotalSyms = 0;
+        public UInt32 TotalSyms;
         public byte[] CodeSizes = [];
+        public int CodeSizesLength;
         public DecoderTables? DecoderTables;
 
-        /*public StaticHuffmanDataModel(UInt32 totalSyms, byte[] codeSizes, UInt32 codeSizeLimit)
+        public void Resize(UInt32 len)
         {
-            Debug.Assert(totalSyms >= 1 && totalSyms <= MAX_SUPPORTED_SYMS && codeSizeLimit >= 1);
-
-            codeSizeLimit = Math.Min(codeSizeLimit, MAX_EXPECTED_CODE_SIZE);
-            
-            CodeSizes = new byte[totalSyms];
-            
-            UInt32 minCodeSize = UInt32.MaxValue;
-            UInt32 maxCodeSize = 0;
-            
-            
-            Array.Copy(codeSizes, CodeSizes, totalSyms);
-            for (UInt32 i = 0; i < totalSyms; i++)
+            if (CodeSizes.Length > 0)
             {
-                var s = codeSizes[i];
-                minCodeSize = Math.Min(minCodeSize, s);
-                maxCodeSize = Math.Max(maxCodeSize, s);
+                ArrayPool<byte>.Shared.Return(CodeSizes);
             }
-            
-            if ((maxCodeSize < 1) || (maxCodeSize > 32) || (minCodeSize > codeSizeLimit))
-                throw new Exception("Invalid code sizes in StaticHuffmanDataModel");
-            
-            if (maxCodeSize > codeSizeLimit)
-                throw new Exception("maxCodeSize exceeds codeSizeLimit in StaticHuffmanDataModel");
-            
-            DecoderTables = new DecoderTables(totalSyms, CodeSizes, ComputeDecoderTableBits());
-        }*/
 
+            if (len > 0)
+            {
+                CodeSizes = ArrayPool<byte>.Shared.Rent((int)len);
+                CodeSizes.AsSpan(0, (int)len).Clear();
+            }
+            else
+            {
+                CodeSizes = [];
+            }
+            CodeSizesLength = (int)len;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PrepareDecoderTables()
         {
-            UInt32 totalSyms = (UInt32)CodeSizes.Length;
+            UInt32 totalSyms = (UInt32)CodeSizesLength;
             
-            Debug.Assert(totalSyms >= 1 && totalSyms <= MAX_SUPPORTED_SYMS);
+            Debug.Assert(totalSyms >= 1 && totalSyms <= MaxSupportedSyms);
             
             TotalSyms = totalSyms;
             
-            DecoderTables ??= new DecoderTables(TotalSyms, CodeSizes, ComputeDecoderTableBits());
+            DecoderTables ??= new DecoderTables(TotalSyms, CodeSizes.AsSpan(0, CodeSizesLength), ComputeDecoderTableBits());
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UInt32 ComputeDecoderTableBits()
         {
             UInt32 decoderTableBits = 0;
             if (TotalSyms > 16)
-                decoderTableBits = Math.Min(1 + CeilLog2i(TotalSyms), MAX_TABLE_BITS);
+                decoderTableBits = Math.Min(1 + CeilLog2I(TotalSyms), MaxTableBits);
             return decoderTableBits;
+        }
+        
+        public void Dispose()
+        {
+            if (CodeSizes.Length > 0)
+            {
+                ArrayPool<byte>.Shared.Return(CodeSizes);
+                CodeSizes = [];
+            }
         }
     }
 }

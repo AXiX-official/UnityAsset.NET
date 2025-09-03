@@ -5,7 +5,7 @@ namespace UnityAsset.NET.TextureHelper.Crunch;
 
 public static partial class Crunch
 {
-    internal sealed class SymbolCodec
+    private sealed class SymbolCodec
     {
         public byte[] DecodeBuf = [];
         public UInt32 DecodeBufNext;
@@ -29,23 +29,23 @@ public static partial class Crunch
 
         public void DecodeReceiveStaticDataModel(StaticHuffmanDataModel model)
         {
-            UInt32 totalUsedSyms = DecodeBits(TotalBits(MAX_SUPPORTED_SYMS));
+            UInt32 totalUsedSyms = DecodeBits(TotalBits(MaxSupportedSyms));
 
             if (totalUsedSyms == 0)
                 throw new Exception("totalUsedSyms is zero in DecodeReceiveStaticDataModel");
             
-            model.CodeSizes = new byte[totalUsedSyms];
+            model.Resize(totalUsedSyms);
             
             UInt32 numCodelengthCodesToSend = DecodeBits(5);
-            if (numCodelengthCodesToSend < 1 || numCodelengthCodesToSend > MAX_CODELENGTH_CODES)
+            if (numCodelengthCodesToSend < 1 || numCodelengthCodesToSend > MaxCodeLengthCodes)
                 throw new Exception("numCodelengthCodesToSend out of range in DecodeReceiveStaticDataModel");
 
             var dm = new StaticHuffmanDataModel();
-            dm.CodeSizes = new byte[MAX_CODELENGTH_CODES];
+            dm.Resize(MaxCodeLengthCodes);
 
             for (int i = 0; i < numCodelengthCodesToSend; i++)
             {
-                dm.CodeSizes[MOST_PROBABLE_CODELENGTH_CODES[i]] = (byte)DecodeBits(3);
+                dm.CodeSizes[MostProbableCodeLengthCodes[i]] = (byte)DecodeBits(3);
             }
             
             dm.PrepareDecoderTables();
@@ -58,29 +58,29 @@ public static partial class Crunch
                 UInt32 code = Decode(dm);
                 if (code <= 16)
                     model.CodeSizes[ofs++] = (byte)code;
-                else if (code == SMALL_ZERO_RUN_CODE)
+                else if (code == SmallZeroRunCode)
                 {
-                    UInt32 len = DecodeBits(SMALL_ZERO_RUN_EXTRA_BITS) + MIN_SMALL_ZERO_RUN_SIZE;
+                    UInt32 len = DecodeBits(SmallZeroRunExtraBits) + MinSmallZeroRunSize;
                     if (len > numRemaining)
                         throw new Exception("len is greater than the remaining length");
                     ofs += len;
                 }
-                else if (code == LARGE_ZERO_RUN_CODE)
+                else if (code == LargeZeroRunCode)
                 {
-                    UInt32 len = DecodeBits(LARGE_ZERO_RUN_EXTRA_BITS) + MIN_LARGE_ZERO_RUN_SIZE;
+                    UInt32 len = DecodeBits(LargeZeroRunExtraBits) + MinLargeZeroRunSize;
                     if (len > numRemaining)
                         throw new Exception("len is greater than the remaining length");
                     ofs += len;
                 }
-                else if (code == SMALL_REPEAT_CODE || code == LARGE_REPEAT_CODE)
+                else if (code == SmallRepeatCode || code == LargeRepeatCode)
                 {
                     UInt32 len =
-                        code == SMALL_REPEAT_CODE
-                            ? DecodeBits(SMALL_NON_ZERO_RUN_EXTRA_BITS) + SMALL_MIN_NON_ZERO_RUN_SIZE
-                            : DecodeBits(LARGE_NON_ZERO_RUN_EXTRA_BITS) + LARGE_MIN_NON_ZERO_RUN_SIZE;
+                        code == SmallRepeatCode
+                            ? DecodeBits(SmallNonZeroRunExtraBits) + SmallMinNonZeroRunSize
+                            : DecodeBits(LargeNonZeroRunExtraBits) + LargeMinNonZeroRunSize;
                     
                     if (ofs == 0 || len > numRemaining)
-                        throw new Exception("len is greater than the remaining length or ofs is zero");
+                        throw new Exception("len is greater than the remaining length or Ofs is zero");
                     UInt32 prev = model.CodeSizes[ofs - 1];
                     if (prev == 0)
                         throw new Exception("previous code size is zero in repeat");
@@ -95,11 +95,12 @@ public static partial class Crunch
             }
             
             if (ofs != totalUsedSyms)
-                throw new Exception("ofs does not equal totalUsedSyms in DecodeReceiveStaticDataModel");
+                throw new Exception("Ofs does not equal totalUsedSyms in DecodeReceiveStaticDataModel");
             
             model.PrepareDecoderTables();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public UInt32 Decode(StaticHuffmanDataModel model)
         {
             if (model.DecoderTables == null)
@@ -146,12 +147,12 @@ public static partial class Crunch
             {
                 len = tables.DecodeStartCodeSize;
 
-                while (k > tables.MaxCodes[len - 1])
+                while (k > tables.MaxCodes[(int)(len - 1)])
                 {
                     len++;
                 }
 
-                var valPtr = tables.ValPtrs[len - 1] + (int)(BitBuf >> (int)(32 - len));
+                var valPtr = tables.ValPtrs[(int)(len - 1)] + (int)(BitBuf >> (int)(32 - len));
                 
                 if (valPtr >= model.TotalSyms)
                     throw new Exception("valPtr out of range in Decode");
@@ -165,6 +166,7 @@ public static partial class Crunch
             return sym;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public UInt32 DecodeBits(UInt32 numBits)
         {
             if (numBits == 0)
@@ -191,11 +193,11 @@ public static partial class Crunch
                     c = DecodeBuf[DecodeBufNext++];
                 
                 BitCount += 8;
-                Debug.Assert(BitCount <= BIT_BUF_SIZE);
-                BitBuf |= c << (int)(BIT_BUF_SIZE - BitCount);
+                Debug.Assert(BitCount <= BitBufSize);
+                BitBuf |= c << (int)(BitBufSize - BitCount);
             }
             
-            UInt32 result = BitBuf >> (int)(BIT_BUF_SIZE - numBits);
+            UInt32 result = BitBuf >> (int)(BitBufSize - numBits);
             BitBuf <<= (int)numBits;
             BitCount -= (int)numBits;
             

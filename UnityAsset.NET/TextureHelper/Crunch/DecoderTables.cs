@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace UnityAsset.NET.TextureHelper.Crunch;
 
 public static partial class Crunch
 {
-    internal sealed class DecoderTables
+    private sealed class DecoderTables
     {
         public UInt32 NumSyms;
         public UInt32 TotalUsedSyms;
@@ -16,25 +17,22 @@ public static partial class Crunch
         
         public byte MinCodeSize;
         public byte MaxCodeSize;
-
-        public UInt32[] MaxCodes;
-        public Int32[] ValPtrs;
+        
+        public UInt32[] MaxCodes = new UInt32[MaxExpectedCodeSize + 1];
+        public Int32[] ValPtrs = new Int32[MaxExpectedCodeSize + 1];
         
         public UInt32[] Lookup;
         public UInt16[] SortedSymbolOrder;
 
-        public DecoderTables(UInt32 numSyms, byte[] codeSizes, UInt32 tableBits)
+        public DecoderTables(UInt32 numSyms, ReadOnlySpan<byte> codeSizes, UInt32 tableBits)
         {
-            Span<UInt32> minCodes = stackalloc UInt32[(int)MAX_EXPECTED_CODE_SIZE];
-            if (tableBits > MAX_TABLE_BITS)
-                throw new Exception("tableBits exceeds MAX_TABLE_BITS");
+            Span<UInt32> minCodes = stackalloc UInt32[(int)MaxExpectedCodeSize];
+            if (tableBits > MaxTableBits)
+                throw new Exception("tableBits exceeds MaxTableBits");
             
             NumSyms = numSyms;
             
-            MaxCodes = new UInt32[MAX_EXPECTED_CODE_SIZE + 1];
-            ValPtrs = new Int32[MAX_EXPECTED_CODE_SIZE + 1];
-            
-            Span<UInt32> numCodes = stackalloc UInt32[(int)MAX_EXPECTED_CODE_SIZE + 1];
+            Span<UInt32> numCodes = stackalloc UInt32[(int)MaxExpectedCodeSize + 1];
             for (int i = 0; i < numSyms; i++)
             {
                 var c = codeSizes[i];
@@ -44,14 +42,14 @@ public static partial class Crunch
                 }
             }
             
-            Span<UInt32> sortedPositions = stackalloc UInt32[(int)MAX_EXPECTED_CODE_SIZE + 1];
+            Span<UInt32> sortedPositions = stackalloc UInt32[(int)MaxExpectedCodeSize + 1];
             
             UInt32 curCode = 0;
             
             UInt32 totalUsedSyms = 0;
             UInt32 maxCodeSize = 0;
             UInt32 minCodeSize = UInt32.MaxValue;
-            for (UInt32 i = 1; i <= MAX_EXPECTED_CODE_SIZE; i++)
+            for (UInt32 i = 1; i <= MaxExpectedCodeSize; i++)
             {
                 UInt32 n = numCodes[(int)i];
 
@@ -117,10 +115,7 @@ public static partial class Crunch
                 var tableSize = 1 << (int)tableBits;
 
                 Lookup = new UInt32[tableSize];
-                for (int i = 0; i < tableSize; i++)
-                {
-                    Lookup[i] = UInt32.MaxValue;
-                }
+                MemoryMarshal.AsBytes(Lookup.AsSpan()).Fill(0xFF);
 
                 for (UInt32 codeSize = 1; codeSize <= tableBits; codeSize++)
                 {
@@ -154,7 +149,7 @@ public static partial class Crunch
                 Lookup = [];
             }
 
-            for (int i = 0; i < MAX_EXPECTED_CODE_SIZE; i++)
+            for (int i = 0; i < MaxExpectedCodeSize; i++)
                 ValPtrs[i] -= (Int32)minCodes[i];
             
             TableMaxCode = 0;
@@ -175,7 +170,7 @@ public static partial class Crunch
                 if (i >= 1)
                 {
                     DecodeStartCodeSize = tableBits + 1;
-                    for (UInt32 j = tableBits + 1; j <= MAX_EXPECTED_CODE_SIZE; j++)
+                    for (UInt32 j = tableBits + 1; j <= MaxExpectedCodeSize; j++)
                     {
                         if (numCodes[(int)j] != 0)
                         {
@@ -187,8 +182,8 @@ public static partial class Crunch
             }
             
             // sentinels
-            MaxCodes[MAX_EXPECTED_CODE_SIZE] = UInt32.MaxValue;
-            ValPtrs[MAX_EXPECTED_CODE_SIZE] = 0xFFFFF;
+            MaxCodes[MaxExpectedCodeSize] = UInt32.MaxValue;
+            ValPtrs[MaxExpectedCodeSize] = 0xFFFFF;
             
             TableShift = 32 - TableBits;
         }
@@ -196,7 +191,7 @@ public static partial class Crunch
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UInt32 GetUnshiftedMaxCode(UInt32 len)
         {
-            Debug.Assert(len >= 1 && len <= MAX_EXPECTED_CODE_SIZE);
+            Debug.Assert(len >= 1 && len <= MaxExpectedCodeSize);
             UInt32 k = MaxCodes[(int)(len - 1)];
             if (k == 0)
                 return UInt32.MaxValue;

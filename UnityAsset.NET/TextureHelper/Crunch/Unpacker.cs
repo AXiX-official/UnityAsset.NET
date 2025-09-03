@@ -1,5 +1,5 @@
 ﻿using System.Buffers.Binary;
-using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Diagnostics;
 
 namespace UnityAsset.NET.TextureHelper.Crunch;
@@ -14,7 +14,7 @@ public static partial class Crunch
         public UInt16 Alpha1EndpointIndex;
     }
     
-    public class Unpacker
+    public sealed class Unpacker
     { 
         public Header Header;
         public byte[] Data;
@@ -135,7 +135,7 @@ public static partial class Crunch
             }
         }
 
-        private void UnpackDxt1(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
+        private unsafe void UnpackDxt1(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
         {
             var numColorEndpoints = _colorEndpoints.Length;
             UInt32 width = (UInt32)(outputWidth + 1 & ~1);
@@ -150,58 +150,50 @@ public static partial class Crunch
 
             for (int f = 0; f < Header.Faces; f++)
             {
-                var row = dst[f];
-                var pRow = 0;
-                for (int y = 0; y < height; y++, pRow += deltaPitchInDwords << 2)
+                fixed (byte* pData = dst[f])
                 {
-                    bool visible = y < outputHeight;
-                    for (int x = 0; x < width; x++, pRow += 2 << 2)
+                    var pRow = (UInt32*)pData;
+                    for (int y = 0; y < height; y++, pRow += deltaPitchInDwords)
                     {
-                        visible = visible && x < outputWidth;
-                        if ((y & 1) == 0 && (x & 1) == 0)
-                            referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
-                        ref BlockBufferElement buffer = ref _blockBuffer[x];
-                        byte endpointReference;
-                        if ((y & 1) != 0)
+                        for (int x = 0; x < width; x++, pRow += 2)
                         {
-                            endpointReference = (byte)buffer.EndpointReference;
-                        }
-                        else
-                        {
-                            endpointReference = (byte)(referenceGroup & 3);
-                            referenceGroup >>= 2;
-                            buffer.EndpointReference = (UInt16)(referenceGroup & 3);
-                            referenceGroup >>= 2;
-                        }
-
-                        if (endpointReference == 0)
-                        {
-                            colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
-                            if (colorEndpointIndex >= numColorEndpoints)
-                                colorEndpointIndex -= (UInt32)numColorEndpoints;
-                            buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
-                        }
-                        else if (endpointReference == 1)
-                        {
-                            buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
-                        }
-                        else
-                        {
-                            colorEndpointIndex = buffer.ColorEndpointIndex;
-                        }
-
-                        UInt32 colorSelectorIndex = _codec.Decode(_selectorDeltaDm[0]);
-                        if (visible)
-                        {
-                            if (CRND_LITTLE_ENDIAN_PLATFORM)
+                            if ((y & 1) == 0 && (x & 1) == 0)
+                                referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
+                            ref BlockBufferElement buffer = ref _blockBuffer[x];
+                            byte endpointReference;
+                            if ((y & 1) != 0)
                             {
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow), _colorEndpoints[colorEndpointIndex]);
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow + 4), _colorSelectors[colorSelectorIndex]);
+                                endpointReference = (byte)buffer.EndpointReference;
                             }
                             else
                             {
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow), _colorEndpoints[colorEndpointIndex]);
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow + 4), _colorSelectors[colorSelectorIndex]);
+                                endpointReference = (byte)(referenceGroup & 3);
+                                referenceGroup >>= 2;
+                                buffer.EndpointReference = (UInt16)(referenceGroup & 3);
+                                referenceGroup >>= 2;
+                            }
+
+                            if (endpointReference == 0)
+                            {
+                                colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
+                                if (colorEndpointIndex >= numColorEndpoints)
+                                    colorEndpointIndex -= (UInt32)numColorEndpoints;
+                                buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
+                            }
+                            else if (endpointReference == 1)
+                            {
+                                buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
+                            }
+                            else
+                            {
+                                colorEndpointIndex = buffer.ColorEndpointIndex;
+                            }
+
+                            UInt32 colorSelectorIndex = _codec.Decode(_selectorDeltaDm[0]);
+                            if (y < outputHeight && x < outputWidth)
+                            {
+                                pRow[0] = _colorEndpoints[colorEndpointIndex];
+                                pRow[1] = _colorSelectors[colorSelectorIndex];
                             }
                         }
                     }
@@ -209,7 +201,7 @@ public static partial class Crunch
             }
         }
         
-        private void UnpackDxt5(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
+        private unsafe void UnpackDxt5(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
         {
             var numColorEndpoints = _colorEndpoints.Length;
             var numAlphaEndpoints = _alphaEndpoints.Length;
@@ -226,78 +218,62 @@ public static partial class Crunch
 
             for (int f = 0; f < Header.Faces; f++)
             {
-                var row = dst[f];
-                var pRow = 0;
-                for (int y = 0; y < height; y++, pRow += deltaPitchInDwords << 2)
+                fixed (byte* pData = dst[f])
                 {
-                    bool visible = y < outputHeight;
-                    for (int x = 0; x < width; x++, pRow += 4 << 2)
+                    var pRow = (UInt32*)pData;
+                    for (int y = 0; y < height; y++, pRow += deltaPitchInDwords)
                     {
-                        visible = visible && x < outputWidth;
-                        if ((y & 1) == 0 && (x & 1) == 0)
-                            referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
-                        ref BlockBufferElement buffer = ref _blockBuffer[x];
-                        byte endpointReference;
-                        if ((y & 1) != 0)
+                        for (int x = 0; x < width; x++, pRow += 4)
                         {
-                            endpointReference = (byte)buffer.EndpointReference;
-                        }
-                        else
-                        {
-                            endpointReference = (byte)(referenceGroup & 3);
-                            referenceGroup >>= 2;
-                            buffer.EndpointReference = (UInt16)(referenceGroup & 3);
-                            referenceGroup >>= 2;
-                        }
-
-                        if (endpointReference == 0)
-                        {
-                            colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
-                            if (colorEndpointIndex >= numColorEndpoints)
-                                colorEndpointIndex -= (UInt32)numColorEndpoints;
-                            buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
-                            alpha0EndpointIndex += _codec.Decode(_endpointDeltaDm[1]);
-                            if (alpha0EndpointIndex >= numAlphaEndpoints)
-                                alpha0EndpointIndex -= (UInt32)numAlphaEndpoints;
-                            buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
-                        }
-                        else if (endpointReference == 1)
-                        {
-                            buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
-                            buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
-                        }
-                        else
-                        {
-                            colorEndpointIndex = buffer.ColorEndpointIndex;
-                            alpha0EndpointIndex = buffer.Alpha0EndpointIndex;
-                        }
-
-                        var colorSelectorIndex = _codec.Decode(_selectorDeltaDm[0]);
-                        var alpha0SelectorIndex = _codec.Decode(_selectorDeltaDm[1]);
-                        if (visible)
-                        {
-                            var pAlpha0Selectors = alpha0SelectorIndex * 3;
-                            if (CRND_LITTLE_ENDIAN_PLATFORM)
+                            if ((y & 1) == 0 && (x & 1) == 0)
+                                referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
+                            ref BlockBufferElement buffer = ref _blockBuffer[x];
+                            byte endpointReference;
+                            if ((y & 1) != 0)
                             {
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow),
-                                    (UInt32)(_alphaEndpoints[alpha0EndpointIndex] | (_alphaSelectors[pAlpha0Selectors] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow + 4),
-                                    (UInt32)(_alphaSelectors[pAlpha0Selectors + 1] | (_alphaSelectors[pAlpha0Selectors + 2] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow + 8), _colorEndpoints[colorEndpointIndex]);
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow + 12),_colorSelectors[colorSelectorIndex]);
+                                endpointReference = (byte)buffer.EndpointReference;
                             }
                             else
                             {
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow),
-                                    (UInt32)(_alphaEndpoints[alpha0EndpointIndex] | (_alphaSelectors[pAlpha0Selectors] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow + 4),
-                                    (UInt32)(_alphaSelectors[pAlpha0Selectors + 1] | (_alphaSelectors[pAlpha0Selectors + 2] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow + 8), _colorEndpoints[colorEndpointIndex]);
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow + 12),_colorSelectors[colorSelectorIndex]);
+                                endpointReference = (byte)(referenceGroup & 3);
+                                referenceGroup >>= 2;
+                                buffer.EndpointReference = (UInt16)(referenceGroup & 3);
+                                referenceGroup >>= 2;
+                            }
+
+                            if (endpointReference == 0)
+                            {
+                                colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
+                                if (colorEndpointIndex >= numColorEndpoints)
+                                    colorEndpointIndex -= (UInt32)numColorEndpoints;
+                                buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
+                                alpha0EndpointIndex += _codec.Decode(_endpointDeltaDm[1]);
+                                if (alpha0EndpointIndex >= numAlphaEndpoints)
+                                    alpha0EndpointIndex -= (UInt32)numAlphaEndpoints;
+                                buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
+                            }
+                            else if (endpointReference == 1)
+                            {
+                                buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
+                                buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
+                            }
+                            else
+                            {
+                                colorEndpointIndex = buffer.ColorEndpointIndex;
+                                alpha0EndpointIndex = buffer.Alpha0EndpointIndex;
+                            }
+
+                            var colorSelectorIndex = _codec.Decode(_selectorDeltaDm[0]);
+                            var alpha0SelectorIndex = _codec.Decode(_selectorDeltaDm[1]);
+                            if (y < outputHeight && x < outputWidth)
+                            {
+                                var pAlpha0Selectors = alpha0SelectorIndex * 3;
+                                pRow[0] = (UInt32)(_alphaEndpoints[(int)alpha0EndpointIndex] |
+                                                   (_alphaSelectors[(int)pAlpha0Selectors] << 16));
+                                pRow[1] = (UInt32)(_alphaSelectors[(int)(pAlpha0Selectors + 1)] |
+                                                   (_alphaSelectors[(int)(pAlpha0Selectors + 2)] << 16));
+                                pRow[2] = _colorEndpoints[(int)colorEndpointIndex];
+                                pRow[3] = _colorSelectors[(int)colorSelectorIndex];
                             }
                         }
                     }
@@ -305,7 +281,7 @@ public static partial class Crunch
             }
         }
 
-        private void UnpackDxt5a(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
+        private unsafe void UnpackDxt5a(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
         {
             var numAlphaEndpoints = _alphaEndpoints.Length;
             UInt32 width = (UInt32)(outputWidth + 1 & ~1);
@@ -320,67 +296,53 @@ public static partial class Crunch
 
             for (int f = 0; f < Header.Faces; f++)
             {
-                var row = dst[f];
-                var pRow = 0;
-                for (int y = 0; y < height; y++, pRow += deltaPitchInDwords << 2)
+                fixed (byte* pData = dst[f])
                 {
-                    bool visible = y < outputHeight;
-                    for (int x = 0; x < width; x++, pRow += 2 << 2)
+                    var pRow = (UInt32*)pData;
+                    for (int y = 0; y < height; y++, pRow += deltaPitchInDwords)
                     {
-                        visible = visible && x < outputWidth;
-                        if ((y & 1) == 0 && (x & 1) == 0)
-                            referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
-                        ref BlockBufferElement buffer = ref _blockBuffer[x];
-                        byte endpointReference;
-                        if ((y & 1) != 0)
+                        for (int x = 0; x < width; x++, pRow += 2)
                         {
-                            endpointReference = (byte)buffer.EndpointReference;
-                        }
-                        else
-                        {
-                            endpointReference = (byte)(referenceGroup & 3);
-                            referenceGroup >>= 2;
-                            buffer.EndpointReference = (UInt16)(referenceGroup & 3);
-                            referenceGroup >>= 2;
-                        }
-
-                        if (endpointReference == 0)
-                        {
-                            alpha0EndpointIndex += _codec.Decode(_endpointDeltaDm[1]);
-                            if (alpha0EndpointIndex >= numAlphaEndpoints)
-                                alpha0EndpointIndex -= (UInt32)numAlphaEndpoints;
-                            buffer.ColorEndpointIndex = (UInt16)alpha0EndpointIndex;
-                        }
-                        else if (endpointReference == 1)
-                        {
-                            buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
-                        }
-                        else
-                        {
-                            alpha0EndpointIndex = buffer.Alpha0EndpointIndex;
-                        }
-
-                        UInt32 alpha0SelectorIndex = _codec.Decode(_selectorDeltaDm[1]);
-                        if (visible)
-                        {
-                            var pAlpha0Selectors = alpha0SelectorIndex * 3;
-                            if (CRND_LITTLE_ENDIAN_PLATFORM)
+                            if ((y & 1) == 0 && (x & 1) == 0)
+                                referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
+                            ref BlockBufferElement buffer = ref _blockBuffer[x];
+                            byte endpointReference;
+                            if ((y & 1) != 0)
                             {
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow),
-                                    (UInt32)(_alphaSelectors[alpha0SelectorIndex] | (_alphaSelectors[pAlpha0Selectors] << 16))
-                                 );
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow + 4), 
-                                    (UInt32)(_alphaSelectors[pAlpha0Selectors + 1] | (_alphaSelectors[pAlpha0Selectors + 2] << 16))
-                                );
+                                endpointReference = (byte)buffer.EndpointReference;
                             }
                             else
                             {
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow),
-                                    (UInt32)(_alphaSelectors[alpha0SelectorIndex] | (_alphaSelectors[pAlpha0Selectors] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow + 4), 
-                                    (UInt32)(_alphaSelectors[pAlpha0Selectors + 1] | (_alphaSelectors[pAlpha0Selectors + 2] << 16))
-                                );
+                                endpointReference = (byte)(referenceGroup & 3);
+                                referenceGroup >>= 2;
+                                buffer.EndpointReference = (UInt16)(referenceGroup & 3);
+                                referenceGroup >>= 2;
+                            }
+
+                            if (endpointReference == 0)
+                            {
+                                alpha0EndpointIndex += _codec.Decode(_endpointDeltaDm[1]);
+                                if (alpha0EndpointIndex >= numAlphaEndpoints)
+                                    alpha0EndpointIndex -= (UInt32)numAlphaEndpoints;
+                                buffer.ColorEndpointIndex = (UInt16)alpha0EndpointIndex;
+                            }
+                            else if (endpointReference == 1)
+                            {
+                                buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
+                            }
+                            else
+                            {
+                                alpha0EndpointIndex = buffer.Alpha0EndpointIndex;
+                            }
+
+                            UInt32 alpha0SelectorIndex = _codec.Decode(_selectorDeltaDm[1]);
+                            if (y < outputHeight && x < outputWidth)
+                            {
+                                var pAlpha0Selectors = alpha0SelectorIndex * 3;
+                                pRow[0] = (UInt32)(_alphaSelectors[alpha0SelectorIndex] |
+                                                   (_alphaSelectors[pAlpha0Selectors] << 16));
+                                pRow[1] = (UInt32)(_alphaSelectors[pAlpha0Selectors + 1] |
+                                                   (_alphaSelectors[pAlpha0Selectors + 2] << 16));
                             }
                         }
                     }
@@ -388,7 +350,7 @@ public static partial class Crunch
             }
         }
         
-        private void UnpackDxn(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
+        private unsafe void UnpackDxn(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
         {
             var numAlphaEndpoints = _alphaEndpoints.Length;
             UInt32 width = (UInt32)(outputWidth + 1 & ~1);
@@ -404,87 +366,65 @@ public static partial class Crunch
 
             for (int f = 0; f < Header.Faces; f++)
             {
-                var row = dst[f];
-                var pRow = 0;
-                for (int y = 0; y < height; y++, pRow += deltaPitchInDwords << 2)
+                fixed (byte* pData = dst[f])
                 {
-                    bool visible = y < outputHeight;
-                    for (int x = 0; x < width; x++, pRow += 4 << 2)
+                    var pRow = (UInt32*)pData;
+                    for (int y = 0; y < height; y++, pRow += deltaPitchInDwords)
                     {
-                        visible = visible && x < outputWidth;
-                        if ((y & 1) == 0 && (x & 1) == 0)
-                            referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
-                        ref BlockBufferElement buffer = ref _blockBuffer[x];
-                        byte endpointReference;
-                        if ((y & 1) != 0)
+                        for (int x = 0; x < width; x++, pRow += 4)
                         {
-                            endpointReference = (byte)buffer.EndpointReference;
-                        }
-                        else
-                        {
-                            endpointReference = (byte)(referenceGroup & 3);
-                            referenceGroup >>= 2;
-                            buffer.EndpointReference = (UInt16)(referenceGroup & 3);
-                            referenceGroup >>= 2;
-                        }
-
-                        if (endpointReference == 0)
-                        {
-                            alpha0EndpointIndex += _codec.Decode(_endpointDeltaDm[1]);
-                            if (alpha0EndpointIndex >= numAlphaEndpoints)
-                                alpha0EndpointIndex -= (UInt32)numAlphaEndpoints;
-                            buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
-                            alpha1EndpointIndex += _codec.Decode(_endpointDeltaDm[1]);
-                            if (alpha1EndpointIndex >= numAlphaEndpoints)
-                                alpha1EndpointIndex -= (UInt32)numAlphaEndpoints;
-                            buffer.Alpha0EndpointIndex = (UInt16)alpha1EndpointIndex;
-                        }
-                        else if (endpointReference == 1)
-                        {
-                            buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
-                            buffer.Alpha1EndpointIndex = (UInt16)alpha1EndpointIndex;
-                        }
-                        else
-                        {
-                            alpha0EndpointIndex = buffer.Alpha0EndpointIndex;
-                            alpha1EndpointIndex = buffer.Alpha1EndpointIndex;
-                        }
-
-                        UInt32 alpha0SelectorIndex = _codec.Decode(_selectorDeltaDm[1]);
-                        UInt32 alpha1SelectorIndex = _codec.Decode(_selectorDeltaDm[1]);
-                        if (visible)
-                        {
-                            var pAlpha0Selectors = alpha0SelectorIndex * 3;
-                            var pAlpha1Selectors = alpha1SelectorIndex * 3;
-                            if (CRND_LITTLE_ENDIAN_PLATFORM)
+                            if ((y & 1) == 0 && (x & 1) == 0)
+                                referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
+                            ref BlockBufferElement buffer = ref _blockBuffer[x];
+                            byte endpointReference;
+                            if ((y & 1) != 0)
                             {
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow),
-                                    (UInt32)(_alphaEndpoints[alpha0EndpointIndex] | (_alphaSelectors[pAlpha0Selectors] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow + 4),
-                                    (UInt32)(_alphaSelectors[pAlpha0Selectors + 1] | (_alphaSelectors[pAlpha0Selectors + 2] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow + 8),
-                                    (UInt32)(_alphaEndpoints[alpha1EndpointIndex] | (_alphaSelectors[pAlpha1Selectors] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow + 12),
-                                    (UInt32)(_alphaSelectors[pAlpha1Selectors + 1] | (_alphaSelectors[pAlpha1Selectors + 2] << 16))
-                                );
+                                endpointReference = (byte)buffer.EndpointReference;
                             }
                             else
                             {
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow),
-                                    (UInt32)(_alphaEndpoints[alpha0EndpointIndex] | (_alphaSelectors[pAlpha0Selectors] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow + 4),
-                                    (UInt32)(_alphaSelectors[pAlpha0Selectors + 1] | (_alphaSelectors[pAlpha0Selectors + 2] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow + 8),
-                                    (UInt32)(_alphaEndpoints[alpha1EndpointIndex] | (_alphaSelectors[pAlpha1Selectors] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow + 12),
-                                    (UInt32)(_alphaSelectors[pAlpha1Selectors + 1] | (_alphaSelectors[pAlpha1Selectors + 2] << 16))
-                                );
+                                endpointReference = (byte)(referenceGroup & 3);
+                                referenceGroup >>= 2;
+                                buffer.EndpointReference = (UInt16)(referenceGroup & 3);
+                                referenceGroup >>= 2;
+                            }
+
+                            if (endpointReference == 0)
+                            {
+                                alpha0EndpointIndex += _codec.Decode(_endpointDeltaDm[1]);
+                                if (alpha0EndpointIndex >= numAlphaEndpoints)
+                                    alpha0EndpointIndex -= (UInt32)numAlphaEndpoints;
+                                buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
+                                alpha1EndpointIndex += _codec.Decode(_endpointDeltaDm[1]);
+                                if (alpha1EndpointIndex >= numAlphaEndpoints)
+                                    alpha1EndpointIndex -= (UInt32)numAlphaEndpoints;
+                                buffer.Alpha0EndpointIndex = (UInt16)alpha1EndpointIndex;
+                            }
+                            else if (endpointReference == 1)
+                            {
+                                buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
+                                buffer.Alpha1EndpointIndex = (UInt16)alpha1EndpointIndex;
+                            }
+                            else
+                            {
+                                alpha0EndpointIndex = buffer.Alpha0EndpointIndex;
+                                alpha1EndpointIndex = buffer.Alpha1EndpointIndex;
+                            }
+
+                            UInt32 alpha0SelectorIndex = _codec.Decode(_selectorDeltaDm[1]);
+                            UInt32 alpha1SelectorIndex = _codec.Decode(_selectorDeltaDm[1]);
+                            if (y < outputHeight && x < outputWidth)
+                            {
+                                var pAlpha0Selectors = alpha0SelectorIndex * 3;
+                                var pAlpha1Selectors = alpha1SelectorIndex * 3;
+                                pRow[0] = (UInt32)(_alphaEndpoints[alpha0EndpointIndex] |
+                                                   (_alphaSelectors[pAlpha0Selectors] << 16));
+                                pRow[1] = (UInt32)(_alphaSelectors[pAlpha0Selectors + 1] |
+                                                   (_alphaSelectors[pAlpha0Selectors + 2] << 16));
+                                pRow[2] = (UInt32)(_alphaEndpoints[alpha1EndpointIndex] |
+                                                   (_alphaSelectors[pAlpha1Selectors] << 16));
+                                pRow[3] = (UInt32)(_alphaSelectors[pAlpha1Selectors + 1] |
+                                                   (_alphaSelectors[pAlpha1Selectors + 2] << 16));
                             }
                         }
                     }
@@ -492,7 +432,7 @@ public static partial class Crunch
             }
         }
         
-        private void UnpackEtc1(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
+        private unsafe void UnpackEtc1(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
         {
             var numColorEndpoints = _colorEndpoints.Length;
             UInt32 width = (UInt32)(outputWidth + 1 & ~1);
@@ -505,103 +445,80 @@ public static partial class Crunch
             UInt32 colorEndpointIndex = 0;
             UInt32 diagonalColorEndpointIndex = 0;
             byte referenceGroup = 0;
-            Span<byte> blockEndpoint = stackalloc byte[4];
-            Span<byte> e0 = stackalloc byte[4];
-            Span<byte> e1 = stackalloc byte[4];
 
             for (int f = 0; f < Header.Faces; f++)
             {
-                var row = dst[f];
-                var pRow = 0;
-                for (int y = 0; y < height; y++, pRow += deltaPitchInDwords << 2)
+                fixed (byte* pData = dst[f])
                 {
-                    bool visible = y < outputHeight;
-                    for (int x = 0; x < width; x++, pRow += 2 << 2)
+                    var pRow = (UInt32*)pData;
+                    for (int y = 0; y < height; y++, pRow += deltaPitchInDwords)
                     {
-                        visible = visible && x < outputWidth;
-                        var buffer = _blockBuffer[x << 1];
-                        byte endpointReference;
-                        blockEndpoint[0] = 0;
-                        blockEndpoint[1] = 0;
-                        blockEndpoint[2] = 0;
-                        blockEndpoint[3] = 0;
-                        e0[0] = 0;
-                        e0[1] = 0;
-                        e0[2] = 0;
-                        e0[3] = 0;
-                        e1[0] = 0;
-                        e1[1] = 0;
-                        e1[2] = 0;
-                        e1[3] = 0;
-                        if ((y & 1) != 0)
+                        for (int x = 0; x < width; x++, pRow += 2)
                         {
-                            endpointReference = (byte)buffer.EndpointReference;
-                        }
-                        else
-                        {
-                            referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
-                            endpointReference = (byte)((referenceGroup & 3) | (referenceGroup >> 2 & 12));
-                            buffer.EndpointReference = (UInt16)((referenceGroup >> 2 & 3) | (referenceGroup >> 4 & 12));
-                        }
-
-                        if ((endpointReference & 3) == 0)
-                        {
-                            colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
-                            if (colorEndpointIndex >= numColorEndpoints)
-                                colorEndpointIndex -= (UInt32)numColorEndpoints;
-                            buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
-                        }
-                        else if ((endpointReference & 3) == 1)
-                        {
-                            buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
-                        }
-                        else if ((endpointReference & 3) == 3)
-                        {
-                            colorEndpointIndex = diagonalColorEndpointIndex;
-                            buffer.EndpointReference = (UInt16)colorEndpointIndex;
-                        }
-                        else
-                        {
-                            colorEndpointIndex = buffer.ColorEndpointIndex;
-                        }
-
-                        endpointReference >>= 2;
-                        if (CRND_LITTLE_ENDIAN_PLATFORM)
-                        {
-                            BinaryPrimitives.WriteUInt32LittleEndian(e0.Slice(0), _colorEndpoints[colorEndpointIndex]);
-                        }
-                        else
-                        {
-                            BinaryPrimitives.WriteUInt32BigEndian(e0.Slice(0), _colorEndpoints[colorEndpointIndex]);
-                        }
-                        UInt32 selectorIndex = _codec.Decode(_selectorDeltaDm[0]);
-                        if (endpointReference != 0)
-                        {
-                            colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
-                            if (colorEndpointIndex >= numColorEndpoints)
-                                colorEndpointIndex -= (UInt32)numColorEndpoints;
-                        }
-                        diagonalColorEndpointIndex = _blockBuffer[x << 1 | 1].ColorEndpointIndex;
-                        _blockBuffer[x << 1 | 1].ColorEndpointIndex = (UInt16)colorEndpointIndex;
-                        if (visible)
-                        {
-                            UInt32 flip = (UInt32)(endpointReference >> 1 ^ 1);
-                            UInt32 diff = 1;
-                            for (int c = 0; (diff & c) < 3; c++)
-                                diff = ((e0[c] + 3 >= e1[c]) && (e1[c] + 4 >= e0[c])) ? diff : 0;
-                            for (int c = 0; c < 3; c++)
-                                blockEndpoint[c] = diff != 0 
-                                    ? (byte)(e0[c] << 3 | ((e1[c] - e0[c]) & 7)) 
-                                    : (byte)((e0[c] << 3 & 0xF0) | e1[c] >> 1);
-                            blockEndpoint[3] = (byte)(e0[3] << 5 | e1[3] << 2 | (int)(diff << 1) | (int)flip);
-                            blockEndpoint.Slice(0, 4).CopyTo(row.AsSpan(pRow));
-                            if (CRND_LITTLE_ENDIAN_PLATFORM)
+                            var buffer = _blockBuffer[x << 1];
+                            byte endpointReference;
+                            EndianPackedUint blockEndpoint = 0;
+                            EndianPackedUint e0 = 0;
+                            EndianPackedUint e1 = 0;
+                            if ((y & 1) != 0)
                             {
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow + 4), _colorSelectors[selectorIndex << 1 | flip]);
+                                endpointReference = (byte)buffer.EndpointReference;
                             }
                             else
                             {
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow + 4), _colorSelectors[selectorIndex << 1 | flip]);
+                                referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
+                                endpointReference = (byte)((referenceGroup & 3) | (referenceGroup >> 2 & 12));
+                                buffer.EndpointReference =
+                                    (UInt16)((referenceGroup >> 2 & 3) | (referenceGroup >> 4 & 12));
+                            }
+
+                            if ((endpointReference & 3) == 0)
+                            {
+                                colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
+                                if (colorEndpointIndex >= numColorEndpoints)
+                                    colorEndpointIndex -= (UInt32)numColorEndpoints;
+                                buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
+                            }
+                            else if ((endpointReference & 3) == 1)
+                            {
+                                buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
+                            }
+                            else if ((endpointReference & 3) == 3)
+                            {
+                                colorEndpointIndex = diagonalColorEndpointIndex;
+                                buffer.EndpointReference = (UInt16)colorEndpointIndex;
+                            }
+                            else
+                            {
+                                colorEndpointIndex = buffer.ColorEndpointIndex;
+                            }
+
+                            endpointReference >>= 2;
+                            e0 = _colorEndpoints[colorEndpointIndex];
+
+                            UInt32 selectorIndex = _codec.Decode(_selectorDeltaDm[0]);
+                            if (endpointReference != 0)
+                            {
+                                colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
+                                if (colorEndpointIndex >= numColorEndpoints)
+                                    colorEndpointIndex -= (UInt32)numColorEndpoints;
+                            }
+
+                            diagonalColorEndpointIndex = _blockBuffer[x << 1 | 1].ColorEndpointIndex;
+                            _blockBuffer[x << 1 | 1].ColorEndpointIndex = (UInt16)colorEndpointIndex;
+                            if (y < outputHeight && x < outputWidth)
+                            {
+                                UInt32 flip = (UInt32)(endpointReference >> 1 ^ 1);
+                                UInt32 diff = 1;
+                                for (int c = 0; (diff & c) < 3; c++)
+                                    diff = ((e0[c] + 3 >= e1[c]) && (e1[c] + 4 >= e0[c])) ? diff : 0;
+                                for (int c = 0; c < 3; c++)
+                                    blockEndpoint[c] = diff != 0
+                                        ? (byte)(e0[c] << 3 | ((e1[c] - e0[c]) & 7))
+                                        : (byte)((e0[c] << 3 & 0xF0) | e1[c] >> 1);
+                                blockEndpoint[3] = (byte)(e0[3] << 5 | e1[3] << 2 | (int)(diff << 1) | (int)flip);
+                                pRow[0] = blockEndpoint;
+                                pRow[1] = _colorSelectors[selectorIndex << 1 | flip];
                             }
                         }
                     }
@@ -609,7 +526,7 @@ public static partial class Crunch
             }
         }
         
-        private void UnpackEtc2a(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
+        private unsafe void UnpackEtc2a(byte[][] dst, UInt32 outputPitchInBytes, UInt32 outputWidth, UInt32 outputHeight)
         {
             var numColorEndpoints = _colorEndpoints.Length;
             var numAlphaEndpoints = _alphaEndpoints.Length;
@@ -625,136 +542,98 @@ public static partial class Crunch
             UInt32 alpha0EndpointIndex = 0;
             UInt32 diagonalAlpha0EndpointIndex = 0;
             byte referenceGroup = 0;
-            Span<byte> blockEndpoint = stackalloc byte[4];
-            Span<byte> e0 = stackalloc byte[4];
-            Span<byte> e1 = stackalloc byte[4];
 
             for (int f = 0; f < Header.Faces; f++)
             {
-                var row = dst[f];
-                var pRow = 0;
-                for (int y = 0; y < height; y++, pRow += deltaPitchInDwords << 2)
+                fixed (byte* pData = dst[f])
                 {
-                    bool visible = y < outputHeight;
-                    for (int x = 0; x < width; x++, pRow += 4 << 2)
+                    var pRow = (UInt32*)pData;
+                    for (int y = 0; y < height; y++, pRow += deltaPitchInDwords)
                     {
-                        visible = visible && x < outputWidth;
-                        var buffer = _blockBuffer[x << 1];
-                        byte endpointReference;
-                        blockEndpoint[0] = 0;
-                        blockEndpoint[1] = 0;
-                        blockEndpoint[2] = 0;
-                        blockEndpoint[3] = 0;
-                        e0[0] = 0;
-                        e0[1] = 0;
-                        e0[2] = 0;
-                        e0[3] = 0;
-                        e1[0] = 0;
-                        e1[1] = 0;
-                        e1[2] = 0;
-                        e1[3] = 0;
-                        if ((y & 1) != 0)
+                        for (int x = 0; x < width; x++, pRow += 4)
                         {
-                            endpointReference = (byte)buffer.EndpointReference;
-                        }
-                        else
-                        {
-                            referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
-                            endpointReference = (byte)((referenceGroup & 3) | (referenceGroup >> 2 & 12));
-                            buffer.EndpointReference = (UInt16)((referenceGroup >> 2 & 3) | (referenceGroup >> 4 & 12));
-                        }
-
-                        if ((endpointReference & 3) == 0)
-                        {
-                            colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
-                            if (colorEndpointIndex >= numColorEndpoints)
-                                colorEndpointIndex -= (UInt32)numColorEndpoints;
-                            buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
-                            alpha0EndpointIndex += _codec.Decode(_endpointDeltaDm[1]);
-                            if (alpha0EndpointIndex >= numAlphaEndpoints)
-                                alpha0EndpointIndex -= (UInt32)numAlphaEndpoints;
-                            buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
-                        }
-                        else if ((endpointReference & 3) == 1)
-                        {
-                            buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
-                            buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
-                        }
-                        else if ((endpointReference & 3) == 3)
-                        {
-                            colorEndpointIndex = diagonalColorEndpointIndex;
-                            buffer.EndpointReference = (UInt16)colorEndpointIndex;
-                            alpha0EndpointIndex = diagonalAlpha0EndpointIndex;
-                            buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
-                        }
-                        else
-                        {
-                            colorEndpointIndex = buffer.ColorEndpointIndex;
-                            alpha0EndpointIndex = buffer.Alpha0EndpointIndex;
-                        }
-
-                        endpointReference >>= 2;
-                        if (CRND_LITTLE_ENDIAN_PLATFORM)
-                        {
-                            BinaryPrimitives.WriteUInt32LittleEndian(e0.Slice(0), _colorEndpoints[colorEndpointIndex]);
-                        }
-                        else
-                        {
-                            BinaryPrimitives.WriteUInt32BigEndian(e0.Slice(0), _colorEndpoints[colorEndpointIndex]);
-                        }
-                        UInt32 colorSelectorIndex = _codec.Decode(_selectorDeltaDm[0]);
-                        UInt32 alpha0SelectorIndex = _codec.Decode(_selectorDeltaDm[1]);
-                        if (endpointReference != 0)
-                        {
-                            colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
-                            if (colorEndpointIndex >= numColorEndpoints)
-                                colorEndpointIndex -= (UInt32)numColorEndpoints;
-                        }
-                        if (CRND_LITTLE_ENDIAN_PLATFORM)
-                        {
-                            BinaryPrimitives.WriteUInt32LittleEndian(e1.Slice(0), _colorEndpoints[colorEndpointIndex]);
-                        }
-                        else
-                        {
-                            BinaryPrimitives.WriteUInt32BigEndian(e1.Slice(0), _colorEndpoints[colorEndpointIndex]);
-                        }
-                        diagonalColorEndpointIndex = _blockBuffer[x << 1 | 1].ColorEndpointIndex;
-                        _blockBuffer[x << 1 | 1].ColorEndpointIndex = (UInt16)colorEndpointIndex;
-                        diagonalAlpha0EndpointIndex = _blockBuffer[x << 1 | 1].Alpha0EndpointIndex;
-                        _blockBuffer[x << 1 | 1].Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
-                        if (visible)
-                        {
-                            UInt32 flip = (UInt32)(endpointReference >> 1 ^ 1);
-                            UInt32 diff = 1;
-                            for (int c = 0; (diff & c) < 3; c++)
-                                diff = ((e0[c] + 3 >= e1[c]) && (e1[c] + 4 >= e0[c])) ? diff : 0;
-                            for (int c = 0; c < 3; c++)
-                                blockEndpoint[c] = diff != 0 
-                                    ? (byte)(e0[c] << 3 | ((e1[c] - e0[c]) & 7)) 
-                                    : (byte)((e0[c] << 3 & 0xF0) | e1[c] >> 1);
-                            blockEndpoint[3] = (byte)(e0[3] << 5 | e1[3] << 2 | (int)(diff << 1) | (int)flip);
-                            var pAlpha0Selectors = alpha0SelectorIndex * 6 + (flip != 0 ? 3 : 0);
-                            if (CRND_LITTLE_ENDIAN_PLATFORM)
+                            var buffer = _blockBuffer[x << 1];
+                            byte endpointReference;
+                            EndianPackedUint blockEndpoint = 0;
+                            EndianPackedUint e0 = 0;
+                            EndianPackedUint e1 = 0;
+                            if ((y & 1) != 0)
                             {
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow),
-                                    (UInt32)(_alphaEndpoints[alpha0EndpointIndex] | (_alphaSelectors[pAlpha0Selectors] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow + 4),
-                                    (UInt32)(_alphaSelectors[pAlpha0Selectors + 1] | (_alphaSelectors[pAlpha0Selectors + 2] << 16))
-                                );
-                                blockEndpoint.Slice(0, 4).CopyTo(row.AsSpan(pRow + 8));
-                                BinaryPrimitives.WriteUInt32LittleEndian(row.AsSpan(pRow + 12),_colorSelectors[colorSelectorIndex << 1 | flip]);
+                                endpointReference = (byte)buffer.EndpointReference;
                             }
                             else
                             {
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow),
-                                    (UInt32)(_alphaEndpoints[alpha0EndpointIndex] | (_alphaSelectors[pAlpha0Selectors] << 16))
-                                );
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow + 4),
-                                    (UInt32)(_alphaSelectors[pAlpha0Selectors + 1] | (_alphaSelectors[pAlpha0Selectors + 2] << 16))
-                                );
-                                blockEndpoint.Slice(0, 4).CopyTo(row.AsSpan(pRow + 8));
-                                BinaryPrimitives.WriteUInt32BigEndian(row.AsSpan(pRow + 12),_colorSelectors[colorSelectorIndex << 1 | flip]);
+                                referenceGroup = (byte)_codec.Decode(_referenceEncodingDm);
+                                endpointReference = (byte)((referenceGroup & 3) | (referenceGroup >> 2 & 12));
+                                buffer.EndpointReference =
+                                    (UInt16)((referenceGroup >> 2 & 3) | (referenceGroup >> 4 & 12));
+                            }
+
+                            if ((endpointReference & 3) == 0)
+                            {
+                                colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
+                                if (colorEndpointIndex >= numColorEndpoints)
+                                    colorEndpointIndex -= (UInt32)numColorEndpoints;
+                                buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
+                                alpha0EndpointIndex += _codec.Decode(_endpointDeltaDm[1]);
+                                if (alpha0EndpointIndex >= numAlphaEndpoints)
+                                    alpha0EndpointIndex -= (UInt32)numAlphaEndpoints;
+                                buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
+                            }
+                            else if ((endpointReference & 3) == 1)
+                            {
+                                buffer.ColorEndpointIndex = (UInt16)colorEndpointIndex;
+                                buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
+                            }
+                            else if ((endpointReference & 3) == 3)
+                            {
+                                colorEndpointIndex = diagonalColorEndpointIndex;
+                                buffer.EndpointReference = (UInt16)colorEndpointIndex;
+                                alpha0EndpointIndex = diagonalAlpha0EndpointIndex;
+                                buffer.Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
+                            }
+                            else
+                            {
+                                colorEndpointIndex = buffer.ColorEndpointIndex;
+                                alpha0EndpointIndex = buffer.Alpha0EndpointIndex;
+                            }
+
+                            endpointReference >>= 2;
+                            e0 = _colorEndpoints[colorEndpointIndex];
+
+                            UInt32 colorSelectorIndex = _codec.Decode(_selectorDeltaDm[0]);
+                            UInt32 alpha0SelectorIndex = _codec.Decode(_selectorDeltaDm[1]);
+                            if (endpointReference != 0)
+                            {
+                                colorEndpointIndex += _codec.Decode(_endpointDeltaDm[0]);
+                                if (colorEndpointIndex >= numColorEndpoints)
+                                    colorEndpointIndex -= (UInt32)numColorEndpoints;
+                            }
+                            
+                            e1 = _colorEndpoints[colorEndpointIndex];
+
+                            diagonalColorEndpointIndex = _blockBuffer[x << 1 | 1].ColorEndpointIndex;
+                            _blockBuffer[x << 1 | 1].ColorEndpointIndex = (UInt16)colorEndpointIndex;
+                            diagonalAlpha0EndpointIndex = _blockBuffer[x << 1 | 1].Alpha0EndpointIndex;
+                            _blockBuffer[x << 1 | 1].Alpha0EndpointIndex = (UInt16)alpha0EndpointIndex;
+                            if (y < outputHeight && x < outputWidth)
+                            {
+                                UInt32 flip = (UInt32)(endpointReference >> 1 ^ 1);
+                                UInt32 diff = 1;
+                                for (int c = 0; (diff & c) < 3; c++)
+                                    diff = ((e0[c] + 3 >= e1[c]) && (e1[c] + 4 >= e0[c])) ? diff : 0;
+                                for (int c = 0; c < 3; c++)
+                                    blockEndpoint[c] = diff != 0
+                                        ? (byte)(e0[c] << 3 | ((e1[c] - e0[c]) & 7))
+                                        : (byte)((e0[c] << 3 & 0xF0) | e1[c] >> 1);
+                                blockEndpoint[3] = (byte)(e0[3] << 5 | e1[3] << 2 | (int)(diff << 1) | (int)flip);
+                                var pAlpha0Selectors = alpha0SelectorIndex * 6 + (flip != 0 ? 3 : 0);
+                                pRow[0] = (UInt32)(_alphaEndpoints[alpha0EndpointIndex] |
+                                                   (_alphaSelectors[pAlpha0Selectors] << 16));
+                                pRow[1] = (UInt32)(_alphaSelectors[pAlpha0Selectors + 1] |
+                                                   (_alphaSelectors[pAlpha0Selectors + 2] << 16));
+                                pRow[2] = blockEndpoint;
+                                pRow[3] = _colorSelectors[colorSelectorIndex << 1 | flip];
                             }
                         }
                     }
@@ -766,14 +645,14 @@ public static partial class Crunch
         {
             _codec.StartDecoding(Data, Header.TablesOfs, Header.TablesSize);
             _codec.DecodeReceiveStaticDataModel(_referenceEncodingDm);
-            if (Header.ColorEndpoints.num == 0 && Header.AlphaEndpoints.num == 0)
+            if (Header.ColorEndpoints.Num == 0 && Header.AlphaEndpoints.Num == 0)
                 throw new Exception("no endpoints in InitTables");
-            if (Header.ColorEndpoints.num != 0)
+            if (Header.ColorEndpoints.Num != 0)
             {
                 _codec.DecodeReceiveStaticDataModel(_endpointDeltaDm[0]);
                 _codec.DecodeReceiveStaticDataModel(_selectorDeltaDm[0]);
             }
-            if (Header.AlphaEndpoints.num != 0)
+            if (Header.AlphaEndpoints.Num != 0)
             {
                 _codec.DecodeReceiveStaticDataModel(_endpointDeltaDm[1]);
                 _codec.DecodeReceiveStaticDataModel(_selectorDeltaDm[1]);
@@ -782,12 +661,12 @@ public static partial class Crunch
 
         private void DecodePalettes()
         {
-            if (Header.ColorEndpoints.num != 0)
+            if (Header.ColorEndpoints.Num != 0)
             {
                 DecodeColorEndpoints();
                 DecodeColorSelectors();
             }
-            if (Header.AlphaEndpoints.num != 0)
+            if (Header.AlphaEndpoints.Num != 0)
             {
                 DecodeAlphaEndpoints();
                 switch ((CrnFmt)(UInt32)Header.Format)
@@ -807,7 +686,7 @@ public static partial class Crunch
 
         private void DecodeColorEndpoints()
         {
-            UInt32 numColorEndpoints = Header.ColorEndpoints.num;
+            UInt32 numColorEndpoints = Header.ColorEndpoints.Num;
             bool hasEtcColorBlocks = (CrnFmt)(UInt32)Header.Format switch
             {
                 CrnFmt.ETC1 => true,
@@ -826,7 +705,7 @@ public static partial class Crunch
             };
             
             _colorEndpoints = new UInt32[numColorEndpoints];
-            _codec.StartDecoding(Data, Header.ColorEndpoints.ofs, Header.ColorEndpoints.size);
+            _codec.StartDecoding(Data, Header.ColorEndpoints.Ofs, Header.ColorEndpoints.Size);
 
             var dm = new StaticHuffmanDataModel[]
             {
@@ -885,14 +764,14 @@ public static partial class Crunch
                 _ => false,
             };
             
-            _codec.StartDecoding(Data, Header.ColorSelectors.ofs, Header.ColorSelectors.size);
+            _codec.StartDecoding(Data, Header.ColorSelectors.Ofs, Header.ColorSelectors.Size);
 
             var dm = new StaticHuffmanDataModel();
             _codec.DecodeReceiveStaticDataModel(dm);
 
-            _colorSelectors = new UInt32[Header.ColorSelectors.num << (hasSubblocks ? 1 : 0)];
+            _colorSelectors = new UInt32[Header.ColorSelectors.Num << (hasSubblocks ? 1 : 0)];
 
-            for (UInt32 s = 0, i = 0; i < Header.ColorSelectors.num; i++)
+            for (UInt32 s = 0, i = 0; i < Header.ColorSelectors.Num; i++)
             {
                 for (int j = 0; j < 32; j += 4)
                     s ^= _codec.Decode(dm) << j;
@@ -924,9 +803,9 @@ public static partial class Crunch
         
         private void DecodeAlphaEndpoints()
         {
-            UInt32 numAlphaEndpoints = Header.AlphaEndpoints.num;
+            UInt32 numAlphaEndpoints = Header.AlphaEndpoints.Num;
             
-            _codec.StartDecoding(Data, Header.AlphaEndpoints.ofs, Header.AlphaEndpoints.size);
+            _codec.StartDecoding(Data, Header.AlphaEndpoints.Ofs, Header.AlphaEndpoints.Size);
             
             var dm = new StaticHuffmanDataModel();
             _codec.DecodeReceiveStaticDataModel(dm);
@@ -949,13 +828,13 @@ public static partial class Crunch
 
         private void DecodeAlphaSelectors()
         {
-            _codec.StartDecoding(Data, Header.AlphaSelectors.ofs, Header.AlphaSelectors.size);
+            _codec.StartDecoding(Data, Header.AlphaSelectors.Ofs, Header.AlphaSelectors.Size);
             var dm = new StaticHuffmanDataModel();
             _codec.DecodeReceiveStaticDataModel(dm);
-            _alphaSelectors = new UInt16[Header.AlphaSelectors.num * 3];
+            _alphaSelectors = new UInt16[Header.AlphaSelectors.Num * 3];
             Span<byte> dxt5FromLinear = stackalloc byte[64];
             for (int i = 0; i < 64; i++)
-                dxt5FromLinear[i] = (byte)(DXT5_FROM_LINEAR[i & 7] | DXT5_FROM_LINEAR[i >> 3] << 3);
+                dxt5FromLinear[i] = (byte)(Dxt5FromLinear[i & 7] | Dxt5FromLinear[i >> 3] << 3);
             for (UInt32 s0Linear = 0, s1Linear = 0, i = 0; i < _alphaSelectors.Length;)
             {
                 UInt32 s0 = 0, s1 = 0;
@@ -971,10 +850,10 @@ public static partial class Crunch
         
         private void DecodeAlphaSelectorsEtc()
         {
-            _codec.StartDecoding(Data, Header.AlphaSelectors.ofs, Header.AlphaSelectors.size);
+            _codec.StartDecoding(Data, Header.AlphaSelectors.Ofs, Header.AlphaSelectors.Size);
             var dm = new StaticHuffmanDataModel();
             _codec.DecodeReceiveStaticDataModel(dm);
-            _alphaSelectors = new UInt16[Header.AlphaSelectors.num * 6];
+            _alphaSelectors = new UInt16[Header.AlphaSelectors.Num * 6];
             Span<byte> sLinear = stackalloc byte[8];
             var pData = 0;
             for (int i = 0; i < _alphaSelectors.Length; i += 6, pData += 12)
@@ -1003,10 +882,10 @@ public static partial class Crunch
         
         private void DecodeAlphaSelectorsEtcs()
         {
-            _codec.StartDecoding(Data, Header.AlphaSelectors.ofs, Header.AlphaSelectors.size);
+            _codec.StartDecoding(Data, Header.AlphaSelectors.Ofs, Header.AlphaSelectors.Size);
             var dm = new StaticHuffmanDataModel();
             _codec.DecodeReceiveStaticDataModel(dm);
-            _alphaSelectors = new UInt16[Header.AlphaSelectors.num * 3];
+            _alphaSelectors = new UInt16[Header.AlphaSelectors.Num * 3];
             Span<byte> sLinear = stackalloc byte[8];
             for (int i = 0; i < _alphaSelectors.Length; i += 6)
             {
