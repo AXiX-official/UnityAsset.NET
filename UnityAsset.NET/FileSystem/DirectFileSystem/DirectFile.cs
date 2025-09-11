@@ -13,6 +13,11 @@ public class DirectFile : IVirtualFile
         _stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         FileType = FileTypeHelper.GetFileType(this);
     }
+
+    public static DirectFile Create(string path)
+    {
+        return new DirectFile(path);
+    }
     
     public string Path { get; }
     public string Name { get; }

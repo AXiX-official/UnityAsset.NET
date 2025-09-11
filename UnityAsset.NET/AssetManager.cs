@@ -20,9 +20,9 @@ public class AssetManager
     public UnityRevision? Version { get; private set; }
     public BuildTarget? BuildTarget { get; private set; }
 
-    public AssetManager(IFileSystem? fileSystem)
+    public AssetManager(IFileSystem? fileSystem, IFileSystem.ErrorHandler? onError)
     {
-        _fileSystem = fileSystem ?? new FileSystem.DirectFileSystem.DirectFileSystem();
+        _fileSystem = fileSystem ?? new FileSystem.DirectFileSystem.DirectFileSystem(onError);
         _loadedFiles = new ();
     }
     

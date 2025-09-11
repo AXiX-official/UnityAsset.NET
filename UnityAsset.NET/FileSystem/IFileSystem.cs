@@ -2,6 +2,8 @@
 
 public interface IFileSystem : IDisposable
 {
+    public delegate void ErrorHandler(string filePath, Exception ex, string errorMessage);
+    public ErrorHandler? OnError { get; set; }
     public List<IVirtualFile> LoadedFiles { get; }
     public Task<List<IVirtualFile>> LoadAsync(List<string> paths, IProgress<LoadProgress>? progress = null);
     public Task<List<IVirtualFile>> LoadDirectoryAsync(string directoryPath, IProgress<LoadProgress>? progress = null)

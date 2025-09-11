@@ -5,11 +5,12 @@ namespace UnityAsset.NET.FileSystem.DirectFileSystem;
 
 public class DirectFileSystem : IFileSystem
 {
+    public IFileSystem.ErrorHandler? OnError { get; set; }
     private readonly ConcurrentDictionary<string, IVirtualFile> _loadedFiles = new();
 
-    public DirectFileSystem()
+    public DirectFileSystem(IFileSystem.ErrorHandler? onError)
     {
-
+        OnError = onError;
     }
     
     public List<IVirtualFile> LoadedFiles => _loadedFiles.Values.ToList();
@@ -23,22 +24,29 @@ public class DirectFileSystem : IFileSystem
             for (int i = 0; i < totalFiles; i++)
             {
                 var path = paths[i];
-                var file = new DirectFile(path);
-                progress?.Report(new LoadProgress($"DirectFileSystem: Loading {file.Name}", totalFiles, i));
-                if (file.FileType == FileType.Unknown)
+                try
                 {
-                    file.Dispose();
-                }
-                else
-                {
-                    if (_loadedFiles.TryAdd(file.Name, file))
-                    {
-                        files.Add(file);
-                    }
-                    else
+                    var file = DirectFile.Create(path);
+                    progress?.Report(new LoadProgress($"DirectFileSystem: Loading {file.Name}", totalFiles, i));
+                    if (file.FileType == FileType.Unknown)
                     {
                         file.Dispose();
                     }
+                    else
+                    {
+                        if (_loadedFiles.TryAdd(file.Name, file))
+                        {
+                            files.Add(file);
+                        }
+                        else
+                        {
+                            file.Dispose();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    OnError?.Invoke(path, ex, $"Fail to load DirectFile {path}: {ex.Message}");
                 }
             }
 
