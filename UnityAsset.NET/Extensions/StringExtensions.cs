@@ -12,4 +12,17 @@ public static class StringExtensions
         byte[] hashBytes = sha256.ComputeHash(textBytes);
         return BitConverter.ToUInt64(hashBytes, 0);
     }
+    
+    public static int GetDeterministicHashCode(this string str)
+    {
+        unchecked
+        {
+            int hash = 17;
+            foreach (char c in str)
+            {
+                hash = hash * 31 + c;
+            }
+            return hash;
+        }
+    }
 }

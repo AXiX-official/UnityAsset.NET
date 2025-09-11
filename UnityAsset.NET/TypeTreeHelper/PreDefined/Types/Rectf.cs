@@ -4,18 +4,20 @@ using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
 namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
 
-public class Vector3f : IPreDefinedType
+public class Rectf : IPreDefinedType
 {
-    public string ClassName => "Vector3f";
+    public string ClassName => "Rectf";
     public float x { get; }
     public float y { get; }
-    public float z { get; }
+    public float width { get; }
+    public float height { get; }
 
-    public Vector3f(IReader reader)
+    public Rectf(IReader reader)
     {
         x = reader.ReadFloat();
         y = reader.ReadFloat();
-        z = reader.ReadFloat();
+        width = reader.ReadFloat();
+        height = reader.ReadFloat();
     }
 
     public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "")
@@ -24,7 +26,8 @@ public class Vector3f : IPreDefinedType
         var childIndent = indent + "    ";
         sb.AppendLine($"{childIndent}float x = {x}");
         sb.AppendLine($"{childIndent}float y = {y}");
-        sb.AppendLine($"{childIndent}float z = {z}");
+        sb.AppendLine($"{childIndent}float width = {width}");
+        sb.AppendLine($"{childIndent}float height = {height}");
         return sb;
     }
 }

@@ -53,71 +53,121 @@ public class TypeGenerator
 
         sb.AppendLine($"    public string ClassName => \"{current.Type}\";");
 
-        foreach (var fieldNode in children)
-        {
-            sb.AppendLine($"    [OriginalName(\"{fieldNode.Name}\")]");
-            if (IsPrimitive(fieldNode.Type) || PreDefinedHelper.IsPreDefinedType(fieldNode.Type))
-            {
-                sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
-            }
-            else if (IsVector(fieldNode, nodes))
-            {
-                sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
-                var dataNode = fieldNode.Children(nodes)[0].Children(nodes)[1];
-                if (!IsPrimitive(dataNode.Type) && !_hashToClassNameMap.ContainsKey(dataNode.GetHash64Code(nodes)) && !PreDefinedHelper.IsPreDefinedType(dataNode.Type))
-                {
-                    _classToGen.Enqueue(dataNode);
-                }
-            }
-            else if (IsMap(fieldNode, nodes))
-            {
-                sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
-                var pair = fieldNode.Children(nodes)[0].Children(nodes)[1].Children(nodes);
-                var keyType = pair[0];
-                var valueType = pair[1];
-                if (!IsPrimitive(keyType.Type) && !_hashToClassNameMap.ContainsKey(keyType.GetHash64Code(nodes)) && !PreDefinedHelper.IsPreDefinedType(keyType.Type))
-                {
-                    _classToGen.Enqueue(keyType);
-                }
-                if (!IsPrimitive(valueType.Type) && !_hashToClassNameMap.ContainsKey(valueType.GetHash64Code(nodes)) && !PreDefinedHelper.IsPreDefinedType(valueType.Type))
-                {
-                    _classToGen.Enqueue(valueType);
-                }
-            }
-            else
-            {
-                var filedHash64 = fieldNode.GetHash64Code(nodes);
-                var filedInterfaceName = $"I{fieldNode.Type}";
-                if (_hashToClassNameMap.TryGetValue(filedHash64, out var filedName))
-                {
-                    if (PreDefinedHelper.IsPreDefinedInterface(filedInterfaceName))
-                    {
-                        sb.AppendLine($"    public {filedInterfaceName} {SanitizeName(fieldNode.Name)} {{ get; }}");
-                    }
-                    else
-                    {
-                        sb.AppendLine($"    public {filedName} {SanitizeName(fieldNode.Name)} {{ get; }}");
-                    }
-                }
-                else
-                {
-                    if (PreDefinedHelper.IsPreDefinedInterface(filedInterfaceName))
-                    {
-                        sb.AppendLine($"    public {filedInterfaceName} {SanitizeName(fieldNode.Name)} {{ get; }}");
-                    }
-                    else
-                    {
-                        sb.AppendLine($"    public {SanitizeName($"{fieldNode.Type}_{filedHash64}")} {SanitizeName(fieldNode.Name)} {{ get; }}");
-                    }
-                    _classToGen.Enqueue(fieldNode);
-                }
-            }
-        }
+        GenerateFields(children, nodes);
 
         GenerateConstructor(className, children, nodes);
         GenerateToPlainTextMethod(current, children, nodes);
         
         sb.AppendLine($"}}");
+    }
+
+    /// <summary>
+    /// Generates the fields of a class.
+    /// </summary>
+    /// <param name="children">The children of the class node.</param>
+    /// <param name="nodes">The list of all nodes.</param>
+    private void GenerateFields(List<TypeTreeNode> children, List<TypeTreeNode> nodes)
+    {
+        foreach (var fieldNode in children)
+        {
+            sb.AppendLine($"    [OriginalName(\"{fieldNode.Name}\")]");
+            if (IsPrimitive(fieldNode.Type) || PreDefinedHelper.IsPreDefinedType(fieldNode.Type))
+            {
+                GeneratePrimitiveField(fieldNode, nodes);
+            }
+            else if (IsVector(fieldNode, nodes))
+            {
+                GenerateVectorField(fieldNode, nodes);
+            }
+            else if (IsMap(fieldNode, nodes))
+            {
+                GenerateMapField(fieldNode, nodes);
+            }
+            else
+            {
+                GenerateComplexField(fieldNode, nodes);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Generates a primitive field.
+    /// </summary>
+    /// <param name="fieldNode">The field node.</param>
+    /// <param name="nodes">The list of all nodes.</param>
+    private void GeneratePrimitiveField(TypeTreeNode fieldNode, List<TypeTreeNode> nodes)
+    {
+        sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
+    }
+
+    /// <summary>
+    /// Generates a vector field.
+    /// </summary>
+    /// <param name="fieldNode">The field node.</param>
+    /// <param name="nodes">The list of all nodes.</param>
+    private void GenerateVectorField(TypeTreeNode fieldNode, List<TypeTreeNode> nodes)
+    {
+        sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
+        var dataNode = fieldNode.Children(nodes)[0].Children(nodes)[1];
+        if (!IsPrimitive(dataNode.Type) && !_hashToClassNameMap.ContainsKey(dataNode.GetHash64Code(nodes)) && !PreDefinedHelper.IsPreDefinedType(dataNode.Type))
+        {
+            _classToGen.Enqueue(dataNode);
+        }
+    }
+
+    /// <summary>
+    /// Generates a map field.
+    /// </summary>
+    /// <param name="fieldNode">The field node.</param>
+    /// <param name="nodes">The list of all nodes.</param>
+    private void GenerateMapField(TypeTreeNode fieldNode, List<TypeTreeNode> nodes)
+    {
+        sb.AppendLine($"    public {GetCSharpType(fieldNode, nodes)} {SanitizeName(fieldNode.Name)} {{ get; }}");
+        var pair = fieldNode.Children(nodes)[0].Children(nodes)[1].Children(nodes);
+        var keyType = pair[0];
+        var valueType = pair[1];
+        if (!IsPrimitive(keyType.Type) && !_hashToClassNameMap.ContainsKey(keyType.GetHash64Code(nodes)) && !PreDefinedHelper.IsPreDefinedType(keyType.Type))
+        {
+            _classToGen.Enqueue(keyType);
+        }
+        if (!IsPrimitive(valueType.Type) && !_hashToClassNameMap.ContainsKey(valueType.GetHash64Code(nodes)) && !PreDefinedHelper.IsPreDefinedType(valueType.Type))
+        {
+            _classToGen.Enqueue(valueType);
+        }
+    }
+
+    /// <summary>
+    /// Generates a complex field.
+    /// </summary>
+    /// <param name="fieldNode">The field node.</param>
+    /// <param name="nodes">The list of all nodes.</param>
+    private void GenerateComplexField(TypeTreeNode fieldNode, List<TypeTreeNode> nodes)
+    {
+        var filedHash64 = fieldNode.GetHash64Code(nodes);
+        var filedInterfaceName = $"I{fieldNode.Type}";
+        if (_hashToClassNameMap.TryGetValue(filedHash64, out var filedName))
+        {
+            if (PreDefinedHelper.IsPreDefinedInterface(filedInterfaceName))
+            {
+                sb.AppendLine($"    public {filedInterfaceName} {SanitizeName(fieldNode.Name)} {{ get; }}");
+            }
+            else
+            {
+                sb.AppendLine($"    public {filedName} {SanitizeName(fieldNode.Name)} {{ get; }}");
+            }
+        }
+        else
+        {
+            if (PreDefinedHelper.IsPreDefinedInterface(filedInterfaceName))
+            {
+                sb.AppendLine($"    public {filedInterfaceName} {SanitizeName(fieldNode.Name)} {{ get; }}");
+            }
+            else
+            {
+                sb.AppendLine($"    public {SanitizeName($"{fieldNode.Type}_{filedHash64}")} {SanitizeName(fieldNode.Name)} {{ get; }}");
+            }
+            _classToGen.Enqueue(fieldNode);
+        }
     }
 
     private string GetInterfaceName(TypeTreeNode current, List<TypeTreeNode> nodes)
@@ -132,6 +182,8 @@ public class TypeGenerator
                     return "ITextAsset";
                 case "Texture2D" :
                     return "ITexture2D";
+                case "Sprite" :
+                    return "ISprite";
                 default:
                 {
                     bool hasNameField = current.Children(nodes).Any(node => node.Name == "m_Name");
@@ -155,33 +207,88 @@ public class TypeGenerator
         sb.AppendLine();
         sb.AppendLine($"    public {className}(IReader reader)");
         sb.AppendLine($"    {{");
+        GenerateConstructorBody(children, nodes);
+        sb.AppendLine($"    }}");
+    }
+
+    /// <summary>
+    /// Generates the body of a class constructor.
+    /// </summary>
+    /// <param name="children">The children of the class node.</param>
+    /// <param name="nodes">The list of all nodes.</param>
+    private void GenerateConstructorBody(List<TypeTreeNode> children, List<TypeTreeNode> nodes)
+    {
         foreach (var fieldNode in children)
         {
-            sb.Append($"        {SanitizeName(fieldNode.Name)} = ");
-            if (IsPrimitive(fieldNode.Type) || IsVector(fieldNode, nodes) || IsMap(fieldNode, nodes) || PreDefinedHelper.IsPreDefinedType(fieldNode.Type))
+            if (IsPrimitive(fieldNode.Type) || PreDefinedHelper.IsPreDefinedType(fieldNode.Type))
             {
-                sb.Append(GetFieldConstructor(fieldNode, nodes));
+                GeneratePrimitiveFieldConstructor(fieldNode, nodes);
+            }
+            else if (IsVector(fieldNode, nodes))
+            {
+                GenerateVectorFieldConstructor(fieldNode, nodes);
+            }
+            else if (IsMap(fieldNode, nodes))
+            {
+                GenerateMapFieldConstructor(fieldNode, nodes);
             }
             else
             {
-                var filedHash64 = fieldNode.GetHash64Code(nodes);
-                if (_hashToClassNameMap.TryGetValue(filedHash64, out var filedName))
-                {
-                    sb.Append($"new {filedName}(reader)");
-                }
-                else
-                {
-                    sb.Append($"new {SanitizeName($"{fieldNode.Type}_{filedHash64}")}(reader)");
-                }
+                GenerateComplexFieldConstructor(fieldNode, nodes);
             }
-            sb.AppendLine(";");
-            //sb.AppendLine($"Console.WriteLine($\"{fieldNode.Type} {fieldNode.Name}: pos: {{reader.Position}}\");");
             
             var align = fieldNode.RequiresAlign(nodes);
             if (align)
                 sb.AppendLine($"        reader.Align(4);");
         }
-        sb.AppendLine($"    }}");
+    }
+
+    /// <summary>
+    /// Generates the constructor for a primitive field.
+    /// </summary>
+    /// <param name="fieldNode">The field node.</param>
+    /// <param name="nodes">The list of all nodes.</param>
+    private void GeneratePrimitiveFieldConstructor(TypeTreeNode fieldNode, List<TypeTreeNode> nodes)
+    {
+        sb.AppendLine($"        {SanitizeName(fieldNode.Name)} = {GetFieldConstructor(fieldNode, nodes)};");
+    }
+
+    /// <summary>
+    /// Generates the constructor for a vector field.
+    /// </summary>
+    /// <param name="fieldNode">The field node.</param>
+    /// <param name="nodes">The list of all nodes.</param>
+    private void GenerateVectorFieldConstructor(TypeTreeNode fieldNode, List<TypeTreeNode> nodes)
+    {
+        sb.AppendLine($"        {SanitizeName(fieldNode.Name)} = {GetFieldConstructor(fieldNode, nodes)};");
+    }
+
+    /// <summary>
+    /// Generates the constructor for a map field.
+    /// </summary>
+    /// <param name="fieldNode">The field node.</param>
+    /// <param name="nodes">The list of all nodes.</param>
+    private void GenerateMapFieldConstructor(TypeTreeNode fieldNode, List<TypeTreeNode> nodes)
+    {
+        sb.AppendLine($"        {SanitizeName(fieldNode.Name)} = {GetFieldConstructor(fieldNode, nodes)};");
+    }
+
+    /// <summary>
+    /// Generates the constructor for a complex field.
+    /// </summary>
+    /// <param name="fieldNode">The field node.</param>
+    /// <param name="nodes">The list of all nodes.</param>
+    private void GenerateComplexFieldConstructor(TypeTreeNode fieldNode, List<TypeTreeNode> nodes)
+    {
+        var filedHash64 = fieldNode.GetHash64Code(nodes);
+        if (_hashToClassNameMap.TryGetValue(filedHash64, out var filedName))
+        {
+            sb.AppendLine($"        {SanitizeName(fieldNode.Name)} = new {filedName}(reader);");
+        }
+        else
+        {
+            sb.AppendLine($"        {SanitizeName(fieldNode.Name)} = new {SanitizeName($"{fieldNode.Type}_{filedHash64}")}(reader);");
+        }
     }
 
     private void GenerateToPlainTextMethod(TypeTreeNode current, List<TypeTreeNode> children, List<TypeTreeNode> nodes)

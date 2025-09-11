@@ -18,6 +18,7 @@ public class TypeTreeNode
     public UInt64 RefTypeHash;
     public string Type = String.Empty;
     public string Name = String.Empty;
+    private int? hash = null;
     private long? hash64 = null;
     
     public TypeTreeNode(UInt16 version, byte level, TypeTreeNodeFlags typeFlags,
@@ -77,6 +78,27 @@ public class TypeTreeNode
         sb.Append($"MetaFlags: {MetaFlags} | ");
         sb.Append($"RefTypeHash: {RefTypeHash}");
         return sb.ToString();
+    }
+
+    public int GetHashCode(List<TypeTreeNode> nodes)
+    {
+        if (hash != null)
+            return hash.Value;
+        
+        unchecked
+        {
+            int hash = 17;
+            hash = hash * 31 + Type.GetDeterministicHashCode();
+            hash = hash * 31 + MetaFlags.GetHashCode();
+            
+            foreach (var child in this.Children(nodes))
+            {
+                hash = hash * 31 + child.GetHashCode(nodes);
+            }
+            
+            this.hash = hash;
+            return hash;
+        }
     }
 
     public long GetHash64Code(List<TypeTreeNode> nodes)

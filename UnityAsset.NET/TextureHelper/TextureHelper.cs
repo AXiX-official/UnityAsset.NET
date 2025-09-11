@@ -83,13 +83,6 @@ public static class TextureHelper
             }
         }
         
-        if (format == TextureFormat.BGRA32)
-        {
-            byte[] newData = new byte[width * height * 4];
-            Array.Copy(imageData, newData, width * height * 4);
-            return newData;
-        }
-        
         int size = format switch
         {
             TextureFormat.Alpha8 => RgbConverter.Convert<ColorA<byte>, byte, ColorBGRA32, byte>(imageData, width,
@@ -110,7 +103,7 @@ public static class TextureHelper
                 height, out output),
             TextureFormat.RGBA4444 => RgbConverter.Convert<ColorRGBA16, byte, ColorBGRA32, byte>(imageData, width,
                 height, out output),
-            //TextureFormat.BGRA32 => imageData.Length,
+            TextureFormat.BGRA32 => DecodeBGRA32(imageData, width, height, out output),
             TextureFormat.RG16 => RgbConverter.Convert<ColorRG<byte>, byte, ColorBGRA32, byte>(imageData, width, height,
                 out output),
             TextureFormat.R8 => RgbConverter.Convert<ColorR<byte>, byte, ColorBGRA32, byte>(imageData, width, height,
@@ -186,5 +179,12 @@ public static class TextureHelper
             _ => 0
         };
         return output;
+    }
+
+    private static int DecodeBGRA32(byte[] imageData, int width, int height, out byte[] buff)
+    {
+        buff = new byte[width * height * 4];
+        Array.Copy(imageData, buff, width * height * 4);
+        return buff.Length;
     }
 }

@@ -4,18 +4,20 @@ using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
 namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
 
-public class Vector3f : IPreDefinedType
+public class Vector4f : IPreDefinedType
 {
-    public string ClassName => "Vector3f";
+    public string ClassName => "Vector4f";
     public float x { get; }
     public float y { get; }
     public float z { get; }
+    public float w { get; }
 
-    public Vector3f(IReader reader)
+    public Vector4f(IReader reader)
     {
         x = reader.ReadFloat();
         y = reader.ReadFloat();
         z = reader.ReadFloat();
+        w = reader.ReadFloat();
     }
 
     public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "")
@@ -25,6 +27,7 @@ public class Vector3f : IPreDefinedType
         sb.AppendLine($"{childIndent}float x = {x}");
         sb.AppendLine($"{childIndent}float y = {y}");
         sb.AppendLine($"{childIndent}float z = {z}");
+        sb.AppendLine($"{childIndent}float w = {w}");
         return sb;
     }
 }
