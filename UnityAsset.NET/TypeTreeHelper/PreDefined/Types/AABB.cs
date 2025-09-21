@@ -16,14 +16,15 @@ public class AABB : IPreDefinedType
         m_Extent = new Vector3f(reader);
     }
 
-    public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "")
+    public StringBuilder ToPlainText(string name = "Base", StringBuilder? sb = null, string indent = "")
     {
         sb ??= new StringBuilder();
+        sb.AppendLine($"{indent}{ClassName} {name}");
         var childIndent = indent + "    ";
         sb.AppendLine($"{childIndent}Vector3f m_Center");
-        m_Center.ToPlainText(sb, childIndent);
+        m_Center.ToPlainText("m_Center", sb, childIndent);
         sb.AppendLine($"{childIndent}Vector3f m_Extent");
-        m_Extent.ToPlainText(sb, childIndent);
+        m_Extent.ToPlainText("m_Extent", sb, childIndent);
         return sb;
     }
 }

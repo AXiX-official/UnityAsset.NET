@@ -22,9 +22,10 @@ public class StreamingInfo  : IPreDefinedType
         reader.Align(4);
     }
 
-    public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "")
+    public StringBuilder ToPlainText(string name = "Base", StringBuilder? sb = null, string indent = "")
     {
         sb ??= new StringBuilder();
+        sb.AppendLine($"{indent}{ClassName} {name}");
         var childIndent = indent + "    ";
         sb.AppendLine($"{childIndent}UInt64 offset = {offset}");
         sb.AppendLine($"{childIndent}unsigned int size = {size}");

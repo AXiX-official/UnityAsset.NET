@@ -20,9 +20,10 @@ public class BlendShapeVertex : IPreDefinedType
         index = reader.ReadUInt32();
     }
 
-    public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "")
+    public StringBuilder ToPlainText(string name = "Base", StringBuilder? sb = null, string indent = "")
     {
         sb ??= new StringBuilder();
+        sb.AppendLine($"{indent}{ClassName} {name}");
         var childIndent = indent + "    ";
         sb.AppendLine($"{childIndent}Vector3f vertex = {vertex}");
         sb.AppendLine($"{childIndent}Vector3f normal = {normal}");

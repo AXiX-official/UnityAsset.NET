@@ -24,9 +24,10 @@ public class GUID : IPreDefinedType
         data_3_ = reader.ReadUInt32();
     }
 
-    public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "")
+    public StringBuilder ToPlainText(string name = "Base", StringBuilder? sb = null, string indent = "")
     {
         sb ??= new StringBuilder();
+        sb.AppendLine($"{indent}{ClassName} {name}");
         var childIndent = indent + "    ";
         sb.AppendLine($"{childIndent}unsigned int data[0] = {data_0_}");
         sb.AppendLine($"{childIndent}unsigned int data[1] = {data_1_}");

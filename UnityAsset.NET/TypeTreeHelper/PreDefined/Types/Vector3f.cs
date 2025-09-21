@@ -18,9 +18,10 @@ public class Vector3f : IPreDefinedType
         z = reader.ReadFloat();
     }
 
-    public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "")
+    public StringBuilder ToPlainText(string name = "Base", StringBuilder? sb = null, string indent = "")
     {
         sb ??= new StringBuilder();
+        sb.AppendLine($"{indent}{ClassName} {name}");
         var childIndent = indent + "    ";
         sb.AppendLine($"{childIndent}float x = {x}");
         sb.AppendLine($"{childIndent}float y = {y}");

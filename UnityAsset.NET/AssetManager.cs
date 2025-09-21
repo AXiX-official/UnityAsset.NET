@@ -20,7 +20,7 @@ public class AssetManager
     public UnityRevision? Version { get; private set; }
     public BuildTarget? BuildTarget { get; private set; }
 
-    public AssetManager(IFileSystem? fileSystem, IFileSystem.ErrorHandler? onError)
+    public AssetManager(IFileSystem? fileSystem = null, IFileSystem.ErrorHandler? onError = null)
     {
         _fileSystem = fileSystem ?? new FileSystem.DirectFileSystem.DirectFileSystem(onError);
         _loadedFiles = new ();
@@ -84,7 +84,7 @@ public class AssetManager
                     }
                 }
             }
-            
+
             var firstFile = _loadedFiles.Values
                 .FirstOrDefault(file => file is SerializedFile);
             if (firstFile is SerializedFile firstSerializedFile)

@@ -21,9 +21,10 @@ public class ChannelInfo : IPreDefinedType
         dimension = reader.ReadUInt8();
     }
 
-    public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "")
+    public StringBuilder ToPlainText(string name = "Base", StringBuilder? sb = null, string indent = "")
     {
         sb ??= new StringBuilder();
+        sb.AppendLine($"{indent}{ClassName} {name}");
         var childIndent = indent + "    ";
         sb.AppendLine($"{childIndent}UInt8 stream = {stream}");
         sb.AppendLine($"{childIndent}UInt8 offset = {offset}");

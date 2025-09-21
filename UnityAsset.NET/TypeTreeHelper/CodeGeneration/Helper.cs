@@ -1,15 +1,17 @@
 ﻿using System.Reflection;
+using UnityAsset.NET.Extensions;
+using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
-namespace UnityAsset.NET.TypeTreeHelper;
+namespace UnityAsset.NET.TypeTreeHelper.CodeGeneration;
 
-public static class PreDefinedHelper
+public static class Helper
 {
     private static readonly HashSet<string> PreDefinedTypeNames;
     
     private static readonly HashSet<string> PreDefinedInterfaceNames;
     
-    static PreDefinedHelper()
+    static Helper()
     {
         var assembly = Assembly.GetExecutingAssembly();
         
@@ -80,4 +82,35 @@ public static class PreDefinedHelper
     public static bool IsPreDefinedType(string unityType) => PreDefinedTypeNames.Contains(unityType);
     
     public static bool IsPreDefinedInterface(string unityType) => PreDefinedInterfaceNames.Contains(unityType);
+    
+    public static bool IsPrimitive(string unityType)
+    {
+        return unityType switch
+        {
+            "SInt8" or "UInt8" or "char" or "short" or "SInt16" or "UInt16" or "unsigned short" or "int" or
+                "SInt32" or "UInt32" or "unsigned int" or "Type*" or "long long" or "SInt64" or "UInt64" or
+                "unsigned long long" or "FileSize" or "float" or "double" or "bool" or "string" => true,
+            _ => false,
+        };
+    }
+
+    public static bool IsVector(TypeTreeNode current, List<TypeTreeNode> nodes)
+    {
+        if (current.Type == "vector") return true;
+        var children = current.Children(nodes);
+        if (children.Count == 0) return false;
+        if (children[0].Type == "Array") return true;
+        return false;
+    }
+
+    public static bool IsMap(TypeTreeNode current, List<TypeTreeNode> nodes)
+    {
+        if (current.Type == "map") return true;
+        return false;
+    }
+
+    public static bool IsGenericPPtr(TypeTreeNode current)
+    {
+        return current.Type.StartsWith("PPtr<") && current.Type.EndsWith(">");
+    }
 }

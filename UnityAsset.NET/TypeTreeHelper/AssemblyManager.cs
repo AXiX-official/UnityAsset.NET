@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.TypeTreeHelper.CodeGeneration;
 
 namespace UnityAsset.NET.TypeTreeHelper;
 
@@ -14,11 +15,8 @@ public static class AssemblyManager
     private static readonly ConcurrentDictionary<string, Type> TypeCache = new();
     private static readonly List<MetadataReference> References;
     
-    public static bool WriteGeneratedCodeToDisk { get; set; } = false;
-    
-    private static readonly object CompilationLock = new object();
+    private static readonly object CompilationLock = new ();
     private static readonly string AssemblyCachePath = Path.Combine(AppContext.BaseDirectory, "AssemblyCache");
-    private static readonly string GeneratedCodePath = Path.Combine(AssemblyCachePath, "GeneratedCode");
     private static readonly string CachedAssemblyPath = Path.Combine(AssemblyCachePath, "UnityAsset.NET.RuntimeTypes.dll");
     private static readonly string CachedSourcePath = Path.Combine(AssemblyCachePath, "UnityAsset.NET.RuntimeTypes.cs");
 
@@ -79,7 +77,7 @@ public static class AssemblyManager
         }
         
         TypeCache.Clear();
-        TypeGenerator.CleanCache();
+        //TypeGenerator.CleanCache();
         if (Directory.Exists(AssemblyCachePath))
         {
             foreach (var file in Directory.GetFiles(AssemblyCachePath))
@@ -98,47 +96,15 @@ public static class AssemblyManager
     public static void LoadTypes(List<SerializedType> typesToGenerate)
     {
         CleanCache();
-        var sourceBuilder = new StringBuilder();
-        sourceBuilder.AppendLine("using System;");
-        sourceBuilder.AppendLine("using System.Text;");
-        sourceBuilder.AppendLine("using System.Collections.Generic;");
-        sourceBuilder.AppendLine("using UnityAsset.NET.IO;");
-        sourceBuilder.AppendLine("using UnityAsset.NET.TypeTreeHelper;");
-        sourceBuilder.AppendLine("using UnityAsset.NET.TypeTreeHelper.PreDefined;");
-        sourceBuilder.AppendLine("using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;");
-        sourceBuilder.AppendLine("using UnityAsset.NET.TypeTreeHelper.PreDefined.Types;");
-        sourceBuilder.AppendLine("using UnityAsset.NET.TypeTreeHelper.PreDefined.Interfaces;");
-        sourceBuilder.AppendLine();
-        sourceBuilder.AppendLine("namespace UnityAsset.NET.RuntimeType;");
-        sourceBuilder.AppendLine();
         
-        if (WriteGeneratedCodeToDisk)
-        {
-            Directory.CreateDirectory(GeneratedCodePath);
-        }
-
-        foreach (var type in typesToGenerate)
-        {
-            if (type.Nodes.Count == 0)
-                continue;
-            var typeSourceCode = TypeGenerator.Generate(type.Nodes);
-            if (WriteGeneratedCodeToDisk)
-            {
-                var root = type.Nodes[0];
-                var rootHash64 = root.GetHash64Code(type.Nodes);
-                File.WriteAllText(Path.Combine(GeneratedCodePath, $"{TypeGenerator.SanitizeName($"{root.Type}_{rootHash64}")}.cs"), typeSourceCode);
-            }
-            sourceBuilder.AppendLine(typeSourceCode);
-        }
-        
-        var fullSourceCode = sourceBuilder.ToString();
+        var fullSourceCode = TypeGenerator.Generate(typesToGenerate);
         Directory.CreateDirectory(AssemblyCachePath);
         File.WriteAllText(CachedSourcePath, fullSourceCode);
         
         var syntaxTree = CSharpSyntaxTree.ParseText(fullSourceCode);
         var compilation = CSharpCompilation.Create(
             assemblyName: "UnityAsset.NET.RuntimeTypes",
-            syntaxTrees: new[] { syntaxTree },
+            syntaxTrees: [syntaxTree],
             references: References,
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Release));
 
@@ -183,11 +149,14 @@ public static class AssemblyManager
                 if (type.Nodes.Count == 0)
                     continue;
                 var root = type.Nodes[0];
-                var rootHash64 = root.GetHash64Code(type.Nodes);
-                var generatedType = assembly.GetType($"UnityAsset.NET.RuntimeType.{TypeGenerator.SanitizeName($"{root.Type}_{rootHash64}")}");
-                if (generatedType != null)
+                var typeInfo = TypeGenerator.TypeMap[root.Type][0];
+                if (typeInfo is ComplexTypeInfo complexTypeInfo)
                 {
-                    TypeCache.TryAdd(type.TypeHash.ToString(), generatedType);
+                    var generatedType = assembly.GetType($"UnityAsset.NET.RuntimeType.{complexTypeInfo.DeclarationName}");
+                    if (generatedType != null)
+                    {
+                        TypeCache.TryAdd(type.TypeHash.ToString(), generatedType);
+                    }
                 }
             }
             File.WriteAllBytes(CachedAssemblyPath, assemblyBytes);

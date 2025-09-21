@@ -15,9 +15,10 @@ public class TypelessData  : IPreDefinedType
         data = reader.ReadBytes(size);
     }
     
-    public StringBuilder ToPlainText(StringBuilder? sb = null, string indent = "")
+    public StringBuilder ToPlainText(string name = "Base", StringBuilder? sb = null, string indent = "")
     {
         sb ??= new StringBuilder();
+        sb.AppendLine($"{indent}{ClassName} {name}");
         sb.AppendLine($"{indent}    int size = {size}");
         sb.AppendLine($"{indent}    vector data");
         sb.AppendLine($"{indent}        Array Array");
