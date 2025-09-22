@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.IO;
+using UnityAsset.NET.IO.Reader;
 using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
 namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
@@ -15,7 +16,7 @@ public class SpriteAtlas : IPreDefinedType, INamedAsset
     public string m_Tag { get; }
     public bool m_IsVariant;
     
-    public SpriteAtlas(IReader reader, UnityRevision version)
+    public SpriteAtlas(IReader reader)
     {
         m_Name = reader.ReadSizedString();
         reader.Align(4);
@@ -34,7 +35,7 @@ public class SpriteAtlas : IPreDefinedType, INamedAsset
         {
             var first = new GUID(reader);
             var second = reader.ReadInt64();
-            var value = new SpriteAtlasData(reader, version);
+            var value = new SpriteAtlasData(reader);
             m_RenderDataMap.Add(new KeyValuePair<GUID, long>(first, second), value);
         }
         m_Tag = reader.ReadSizedString();
@@ -63,8 +64,9 @@ public class SpriteAtlasData
     public UInt32 settingsRaw;
     public List<SecondarySpriteTexture>? secondaryTextures;
 
-    public SpriteAtlasData(IReader reader, UnityRevision version)
+    public SpriteAtlasData(IReader reader)
     {
+        UnityRevision version = ((AssetReader)reader).AssetsFile.Metadata.UnityVersion;
         texture = new PPtr<ITexture2D>(reader);
         alphaTexture = new PPtr<ITexture2D>(reader);
         textureRect = new Rectf(reader);

@@ -34,7 +34,7 @@ public sealed class SerializedFile : IFile
         foreach (var assetInfo in Metadata.AssetInfos.AsSpan())
         {
             reader.Seek((int)(Header.DataOffset + assetInfo.ByteOffset));
-            Assets.Add(new Asset(assetInfo, new SlicedReader(reader, (long)(Header.DataOffset + assetInfo.ByteOffset),assetInfo.ByteSize)));
+            Assets.Add(new Asset(assetInfo, new AssetReader(reader, (long)(Header.DataOffset + assetInfo.ByteOffset),assetInfo.ByteSize, this)));
         }
     }
     
@@ -49,12 +49,13 @@ public sealed class SerializedFile : IFile
             metadata.UnityVersion = Setting.DefaultUnityVerion;
         }
         var assets = new List<Asset>();
+        var sf = new SerializedFile(header, metadata, assets);
         foreach (var assetInfo in metadata.AssetInfos.AsSpan())
         {
             reader.Seek((int)(header.DataOffset + assetInfo.ByteOffset));
-            assets.Add(new Asset(assetInfo, new SlicedReader(reader, (long)(header.DataOffset + assetInfo.ByteOffset),assetInfo.ByteSize)));
+            assets.Add(new Asset(assetInfo, new AssetReader(reader, (long)(header.DataOffset + assetInfo.ByteOffset),assetInfo.ByteSize, sf)));
         }
-        return new SerializedFile(header, metadata, assets);
+        return sf;
     }
 
     /*public void Serialize(IWriter writer)

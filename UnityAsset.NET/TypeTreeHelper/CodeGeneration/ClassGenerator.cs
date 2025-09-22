@@ -43,7 +43,7 @@ public static class ClassGenerator
             
             if (fieldInfo.RequiresAlign)
             {
-                sb.AppendLine("        reader.Align(4);");
+                sb.AppendLine("        ((IReader)reader).Align(4);");
             }
         }
 
