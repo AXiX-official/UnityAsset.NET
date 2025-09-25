@@ -62,7 +62,7 @@ public static class ClassGenerator
 
         foreach (var (fieldName, fieldInfo) in type.Fields)
         {
-            GetToPlainTextRecursive(fieldName, fieldInfo, sb, indent, fieldName);
+            GetToPlainTextRecursive(fieldName, fieldInfo, sb, indent, $"this.{fieldName}");
         }
         
         sb.AppendLine("        return sb;");
@@ -77,11 +77,11 @@ public static class ClassGenerator
             {
                 if (primitiveType.OriginalName == "string")
                 {
-                    sb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{primitiveType.OriginalName} {valueName} \\\"{{{valueName}}}\\\"\");");
+                    sb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}this.{primitiveType.OriginalName} {valueName} \\\"{{{valueName}}}\\\"\");");
                 }
                 else
                 {
-                    sb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{primitiveType.OriginalName} {valueName} {{{valueName}}}\");");
+                    sb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}this.{primitiveType.OriginalName} {valueName} {{{valueName}}}\");");
                 }
                 break;
             }
@@ -108,7 +108,7 @@ public static class ClassGenerator
                 sb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}{mapTypeInfo.OriginalName} {fieldName}\");");
                 sb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}    Array Array\");");
                 sb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}    int size = {{{valueName}.Count}}\");");
-                sb.AppendLine($"{indent}foreach (var {fieldName}Count = 0; {fieldName}Count < {fieldName}.Count; {fieldName}Count++)");
+                sb.AppendLine($"{indent}foreach (var {fieldName}Count = 0; {fieldName}Count < this.{fieldName}.Count; {fieldName}Count++)");
                 var identBackup = indent;
                 indent += "    ";
                 sb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}        [{{{fieldName}Count}}]\");");
