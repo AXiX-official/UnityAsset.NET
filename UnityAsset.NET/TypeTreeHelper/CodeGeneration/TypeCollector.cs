@@ -5,7 +5,7 @@ namespace UnityAsset.NET.TypeTreeHelper.CodeGeneration;
 
 public static class TypeCollector
 {
-    public static Dictionary<int, BaseTypeInfo> Collect(IEnumerable<SerializedType> serializedTypes, Dictionary<string, List<BaseTypeInfo>> typeMap)
+    public static Dictionary<int, BaseTypeInfo> Collect(IEnumerable<SerializedType> serializedTypes)
     {
         var typeCache = new Dictionary<int, BaseTypeInfo>();
         foreach (var serializedType in serializedTypes)
@@ -20,7 +20,7 @@ public static class TypeCollector
                 continue;
             }
 
-            var typeResolver = new CSharpTypeResolver(serializedType.Nodes, typeCache, typeMap);
+            var typeResolver = new CSharpTypeResolver(serializedType.Nodes, typeCache);
 
             typeResolver.Resolve(serializedType.Nodes[0]);
         }

@@ -5,14 +5,11 @@ using UnityAsset.NET.TypeTreeHelper.CodeGeneration;
 namespace UnityAsset.NET.TypeTreeHelper;
 public class TypeGenerator
 {
-    public readonly Dictionary<string, List<BaseTypeInfo>> TypeMap = new();
-
     public string Generate(List<SerializedType> serializedTypes)
     {
         var sb = new StringBuilder();
-        TypeMap.Clear();
 
-        var typeCache = TypeCollector.Collect(serializedTypes, TypeMap);
+        var typeCache = TypeCollector.Collect(serializedTypes);
 
         sb.AppendLine("using System;");
         sb.AppendLine("using System.Text;");

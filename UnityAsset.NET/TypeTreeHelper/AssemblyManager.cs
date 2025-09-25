@@ -149,14 +149,12 @@ public static class AssemblyManager
                 if (type.Nodes.Count == 0)
                     continue;
                 var root = type.Nodes[0];
-                var typeInfo = TypeGenerator.TypeMap[root.Type][0];
-                if (typeInfo is ComplexTypeInfo complexTypeInfo)
+                var hash = root.GetHashCode(type.Nodes);
+                var concreteTypeName = IdentifierSanitizer.SanitizeName($"{root.Type}_{hash}");
+                var generatedType = assembly.GetType($"UnityAsset.NET.RuntimeType.{concreteTypeName}");
+                if (generatedType != null)
                 {
-                    var generatedType = assembly.GetType($"UnityAsset.NET.RuntimeType.{complexTypeInfo.DeclarationName}");
-                    if (generatedType != null)
-                    {
-                        TypeCache.TryAdd(type.TypeHash.ToString(), generatedType);
-                    }
+                    TypeCache.TryAdd(type.TypeHash.ToString(), generatedType);
                 }
             }
             File.WriteAllBytes(CachedAssemblyPath, assemblyBytes);

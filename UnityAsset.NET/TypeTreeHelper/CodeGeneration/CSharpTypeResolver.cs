@@ -7,13 +7,11 @@ public class CSharpTypeResolver
 {
     private readonly List<TypeTreeNode> _allNodes;
     private readonly Dictionary<int, BaseTypeInfo> _cache;
-    private readonly Dictionary<string, List<BaseTypeInfo>> _map;
 
-    public CSharpTypeResolver(List<TypeTreeNode> allNodes, Dictionary<int, BaseTypeInfo> cache, Dictionary<string, List<BaseTypeInfo>> map)
+    public CSharpTypeResolver(List<TypeTreeNode> allNodes, Dictionary<int, BaseTypeInfo> cache)
     {
         _allNodes = allNodes;
         _cache = cache;
-        _map = map;
     }
     
     public BaseTypeInfo Resolve(TypeTreeNode node)
@@ -26,15 +24,6 @@ public class CSharpTypeResolver
 
         var newInfo = CreateMappingInfo(node);
         _cache[hash] = newInfo;
-
-        if (_map.TryGetValue(node.Type, out var mappedInfos))
-        {
-            mappedInfos.Add(newInfo);
-        }
-        else
-        {
-            _map[node.Type] = new List<BaseTypeInfo>([newInfo]);
-        }
 
         return newInfo;
     }
