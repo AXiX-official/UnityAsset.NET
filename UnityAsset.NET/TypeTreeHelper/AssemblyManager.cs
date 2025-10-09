@@ -5,13 +5,13 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using UnityAsset.NET.Files.SerializedFiles;
-using UnityAsset.NET.TypeTreeHelper.CodeGeneration;
+using UnityAsset.NET.TypeTreeHelper.Compiler;
+using UnityAsset.NET.TypeTreeHelper.Compiler.Generator;
 
 namespace UnityAsset.NET.TypeTreeHelper;
 
 public static class AssemblyManager
 {
-    private static readonly TypeGenerator TypeGenerator = new();
     private static readonly ConcurrentDictionary<string, Type> TypeCache = new();
     private static readonly List<MetadataReference> References;
     
@@ -96,8 +96,8 @@ public static class AssemblyManager
     public static void LoadTypes(List<SerializedType> typesToGenerate)
     {
         CleanCache();
-        
-        var fullSourceCode = TypeGenerator.Generate(typesToGenerate);
+        var compiler = new UnityTypeCompiler(new GenerationOptions{ GenerateOriginalNameAttributes = false});
+        var fullSourceCode = compiler.Compile(typesToGenerate);
         Directory.CreateDirectory(AssemblyCachePath);
         File.WriteAllText(CachedSourcePath, fullSourceCode);
         
@@ -106,8 +106,13 @@ public static class AssemblyManager
             assemblyName: "UnityAsset.NET.RuntimeTypes",
             syntaxTrees: [syntaxTree],
             references: References,
-            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Release));
-
+            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
+#if DEBUG
+                optimizationLevel: OptimizationLevel.Debug));
+#else
+                optimizationLevel: OptimizationLevel.Release));
+#endif
+        
         lock (CompilationLock)
         {
             // Unload the previous assembly context before loading a new one.

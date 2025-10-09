@@ -124,20 +124,26 @@ public interface IReader : ISeek, IFile
         }
         return list;
     }
-
-    public List<KeyValuePair<K, V>> ReadMapWithAlign<K, V>(int count, Func<IReader, K> keyConstructor,
-        Func<IReader, V> valueConstructor, bool keyRequiresAlign, bool valueRequiresAlign) where K : notnull
+    
+    public KeyValuePair<TK, TV> ReadPairWithAlign<TK, TV>(Func<IReader, TK> keyConstructor,
+        Func<IReader, TV> valueConstructor, bool keyRequiresAlign, bool valueRequiresAlign) where TK : notnull
     {
-        var map = new List<KeyValuePair<K, V>>(count);
+        TK key = keyConstructor(this);
+        if (keyRequiresAlign) 
+            Align(4);
+        TV value = valueConstructor(this);
+        if (valueRequiresAlign) 
+            Align(4);
+        return new KeyValuePair<TK, TV>(key, value);
+    }
+
+    public List<KeyValuePair<TK, TV>> ReadMapWithAlign<TK, TV>(int count, Func<IReader, TK> keyConstructor,
+        Func<IReader, TV> valueConstructor, bool keyRequiresAlign, bool valueRequiresAlign) where TK : notnull
+    {
+        var map = new List<KeyValuePair<TK, TV>>(count);
         for (int i = 0; i < count; i++)
         {
-            K key = keyConstructor(this);
-            if (keyRequiresAlign) 
-                Align(4);
-            V value = valueConstructor(this);
-            if (valueRequiresAlign) 
-                Align(4);
-            map.Add(new KeyValuePair<K, V>(key, value));
+            map.Add(ReadPairWithAlign(keyConstructor, valueConstructor, keyRequiresAlign, valueRequiresAlign));
         }
         return map;
     }

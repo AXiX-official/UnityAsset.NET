@@ -2,6 +2,7 @@
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
 using UnityAsset.NET.TypeTreeHelper;
+using UnityAsset.NET.TypeTreeHelper.PreDefined;
 using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
 namespace UnityAsset.NET;
