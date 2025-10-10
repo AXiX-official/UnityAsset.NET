@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
@@ -12,7 +13,7 @@ public class PPtr<T> : IPreDefinedType where T : IUnityType
     public string ClassName => $"PPtr<{UnityTypeHelper.GetClassName(typeof(T))}>";
     public Int32 m_FileID { get; }
     public Int64 m_PathID { get; }
-    private readonly AssetReader _reader;
+    internal readonly AssetReader _reader;
 
     public PPtr(IReader reader)
     {
@@ -31,10 +32,10 @@ public class PPtr<T> : IPreDefinedType where T : IUnityType
         return sb;
     }
     
-    public bool TryGet(out T? result)
+    public bool TryGet([NotNullWhen(true)] out T? result)
     {
         result = default;
-        if (TryGetAssetsFile(out var sourceFile) && sourceFile != null)
+        if (TryGetAssetsFile(out var sourceFile))
         {
             var index = sourceFile.Assets.FindIndex(a => a.Info.PathId == m_PathID);
             if ( index != -1)
@@ -51,7 +52,7 @@ public class PPtr<T> : IPreDefinedType where T : IUnityType
         return false;
     }
 
-    private bool TryGetAssetsFile(out SerializedFile? sf)
+    private bool TryGetAssetsFile([NotNullWhen(true)] out SerializedFile? sf)
     {
         sf = null;
         if (m_FileID == 0)
