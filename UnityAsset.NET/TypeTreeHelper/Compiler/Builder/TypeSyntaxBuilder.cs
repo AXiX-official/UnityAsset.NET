@@ -126,9 +126,12 @@ public class TypeSyntaxBuilder
 
     private TypeDeclarationNode CreateNodeForMissingField(Type csharpType)
     {
+        var name = csharpType.IsGenericType && csharpType.GetGenericTypeDefinition() == typeof(Nullable<>)
+            ? $"{csharpType.GetGenericArguments()[0].Name}"
+            : throw new Exception($"Cannot create node for missing field of type {csharpType.FullName}");
         if (csharpType.IsPrimitive || csharpType == typeof(string))
         {
-            return new PrimitiveSyntaxNode(csharpType.Name, IdentifierSanitizer.SanitizeName(csharpType.Name), false, csharpType.Name);
+            return new PrimitiveSyntaxNode(csharpType.Name, IdentifierSanitizer.SanitizeName(csharpType.Name), false, name);
         }
 
         if (csharpType.IsGenericType)
@@ -148,6 +151,6 @@ public class TypeSyntaxBuilder
         }
         
         // Assume it's a predefined class/struct or another interface
-        return new PredefinedSyntaxNode(csharpType.Name, IdentifierSanitizer.SanitizeName(csharpType.Name), false, csharpType.Name);
+        return new PredefinedSyntaxNode(csharpType.Name, IdentifierSanitizer.SanitizeName(csharpType.Name), false, name);
     }
 }

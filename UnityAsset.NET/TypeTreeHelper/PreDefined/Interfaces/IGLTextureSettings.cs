@@ -1,6 +1,4 @@
-﻿using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
-
-namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Interfaces;
+﻿namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Interfaces;
 
 public interface IGLTextureSettings : IPreDefinedInterface
 { 

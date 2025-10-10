@@ -1,5 +1,8 @@
 ﻿using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 using UnityAsset.NET.Enums;
+using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.TypeTreeHelper.PreDefined;
+using UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
 
 namespace UnityAsset.NET.AssetHelper;
 
@@ -15,5 +18,4 @@ public static class AssetManagerExtension
         var buildTarget = assetManager.BuildTarget;
         return TextureHelper.TextureHelper.Decode(imageData, tex.m_Width, tex.m_Height, (TextureFormat)tex.m_TextureFormat, buildTarget);
     }
-    
 }

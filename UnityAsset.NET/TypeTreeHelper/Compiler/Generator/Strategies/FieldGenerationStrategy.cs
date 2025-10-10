@@ -23,7 +23,7 @@ public class FieldGenerationStrategy : IGenerationStrategy
             }
             else
             {
-                sb.AppendLine($"    public {field.FieldTypeNode.DeclarationName} {field.SanitizedName} => default;");
+                sb.AppendLine($"    public {field.FieldTypeNode.DeclarationName}? {field.SanitizedName} => default;");
             }
         }
     }

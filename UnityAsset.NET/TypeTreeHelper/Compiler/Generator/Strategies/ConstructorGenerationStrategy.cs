@@ -54,6 +54,7 @@ public class ConstructorGenerationStrategy : IGenerationStrategy
             "SInt8" => $"{readerName}.ReadInt8()",
             "byte" => $"{readerName}.ReadByte()",
             "UInt8" => $"{readerName}.ReadUInt8()",
+            "char" => "BitConverter.ToChar(reader.ReadBytes(2), 0)",
             "Int16" or "short" or "SInt16" => $"{readerName}.ReadInt16()",
             "UInt16" or "unsigned short" => $"{readerName}.ReadUInt16()",
             "int" or "SInt32" => $"{readerName}.ReadInt32()",

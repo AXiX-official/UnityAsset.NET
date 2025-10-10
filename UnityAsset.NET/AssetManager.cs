@@ -19,7 +19,7 @@ public class AssetManager
     
     public UnityRevision? Version { get; private set; }
     public BuildTarget? BuildTarget { get; private set; }
-
+    
     public AssetManager(IFileSystem? fileSystem = null, IFileSystem.ErrorHandler? onError = null)
     {
         _fileSystem = fileSystem ?? new FileSystem.DirectFileSystem.DirectFileSystem(onError);
@@ -39,7 +39,7 @@ public class AssetManager
         .SelectMany(sf => sf.Assets)
         .ToList();
 
-    public async Task LoadAsync(List<IVirtualFile> files, IProgress<LoadProgress>? progress = null)
+    public async Task LoadAsync(List<IVirtualFile> files, bool ignoreDuplicatedFiles = false, IProgress<LoadProgress>? progress = null)
     {
         await Task.Run(() =>
         {
@@ -58,7 +58,7 @@ public class AssetManager
                         bundleFile.ParseFilesWithTypeConversion();
                         foreach (var fw in bundleFile.Files)
                         {
-                            if (!_loadedFiles.TryAdd(fw.Info.Path, fw.File))
+                            if (!_loadedFiles.TryAdd(fw.Info.Path, fw.File) && !ignoreDuplicatedFiles)
                             {
                                 throw new InvalidOperationException($"File {fw.Info.Path} already loaded");
                             }
@@ -74,7 +74,7 @@ public class AssetManager
                     case FileType.SerializedFile:
                     {
                         var serializedFile = new SerializedFile(file);
-                        if (!_loadedFiles.TryAdd(file.Name, serializedFile))
+                        if (!_loadedFiles.TryAdd(file.Name, serializedFile) && !ignoreDuplicatedFiles)
                         {
                             throw new InvalidOperationException($"File {file.Name} already loaded");
                         }
@@ -103,17 +103,17 @@ public class AssetManager
         });
     }
     
-    public async Task LoadAsync(List<string> paths, IProgress<LoadProgress>? progress = null)
+    public async Task LoadAsync(List<string> paths, bool ignoreDuplicatedFiles = false, IProgress<LoadProgress>? progress = null)
     {
         var virtualFiles = await _fileSystem.LoadAsync(paths, progress);
         
-        await LoadAsync(virtualFiles, progress);
+        await LoadAsync(virtualFiles, ignoreDuplicatedFiles, progress);
     }
 
-    public async Task LoadDirectoryAsync(string directoryPath, IProgress<LoadProgress>? progress = null)
+    public async Task LoadDirectoryAsync(string directoryPath, bool ignoreDuplicatedFiles = false, IProgress<LoadProgress>? progress = null)
     {
         string[] filePaths = Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories);
-        await LoadAsync(filePaths.ToList(), progress);
+        await LoadAsync(filePaths.ToList(), ignoreDuplicatedFiles, progress);
     }
 
     public byte[]? LoadStreamingData(StreamingInfo streamingInfo)
