@@ -7,7 +7,7 @@ namespace UnityAsset.NET.AssetHelper;
 
 public static class SpriteHelper
 {
-    public static Image<Bgra32> GetImage(ISprite m_Sprite)
+    /*public static Image<Bgra32> GetImage(ISprite m_Sprite)
     {
         if (m_Sprite.m_SpriteAtlas != null && m_Sprite.m_SpriteAtlas.TryGet(out var m_SpriteAtlas))
         {
