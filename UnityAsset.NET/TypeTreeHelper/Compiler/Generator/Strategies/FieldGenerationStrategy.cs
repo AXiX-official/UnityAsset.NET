@@ -19,11 +19,11 @@ public class FieldGenerationStrategy : IGenerationStrategy
 
             if (field.IsPresentInData)
             {
-                sb.AppendLine($"    public {field.FieldTypeNode.DeclarationName} {field.SanitizedName} {{ get; }}");
+                sb.AppendLine($"    public {field.FieldTypeNode.DeclarationName}{(field.IsNullable ? "?" : "")} {field.SanitizedName} {{ get; }}");
             }
             else
             {
-                sb.AppendLine($"    public {field.FieldTypeNode.DeclarationName}? {field.SanitizedName} => default;");
+                sb.AppendLine($"    public {field.FieldTypeNode.DeclarationName}{(field.IsNullable ? "?" : "")} {field.SanitizedName} => default;");
             }
         }
     }

@@ -5,5 +5,6 @@ public record FieldSyntaxNode(
     string SanitizedName,
     bool RequiresAlign,
     TypeDeclarationNode FieldTypeNode,
-    bool IsPresentInData
+    bool IsPresentInData,
+    bool IsNullable
 ) : SyntaxNode(OriginalName, SanitizedName, RequiresAlign);

@@ -10,6 +10,11 @@ public class TypeSyntaxBuilder
     private readonly Dictionary<int, TypeDeclarationNode> _cache = new();
     public Dictionary<int, ClassSyntaxNode> DiscoveredTypes { get; } = new();
 
+    private static bool IsNullable(Type csharpType)
+    {
+        return csharpType.IsGenericType && csharpType.GetGenericTypeDefinition() == typeof(Nullable<>);
+    }
+
     public ClassSyntaxNode Build(TypeTreeNode current, List<TypeTreeNode> nodes)
     {
         var inferredInterfaceName = $"I{current.Type}";
@@ -25,12 +30,15 @@ public class TypeSyntaxBuilder
         {
             var fieldTypeNode = ResolveNode(node, nodes);
             var sanitizedName = IdentifierSanitizer.SanitizeName(node.Name);
+            bool isNullable = interfaceProperties?.TryGetValue(sanitizedName, out var field) == true 
+                              && IsNullable(field.PropertyType);
             fields.Add(new FieldSyntaxNode(
                 node.Name,
                 sanitizedName,
                 node.RequiresAlign(nodes),
                 fieldTypeNode,
-                true
+                true,
+                isNullable
             ));
             interfaceProperties?.Remove(sanitizedName);
         }
@@ -45,7 +53,8 @@ public class TypeSyntaxBuilder
                     IdentifierSanitizer.SanitizeName(remainingProp.Name),
                     false,
                     fieldTypeNode,
-                    false
+                    false,
+                    IsNullable(remainingProp.PropertyType)
                 ));
             }
         }
@@ -126,7 +135,7 @@ public class TypeSyntaxBuilder
 
     private TypeDeclarationNode CreateNodeForMissingField(Type csharpType)
     {
-        var name = csharpType.IsGenericType && csharpType.GetGenericTypeDefinition() == typeof(Nullable<>)
+        var name = IsNullable(csharpType)
             ? $"{csharpType.GetGenericArguments()[0].Name}"
             : throw new Exception($"Cannot create node for missing field of type {csharpType.FullName}");
         if (csharpType.IsPrimitive || csharpType == typeof(string))
