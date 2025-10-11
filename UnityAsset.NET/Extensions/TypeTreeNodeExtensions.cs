@@ -15,7 +15,7 @@ public static class TypeTreeNodeExtensions
                 return node.RequiresAlign() || node.Children(nodes)[0].RequiresAlign();
             case "map" :
                 return node.RequiresAlign() || node.Children(nodes)[0].Children(nodes)[1].RequiresAlign();
-            default: return (node.MetaFlags & 0x4000) != 0;
+            default: return node.RequiresAlign();
         }
     }
     

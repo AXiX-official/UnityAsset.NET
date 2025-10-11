@@ -30,17 +30,13 @@ public class DirectFileSystem : IFileSystem
                     progress?.Report(new LoadProgress($"DirectFileSystem: Loading {file.Name}", totalFiles, i));
                     if (file.FileType == FileType.Unknown)
                     {
-                        file.Dispose();
+                        continue;
                     }
                     else
                     {
                         if (_loadedFiles.TryAdd(file.Name, file))
                         {
                             files.Add(file);
-                        }
-                        else
-                        {
-                            file.Dispose();
                         }
                     }
                 }
@@ -56,10 +52,6 @@ public class DirectFileSystem : IFileSystem
     
     public void Clear()
     {
-        foreach (var file in _loadedFiles.Values)
-        {
-           file.Dispose(); 
-        }
         _loadedFiles.Clear();
     }
     

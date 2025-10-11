@@ -1,5 +1,7 @@
 ﻿using System.Text;
+using UnityAsset.NET.Files;
 using UnityAsset.NET.IO;
+using UnityAsset.NET.IO.Reader;
 using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
 namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
@@ -16,7 +18,7 @@ public class StreamingInfo  : IPreDefinedType
     
     public StreamingInfo(IReader reader)
     {
-        offset = reader.ReadUInt64();
+        offset = (UnityRevision)((AssetReader)reader).AssetsFile.Metadata.UnityVersion >= "2020" ? reader.ReadUInt64() : reader.ReadUInt32();
         size = reader.ReadUInt32();
         path = reader.ReadSizedString();
         reader.Align(4);

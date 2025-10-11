@@ -8,10 +8,16 @@ public static class FileTypeHelper
 {
     public static FileType GetFileType(IVirtualFile file)
     {
-        var stream = file.Stream;
+        using var stream = file.OpenStream();
+        return GetFileType(stream);
+    }
+        
+    public static FileType GetFileType(Stream stream)
+    {
+        
         IReader reader = new CustomStreamReader(stream);
         reader.Seek(0);
-        if (file.Length > 7)
+        if (stream.Length > 7)
         {
             var signature = reader.ReadBytes(7);
             var header = System.Text.Encoding.UTF8.GetString(signature);
@@ -21,7 +27,7 @@ public static class FileTypeHelper
                 return FileType.BundleFile;
             }
             
-            if (file.Length < 20)
+            if (stream.Length < 20)
             {
                 reader.Seek(0);
                 return FileType.Unknown;
@@ -37,7 +43,7 @@ public static class FileTypeHelper
         
             if (version >= SerializedFileFormatVersion.LargeFilesSupport)
             {
-                if (file.Length < 48)
+                if (stream.Length < 48)
                 {
                     reader.Seek(0);
                     return FileType.Unknown;
@@ -49,7 +55,7 @@ public static class FileTypeHelper
             }
             
             reader.Seek(0);
-            if ((long)fileSize != file.Length || (long)dataOffset > file.Length)
+            if ((long)fileSize != stream.Length || (long)dataOffset > stream.Length)
             {
                 return FileType.Unknown;
             }
@@ -59,11 +65,11 @@ public static class FileTypeHelper
     }
 }
 
-public interface IVirtualFile : IDisposable
+public interface IVirtualFile
 {
     public string Path { get; }
     public string Name { get; }
+    public long Length { get; }
     public FileType FileType { get; }
-    public Stream Stream { get; }
-    long Length { get; }
+    Stream OpenStream();
 }

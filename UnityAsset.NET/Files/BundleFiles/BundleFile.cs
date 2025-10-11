@@ -213,7 +213,7 @@ public class BundleFile : IFile
     
     public BundleFile(IVirtualFile file, string? key = null, bool lazyLoad = true)
     {
-        CustomStreamReader reader = new CustomStreamReader(file.Stream);
+        CustomStreamReader reader = new CustomStreamReader(file.OpenStream());
         UnityCnKey = key;
         Header = Header.Parse(reader);
         if (Header.UnityRevision == "0.0.0")

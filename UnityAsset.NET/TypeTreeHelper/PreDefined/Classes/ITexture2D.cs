@@ -12,7 +12,7 @@ public interface ITexture2D : INamedAsset
     public bool? m_IsAlphaChannelOptional { get; }
     public Int32 m_Width { get; }
     public Int32 m_Height { get; }
-    public UInt32 m_CompleteImageSize { get; }
+    //public UInt32 m_CompleteImageSize { get; }
     public Int32? m_MipsStripped { get; }
     public Int32 m_TextureFormat { get; }
     public Int32 m_MipCount { get; }

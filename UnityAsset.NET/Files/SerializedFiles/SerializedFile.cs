@@ -23,7 +23,7 @@ public sealed class SerializedFile : IFile
 
     public SerializedFile(IVirtualFile file)
     {
-        CustomStreamReader reader = new CustomStreamReader(file.Stream);
+        CustomStreamReader reader = new CustomStreamReader(file.OpenStream());
         reader.Seek(0);
         Header = SerializedFileHeader.Parse(reader);
         reader.Endian = Header.Endianness;

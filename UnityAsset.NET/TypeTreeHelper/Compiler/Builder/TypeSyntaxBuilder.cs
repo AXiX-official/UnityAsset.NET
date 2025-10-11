@@ -12,6 +12,10 @@ public class TypeSyntaxBuilder
 
     private static bool IsNullable(Type csharpType)
     {
+        if (!csharpType.IsValueType)
+        {
+            return true;
+        }
         return csharpType.IsGenericType && csharpType.GetGenericTypeDefinition() == typeof(Nullable<>);
     }
 
@@ -135,9 +139,12 @@ public class TypeSyntaxBuilder
 
     private TypeDeclarationNode CreateNodeForMissingField(Type csharpType)
     {
-        var name = IsNullable(csharpType)
-            ? $"{csharpType.GetGenericArguments()[0].Name}"
-            : throw new Exception($"Cannot create node for missing field of type {csharpType.FullName}");
+        var name = csharpType.IsValueType 
+            ? IsNullable(csharpType)
+                ? $"{csharpType.GetGenericArguments()[0].Name}"
+                : csharpType.Name
+            : csharpType.Name;
+
         if (csharpType.IsPrimitive || csharpType == typeof(string))
         {
             return new PrimitiveSyntaxNode(csharpType.Name, IdentifierSanitizer.SanitizeName(csharpType.Name), false, name);
