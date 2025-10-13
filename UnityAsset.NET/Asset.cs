@@ -12,31 +12,43 @@ public class Asset
     public AssetFileInfo Info;
     public IReader RawData;
     //public NodeData NodeData;
-    private IAsset? value;
+    private IAsset? _value;
+    private string _name = string.Empty;
+    private readonly object _lock = new();
 
     public IAsset Value
     {
         get
         {
-            if (value == null)
+            lock (_lock)
             {
-                RawData.Seek(0);
-                value = UnityObjectFactory.Create(Info.Type, RawData);
+                if (_value == null)
+                {
+                    RawData.Seek(0);
+                    _value = UnityObjectFactory.Create(Info.Type, RawData);
+                }
+                return _value;
             }
-            return value;
         }
     }
 
-    public string Type => Value.ClassName;
+    public string Type => Info.Type.Nodes[0].Type;
 
     public string Name
     {
-        get {
-            if (Value is INamedAsset named)
+        get
+        {
+            lock (_lock)
             {
-                return named.m_Name;
+                var nodes = Info.Type.Nodes;
+                if (TypeTreeHelper.Compiler.Helper.IsNamedAsset(nodes[0], nodes) && string.IsNullOrEmpty(_name))
+                {
+                    RawData.Seek(0);
+                    _name = RawData.ReadSizedString();
+                    RawData.Seek(0);
+                }
+                return _name;
             }
-            return string.Empty;
         }
     }
 

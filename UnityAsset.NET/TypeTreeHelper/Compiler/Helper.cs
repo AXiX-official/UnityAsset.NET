@@ -29,6 +29,14 @@ public static class Helper
                         t.IsClass && !t.IsAbstract)
             .ToDictionary(t => t.Name, t => t, StringComparer.OrdinalIgnoreCase);
     }
+
+    public static bool IsNamedAsset(TypeTreeNode current, List<TypeTreeNode> nodes)
+    {
+        var children = current.Children(nodes);
+        if (children.Count == 0) return false;
+        // workaround
+        return (children[0].Type == "string" &&  children[0].Name == "m_Name");
+    }
     
     public static string GetPredefinedTypeOrInterfaceName(string type)
     {

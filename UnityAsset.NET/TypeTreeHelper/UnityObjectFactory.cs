@@ -1,7 +1,6 @@
 ﻿using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.TypeTreeHelper.PreDefined;
-using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
 namespace UnityAsset.NET.TypeTreeHelper;
 
@@ -15,7 +14,7 @@ public static class UnityObjectFactory
         {
             throw new Exception($"Type {sType.TypeID} not found");
         }
-        
-        return (IAsset)Activator.CreateInstance(generatedType, args: new object[] { reader })!;
+        var instance = Activator.CreateInstance(generatedType, args: [ reader ]);
+        return (IAsset)(instance ?? throw new InvalidOperationException("Activator.CreateInstance unexpectedly returned null for type: " + generatedType.FullName));
     }
 }

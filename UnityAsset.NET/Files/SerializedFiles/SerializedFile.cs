@@ -33,7 +33,6 @@ public sealed class SerializedFile : IFile
         Assets = new List<Asset>();
         foreach (var assetInfo in Metadata.AssetInfos.AsSpan())
         {
-            reader.Seek((int)(Header.DataOffset + assetInfo.ByteOffset));
             Assets.Add(new Asset(assetInfo, new AssetReader(reader, (long)(Header.DataOffset + assetInfo.ByteOffset),assetInfo.ByteSize, this)));
         }
     }
@@ -52,7 +51,6 @@ public sealed class SerializedFile : IFile
         var sf = new SerializedFile(header, metadata, assets);
         foreach (var assetInfo in metadata.AssetInfos.AsSpan())
         {
-            reader.Seek((int)(header.DataOffset + assetInfo.ByteOffset));
             assets.Add(new Asset(assetInfo, new AssetReader(reader, (long)(header.DataOffset + assetInfo.ByteOffset),assetInfo.ByteSize, sf)));
         }
         return sf;

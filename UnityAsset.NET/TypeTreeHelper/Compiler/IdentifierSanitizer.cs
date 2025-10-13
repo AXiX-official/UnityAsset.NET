@@ -52,6 +52,10 @@ public static class IdentifierSanitizer
             {
                 sanitized.Append(c);
             }
+            else if (c == '$')
+            {
+                continue;
+            }
             else
             {
                 sanitized.Append('_');

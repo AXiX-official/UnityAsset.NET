@@ -64,7 +64,7 @@ public class TypeSyntaxBuilder
         }
         
         
-        var interfaceName = type?.Name ?? "IUnityType";
+        var interfaceName = type?.Name ?? (Helper.IsNamedAsset(current, nodes) ? "INamedAsset" : current == nodes[0] ? "IAsset" : "IUnityType");
         var concreteName = IdentifierSanitizer.SanitizeName($"{current.Type}_{current.GetHashCode(nodes)}");
 
         var classSyntaxNode = new ClassSyntaxNode(

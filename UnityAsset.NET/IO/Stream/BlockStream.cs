@@ -112,12 +112,22 @@ public class BlockStream : System.IO.Stream
         _currentBlockData!.Position = position - _blocks[blockIndex].UncompressedOffset;
     }
 
-    public override int Read(byte[] buffer, int offset, int count)
+    public override int ReadByte()
     {
         if (_disposed) throw new ObjectDisposedException(nameof(BlockStream));
-        if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset));
-        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
-        if (buffer.Length - offset < count) throw new ArgumentException("Invalid offset and length.");
+        if (_position >= _length)  throw new EndOfStreamException();
+        
+        EnsureBlockLoaded(_position);
+        _position++;
+        return _currentBlockData!.ReadByte();
+    }
+
+    public override int Read(Span<byte> buffer)
+    {
+        if (_disposed) throw new ObjectDisposedException(nameof(BlockStream));
+        
+        var count = buffer.Length;
+        var offset = 0;
 
         int totalRead = 0;
         while (count > 0)
@@ -129,7 +139,7 @@ public class BlockStream : System.IO.Stream
             long remainingInBlock = _currentBlockData!.Length - _currentBlockData.Position;
             int bytesToRead = (int)Math.Min(remainingInBlock, count);
 
-            int bytesRead = _currentBlockData.Read(buffer, offset, bytesToRead);
+            int bytesRead = _currentBlockData.Read(buffer.Slice(offset, bytesToRead));
             if (bytesRead <= 0) break;
 
             totalRead += bytesRead;
@@ -140,6 +150,8 @@ public class BlockStream : System.IO.Stream
 
         return totalRead;
     }
+    
+    public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
 
     public override long Seek(long offset, SeekOrigin origin)
     {

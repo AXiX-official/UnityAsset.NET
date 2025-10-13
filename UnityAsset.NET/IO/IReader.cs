@@ -96,8 +96,9 @@ public interface IReader : ISeek, IFile
     {
         var length = ReadInt32();
         if (length > Length - Position || length < 0)
-            throw new Exception("String length is invalid");
-        var ret = length > 0 ? Encoding.UTF8.GetString(ReadBytes(length)) : "";
+            // Fuck Unity
+            return String.Empty;
+        var ret = length > 0 ? Encoding.UTF8.GetString(ReadBytes(length)) : String.Empty;
         return ret;
     }
     public int[] ReadIntArray(int count)

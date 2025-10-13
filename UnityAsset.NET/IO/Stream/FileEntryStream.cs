@@ -25,19 +25,28 @@ public class FileEntryStream : System.IO.Stream
         set => Seek(value, SeekOrigin.Begin);
     }
 
-    public override int Read(byte[] buffer, int offset, int count)
+    public override int ReadByte()
     {
+        _blockStream.Seek(_fileEntry.Offset + _position, SeekOrigin.Begin);
+        _position++;
+        return _blockStream.ReadByte();
+    }
+
+    public override int Read(Span<byte> buffer)
+    {
+        _blockStream.Seek(_fileEntry.Offset + _position, SeekOrigin.Begin);
         long remaining = _fileEntry.Size - _position;
         if (remaining <= 0)
             return 0;
             
-        count = (int)Math.Min(count, remaining);
-        if (_blockStream.Position != _fileEntry.Offset + _position)
-            Seek(_position, SeekOrigin.Begin);
-        int bytesRead = _blockStream.Read(buffer, offset, count);
+        var count = (int)Math.Min(buffer.Length, remaining);
+        int bytesRead = _blockStream.Read(buffer.Slice(0, count));
         _position += bytesRead;
         return bytesRead;
     }
+    
+    public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
+
 
     public override long Seek(long offset, SeekOrigin origin)
     {
@@ -54,7 +63,7 @@ public class FileEntryStream : System.IO.Stream
         
         _position = newPosition;
         _blockStream.Seek(_fileEntry.Offset + newPosition, SeekOrigin.Begin);
-        return newPosition;
+        return _position;
     }
 
     public override void Flush() => throw new NotSupportedException();
