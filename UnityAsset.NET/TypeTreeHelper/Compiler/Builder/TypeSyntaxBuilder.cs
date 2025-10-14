@@ -18,6 +18,26 @@ public class TypeSyntaxBuilder
         }
         return csharpType.IsGenericType && csharpType.GetGenericTypeDefinition() == typeof(Nullable<>);
     }
+    
+    private static Dictionary<string, PropertyInfo> GetAllInterfaceProperties(Type type)
+    {
+        var properties = new Dictionary<string, PropertyInfo>();
+
+        foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        {
+            properties[property.Name] = property;
+        }
+
+        foreach (var baseInterface in type.GetInterfaces())
+        {
+            foreach (var property in GetAllInterfaceProperties(baseInterface))
+            {
+                properties[property.Key] = property.Value;
+            }
+        }
+
+        return properties;
+    }
 
     public ClassSyntaxNode Build(TypeTreeNode current, List<TypeTreeNode> nodes)
     {
@@ -27,9 +47,10 @@ public class TypeSyntaxBuilder
         var children = current.Children(nodes);
         var fields = new List<FieldSyntaxNode>();
 
-        var interfaceProperties = type?.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .ToDictionary(p => p.Name, p => p);
+        var interfaceProperties = type != null ? GetAllInterfaceProperties(type) : null;
 
+        interfaceProperties?.Remove("ClassName");
+        
         foreach (var node in children)
         {
             var fieldTypeNode = ResolveNode(node, nodes);

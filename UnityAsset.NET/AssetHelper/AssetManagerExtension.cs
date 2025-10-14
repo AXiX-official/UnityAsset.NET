@@ -22,7 +22,7 @@ public static class AssetManagerExtension
     public static Image<Bgra32> DecodeTexture2DToImage(this AssetManager assetManager, ITexture2D tex)
     {
         var imgData = assetManager.DecodeTexture2D(tex);
-        var image = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(imgData, tex.m_Width, tex.m_Height);
+        var image = Image.LoadPixelData<Bgra32>(imgData, tex.m_Width, tex.m_Height);
         image.Mutate(x => x.Flip(FlipMode.Vertical));
         return image;
     }

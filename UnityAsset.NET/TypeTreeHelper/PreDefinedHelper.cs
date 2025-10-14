@@ -22,7 +22,8 @@ public static class PreDefinedHelper
         
         var preDefinedInterfaces = assembly
             .GetTypes()
-            .Where(t => typeof(IPreDefinedInterface).IsAssignableFrom(t))
+            .Where(t => typeof(IPreDefinedInterface).IsAssignableFrom(t) ||
+                        (t.Namespace?.EndsWith("PreDefined.Classes") ?? false))
             .ToDictionary(t => t.Name, t => t, StringComparer.OrdinalIgnoreCase);
         
         PreDefinedTypeNames = new HashSet<string>(

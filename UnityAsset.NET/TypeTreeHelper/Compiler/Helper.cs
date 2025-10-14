@@ -42,19 +42,10 @@ public static class Helper
     {
         if (PreDefinedHelper.IsPreDefinedType(type))
             return type;
-        switch (type)
-        {
-            case "AssetBundle": return "IAssetBundle";
-            case "Mesh": return "IMesh";
-            case "TextAsset": return "ITextAsset";
-            case "Texture2D": return "ITexture2D";
-            case "Sprite": return "ISprite";
-            default:
-            {
-                var interfaceName = $"I{type}";
-                return PreDefinedHelper.IsPreDefinedInterface(interfaceName) ? interfaceName : "IUnityType";
-            }
-        }
+        var interfaceName = $"I{type}";
+        if (PreDefinedHelper.IsPreDefinedInterface(type))
+            return interfaceName;
+        return PreDefinedHelper.IsPreDefinedInterface(interfaceName) ? interfaceName : "IUnityType";
     }
     
     public static string GetCSharpPrimitiveType(string unityType)
