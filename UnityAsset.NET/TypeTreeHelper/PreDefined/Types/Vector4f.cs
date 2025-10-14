@@ -19,6 +19,14 @@ public class Vector4f : IPreDefinedType
         z = reader.ReadFloat();
         w = reader.ReadFloat();
     }
+    
+    public Vector4f(float x, float y, float z, float w)
+    {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
+    }
 
     public StringBuilder ToPlainText(string name = "Base", StringBuilder? sb = null, string indent = "")
     {

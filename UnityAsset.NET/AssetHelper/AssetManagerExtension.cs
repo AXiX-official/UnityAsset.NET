@@ -1,8 +1,8 @@
-﻿using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 using UnityAsset.NET.Enums;
-using UnityAsset.NET.Files.SerializedFiles;
-using UnityAsset.NET.TypeTreeHelper.PreDefined;
-using UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
 
 namespace UnityAsset.NET.AssetHelper;
 
@@ -17,5 +17,20 @@ public static class AssetManagerExtension
         
         var buildTarget = assetManager.BuildTarget;
         return TextureHelper.TextureHelper.Decode(imageData, tex.m_Width, tex.m_Height, (TextureFormat)tex.m_TextureFormat, buildTarget);
+    }
+    
+    public static Image<Bgra32> DecodeTexture2DToImage(this AssetManager assetManager, ITexture2D tex)
+    {
+        var imgData = assetManager.DecodeTexture2D(tex);
+        var image = SixLabors.ImageSharp.Image.LoadPixelData<Bgra32>(imgData, tex.m_Width, tex.m_Height);
+        image.Mutate(x => x.Flip(FlipMode.Vertical));
+        return image;
+    }
+    
+    public static Image<Bgra32> DecodeSpriteToImage(this AssetManager assetManager, ISprite sprite)
+    {
+        var image = SpriteHelper.GetImage(assetManager, sprite);
+        image.Mutate(x => x.Flip(FlipMode.Vertical));
+        return image;
     }
 }

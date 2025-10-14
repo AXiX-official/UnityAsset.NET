@@ -18,6 +18,13 @@ public class Vector3f : IPreDefinedType
         z = reader.ReadFloat();
     }
 
+    public Vector3f(float x, float y, float z)
+    {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
     public StringBuilder ToPlainText(string name = "Base", StringBuilder? sb = null, string indent = "")
     {
         sb ??= new StringBuilder();

@@ -7,7 +7,6 @@ using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
 namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
 
-[OriginalName("PPtr")]
 public class PPtr<T> : IPreDefinedType where T : IUnityType
 {
     public string ClassName => $"PPtr<{UnityTypeHelper.GetClassName(typeof(T))}>";

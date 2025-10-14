@@ -1,5 +1,4 @@
-﻿using System.Buffers.Binary;
-using AssetRipper.TextureDecoder.Astc;
+﻿using AssetRipper.TextureDecoder.Astc;
 using AssetRipper.TextureDecoder.Atc;
 using AssetRipper.TextureDecoder.Bc;
 using AssetRipper.TextureDecoder.Dxt;

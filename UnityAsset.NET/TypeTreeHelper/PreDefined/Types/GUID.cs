@@ -7,13 +7,9 @@ namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
 public class GUID : IPreDefinedType
 {
     public string ClassName => "GUID";
-    [OriginalName("data[0]")]
     public UInt32 data_0_ { get; }
-    [OriginalName("data[1]")]
     public UInt32 data_1_ { get; }
-    [OriginalName("data[2]")]
     public UInt32 data_2_ { get; }
-    [OriginalName("data[3]")]
     public UInt32 data_3_ { get; }
 
     public GUID(IReader reader)

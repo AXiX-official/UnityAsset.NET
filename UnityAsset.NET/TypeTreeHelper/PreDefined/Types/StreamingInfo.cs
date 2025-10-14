@@ -9,11 +9,8 @@ namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
 public class StreamingInfo  : IPreDefinedType
 {
     public string ClassName => "StreamingInfo";
-    [OriginalName("offset")]
     public UInt64 offset { get; }
-    [OriginalName("size")]
     public UInt32 size { get; }
-    [OriginalName("path")]
     public string path { get; }
     
     public StreamingInfo(IReader reader)
