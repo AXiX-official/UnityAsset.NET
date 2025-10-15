@@ -48,7 +48,7 @@ public class Matrix4x4f : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}float e00 = {e00}");
         sb.AppendLine($"{childIndent}float e01 = {e01}");
         sb.AppendLine($"{childIndent}float e02 = {e02}");

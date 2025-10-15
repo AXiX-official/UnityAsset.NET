@@ -20,7 +20,7 @@ public class AABB : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}Vector3f m_Center");
         m_Center.ToPlainText("m_Center", sb, childIndent);
         sb.AppendLine($"{childIndent}Vector3f m_Extent");

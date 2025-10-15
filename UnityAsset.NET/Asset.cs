@@ -58,4 +58,12 @@ public class Asset
         RawData = reader; 
         //NodeData = new NodeData(reader, info.Type.Nodes, info.Type.Nodes[0]);
     }
+
+    public void Release()
+    {
+        lock (_lock)
+        {
+            _value = null;
+        }
+    }
 }

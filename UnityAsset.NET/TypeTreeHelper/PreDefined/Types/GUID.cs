@@ -24,7 +24,7 @@ public class GUID : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}unsigned int data[0] = {data_0_}");
         sb.AppendLine($"{childIndent}unsigned int data[1] = {data_1_}");
         sb.AppendLine($"{childIndent}unsigned int data[2] = {data_2_}");

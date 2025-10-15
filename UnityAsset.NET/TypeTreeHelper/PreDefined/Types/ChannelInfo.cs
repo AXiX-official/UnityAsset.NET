@@ -25,7 +25,7 @@ public class ChannelInfo : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}UInt8 stream = {stream}");
         sb.AppendLine($"{childIndent}UInt8 offset = {offset}");
         sb.AppendLine($"{childIndent}UInt8 format = {format}");

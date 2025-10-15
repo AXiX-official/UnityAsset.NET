@@ -25,7 +25,7 @@ public class PPtr<T> : IPreDefinedType where T : IUnityType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}int m_FileID = {m_FileID}");
         sb.AppendLine($"{childIndent}SInt64 m_PathID = {m_PathID}");
         return sb;

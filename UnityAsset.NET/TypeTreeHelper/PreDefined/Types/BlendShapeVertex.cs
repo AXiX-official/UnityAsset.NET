@@ -24,10 +24,10 @@ public class BlendShapeVertex : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
-        sb.AppendLine($"{childIndent}Vector3f vertex = {vertex}");
-        sb.AppendLine($"{childIndent}Vector3f normal = {normal}");
-        sb.AppendLine($"{childIndent}Vector3f tangent = {tangent}");
+        var childIndent = $"{indent}\t";
+        vertex.ToPlainText("vertex", sb, childIndent);
+        normal.ToPlainText("normal", sb, childIndent);
+        tangent.ToPlainText("tangent", sb, childIndent);
         sb.AppendLine($"{childIndent}unsigned int index = {index}");
         return sb;
     }

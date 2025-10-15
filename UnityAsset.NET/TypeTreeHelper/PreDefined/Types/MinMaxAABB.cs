@@ -20,7 +20,7 @@ public class MinMaxAABB  : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}Vector3f m_Min = {m_Min}");
         sb.AppendLine($"{childIndent}Vector3f m_Max = {m_Max}");
         return sb;

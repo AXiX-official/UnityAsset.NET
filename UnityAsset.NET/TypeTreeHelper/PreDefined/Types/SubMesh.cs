@@ -32,7 +32,7 @@ public class SubMesh  : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}unsigned int firstByte = {firstByte}");
         sb.AppendLine($"{childIndent}unsigned int indexCount = {indexCount}");
         sb.AppendLine($"{childIndent}int topology = {topology}");

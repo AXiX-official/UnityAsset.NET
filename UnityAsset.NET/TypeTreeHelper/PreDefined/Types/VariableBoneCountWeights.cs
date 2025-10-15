@@ -19,14 +19,14 @@ public class VariableBoneCountWeights : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}vector m_Data");
-        sb.AppendLine($"{childIndent}    Array Array");
-        sb.AppendLine($"{childIndent}    int size =  {(uint)m_Data.Count}");
+        sb.AppendLine($"{childIndent}\tArray Array");
+        sb.AppendLine($"{childIndent}\tint size =  {(uint)m_Data.Count}");
         for (int im_Data = 0; im_Data < m_Data.Count; im_Data++)
         {
             var m_DatachildIndentBackUp = childIndent;
-            childIndent = $"{childIndent}        ";
+            childIndent = $"{childIndent}\t\t";
             sb.AppendLine($"{childIndent}[{im_Data}]");
             sb.AppendLine($"{childIndent}unsigned int data = {m_Data[im_Data]}");
             childIndent = m_DatachildIndentBackUp;

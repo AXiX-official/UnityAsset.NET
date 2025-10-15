@@ -21,7 +21,7 @@ public class SecondarySpriteTexture : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         texture.ToPlainText("texture", sb, childIndent);
         sb.AppendLine($"{childIndent}string name \"{name}\"");
         return sb;

@@ -24,7 +24,7 @@ public class Pair<TFirst, TSecond> : IPreDefinedType where TFirst : IUnityType w
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         FirstToPlainText("first", sb, childIndent, first);
         SecondToPlainText("second", sb, childIndent, second);
         return sb;

@@ -19,14 +19,14 @@ public class TypelessData  : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        sb.AppendLine($"{indent}    int size = {size}");
-        sb.AppendLine($"{indent}    vector data");
-        sb.AppendLine($"{indent}        Array Array");
-        sb.AppendLine($"{indent}        int size = {data.Length}");
+        sb.AppendLine($"{indent}\tint size = {size}");
+        sb.AppendLine($"{indent}\tvector data");
+        sb.AppendLine($"{indent}\t\tArray Array");
+        sb.AppendLine($"{indent}\t\tint size = {data.Length}");
         for (int i = 0; i < data.Length; i++)
         {
-            sb.AppendLine($"{indent}            [{i}]");
-            sb.AppendLine($"{indent}            byte = {data[i]}");
+            sb.AppendLine($"{indent}\t\t\t[{i}]");
+            sb.AppendLine($"{indent}\t\t\tbyte = {data[i]}");
         }
         return sb;
     }

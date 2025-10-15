@@ -24,7 +24,7 @@ public class MeshBlendShape : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}unsigned int firstVertex = {this.firstVertex}");
         sb.AppendLine($"{childIndent}unsigned int vertexCount = {this.vertexCount}");
         sb.AppendLine($"{childIndent}bool hasNormals = {this.hasNormals}");

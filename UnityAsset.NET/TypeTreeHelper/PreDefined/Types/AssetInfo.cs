@@ -21,7 +21,7 @@ public class AssetInfo : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}int preloadIndex = {preloadIndex}");
         sb.AppendLine($"{childIndent}int preloadSize = {preloadSize}");
         asset.ToPlainText("asset", sb, childIndent);

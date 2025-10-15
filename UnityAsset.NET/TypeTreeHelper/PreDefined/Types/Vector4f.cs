@@ -32,7 +32,7 @@ public class Vector4f : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}float x = {x}");
         sb.AppendLine($"{childIndent}float y = {y}");
         sb.AppendLine($"{childIndent}float z = {z}");

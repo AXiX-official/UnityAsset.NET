@@ -25,7 +25,7 @@ public class StreamingInfo  : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}UInt64 offset = {offset}");
         sb.AppendLine($"{childIndent}unsigned int size = {size}");
         sb.AppendLine($"{childIndent}string path = \"{path}\"");

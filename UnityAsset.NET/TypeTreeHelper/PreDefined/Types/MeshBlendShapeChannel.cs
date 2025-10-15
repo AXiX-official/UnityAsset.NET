@@ -25,7 +25,7 @@ public class MeshBlendShapeChannel  : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}string name = \"{name}\"");
         sb.AppendLine($"{childIndent}unsigned int nameHash = {nameHash}");
         sb.AppendLine($"{childIndent}int frameIndex = {frameIndex}");

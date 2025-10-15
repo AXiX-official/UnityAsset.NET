@@ -6,37 +6,21 @@ namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
 public class Hash128 : IPreDefinedType
 {
     public string ClassName => "Hash128";
-
     public byte bytes_0_ { get; }
-
     public byte bytes_1_ { get; }
-
     public byte bytes_2_ { get; }
-
     public byte bytes_3_ { get; }
-
     public byte bytes_4_ { get; }
-
     public byte bytes_5_ { get; }
-
     public byte bytes_6_ { get; }
-
     public byte bytes_7_ { get; }
-
     public byte bytes_8_ { get; }
-
     public byte bytes_9_ { get; }
-
     public byte bytes_10_ { get; }
-
     public byte bytes_11_ { get; }
-
     public byte bytes_12_ { get; }
-
     public byte bytes_13_ { get; }
-
     public byte bytes_14_ { get; }
-
     public byte bytes_15_ { get; }
 
     public Hash128(IReader reader)
@@ -63,7 +47,7 @@ public class Hash128 : IPreDefinedType
     {
         sb ??= new StringBuilder();
         sb.AppendLine($"{indent}{ClassName} {name}");
-        var childIndent = indent + "    ";
+        var childIndent = $"{indent}\t";
         sb.AppendLine($"{childIndent}UInt8 bytes[0] = {this.bytes_0_}");
         sb.AppendLine($"{childIndent}UInt8 bytes[1] = {this.bytes_1_}");
         sb.AppendLine($"{childIndent}UInt8 bytes[2] = {this.bytes_2_}");
