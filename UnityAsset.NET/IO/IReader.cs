@@ -26,6 +26,13 @@ public interface IReader : ISeek, IFile
     public long Length { get; }
     public byte ReadByte();
     public byte[] ReadBytes(int count);
+    public int Read(byte[] buffer, int offset, int count)
+    {
+        var bytesAvailable = (int)Math.Min(count, Length - Position);
+        var bytesRead = ReadBytes(bytesAvailable);
+        Array.Copy(bytesRead, 0, buffer, offset, bytesAvailable);
+        return bytesAvailable;
+    }
     public Boolean ReadBoolean() => ReadByte() != 0;
     public sbyte ReadInt8() => (sbyte)ReadByte();
     public byte ReadUInt8() => ReadByte();
