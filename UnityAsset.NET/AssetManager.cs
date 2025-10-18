@@ -43,13 +43,14 @@ public class AssetManager
     {
         await Task.Run(() =>
         {
-            List<SerializedType> types = new();
+            var fileWrappers = new ConcurrentBag<(string, IFile)>();
+            var types = new ConcurrentBag<SerializedType>();
+            int progressCount = 0;
 
-            for (int i = 0; i < files.Count; i++)
+            Parallel.ForEach(files, file =>
             {
-                var file = files[i];
-
-                progress?.Report(new LoadProgress($"AssetManager: Loading {file.Name}", files.Count, i));
+                int currentProgress = Interlocked.Increment(ref progressCount);
+                progress?.Report(new LoadProgress($"AssetManager: Loading {file.Name}", files.Count, currentProgress));
                 switch (file.FileType)
                 {
                     case FileType.BundleFile:
@@ -58,14 +59,16 @@ public class AssetManager
                         bundleFile.ParseFilesWithTypeConversion();
                         foreach (var fw in bundleFile.Files)
                         {
-                            if (!_loadedFiles.TryAdd(fw.Info.Path, fw.File) && !ignoreDuplicatedFiles)
+                            /*if (!_loadedFiles.TryAdd(fw.Info.Path, fw.File) && !ignoreDuplicatedFiles)
                             {
                                 throw new InvalidOperationException($"File {fw.Info.Path} already loaded");
-                            }
+                            }*/
+                            fileWrappers.Add((fw.Info.Path, fw.File));
 
                             if (fw is { File: SerializedFile sf })
                             {
-                                types.AddRange(sf.Metadata.Types);
+                                foreach(var type in sf.Metadata.Types)
+                                    types.Add(type);
                             }
                         }
 
@@ -74,14 +77,24 @@ public class AssetManager
                     case FileType.SerializedFile:
                     {
                         var serializedFile = new SerializedFile(file);
-                        if (!_loadedFiles.TryAdd(file.Name, serializedFile) && !ignoreDuplicatedFiles)
+                        /*if (!_loadedFiles.TryAdd(file.Name, serializedFile) && !ignoreDuplicatedFiles)
                         {
                             throw new InvalidOperationException($"File {file.Name} already loaded");
-                        }
+                        }*/
+                        fileWrappers.Add((file.Name, serializedFile));
 
-                        types.AddRange(serializedFile.Metadata.Types);
+                        foreach(var type in serializedFile.Metadata.Types)
+                            types.Add(type);
                         break;
                     }
+                }
+            });
+            
+            foreach (var (path, file) in fileWrappers)
+            {
+                if (!_loadedFiles.TryAdd(path, file) && !ignoreDuplicatedFiles)
+                {
+                    throw new InvalidOperationException($"File {path} already loaded");
                 }
             }
 

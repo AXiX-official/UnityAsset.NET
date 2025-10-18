@@ -123,7 +123,6 @@ public interface IReader : ISeek, IFile
             list.Add(constructor(this));
         return list;
     }
-    
     public List<T> ReadListWithAlign<T>(int count, Func<IReader, T> constructor, bool requiresAlign)
     {
         var list = new List<T>(count);

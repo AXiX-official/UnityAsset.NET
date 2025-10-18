@@ -39,8 +39,10 @@ public class TypeSyntaxBuilder
         return properties;
     }
 
-    public ClassSyntaxNode Build(TypeTreeNode current, List<TypeTreeNode> nodes)
+    public ClassSyntaxNode? Build(TypeTreeNode current, List<TypeTreeNode> nodes)
     {
+        if (Helper.IsPreDefinedType(current))
+            return null;
         var inferredInterfaceName = $"I{current.Type}";
         var type = ((IReadOnlyDictionary<string, Type?>)Helper.PreDefinedInterfaceMap).GetValueOrDefault(inferredInterfaceName, null);
         
@@ -150,8 +152,8 @@ public class TypeSyntaxBuilder
         {
             var classSyntaxNode = Build(node, allNodes);
 
-            DiscoveredTypes[hash] = classSyntaxNode;
-            newNode = classSyntaxNode;
+            DiscoveredTypes[hash] = classSyntaxNode!;
+            newNode = classSyntaxNode!;
         }
 
         _cache[hash] = newNode;

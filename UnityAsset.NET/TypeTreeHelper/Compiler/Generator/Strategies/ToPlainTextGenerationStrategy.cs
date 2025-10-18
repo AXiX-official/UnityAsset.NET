@@ -73,8 +73,11 @@ public class ToPlainTextGenerationStrategy : IGenerationStrategy
 
             case PairSyntaxNode p:
                 sb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}pair {name}\");");
-                AppendRecursive(sb, p.KeyNode, "first", $"{valueAccess}.Key", $"{indent}\t");
-                AppendRecursive(sb, p.ValueNode, "second", $"{valueAccess}.Value", $"{indent}\t");
+                sb.AppendLine($"{indent}var {name}childIndentBackUp = childIndent;");
+                sb.AppendLine($"{indent}childIndent = $\"{{childIndent}}\\t\\t\";");
+                AppendRecursive(sb, p.KeyNode, "first", $"{valueAccess}.Key", $"{indent}");
+                AppendRecursive(sb, p.ValueNode, "second", $"{valueAccess}.Value", $"{indent}");
+                sb.AppendLine($"{indent}childIndent = {name}childIndentBackUp;");
                 break;
 
             case ClassSyntaxNode c:

@@ -43,7 +43,7 @@ public class ThrottledProgress : IProgress<LoadProgress>
     public void Flush()
     {
         if (_latestValue == null)
-            throw new NullReferenceException();
+            return;
         _innerProgress.Report(_latestValue);
     }
 }

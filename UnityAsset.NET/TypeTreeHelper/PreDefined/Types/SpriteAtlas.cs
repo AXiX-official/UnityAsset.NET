@@ -12,9 +12,9 @@ public class SpriteAtlas : IPreDefinedType, INamedAsset
     public string m_Name { get; }
     public List<PPtr<ISprite>> m_PackedSprites { get; }
     public List<string> m_PackedSpriteNamesToIndex { get; }
-    public Dictionary<KeyValuePair<GUID, long>, SpriteAtlasData> m_RenderDataMap;
+    public List<KeyValuePair<KeyValuePair<GUID, Int64>, SpriteAtlasData>> m_RenderDataMap { get; }
     public string m_Tag { get; }
-    public bool m_IsVariant;
+    public bool m_IsVariant { get; }
     
     public SpriteAtlas(IReader reader)
     {
@@ -22,22 +22,17 @@ public class SpriteAtlas : IPreDefinedType, INamedAsset
         reader.Align(4);
         m_PackedSprites = reader.ReadListWithAlign(reader.ReadInt32(), r => new PPtr<ISprite>(r), false);
 
-        m_PackedSpriteNamesToIndex = reader.ReadListWithAlign(reader.ReadInt32(), r =>
-        {
-            var s = r.ReadSizedString();
-            r.Align(4);
-            return s;
-        }, false);
-
-        var m_RenderDataMapSize = reader.ReadInt32();
-        m_RenderDataMap = new Dictionary<KeyValuePair<GUID, long>, SpriteAtlasData>();
-        for (int i = 0; i < m_RenderDataMapSize; i++)
-        {
-            var first = new GUID(reader);
-            var second = reader.ReadInt64();
-            var value = new SpriteAtlasData(reader);
-            m_RenderDataMap.Add(new KeyValuePair<GUID, long>(first, second), value);
-        }
+        m_PackedSpriteNamesToIndex = reader.ReadListWithAlign(reader.ReadInt32(), r => r.ReadSizedString(), true);
+        
+        m_RenderDataMap = reader.ReadListWithAlign(
+	        reader.ReadInt32(), 
+	        r => r.ReadPairWithAlign(
+		        r => r.ReadPairWithAlign<GUID, Int64>(r => new GUID(r), 
+			        r => r.ReadInt64(), false, false), 
+		        r => new SpriteAtlasData(r), 
+		        false, 
+		        false)
+	        , false);
         m_Tag = reader.ReadSizedString();
         reader.Align(4);
         m_IsVariant = reader.ReadBoolean();
@@ -45,43 +40,56 @@ public class SpriteAtlas : IPreDefinedType, INamedAsset
     }
 
     public StringBuilder ToPlainText(string name = "Base", StringBuilder? sb = null, string indent = "")
-    {
-        sb ??= new StringBuilder();
-        sb.AppendLine($"{indent}{ClassName} {name}");
-        return sb;
-    }
-}
-
-public class SpriteAtlasData
-{
-    public PPtr<ITexture2D> texture;
-    public PPtr<ITexture2D> alphaTexture;
-    public Rectf textureRect;
-    public Vector2f textureRectOffset;
-    public Vector2f? atlasRectOffset;
-    public Vector4f uvTransform;
-    public float downscaleMultiplier;
-    public UInt32 settingsRaw;
-    public List<SecondarySpriteTexture>? secondaryTextures;
-
-    public SpriteAtlasData(IReader reader)
-    {
-        UnityRevision version = ((AssetReader)reader).AssetsFile.Metadata.UnityVersion;
-        texture = new PPtr<ITexture2D>(reader);
-        alphaTexture = new PPtr<ITexture2D>(reader);
-        textureRect = new Rectf(reader);
-        textureRectOffset = new Vector2f(reader);
-        if (version >= "2017.2") //2017.2 and up
-        {
-            atlasRectOffset =new Vector2f(reader);
-        }
-        uvTransform = new Vector4f(reader);
-        downscaleMultiplier = reader.ReadFloat();
-        settingsRaw = reader.ReadUInt32();
-        if (version >= "2020.2") //2020.2 and up
-        {
-            secondaryTextures =
-                reader.ReadListWithAlign(reader.ReadInt32(), r => new SecondarySpriteTexture(r), true);
-        }
-    }
+	{
+		sb ??= new StringBuilder();
+		sb.AppendLine($"{indent}{ClassName} {name}");
+		var childIndent = $"{indent}\t";
+		sb.AppendLine($"{childIndent}string m_Name = \"{this.m_Name}\"");
+		sb.AppendLine($"{childIndent}vector m_PackedSprites");
+		sb.AppendLine($"{childIndent}	Array Array");
+		sb.AppendLine($"{childIndent}	int size =  {(uint)this.m_PackedSprites.Count}");
+		for (int im_PackedSprites = 0; im_PackedSprites < this.m_PackedSprites.Count; im_PackedSprites++)
+		{
+			var m_PackedSpriteschildIndentBackUp = childIndent;
+			childIndent = $"{childIndent}\t\t";
+			sb.AppendLine($"{childIndent}[{im_PackedSprites}]");
+			this.m_PackedSprites[im_PackedSprites]?.ToPlainText("data", sb, childIndent);
+			childIndent = m_PackedSpriteschildIndentBackUp;
+		}
+		sb.AppendLine($"{childIndent}vector m_PackedSpriteNamesToIndex");
+		sb.AppendLine($"{childIndent}	Array Array");
+		sb.AppendLine($"{childIndent}	int size =  {(uint)this.m_PackedSpriteNamesToIndex.Count}");
+		for (int im_PackedSpriteNamesToIndex = 0; im_PackedSpriteNamesToIndex < this.m_PackedSpriteNamesToIndex.Count; im_PackedSpriteNamesToIndex++)
+		{
+			var m_PackedSpriteNamesToIndexchildIndentBackUp = childIndent;
+			childIndent = $"{childIndent}\t\t";
+			sb.AppendLine($"{childIndent}[{im_PackedSpriteNamesToIndex}]");
+			sb.AppendLine($"{childIndent}string data = \"{this.m_PackedSpriteNamesToIndex[im_PackedSpriteNamesToIndex]}\"");
+			childIndent = m_PackedSpriteNamesToIndexchildIndentBackUp;
+		}
+		sb.AppendLine($"{childIndent}map m_RenderDataMap");
+		sb.AppendLine($"{childIndent}	Array Array");
+		sb.AppendLine($"{childIndent}	int size =  {(uint)this.m_RenderDataMap.Count}");
+		for (int im_RenderDataMap = 0; im_RenderDataMap < this.m_RenderDataMap.Count; im_RenderDataMap++)
+		{
+			var m_RenderDataMapchildIndentBackUp = childIndent;
+			childIndent = $"{childIndent}\t\t";
+			sb.AppendLine($"{childIndent}[{im_RenderDataMap}]");
+			sb.AppendLine($"{childIndent}pair data");
+			var datachildIndentBackUp = childIndent;
+			childIndent = $"{childIndent}\t\t";
+			sb.AppendLine($"{childIndent}pair first");
+			var firstchildIndentBackUp = childIndent;
+			childIndent = $"{childIndent}\t\t";
+			this.m_RenderDataMap[im_RenderDataMap].Key.Key?.ToPlainText("first", sb, childIndent);
+			sb.AppendLine($"{childIndent}SInt64 second = {this.m_RenderDataMap[im_RenderDataMap].Key.Value}");
+			childIndent = firstchildIndentBackUp;
+			this.m_RenderDataMap[im_RenderDataMap].Value.ToPlainText("second", sb, childIndent);
+			childIndent = datachildIndentBackUp;
+			childIndent = m_RenderDataMapchildIndentBackUp;
+		}
+		sb.AppendLine($"{childIndent}string m_Tag = \"{this.m_Tag}\"");
+		sb.AppendLine($"{childIndent}bool m_IsVariant = {this.m_IsVariant}");
+		return sb;
+	}
 }

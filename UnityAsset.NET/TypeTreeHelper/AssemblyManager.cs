@@ -172,6 +172,11 @@ public static class AssemblyManager
         {
             return cachedType;
         }
+        
+        if (Helper.PreDefinedTypeMap.TryGetValue(type.Nodes[0].Type, out var preDefinedType))
+        {
+            return preDefinedType;
+        }
 
         throw new Exception($"Unexpected type: {type}");
     }
