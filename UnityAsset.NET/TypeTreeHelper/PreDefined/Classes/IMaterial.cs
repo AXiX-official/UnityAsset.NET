@@ -15,7 +15,7 @@ public interface IMaterial : INamedAsset
     public bool m_DoubleSidedGI { get; }
 
     public Int32 m_CustomRenderQueue { get; }
-    public List<KeyValuePair<string, string>> stringTagMap { get; }
+    public List<(string, string)> stringTagMap { get; }
     public List<string> disabledShaderPasses { get; }
 
     public IUnityPropertySheet m_SavedProperties { get; }

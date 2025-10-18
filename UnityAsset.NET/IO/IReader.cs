@@ -135,7 +135,7 @@ public interface IReader : ISeek, IFile
         return list;
     }
     
-    public KeyValuePair<TK, TV> ReadPairWithAlign<TK, TV>(Func<IReader, TK> keyConstructor,
+    public (TK, TV) ReadPairWithAlign<TK, TV>(Func<IReader, TK> keyConstructor,
         Func<IReader, TV> valueConstructor, bool keyRequiresAlign, bool valueRequiresAlign) where TK : notnull
     {
         TK key = keyConstructor(this);
@@ -144,13 +144,13 @@ public interface IReader : ISeek, IFile
         TV value = valueConstructor(this);
         if (valueRequiresAlign) 
             Align(4);
-        return new KeyValuePair<TK, TV>(key, value);
+        return new (key, value);
     }
 
-    public List<KeyValuePair<TK, TV>> ReadMapWithAlign<TK, TV>(int count, Func<IReader, TK> keyConstructor,
+    public List<(TK, TV)> ReadMapWithAlign<TK, TV>(int count, Func<IReader, TK> keyConstructor,
         Func<IReader, TV> valueConstructor, bool keyRequiresAlign, bool valueRequiresAlign) where TK : notnull
     {
-        var map = new List<KeyValuePair<TK, TV>>(count);
+        var map = new List<(TK, TV)>(count);
         for (int i = 0; i < count; i++)
         {
             map.Add(ReadPairWithAlign(keyConstructor, valueConstructor, keyRequiresAlign, valueRequiresAlign));

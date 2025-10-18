@@ -5,7 +5,7 @@ namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 public interface IAssetBundle : INamedAsset
 {
     public List<PPtr<Types.Object>> m_PreloadTable { get; }
-    public List<KeyValuePair<string, AssetInfo>> m_Container { get; }
+    public List<(string, AssetInfo)> m_Container { get; }
     //public AssetInfo m_MainAsset { get; }
     //public UInt32 m_RuntimeCompatibility { get; }
     //public string m_AssetBundleName { get; }

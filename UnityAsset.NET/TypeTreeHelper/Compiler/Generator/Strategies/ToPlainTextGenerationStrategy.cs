@@ -75,8 +75,8 @@ public class ToPlainTextGenerationStrategy : IGenerationStrategy
                 sb.AppendLine($"{indent}sb.AppendLine($\"{{childIndent}}pair {name}\");");
                 sb.AppendLine($"{indent}var {name}childIndentBackUp = childIndent;");
                 sb.AppendLine($"{indent}childIndent = $\"{{childIndent}}\\t\\t\";");
-                AppendRecursive(sb, p.KeyNode, "first", $"{valueAccess}.Key", $"{indent}");
-                AppendRecursive(sb, p.ValueNode, "second", $"{valueAccess}.Value", $"{indent}");
+                AppendRecursive(sb, p.KeyNode, "first", $"{valueAccess}.Item1", $"{indent}");
+                AppendRecursive(sb, p.ValueNode, "second", $"{valueAccess}.Item2", $"{indent}");
                 sb.AppendLine($"{indent}childIndent = {name}childIndentBackUp;");
                 break;
 

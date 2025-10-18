@@ -12,7 +12,7 @@ public interface ISprite : INamedAsset
     public Vector2f m_Pivot { get; }
     public UInt32 m_Extrude { get; }
     public bool m_IsPolygon { get; }
-    public KeyValuePair<GUID, Int64> m_RenderDataKey { get; }
+    public (GUID, Int64) m_RenderDataKey { get; }
     public List<string> m_AtlasTags { get; }
     public PPtr<SpriteAtlas> m_SpriteAtlas { get; }
     public ISpriteRenderData m_RD { get; }

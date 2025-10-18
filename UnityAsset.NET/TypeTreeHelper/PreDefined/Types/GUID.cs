@@ -4,7 +4,7 @@ using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 
 namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
 
-public class GUID : IPreDefinedType
+public class GUID : IPreDefinedType, IEquatable<GUID>
 {
     public string ClassName => "GUID";
     public UInt32 data_0_ { get; }
@@ -30,5 +30,14 @@ public class GUID : IPreDefinedType
         sb.AppendLine($"{childIndent}unsigned int data[2] = {data_2_}");
         sb.AppendLine($"{childIndent}unsigned int data[3] = {data_3_}");
         return sb;
+    }
+    
+    public bool Equals(GUID? other)
+    {
+        if (other is null) return false;
+        return data_0_ == other.data_0_ &&
+               data_1_ == other.data_1_ &&
+               data_2_ == other.data_2_ &&
+               data_3_ == other.data_3_;
     }
 }

@@ -12,7 +12,7 @@ public class SpriteAtlas : IPreDefinedType, INamedAsset
     public string m_Name { get; }
     public List<PPtr<ISprite>> m_PackedSprites { get; }
     public List<string> m_PackedSpriteNamesToIndex { get; }
-    public List<KeyValuePair<KeyValuePair<GUID, Int64>, SpriteAtlasData>> m_RenderDataMap { get; }
+    public List<((GUID, Int64), SpriteAtlasData)> m_RenderDataMap { get; }
     public string m_Tag { get; }
     public bool m_IsVariant { get; }
     
@@ -81,10 +81,10 @@ public class SpriteAtlas : IPreDefinedType, INamedAsset
 			sb.AppendLine($"{childIndent}pair first");
 			var firstchildIndentBackUp = childIndent;
 			childIndent = $"{childIndent}\t\t";
-			this.m_RenderDataMap[im_RenderDataMap].Key.Key?.ToPlainText("first", sb, childIndent);
-			sb.AppendLine($"{childIndent}SInt64 second = {this.m_RenderDataMap[im_RenderDataMap].Key.Value}");
+			this.m_RenderDataMap[im_RenderDataMap].Item1.Item1?.ToPlainText("first", sb, childIndent);
+			sb.AppendLine($"{childIndent}SInt64 second = {this.m_RenderDataMap[im_RenderDataMap].Item1.Item2}");
 			childIndent = firstchildIndentBackUp;
-			this.m_RenderDataMap[im_RenderDataMap].Value.ToPlainText("second", sb, childIndent);
+			this.m_RenderDataMap[im_RenderDataMap].Item2.ToPlainText("second", sb, childIndent);
 			childIndent = datachildIndentBackUp;
 			childIndent = m_RenderDataMapchildIndentBackUp;
 		}

@@ -63,7 +63,7 @@ public static class SpriteHelper
     {
         if (m_Sprite.m_SpriteAtlas.TryGet(out var m_SpriteAtlas))
         {
-            var spriteAtlasData = m_SpriteAtlas.m_RenderDataMap.Find(rdm => rdm.Key.Equals(m_Sprite.m_RenderDataKey)).Value;
+            var spriteAtlasData = m_SpriteAtlas.m_RenderDataMap.Find(rdm => rdm.Item1.Equals(m_Sprite.m_RenderDataKey)).Item2;
             if (spriteAtlasData != null && spriteAtlasData.texture.TryGet(out var m_Texture2D))
             {
                 return CutImage(assetManager, m_Sprite, m_Texture2D, spriteAtlasData.textureRect, spriteAtlasData.textureRectOffset, spriteAtlasData.downscaleMultiplier, (SpriteSettings)spriteAtlasData.settingsRaw);
@@ -82,7 +82,7 @@ public static class SpriteHelper
     
     private static Image<Bgra32> CutImage(AssetManager assetManager, ISprite m_Sprite, ITexture2D m_Texture2D, Rectf textureRect, Vector2f textureRectOffset, float downscaleMultiplier, SpriteSettings settingsRaw)
     {
-        using var originalImage = assetManager.DecodeTexture2DToImage(m_Texture2D);
+        using var originalImage = assetManager.DecodeTexture2DToImage(m_Texture2D, false);
         
         if (downscaleMultiplier > 0f && downscaleMultiplier != 1f)
         {
@@ -137,14 +137,12 @@ public static class SpriteHelper
                         AlphaCompositionMode = PixelAlphaCompositionMode.DestOut
                     }
                 };
-                using (var mask = new Image<Bgra32>(rect.Width, rect.Height, SixLabors.ImageSharp.Color.Black))
-                {
-                    mask.Mutate(x => x.Fill(options, SixLabors.ImageSharp.Color.Red, path));
-                    var bursh = new ImageBrush(mask);
-                    spriteImage.Mutate(x => x.Fill(options, bursh));
-                    spriteImage.Mutate(x => x.Flip(FlipMode.Vertical));
-                    return spriteImage;
-                }
+                using var mask = new Image<Bgra32>(rect.Width, rect.Height, SixLabors.ImageSharp.Color.Black);
+                mask.Mutate(x => x.Fill(options, SixLabors.ImageSharp.Color.Red, path));
+                var bursh = new ImageBrush(mask);
+                spriteImage.Mutate(x => x.Fill(options, bursh));
+                spriteImage.Mutate(x => x.Flip(FlipMode.Vertical));
+                return spriteImage;
             }
             catch
             {

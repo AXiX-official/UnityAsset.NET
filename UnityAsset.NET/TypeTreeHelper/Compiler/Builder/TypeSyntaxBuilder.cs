@@ -181,7 +181,7 @@ public class TypeSyntaxBuilder
                 var elementType = CreateNodeForMissingField(csharpType.GetGenericArguments()[0]);
                 return new VectorSyntaxNode("vector", "vector", false, elementType);
             }
-            if (genericDef == typeof(KeyValuePair<,>))
+            if (genericDef == typeof(ValueTuple<,>))
             {
                 var keyType = CreateNodeForMissingField(csharpType.GetGenericArguments()[0]);
                 var valueType = CreateNodeForMissingField(csharpType.GetGenericArguments()[1]);

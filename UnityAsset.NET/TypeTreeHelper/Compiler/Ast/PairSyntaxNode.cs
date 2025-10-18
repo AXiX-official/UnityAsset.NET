@@ -6,4 +6,4 @@ public record PairSyntaxNode(
     bool RequiresAlign,
     TypeDeclarationNode KeyNode,
     TypeDeclarationNode ValueNode
-) : TypeDeclarationNode(OriginalName, SanitizedName, RequiresAlign, $"KeyValuePair<{KeyNode.DeclarationName}, {ValueNode.DeclarationName}>");
+) : TypeDeclarationNode(OriginalName, SanitizedName, RequiresAlign, $"({KeyNode.DeclarationName}, {ValueNode.DeclarationName})");
