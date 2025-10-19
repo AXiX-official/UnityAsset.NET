@@ -1,20 +1,17 @@
-﻿using System.Collections.Concurrent;
-using UnityAsset.NET.Enums;
+﻿using UnityAsset.NET.Enums;
 
 namespace UnityAsset.NET.FileSystem.DirectFileSystem;
 
 public class DirectFileSystem : IFileSystem
 {
     public IFileSystem.ErrorHandler? OnError { get; set; }
-    private readonly ConcurrentDictionary<string, IVirtualFile> _loadedFiles = new();
+    public List<IVirtualFile> LoadedFiles { get; private set; } = new();
 
     public DirectFileSystem(IFileSystem.ErrorHandler? onError)
     {
         OnError = onError;
     }
     
-    public List<IVirtualFile> LoadedFiles => _loadedFiles.Values.ToList();
-
     public Task<List<IVirtualFile>> LoadAsync(List<string> paths, IProgress<LoadProgress>? progress = null)
     {
         return Task.Run(() =>
@@ -26,19 +23,10 @@ public class DirectFileSystem : IFileSystem
                 var path = paths[i];
                 try
                 {
-                    var file = DirectFile.Create(path);
+                    var file = new DirectFile(path);
                     progress?.Report(new LoadProgress($"DirectFileSystem: Loading {file.Name}", totalFiles, i));
-                    if (file.FileType == FileType.Unknown)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        if (_loadedFiles.TryAdd(file.Name, file))
-                        {
-                            files.Add(file);
-                        }
-                    }
+                    if (file.FileType != FileType.Unknown)
+                        files.Add(file);
                 }
                 catch (Exception ex)
                 {
@@ -46,13 +34,14 @@ public class DirectFileSystem : IFileSystem
                 }
             }
 
-            return files;
+            LoadedFiles = files;
+            return LoadedFiles;
         });
     }
     
     public void Clear()
     {
-        _loadedFiles.Clear();
+        LoadedFiles.Clear();
     }
     
     public void Dispose()

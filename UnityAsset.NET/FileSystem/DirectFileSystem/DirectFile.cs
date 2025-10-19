@@ -12,11 +12,6 @@ public class DirectFile : IVirtualFile
         Length = stream.Length;
         FileType = FileTypeHelper.GetFileType(stream);
     }
-
-    public static DirectFile Create(string path)
-    {
-        return new DirectFile(path);
-    }
     
     public string Path { get; }
     public string Name { get; }

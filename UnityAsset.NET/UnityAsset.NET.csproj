@@ -20,6 +20,7 @@
         <PackageTags>Unity</PackageTags>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <NoWarn>CS8981</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
