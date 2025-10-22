@@ -119,6 +119,48 @@ public static class TextureHelper
             TextureFormat.RGBA64 => RgbConverter.Convert<ColorRGBA<ushort>, ushort, ColorBGRA32, byte>(imageData, width,
                 height, out output),
 
+#if NET9_0_OR_GREATER
+            TextureFormat.DXT1 => DxtDecoder.DecompressDXT1<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.DXT3 => DxtDecoder.DecompressDXT3<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.DXT5 => DxtDecoder.DecompressDXT5<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.BC4 => Bc4.Decompress<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.BC5 => Bc5.Decompress<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.BC6H => Bc6h.Decompress<ColorBGRA32, byte>(imageData, width, height, false, out output),
+            TextureFormat.BC7 => Bc7.Decompress<ColorBGRA32, byte>(imageData, width, height, out output),
+
+            TextureFormat.ETC_RGB4 => EtcDecoder.DecompressETC<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.ETC2_RGB4 => EtcDecoder.DecompressETC2<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.ETC2_RGB4_PUNCHTHROUGH_ALPHA => EtcDecoder.DecompressETC2A1<ColorBGRA32, byte>(imageData, width, height,
+                out output),
+            TextureFormat.ETC2_RGBA8 => EtcDecoder.DecompressETC2A8<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.EAC_R => EtcDecoder.DecompressEACRUnsigned<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.EAC_R_SIGNED => EtcDecoder.DecompressEACRSigned<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.EAC_RG => EtcDecoder.DecompressEACRGUnsigned<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.EAC_RG_SIGNED => EtcDecoder.DecompressEACRGSigned<ColorBGRA32, byte>(imageData, width, height, out output),
+
+            TextureFormat.ASTC_RGB_4x4 or
+                TextureFormat.ASTC_RGBA_4x4 => AstcDecoder.DecodeASTC<ColorBGRA32, byte>(imageData, width, height, 4, 4, out output),
+            TextureFormat.ASTC_RGB_5x5 or
+                TextureFormat.ASTC_RGBA_5x5 => AstcDecoder.DecodeASTC<ColorBGRA32, byte>(imageData, width, height, 5, 5, out output),
+            TextureFormat.ASTC_RGB_6x6 or
+                TextureFormat.ASTC_RGBA_6x6 => AstcDecoder.DecodeASTC<ColorBGRA32, byte>(imageData, width, height, 6, 6, out output),
+            TextureFormat.ASTC_RGB_8x8 or
+                TextureFormat.ASTC_RGBA_8x8 => AstcDecoder.DecodeASTC<ColorBGRA32, byte>(imageData, width, height, 8, 8, out output),
+            TextureFormat.ASTC_RGB_10x10 or
+                TextureFormat.ASTC_RGBA_10x10 => AstcDecoder.DecodeASTC<ColorBGRA32, byte>(imageData, width, height, 10, 10, out output),
+            TextureFormat.ASTC_RGB_12x12 or
+                TextureFormat.ASTC_RGBA_12x12 => AstcDecoder.DecodeASTC<ColorBGRA32, byte>(imageData, width, height, 12, 12, out output),
+
+            TextureFormat.ATC_RGB4 => AtcDecoder.DecompressAtcRgb4<ColorBGRA32, byte>(imageData, width, height, out output),
+            TextureFormat.ATC_RGBA8 => AtcDecoder.DecompressAtcRgba8<ColorBGRA32, byte>(imageData, width, height, out output),
+
+            TextureFormat.PVRTC_RGB2 or
+                TextureFormat.PVRTC_RGBA2 => PvrtcDecoder.DecompressPVRTC<ColorBGRA32, byte>(imageData, width, height, true, out output),
+            TextureFormat.PVRTC_RGB4 or
+                TextureFormat.PVRTC_RGBA4 => PvrtcDecoder.DecompressPVRTC<ColorBGRA32, byte>(imageData, width, height, false, out output),
+
+            TextureFormat.YUY2 => Yuy2Decoder.DecompressYUY2<ColorBGRA32, byte>(imageData, width, height, out output),
+#else
             TextureFormat.DXT1 => DxtDecoder.DecompressDXT1(imageData, width, height, out output),
             TextureFormat.DXT3 => DxtDecoder.DecompressDXT3(imageData, width, height, out output),
             TextureFormat.DXT5 => DxtDecoder.DecompressDXT5(imageData, width, height, out output),
@@ -159,6 +201,7 @@ public static class TextureHelper
                 TextureFormat.PVRTC_RGBA4 => PvrtcDecoder.DecompressPVRTC(imageData, width, height, false, out output),
 
             TextureFormat.YUY2 => Yuy2Decoder.DecompressYUY2(imageData, width, height, out output),
+#endif
 
             TextureFormat.DXT1Crunched => CrunchDecoder.Decompress(imageData, width, height, TextureFormat.DXT1Crunched, out output),
             TextureFormat.DXT5Crunched => CrunchDecoder.Decompress(imageData, width, height, TextureFormat.DXT5Crunched, out output),
