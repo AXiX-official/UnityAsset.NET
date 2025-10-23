@@ -123,6 +123,14 @@ public interface IReader : ISeek, IFile
             list.Add(constructor(this));
         return list;
     }
+    public List<T> ReadList<T>(Func<IReader, T> constructor)
+    {
+        var count = ReadInt32();
+        var list = new List<T>(count);
+        for (int i = 0; i < count; i++)
+            list.Add(constructor(this));
+        return list;
+    }
     public List<T> ReadListWithAlign<T>(int count, Func<IReader, T> constructor, bool requiresAlign)
     {
         var list = new List<T>(count);
@@ -134,7 +142,18 @@ public interface IReader : ISeek, IFile
         }
         return list;
     }
-    
+    public List<T> ReadListWithAlign<T>(Func<IReader, T> constructor, bool requiresAlign)
+    {
+        var count = ReadInt32();
+        var list = new List<T>(count);
+        for (int i = 0; i < count; i++)
+        {
+            list.Add(constructor(this));
+            if (requiresAlign) 
+                Align(4);
+        }
+        return list;
+    }
     public (TK, TV) ReadPairWithAlign<TK, TV>(Func<IReader, TK> keyConstructor,
         Func<IReader, TV> valueConstructor, bool keyRequiresAlign, bool valueRequiresAlign) where TK : notnull
     {
@@ -150,6 +169,17 @@ public interface IReader : ISeek, IFile
     public List<(TK, TV)> ReadMapWithAlign<TK, TV>(int count, Func<IReader, TK> keyConstructor,
         Func<IReader, TV> valueConstructor, bool keyRequiresAlign, bool valueRequiresAlign) where TK : notnull
     {
+        var map = new List<(TK, TV)>(count);
+        for (int i = 0; i < count; i++)
+        {
+            map.Add(ReadPairWithAlign(keyConstructor, valueConstructor, keyRequiresAlign, valueRequiresAlign));
+        }
+        return map;
+    }
+    public List<(TK, TV)> ReadMapWithAlign<TK, TV>(Func<IReader, TK> keyConstructor,
+        Func<IReader, TV> valueConstructor, bool keyRequiresAlign, bool valueRequiresAlign) where TK : notnull
+    {
+        var count = ReadInt32();
         var map = new List<(TK, TV)>(count);
         for (int i = 0; i < count; i++)
         {

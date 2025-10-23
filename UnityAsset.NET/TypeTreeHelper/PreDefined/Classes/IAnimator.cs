@@ -13,5 +13,5 @@ public interface IAnimator : IBehaviour
     public bool? m_StabilizeFeet { get; }
     public bool m_HasTransformHierarchy { get; }
     public bool m_AllowConstantClipSamplingOptimization { get; }
-    public bool? m_KeepAnimatorStateOnDisable { get; }
+    public bool? m_KeepAnimatorStateOnDisable { get => null; }
 }

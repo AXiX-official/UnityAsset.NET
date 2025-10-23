@@ -6,10 +6,10 @@ namespace UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 public interface IMaterial : INamedAsset
 {
     public PPtr<IShader> m_Shader { get; }
-    public List<string>? m_ValidKeywords { get; }
+    public List<string>? m_ValidKeywords { get => null; }
 
-    public List<string>? m_InvalidKeywords { get; }
-    public string? m_ShaderKeywords { get; }
+    public List<string>? m_InvalidKeywords { get => null; }
+    public string? m_ShaderKeywords { get => null; }
     public UInt32 m_LightmapFlags { get; }
     public bool m_EnableInstancingVariants { get; }
     public bool m_DoubleSidedGI { get; }
@@ -20,5 +20,5 @@ public interface IMaterial : INamedAsset
 
     public IUnityPropertySheet m_SavedProperties { get; }
 
-    public List<BuildTextureStackReference>? m_BuildTextureStacks { get; }
+    public List<BuildTextureStackReference>? m_BuildTextureStacks { get => null; }
 }

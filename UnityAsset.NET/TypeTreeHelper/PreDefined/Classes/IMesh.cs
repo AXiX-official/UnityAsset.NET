@@ -13,25 +13,25 @@ public interface IMesh : INamedAsset
     public List<Matrix4x4f> m_BindPose { get; }
     public List<UInt32> m_BoneNameHashes { get; }
     public UInt32 m_RootBoneNameHash { get; }
-    public List<MinMaxAABB>? m_BonesAABB { get; }
-    public VariableBoneCountWeights? m_VariableBoneCountWeights { get; }
+    public List<MinMaxAABB>? m_BonesAABB { get => null; }
+    public VariableBoneCountWeights? m_VariableBoneCountWeights { get => null; }
     public byte m_MeshCompression { get; }
     public bool m_IsReadable { get; }
     public bool m_KeepVertices { get; }
     public bool m_KeepIndices { get; }
-    public Int32? m_IndexFormat { get; }
+    public Int32? m_IndexFormat { get => null; }
     public List<byte> m_IndexBuffer { get; }
     // public List<BoneWeights4> m_Skin; lack of test data for 2018.2 down
     public IVertexData m_VertexData { get; }
     public ICompressedMesh m_CompressedMesh { get; }
     public AABB m_LocalAABB { get; }
     public Int32 m_MeshUsageFlags { get; }
-    public Int32? m_CookingOptions { get; }
+    public Int32? m_CookingOptions { get => null; }
     public List<byte> m_BakedConvexCollisionMesh { get; }
     public List<byte> m_BakedTriangleCollisionMesh { get; }
-    public float? m_MeshMetrics_0_ { get; }
-    public float? m_MeshMetrics_1_ { get; }
-    public StreamingInfo? m_StreamData { get; }
+    public float? m_MeshMetrics_0_ { get => null; }
+    public float? m_MeshMetrics_1_ { get => null; }
+    public StreamingInfo? m_StreamData { get => null; }
 
     private void ProcessData()
     {

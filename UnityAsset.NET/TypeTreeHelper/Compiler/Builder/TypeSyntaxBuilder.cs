@@ -70,7 +70,7 @@ public class TypeSyntaxBuilder
             interfaceProperties?.Remove(sanitizedName);
         }
 
-        if (interfaceProperties != null)
+        /*if (interfaceProperties != null)
         {
             foreach (var remainingProp in interfaceProperties.Values)
             {
@@ -84,7 +84,7 @@ public class TypeSyntaxBuilder
                     IsNullable(remainingProp.PropertyType)
                 ));
             }
-        }
+        }*/
         
         
         var interfaceName = type?.Name ?? (Helper.IsNamedAsset(current, nodes) ? "INamedAsset" : current == nodes[0] ? "IAsset" : "IUnityType");

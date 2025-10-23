@@ -18,7 +18,7 @@ public static class AssemblyManager
     private static readonly object CompilationLock = new ();
     private static readonly string AssemblyCachePath = Path.Combine(AppContext.BaseDirectory, "AssemblyCache");
     private static readonly string CachedAssemblyPath = Path.Combine(AssemblyCachePath, "UnityAsset.NET.RuntimeTypes.dll");
-    private static readonly string CachedSourcePath = Path.Combine(AssemblyCachePath, "UnityAsset.NET.RuntimeTypes.cs");
+    private static readonly string CachedSourcePath = Path.Combine(AssemblyCachePath, "UnityAsset.NET.RuntimeTypes.g.cs");
 
     private static CollectibleAssemblyContext? _loadContext;
 
