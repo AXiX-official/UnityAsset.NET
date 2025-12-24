@@ -52,5 +52,8 @@
     <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
         <PackageReference Include="AssetRipper.TextureDecoder" Version="2.4.0" />
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\UnityAsset.NET.TypeTreeHelper\UnityAsset.NET.TypeTreeHelper.csproj" />
+    </ItemGroup>
 
 </Project>

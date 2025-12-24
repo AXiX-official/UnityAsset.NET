@@ -3,7 +3,7 @@ using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
-using UnityAsset.NET.TypeTreeHelper;
+using UnityAsset.NET.TypeTree;
 using static UnityAsset.NET.Enums.SerializedFileFormatVersion;
 
 namespace UnityAsset.NET.Files.SerializedFiles;

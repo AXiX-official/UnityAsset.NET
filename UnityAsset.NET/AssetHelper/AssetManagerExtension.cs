@@ -1,8 +1,8 @@
 ﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
 using UnityAsset.NET.Enums;
+using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.AssetHelper;
 

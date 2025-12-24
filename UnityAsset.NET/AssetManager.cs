@@ -5,9 +5,9 @@ using UnityAsset.NET.Files;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
-using UnityAsset.NET.TypeTreeHelper;
-using UnityAsset.NET.TypeTreeHelper.PreDefined;
-using UnityAsset.NET.TypeTreeHelper.PreDefined.Types;
+using UnityAsset.NET.TypeTree;
+using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
+using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET;
 
@@ -106,11 +106,11 @@ public class AssetManager
                 Version = firstSerializedFile.Metadata.UnityVersion;
             }
 
-            if (types.Count > 0)
+            if (TypeTreeCache.Cache.Count > 0)
             {
                 progress?.Report(new LoadProgress($"AssetManager: Generating Types", 2, 1));
                 var typeSet = types.DistinctBy(t => t.TypeHash).ToList();
-                AssemblyManager.LoadTypes(typeSet);
+                AssemblyManager.LoadTypes(TypeTreeCache.ToTypeTreeHelperNodes().ToList());
                 progress?.Report(new LoadProgress($"AssetManager: Generated {typeSet.Count} types", 2, 2));
             }
         });
@@ -148,5 +148,6 @@ public class AssetManager
     {
         _loadedFiles.Clear();
         _fileSystem.Clear();
+        TypeTreeCache.CleanCache();
     }
 }

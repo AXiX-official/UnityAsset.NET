@@ -1,0 +1,149 @@
+﻿using Microsoft.CodeAnalysis.CSharp;
+using UnityAsset.NET.TypeTreeHelper.Compiler.IR;
+
+namespace UnityAsset.NET.TypeTreeHelper.Compiler;
+
+public class SemanticModelBuilder
+{
+    private readonly Dictionary<int, IUnityTypeInfo> _cache = new();
+    public Dictionary<int, ClassTypeInfo> DiscoveredTypes { get; } = new();
+    private readonly Dictionary<string, Type> _preDefinedInterfaceMap;
+
+    public SemanticModelBuilder(Dictionary<string, Type> preDefinedInterfaceMap)
+    {
+        _preDefinedInterfaceMap = preDefinedInterfaceMap;
+    }
+    
+    public ClassTypeInfo? Build(TypeTreeNode current)
+    {
+        if (Helper.IsPreDefinedType(current))
+            return null;
+        
+        var inferredInterfaceName = $"I{current.TypeName}";
+        var type = ((IReadOnlyDictionary<string, Type?>)_preDefinedInterfaceMap).GetValueOrDefault(inferredInterfaceName, null);
+        
+        var fields = new List<UnityFieldInfo>();
+
+        var interfaceProperties = type != null ? Helper.GetAllInterfaceProperties(type) : null;
+
+        interfaceProperties?.Remove("ClassName");
+        
+        foreach (var node in current.SubNodes)
+        {
+            
+            var sanitizedName = Helper.SanitizeName(node.Name);
+            bool isNullable = interfaceProperties?.TryGetValue(sanitizedName, out var field) == true 
+                              && Helper.IsNullable(field.PropertyType);
+            
+            var fieldTypeInfo = ResolveNode(node);
+
+            var fieldName = Helper.SanitizeName(node.Name); 
+            
+            fields.Add(new UnityFieldInfo
+            {
+                Name = fieldName,
+                RequireAlign = node.RequiresAlign(),
+                IsNullable = isNullable,
+                DeclaredTypeSyntax = interfaceProperties?.TryGetValue(fieldName, out var interfaceProperty) ?? false
+                    ? Helper.GetTypeSyntax(interfaceProperty.PropertyType) : fieldTypeInfo.ToTypeSyntax(),
+                TypeInfo = fieldTypeInfo
+            });
+        }
+        
+        
+        //var interfaceName = type?.Name ?? (Helper.IsNamedAsset(current) ? "INamedAsset" : current == nodes[0] ? "IAsset" : "IUnityType");
+        var interfaceName = type == null ? "IUnityType" : Helper.GetInterfaceName(current);
+        var generatedClassName = Helper.SanitizeName($"{current.TypeName}_{current.GetHashCode()}");
+
+        var classTypeInfo = new ClassTypeInfo
+        {
+            Name = current.TypeName,
+            GeneratedClassName = generatedClassName,
+            InterfaceName = interfaceName,
+            Fields = fields,
+            TypeTreeNode = current
+        };
+        
+        DiscoveredTypes[current.GetHashCode()] = classTypeInfo;
+        return classTypeInfo;
+    }
+
+    private IUnityTypeInfo ResolveNode(TypeTreeNode node)
+    {
+        var hash = node.GetHashCode();
+        if (_cache.TryGetValue(hash, out var cachedInfo)) return cachedInfo;
+
+        IUnityTypeInfo typeInfo;
+        if (Helper.IsPrimitive(node))
+        {
+            var csharpType = Helper.GetCSharpPrimitiveType(node.TypeName);
+            typeInfo = new PrimitiveTypeInfo
+            {
+                TypeTreeNode = node,
+                OriginalTypeName = node.TypeName,
+                PrimitiveSyntax = SyntaxFactory.ParseTypeName(csharpType)
+            };
+        }
+        else if (Helper.IsGenericPPtr(node))
+        {
+            var genericTypeName = node.TypeName.Substring(5, node.TypeName.Length - 6);
+            typeInfo = new GenericPPtrTypeInfo
+            {
+                TypeTreeNode = node,
+                GenericTypeSyntax = SyntaxFactory.ParseTypeName(Helper.GetGenericPPtrInterfaceName(genericTypeName))
+            };
+        }
+        else if (Helper.IsPreDefinedType(node))
+        {
+            typeInfo = new PredefinedTypeInfo
+            {
+                TypeTreeNode = node,
+                PredefinedTypeSyntax = SyntaxFactory.ParseTypeName(Helper.SanitizeName(node.TypeName))
+            };
+        }
+        else if (Helper.IsPair(node))
+        {
+            var children = node.SubNodes;
+            var item1Node = children[0];
+            var item2Node = children[1];
+            typeInfo = new PairTypeInfo
+            {
+                TypeTreeNode = node,
+                Item1Type = ResolveNode(item1Node),
+                Item2Type = ResolveNode(item2Node),
+                Item1RequireAlign = item1Node.RequiresAlign(),
+                Item2RequireAlign = item2Node.RequiresAlign()
+            };
+        }
+        else if (Helper.IsVector(node))
+        {
+            var elementNode = node.SubNodes[0].SubNodes[1];
+            typeInfo = new VectorTypeInfo
+            {
+                TypeTreeNode = node,
+                ElementType = ResolveNode(elementNode),
+                ElementRequireAlign = elementNode.RequiresAlign()
+            };
+        }
+        else if (Helper.IsMap(node))
+        {
+            var pairNode = node.SubNodes[0].SubNodes[1];
+            typeInfo = new MapTypeInfo
+            {
+                TypeTreeNode = node,
+                PairType = (PairTypeInfo)ResolveNode(pairNode),
+                PairRequireAlign = pairNode.RequiresAlign()
+            };
+        }
+        else // Complex Type
+        {
+            var classTypeInfo = Build(node);
+
+            DiscoveredTypes[hash] = classTypeInfo!;
+            typeInfo = classTypeInfo!;
+        }
+
+        _cache[hash] = typeInfo;
+        return typeInfo;
+    }
+}

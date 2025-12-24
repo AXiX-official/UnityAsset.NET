@@ -1,9 +1,7 @@
 ﻿using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
-using UnityAsset.NET.IO.Reader;
-using UnityAsset.NET.TypeTreeHelper;
-using UnityAsset.NET.TypeTreeHelper.PreDefined;
-using UnityAsset.NET.TypeTreeHelper.PreDefined.Classes;
+using UnityAsset.NET.TypeTree;
+using UnityAsset.NET.TypeTree.PreDefined;
 
 namespace UnityAsset.NET;
 
@@ -12,11 +10,11 @@ public class Asset
     public AssetFileInfo Info;
     public IReader RawData;
     //public NodeData NodeData;
-    private IAsset? _value;
+    private IUnityAsset? _value;
     private string _name = string.Empty;
     private readonly object _lock = new();
 
-    public IAsset Value
+    public IUnityAsset Value
     {
         get
         {
@@ -41,7 +39,7 @@ public class Asset
             lock (_lock)
             {
                 var nodes = Info.Type.Nodes;
-                if (TypeTreeHelper.Compiler.Helper.IsNamedAsset(nodes[0], nodes) && string.IsNullOrEmpty(_name))
+                if (TypeTreeHelper.Compiler.Helper.IsNamedAsset(TypeTreeCache.Map[Info.Type.TypeHash]) && string.IsNullOrEmpty(_name))
                 {
                     RawData.Seek(0);
                     _name = RawData.ReadSizedString();
