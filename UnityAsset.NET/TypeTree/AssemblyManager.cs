@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
@@ -16,9 +17,10 @@ public static class AssemblyManager
     
     private static readonly object CompilationLock = new ();
     private static readonly string AssemblyCachePath = Path.Combine(AppContext.BaseDirectory, "AssemblyCache");
-    private static readonly string CachedAssemblyPath = Path.Combine(AssemblyCachePath, "UnityAsset.NET.RuntimeTypes.dll");
-    private static readonly string CachedSourcePath = Path.Combine(AssemblyCachePath, "UnityAsset.NET.RuntimeTypes.g.cs");
-
+    private static readonly string AssemblyNameSpace = "UnityAsset.NET.RuntimeTypes";
+    private static readonly string CachedAssemblyPath = Path.Combine(AssemblyCachePath, $"{AssemblyNameSpace}.dll");
+    private static readonly string CachedSourcePath = Path.Combine(AssemblyCachePath, $"{AssemblyNameSpace}.g.cs");
+    
     private static CollectibleAssemblyContext? _loadContext;
     
     private static Dictionary<string, Type> _preDefinedInterfaceMap;
@@ -110,13 +112,10 @@ public static class AssemblyManager
         var formattedSource = syntax.NormalizeWhitespace(elasticTrivia: true).ToFullString();
         File.WriteAllText(CachedSourcePath, formattedSource, Encoding.UTF8);
 
-#if DEBUG
         var syntaxTree = CSharpSyntaxTree.ParseText(formattedSource);
-#else
-        var syntaxTree = CSharpSyntaxTree.Create(syntax);
-#endif
+
         var compilation = CSharpCompilation.Create(
-            assemblyName: "UnityAsset.NET.RuntimeTypes",
+            assemblyName: AssemblyNameSpace,
             syntaxTrees: [syntaxTree],
             references: References,
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
@@ -166,8 +165,8 @@ public static class AssemblyManager
             {
                 if (type.SubNodes.Length == 0)
                     continue;
-                var concreteTypeName = Helper.SanitizeName($"{type.TypeName}_{type.Hash}");
-                var generatedType = assembly.GetType($"UnityAsset.NET.RuntimeType.{concreteTypeName}");
+                var concreteTypeName = Helper.SanitizeName($"{type.TypeName}_{type.GetHashCode()}");
+                var generatedType = assembly.GetType($"{AssemblyNameSpace}.{concreteTypeName}");
                 if (generatedType != null)
                 {
                     TypeCache.TryAdd(type.Hash, generatedType);

@@ -26,7 +26,7 @@ public class UnityTypeCompiler
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree.PreDefined.Interfaces"))
         ]);
 
-        var namespaceDeclaration = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName("UnityAsset.NET.RuntimeType"));
+        var namespaceDeclaration = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName("UnityAsset.NET.RuntimeTypes"));
 
         _builder.NamespaceDeclaration = namespaceDeclaration;
     
