@@ -66,12 +66,12 @@ public class RoslynTypeBuilder
     {
         var statements = new List<StatementSyntax>();
 
-        // var root = new AssetNode { Name = name, TypeName = typeInfo.TypeTreeNode.Type };
+        // var rootAssetNode = new AssetNode { Name = name, TypeName = typeInfo.TypeTreeNode.Type };
         statements.Add(
             SyntaxFactory.LocalDeclarationStatement(
                 SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("var"))
                     .AddVariables(
-                        SyntaxFactory.VariableDeclarator("root")
+                        SyntaxFactory.VariableDeclarator("rootAssetNode")
                             .WithInitializer(SyntaxFactory.EqualsValueClause(
                                 SyntaxFactory.ObjectCreationExpression(SyntaxFactory.IdentifierName("AssetNode"))
                                     .WithInitializer(SyntaxFactory.InitializerExpression(SyntaxKind.ObjectInitializerExpression)
@@ -95,10 +95,10 @@ public class RoslynTypeBuilder
 
         foreach (var fieldInfo in typeInfo.Fields)
         {
-            statements.AddRange(CreateAssetNodeCreationStatement(fieldInfo.Name, fieldInfo.TypeInfo, "root"));
+            statements.AddRange(CreateAssetNodeCreationStatement(fieldInfo.Name, fieldInfo.TypeInfo, "rootAssetNode"));
         }
 
-        statements.Add(SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("root")));
+        statements.Add(SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("rootAssetNodend")));
 
         var methodDeclaration = SyntaxFactory.MethodDeclaration(
             SyntaxFactory.IdentifierName("AssetNode?"), "ToAssetNode")
