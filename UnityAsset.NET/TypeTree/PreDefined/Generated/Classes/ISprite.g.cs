@@ -14,7 +14,15 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float m_PixelsToUnits { get; }
         public Vector2f m_Pivot { get; }
         public uint m_Extrude { get; }
-        public bool m_IsPolygon { get; }
+
+        public bool? m_IsPolygon
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public ValueTuple<GUID, long> m_RenderDataKey { get; }
         public List<string> m_AtlasTags { get; }
         public PPtr<ISpriteAtlas> m_SpriteAtlas { get; }

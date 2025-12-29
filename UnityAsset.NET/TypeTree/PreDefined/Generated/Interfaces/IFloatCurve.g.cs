@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IFloatCurve : IPreDefinedInterface
     {
-        public IAnimationCurve curve { get; }
+        public IAnimationCurve<float> curve { get; }
         public string attribute { get; }
         public string path { get; }
         public uint classID { get; }

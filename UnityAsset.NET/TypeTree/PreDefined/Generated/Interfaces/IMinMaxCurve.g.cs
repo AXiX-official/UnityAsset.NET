@@ -10,8 +10,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public short minMaxState { get; }
         public float scalar { get; }
-        public IAnimationCurve maxCurve { get; }
-        public IAnimationCurve minCurve { get; }
+        public IAnimationCurve<float> maxCurve { get; }
+        public IAnimationCurve<float> minCurve { get; }
 
         public float? minScalar
         {

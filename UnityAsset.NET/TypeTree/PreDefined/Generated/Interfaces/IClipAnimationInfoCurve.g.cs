@@ -9,6 +9,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IClipAnimationInfoCurve : IPreDefinedInterface
     {
         public string name { get; }
-        public IAnimationCurve curve { get; }
+        public IAnimationCurve<float> curve { get; }
     }
 }

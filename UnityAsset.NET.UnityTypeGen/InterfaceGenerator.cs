@@ -111,12 +111,31 @@ public class InterfaceGenerator
 
         if (node.TypeName == "Keyframe")
         {
-            type = node.SubNodes[0].TypeName;
+            type = node.SubNodes[1].TypeName;
+            _cachedGenericTypes[node.Index] = type;
+            return type;
+        }
+        
+        if (node.TypeName == "AnimationCurve")
+        {
+            type = GetGenricType(node.SubNodes[0].SubNodes[0].SubNodes[1]); // keyframe<T> m_Curve
+            _cachedGenericTypes[node.Index] = type;
+            return type;
+        }
+        
+        // assert we can cut generic type spreading here
+        type = string.Empty;
+        _cachedGenericTypes[node.Index] = type;
+        return type;
+        /*var propertyNodes = node.SubNodes.Where(n => n.TypeName == "AnimationCurve").ToList();
+        if (propertyNodes.Count == 0)
+        {
+            type = string.Empty;
             _cachedGenericTypes[node.Index] = type;
             return type;
         }
 
-        var uniqueTypes = new HashSet<string>(node.SubNodes.Select(GetGenricType).Where(t => t != string.Empty));
+        var uniqueTypes = new HashSet<string>(propertyNodes.Select(GetGenricType).Where(t => t != string.Empty));
         
         if (uniqueTypes.Count == 0)
         {
@@ -130,7 +149,7 @@ public class InterfaceGenerator
         
         type = uniqueTypes.First();
         _cachedGenericTypes[node.Index] = type;
-        return type;
+        return type;*/
     }
     
     private CompilationUnitSyntax GenerateClassInterface(string className, List<TpkUnityTreeNode> rootNodes, bool isRootClass)
@@ -170,7 +189,7 @@ public class InterfaceGenerator
                     continue;
                 var interfaceName = Helper.IsPrimitive(subNode.TypeName) 
                     ? Helper.GetCSharpPrimitiveType(subNode.TypeName) 
-                    : GetInterfaceName(subNode);
+                    : GetInterfaceName(subNode, out var genericTypeName);
 
                 if (!properties.ContainsKey(name))
                 {
@@ -250,8 +269,10 @@ public class InterfaceGenerator
         return Helper.PrimitiveNumericMap[rank];
     }
 
-    private string GetInterfaceName(TpkUnityTreeNode node)
+    private string GetInterfaceName(TpkUnityTreeNode node, out string genericTypeName)
     {
+        genericTypeName = string.Empty;
+        
         if (Helper.IsPrimitive(node.TypeName))
             return Helper.GetCSharpPrimitiveType(node.TypeName);
 
@@ -266,23 +287,23 @@ public class InterfaceGenerator
         }
         
         if (node.TypeName == "pair")
-            return $"ValueTuple<{GetInterfaceName(node.SubNodes[0])}, {GetInterfaceName(node.SubNodes[1])}>";
+            return $"ValueTuple<{GetInterfaceName(node.SubNodes[0], out _)}, {GetInterfaceName(node.SubNodes[1], out _)}>";
 
         if (node.TypeName == "vector" || node.TypeName == "map")
-            return GetInterfaceName(node.SubNodes[0]);
+            return GetInterfaceName(node.SubNodes[0], out _);
         
         if (node.TypeName == "Array")
-            return $"List<{GetInterfaceName(node.SubNodes[1])}>";
+            return $"List<{GetInterfaceName(node.SubNodes[1], out _)}>";
         
         if (Helper.PreDefinedTypes.Contains(node.TypeName))
             return node.TypeName;
         
-        /*var genericTypeName = GetGenricType(node);
+        genericTypeName = GetGenricType(node);
 
         return genericTypeName == string.Empty
             ? $"I{node.TypeName}"
-            : $"I{node.TypeName}<{genericTypeName}>";*/
+            : $"I{node.TypeName}<{genericTypeName}>";
         
-        return $"I{node.TypeName}";
+        //return $"I{node.TypeName}";
     }
 }

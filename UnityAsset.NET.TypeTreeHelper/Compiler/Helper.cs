@@ -31,6 +31,7 @@ public static class Helper
         "Vector2f",
         "Vector3f",
         "Vector4f",
+        "Quaternionf",
         "Rectf",
         "SecondarySpriteTexture"
     ];
@@ -41,7 +42,8 @@ public static class Helper
         //"SpriteAtlas",
         "StreamingInfo",
         "TypelessData",
-        "EditorSettings" // workaround
+        "EditorSettings", // workaround
+        "Quaternionf", // workaround
     ];
 
     public static HashSet<string> IncludedPPTrGenricTypes =

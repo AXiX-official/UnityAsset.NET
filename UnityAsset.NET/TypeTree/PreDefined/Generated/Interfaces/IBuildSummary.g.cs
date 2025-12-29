@@ -84,5 +84,21 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
                 return null;
             }
         }
+
+        public string? dataPath
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? buildContentOptions
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

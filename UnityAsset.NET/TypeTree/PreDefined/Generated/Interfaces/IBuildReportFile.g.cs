@@ -12,5 +12,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public string role { get; }
         public uint id { get; }
         public ulong totalSize { get; }
+
+        public int? flags
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

@@ -35,7 +35,15 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public PPtr<ITexture2D> m_SplashScreenBackgroundLandscape { get; }
         public PPtr<ITexture2D> m_SplashScreenBackgroundPortrait { get; }
         public PPtr<ITexture2D> m_VirtualRealitySplashScreen { get; }
-        public PPtr<ITexture2D> m_HolographicTrackingLossScreen { get; }
+
+        public PPtr<ITexture2D>? m_HolographicTrackingLossScreen
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public int defaultScreenWidth { get; }
         public int defaultScreenHeight { get; }
         public int defaultScreenWidthWeb { get; }
@@ -322,7 +330,15 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public string bundleVersion { get; }
         public List<PPtr<UnityObject>> preloadedAssets { get; }
         public int metroInputSource { get; }
-        public bool m_HolographicPauseOnTrackingLoss { get; }
+
+        public bool? m_HolographicPauseOnTrackingLoss
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public bool xboxOneDisableKinectGpuReservation { get; }
         public bool xboxOneEnable7thCore { get; }
         public IVRSettings vrSettings { get; }
@@ -911,6 +927,14 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
+        public bool? androidPredictiveBackSupport
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public int? switchNVNGraphicsFirmwareMemory
         {
             get
@@ -1063,7 +1087,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public bool? androidPredictiveBackSupport
+        public int? androidDisplayOptions
         {
             get
             {
@@ -1120,14 +1144,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         }
 
         public int? m_SpriteBatchMaxVertexCount
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public int? androidDisplayOptions
         {
             get
             {

@@ -9,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ILineParameters : IPreDefinedInterface
     {
         public float widthMultiplier { get; }
-        public IAnimationCurve widthCurve { get; }
+        public IAnimationCurve<float> widthCurve { get; }
         public IGradient colorGradient { get; }
         public int numCornerVertices { get; }
         public int numCapVertices { get; }

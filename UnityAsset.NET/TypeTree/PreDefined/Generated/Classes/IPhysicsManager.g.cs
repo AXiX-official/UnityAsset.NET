@@ -236,5 +236,29 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
                 return null;
             }
         }
+
+        public uint? m_SceneBuffersReleaseInterval
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_ReleaseSceneBuffers
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_LogVerbosity
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

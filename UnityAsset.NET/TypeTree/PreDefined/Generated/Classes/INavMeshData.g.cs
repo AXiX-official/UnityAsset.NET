@@ -14,7 +14,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public List<IHeightMeshData> m_HeightMeshes { get; }
         public List<IAutoOffMeshLinkData> m_OffMeshLinks { get; }
         public IAABB m_SourceBounds { get; }
-        public IQuaternionf m_Rotation { get; }
+        public Quaternionf m_Rotation { get; }
         public Vector3f m_Position { get; }
         public int m_AgentTypeID { get; }
     }

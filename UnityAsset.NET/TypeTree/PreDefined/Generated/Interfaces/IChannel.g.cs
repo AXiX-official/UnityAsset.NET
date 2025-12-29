@@ -9,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IChannel : IPreDefinedInterface
     {
         public int byteOffset { get; }
-        public IAnimationCurve curve { get; }
+        public IAnimationCurve<float> curve { get; }
         public string attributeName { get; }
     }
 }

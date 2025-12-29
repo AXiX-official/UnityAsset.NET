@@ -11,6 +11,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public PPtr<IGameObject> m_GameObject { get; }
         public byte m_Enabled { get; }
         public float m_LowpassResonanceQ { get; }
-        public IAnimationCurve lowpassLevelCustomCurve { get; }
+        public IAnimationCurve<float> lowpassLevelCustomCurve { get; }
     }
 }

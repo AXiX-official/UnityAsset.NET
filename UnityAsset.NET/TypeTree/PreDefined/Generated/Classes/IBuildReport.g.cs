@@ -12,5 +12,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public List<IBuildReportFile> m_Files { get; }
         public List<IBuildStepInfo> m_BuildSteps { get; }
         public List<PPtr<UnityObject>> m_Appendices { get; }
+
+        public List<string>? m_RootAssetPaths
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

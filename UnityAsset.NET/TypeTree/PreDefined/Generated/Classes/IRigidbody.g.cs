@@ -49,7 +49,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public IQuaternionf? m_InertiaRotation
+        public Quaternionf? m_InertiaRotation
         {
             get
             {

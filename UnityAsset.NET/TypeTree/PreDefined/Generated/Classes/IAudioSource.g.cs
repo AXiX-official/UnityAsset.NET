@@ -28,10 +28,10 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public bool BypassEffects { get; }
         public bool BypassListenerEffects { get; }
         public bool BypassReverbZones { get; }
-        public IAnimationCurve rolloffCustomCurve { get; }
-        public IAnimationCurve panLevelCustomCurve { get; }
-        public IAnimationCurve spreadCustomCurve { get; }
-        public IAnimationCurve reverbZoneMixCustomCurve { get; }
+        public IAnimationCurve<float> rolloffCustomCurve { get; }
+        public IAnimationCurve<float> panLevelCustomCurve { get; }
+        public IAnimationCurve<float> spreadCustomCurve { get; }
+        public IAnimationCurve<float> reverbZoneMixCustomCurve { get; }
 
         public List<IExtensionPropertyValue>? m_ExtensionPropertyValues
         {

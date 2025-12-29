@@ -482,5 +482,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
                 return null;
             }
         }
+
+        public bool? calculateBlendshapeNormalsDeltaFromImportedNormals
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

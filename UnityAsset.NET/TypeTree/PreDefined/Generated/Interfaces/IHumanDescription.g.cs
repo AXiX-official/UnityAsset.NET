@@ -19,7 +19,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float m_FeetSpacing { get; }
         public string m_RootMotionBoneName { get; }
 
-        public IQuaternionf? m_RootMotionBoneRotation
+        public Quaternionf? m_RootMotionBoneRotation
         {
             get
             {

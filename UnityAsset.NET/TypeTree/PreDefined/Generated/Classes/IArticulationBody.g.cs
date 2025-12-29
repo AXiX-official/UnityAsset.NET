@@ -12,9 +12,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public byte m_Enabled { get; }
         public float m_Mass { get; }
         public Vector3f m_ParentAnchorPosition { get; }
-        public IQuaternionf m_ParentAnchorRotation { get; }
+        public Quaternionf m_ParentAnchorRotation { get; }
         public Vector3f m_AnchorPosition { get; }
-        public IQuaternionf m_AnchorRotation { get; }
+        public Quaternionf m_AnchorRotation { get; }
         public bool m_MatchAnchors { get; }
         public int m_ArticulationJointType { get; }
         public int m_LinearX { get; }
@@ -31,7 +31,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float m_JointFriction { get; }
         public Vector3f m_CenterOfMass { get; }
         public Vector3f m_InertiaTensor { get; }
-        public IQuaternionf m_InertiaRotation { get; }
+        public Quaternionf m_InertiaRotation { get; }
         public IBitField m_IncludeLayers { get; }
         public IBitField m_ExcludeLayers { get; }
         public bool m_ImplicitCom { get; }

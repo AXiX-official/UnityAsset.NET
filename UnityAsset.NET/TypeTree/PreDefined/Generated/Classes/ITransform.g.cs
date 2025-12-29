@@ -9,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ITransform : IUnityAsset
     {
         public PPtr<IGameObject> m_GameObject { get; }
-        public IQuaternionf m_LocalRotation { get; }
+        public Quaternionf m_LocalRotation { get; }
         public Vector3f m_LocalPosition { get; }
         public Vector3f m_LocalScale { get; }
         public List<PPtr<ITransform>> m_Children { get; }

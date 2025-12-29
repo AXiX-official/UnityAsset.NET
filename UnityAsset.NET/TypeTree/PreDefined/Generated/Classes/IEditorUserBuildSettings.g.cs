@@ -745,6 +745,14 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
+        public List<ValueTuple<string, int>>? m_SelectedDiagnosticSetting
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public int? m_SelectedWindowsBuildAndRunDeployTarget
         {
             get
@@ -826,6 +834,14 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         }
 
         public List<ValueTuple<string, string>>? m_BuildOutputToBuildMetadataMap
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_BuildWithCodeCoverage
         {
             get
             {

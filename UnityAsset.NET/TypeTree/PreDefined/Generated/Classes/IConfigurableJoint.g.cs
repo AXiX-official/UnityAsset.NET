@@ -34,7 +34,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public IJointDrive m_XDrive { get; }
         public IJointDrive m_YDrive { get; }
         public IJointDrive m_ZDrive { get; }
-        public IQuaternionf m_TargetRotation { get; }
+        public Quaternionf m_TargetRotation { get; }
         public Vector3f m_TargetAngularVelocity { get; }
         public int m_RotationDriveMode { get; }
         public IJointDrive m_AngularXDrive { get; }

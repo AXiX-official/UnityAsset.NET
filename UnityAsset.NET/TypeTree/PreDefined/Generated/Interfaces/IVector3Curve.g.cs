@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVector3Curve : IPreDefinedInterface
     {
-        public IAnimationCurve curve { get; }
+        public IAnimationCurve<Vector3f> curve { get; }
         public string path { get; }
     }
 }

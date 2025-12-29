@@ -10,7 +10,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public string name { get; }
         public Vector3f position { get; }
-        public IQuaternionf rotation { get; }
+        public Quaternionf rotation { get; }
         public float length { get; }
         public int parentId { get; }
 
