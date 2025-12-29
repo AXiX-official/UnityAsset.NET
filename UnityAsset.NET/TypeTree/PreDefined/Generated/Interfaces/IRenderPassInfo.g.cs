@@ -8,9 +8,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IRenderPassInfo : IPreDefinedInterface
     {
-        public Istaticvector attachments { get; }
+        public List<IAttachmentInfo> attachments { get; }
         public int attachmentCount { get; }
-        public Istaticvector subPasses { get; }
+        public List<ISubPassDescriptor> subPasses { get; }
         public int subPassCount { get; }
         public int depthAttachmentIndex { get; }
         public int shadingRateIndex { get; }

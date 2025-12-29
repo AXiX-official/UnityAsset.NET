@@ -8,10 +8,37 @@ public class SemanticModelBuilder
     private readonly Dictionary<int, IUnityTypeInfo> _cache = new();
     public Dictionary<int, ClassTypeInfo> DiscoveredTypes { get; } = new();
     private readonly Dictionary<string, Type> _preDefinedInterfaceMap;
+    private Dictionary<int, string> _cachedGenericTypes = new();
 
     public SemanticModelBuilder(Dictionary<string, Type> preDefinedInterfaceMap)
     {
         _preDefinedInterfaceMap = preDefinedInterfaceMap;
+    }
+    
+    private string GetGenricType(TypeTreeNode node)
+    {
+        if (_cachedGenericTypes.TryGetValue(node.GetHashCode(), out var type))
+        {
+            return type;
+        }
+
+        if (node.TypeName == "Keyframe")
+        {
+            type = node.SubNodes[1].TypeName;
+            _cachedGenericTypes[node.GetHashCode()] = type;
+            return type;
+        }
+        
+        if (node.TypeName == "AnimationCurve")
+        {
+            type = GetGenricType(node.SubNodes[0].SubNodes[0].SubNodes[1]); // keyframe<T> m_Curve
+            _cachedGenericTypes[node.GetHashCode()] = type;
+            return type;
+        }
+
+        type = string.Empty;
+        _cachedGenericTypes[node.GetHashCode()] = type;
+        return type;
     }
     
     public ClassTypeInfo? Build(TypeTreeNode current)
@@ -19,7 +46,19 @@ public class SemanticModelBuilder
         if (Helper.IsPreDefinedType(current))
             return null;
         
-        var inferredInterfaceName = $"I{current.TypeName}";
+        bool isGenericType = current.TypeName switch
+        {
+            "Keyframe" => true,
+            "AnimationCurve" => true,
+            _ => false
+        };
+        
+        var inferredInterfaceName = current.TypeName switch
+        {
+            "Keyframe" => "IKeyframe`1",
+            "AnimationCurve" => "IAnimationCurve`1",
+            _ => $"I{current.TypeName}"
+        };
         var type = ((IReadOnlyDictionary<string, Type?>)_preDefinedInterfaceMap).GetValueOrDefault(inferredInterfaceName, null);
         
         var fields = new List<UnityFieldInfo>();
@@ -44,15 +83,35 @@ public class SemanticModelBuilder
                 Name = fieldName,
                 RequireAlign = node.RequiresAlign(),
                 IsNullable = isNullable,
-                DeclaredTypeSyntax = interfaceProperties?.TryGetValue(fieldName, out var interfaceProperty) ?? false
-                    ? Helper.GetTypeSyntax(interfaceProperty.PropertyType) : fieldTypeInfo.ToTypeSyntax(),
+                DeclaredTypeSyntax =
+                    !isGenericType
+                    ? interfaceProperties?.TryGetValue(fieldName, out var interfaceProperty) ?? false
+                    ? Helper.GetTypeSyntax(interfaceProperty.PropertyType) : fieldTypeInfo.ToTypeSyntax()
+                    : fieldTypeInfo.ToTypeSyntax(),
                 TypeInfo = fieldTypeInfo
             });
         }
         
         
         //var interfaceName = type?.Name ?? (Helper.IsNamedAsset(current) ? "INamedAsset" : current == nodes[0] ? "IAsset" : "IUnityType");
-        var interfaceName = type == null ? "IUnityType" : Helper.GetInterfaceName(current);
+        var interfaceName = "IUnityType";
+
+        if (type != null)
+        {
+            if (current.TypeName == "Keyframe")
+            {
+                interfaceName = $"IKeyframe<{GetGenricType(current)}>";
+            }
+            else if (current.TypeName == "AnimationCurve")
+            {
+                interfaceName = $"IAnimationCurve<{GetGenricType(current)}>";
+            }
+            else
+            {
+                interfaceName = Helper.GetInterfaceName(current);
+            }
+        }
+        
         var generatedClassName = Helper.SanitizeName($"{current.TypeName}_{current.GetHashCode()}");
 
         var classTypeInfo = new ClassTypeInfo

@@ -25,6 +25,7 @@ public interface IReader : ISeek, IFile
     public Endianness Endian { get; set; }
     public long Length { get; }
     public byte ReadByte();
+    public sbyte ReadSByte() => (sbyte)ReadByte();
     public byte[] ReadBytes(int count);
     public int Read(byte[] buffer, int offset, int count)
     {

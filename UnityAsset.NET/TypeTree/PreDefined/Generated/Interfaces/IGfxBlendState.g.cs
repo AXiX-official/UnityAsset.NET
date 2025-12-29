@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IGfxBlendState : IPreDefinedInterface
     {
-        public Istaticvector rt { get; }
+        public List<IGfxRenderTargetBlendState> rt { get; }
         public byte separateMRTBlend { get; }
         public byte alphaToMask { get; }
     }

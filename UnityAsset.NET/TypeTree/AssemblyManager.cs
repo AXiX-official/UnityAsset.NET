@@ -23,6 +23,7 @@ public static class AssemblyManager
     
     private static CollectibleAssemblyContext? _loadContext;
     
+    private static Dictionary<string, Type> _preDefinedTypeMap;
     private static Dictionary<string, Type> _preDefinedInterfaceMap;
 
     private class CollectibleAssemblyContext : AssemblyLoadContext
@@ -54,6 +55,12 @@ public static class AssemblyManager
         References = references;
         
         var thisAssembly = Assembly.GetExecutingAssembly();
+        
+        _preDefinedTypeMap = thisAssembly
+            .GetTypes()
+            .Where(t => t is {IsClass : true, Namespace : "UnityAsset.NET.TypeTree.PreDefined.Types"})
+            .Where(t => Helper.PreDefinedTypes.Contains(t.Name))
+            .ToDictionary(t => t.Name, t => t, StringComparer.OrdinalIgnoreCase);
         
         _preDefinedInterfaceMap = thisAssembly
             .GetTypes()
@@ -178,6 +185,11 @@ public static class AssemblyManager
 
     public static Type GetType(SerializedType type)
     {
+        if (Helper.PreDefinedTypes.Contains(type.Nodes[0].Type))
+        {
+            return _preDefinedTypeMap[type.Nodes[0].Type];
+        }
+        
         if (TypeCache.TryGetValue(TypeTreeCache.Map[type.TypeHash].Hash, out var cachedType))
         {
             return cachedType;

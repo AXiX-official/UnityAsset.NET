@@ -30,10 +30,10 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public Istaticvector m_HumanBoneIndex { get; }
-        public Istaticvector m_HumanBoneMass { get; }
+        public List<int> m_HumanBoneIndex { get; }
+        public List<float> m_HumanBoneMass { get; }
 
-        public Istaticvector? m_ColliderIndex
+        public List<int>? m_ColliderIndex
         {
             get
             {

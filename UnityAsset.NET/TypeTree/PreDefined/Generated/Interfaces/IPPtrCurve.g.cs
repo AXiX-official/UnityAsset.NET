@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IPPtrCurve : IPreDefinedInterface
     {
-        public List<PPtr<IUnityType>> curve { get; }
+        public List<IPPtrKeyframe> curve { get; }
         public string attribute { get; }
         public string path { get; }
         public uint classID { get; }

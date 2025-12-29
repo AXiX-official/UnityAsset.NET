@@ -17,7 +17,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public List<IVector3Curve> m_PositionCurves { get; }
         public List<IVector3Curve> m_ScaleCurves { get; }
         public List<IFloatCurve> m_FloatCurves { get; }
-        public List<PPtr<IUnityType>> m_PPtrCurves { get; }
+        public List<IPPtrCurve> m_PPtrCurves { get; }
         public float m_SampleRate { get; }
         public int m_WrapMode { get; }
         public IAABB m_Bounds { get; }

@@ -1,6 +1,7 @@
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 
 public interface IKeyframe<T>: IPreDefinedInterface
+    where T : notnull
 {
     public float time { get; }
     public T value { get; }

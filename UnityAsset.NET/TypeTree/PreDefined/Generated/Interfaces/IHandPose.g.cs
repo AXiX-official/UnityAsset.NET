@@ -9,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IHandPose : IPreDefinedInterface
     {
         public Ixform m_GrabX { get; }
-        public Istaticvector m_DoFArray { get; }
+        public List<float> m_DoFArray { get; }
         public float m_Override { get; }
         public float m_CloseOpen { get; }
         public float m_InOut { get; }

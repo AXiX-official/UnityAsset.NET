@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IHand : IPreDefinedInterface
     {
-        public Istaticvector m_HandBoneIndex { get; }
+        public List<int> m_HandBoneIndex { get; }
     }
 }

@@ -8,8 +8,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVertexLayoutInfo : IPreDefinedInterface
     {
-        public Istaticvector vertexChannelsInfo { get; }
-        public Istaticvector vertexStrides { get; }
+        public List<IChannelInfo> vertexChannelsInfo { get; }
+        public List<byte> vertexStrides { get; }
         public int vertexStreamCount { get; }
     }
 }

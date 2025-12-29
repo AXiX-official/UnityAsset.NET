@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IAttachmentIndexArray : IPreDefinedInterface
     {
-        public Istaticvector attachments { get; }
+        public List<int> attachments { get; }
         public int activeAttachments { get; }
     }
 }

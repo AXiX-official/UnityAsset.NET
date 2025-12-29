@@ -22,7 +22,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public List<IComputeShaderResource> inBuffers { get; }
         public List<IComputeShaderResource> outBuffers { get; }
         public List<byte> code { get; }
-        public Istaticvector threadGroupSize { get; }
+        public List<uint> threadGroupSize { get; }
 
         public List<uint>? cbVariantIndices
         {

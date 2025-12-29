@@ -69,7 +69,7 @@ public class InterfaceGenerator
         {
             var type = subNode.TypeName;
         
-            if (type.StartsWith("PPtr<") && type.EndsWith(">"))
+            if (type.StartsWith("PPtr<"))
                 type = "PPtr";
 
             if (!Helper.IsPrimitive(type) && !Helper.ExcludedTypes.Contains(type) && !Helper.NoInterfaceTypes.Contains(type))
@@ -276,7 +276,7 @@ public class InterfaceGenerator
         if (Helper.IsPrimitive(node.TypeName))
             return Helper.GetCSharpPrimitiveType(node.TypeName);
 
-        if (node.TypeName.StartsWith("PPtr"))
+        if (node.TypeName.StartsWith("PPtr<"))
         {
             var genericType = node.TypeName.Substring(5, node.TypeName.Length - 6);
             return genericType == "Object"
@@ -289,7 +289,7 @@ public class InterfaceGenerator
         if (node.TypeName == "pair")
             return $"ValueTuple<{GetInterfaceName(node.SubNodes[0], out _)}, {GetInterfaceName(node.SubNodes[1], out _)}>";
 
-        if (node.TypeName == "vector" || node.TypeName == "map")
+        if (node.TypeName == "vector" || node.TypeName == "staticvector" || node.TypeName == "map")
             return GetInterfaceName(node.SubNodes[0], out _);
         
         if (node.TypeName == "Array")

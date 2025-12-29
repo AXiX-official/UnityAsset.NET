@@ -21,7 +21,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float m_Level { get; }
         public float m_CycleOffset { get; }
         public float m_AverageAngularSpeed { get; }
-        public Istaticvector m_IndexArray { get; }
+        public List<int> m_IndexArray { get; }
         public List<IValueDelta> m_ValueArrayDelta { get; }
         public List<float> m_ValueArrayReferencePose { get; }
         public bool m_Mirror { get; }

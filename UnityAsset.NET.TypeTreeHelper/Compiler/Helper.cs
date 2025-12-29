@@ -10,6 +10,7 @@ public static class Helper
     public static HashSet<string> ExcludedTypes =
     [
         "vector",
+        "staticvector",
         "map",
         "Array",
         "pair",
@@ -150,6 +151,9 @@ public static class Helper
     
     public static string GetGenericPPtrInterfaceName(string typeName)
     {
+        if (typeName.StartsWith('$'))
+            typeName = typeName.Substring(1);
+        
         if (typeName == "Object")
             return "UnityObject";
         
@@ -170,13 +174,13 @@ public static class Helper
         if (NoInterfaceTypes.Contains(node.TypeName))
             return "IUnityType";
     
-        if (node.TypeName.StartsWith("PPtr"))
+        if (node.TypeName.StartsWith("PPtr<"))
             return $"PPtr<{GetGenericPPtrInterfaceName(node.TypeName.Substring(5, node.TypeName.Length - 6))}>";
     
         if (node.TypeName == "pair")
             return $"ValueTuple<{GetInterfaceName(node.SubNodes[0])}, {GetInterfaceName(node.SubNodes[1])}>";
 
-        if (node.TypeName == "vector" || node.TypeName == "map")
+        if (node.TypeName == "vector" || node.TypeName == "staticvector" || node.TypeName == "map")
             return GetInterfaceName(node.SubNodes[0]);
     
         if (node.TypeName == "Array")
@@ -294,7 +298,7 @@ public static class Helper
 
     public static bool IsVector(TypeTreeNode current)
     {
-        if (current.TypeName == "vector") return true;
+        if (current.TypeName == "vector" || current.TypeName == "staticvector") return true;
         if (current.SubNodes.Length == 0) return false;
         if (current.SubNodes[0].TypeName == "Array") return true;
         return false;
@@ -324,6 +328,11 @@ public static class Helper
 
     public static bool IsNullable(Type csharpType)
     {
+        if (csharpType.IsGenericParameter)
+        {
+            return false;
+        }
+        
         if (!csharpType.IsValueType)
         {
             return true;

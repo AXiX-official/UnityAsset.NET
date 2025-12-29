@@ -8,8 +8,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ILightProbeOcclusion : IPreDefinedInterface
     {
-        public Istaticvector m_ProbeOcclusionLightIndex { get; }
-        public Istaticvector m_Occlusion { get; }
-        public Istaticvector m_OcclusionMaskChannel { get; }
+        public List<int> m_ProbeOcclusionLightIndex { get; }
+        public List<float> m_Occlusion { get; }
+        public List<sbyte> m_OcclusionMaskChannel { get; }
     }
 }
