@@ -26,6 +26,7 @@ public class TypeTreeNode
             unchecked
             {
                 int hash = 17;
+                hash = hash * 31 + Name.GetDeterministicHashCode();
                 hash = hash * 31 + TypeName.GetDeterministicHashCode();
                 hash = hash * 31 + MetaFlag.GetHashCode();
             

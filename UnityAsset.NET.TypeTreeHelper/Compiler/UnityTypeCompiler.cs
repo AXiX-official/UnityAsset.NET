@@ -32,6 +32,8 @@ public class UnityTypeCompiler
     
         foreach (var rootNode in rootNodes)
         {
+            if (rootNode.TypeName == "MonoBehaviour")
+                continue;
             _semanticModelBuilder.Build(rootNode);
         }
 

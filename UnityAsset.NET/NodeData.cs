@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Specialized;
-using System.Text;
+﻿using System.Text;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
@@ -15,6 +13,11 @@ public class NodeData
     public object Value;
     public UInt32 MetaFlags;
     public NodeData? Parent;
+    
+    public T As<T>()
+    {
+        return (T)Value;
+    }
 
     public NodeData(byte level, string type, string name, object value, UInt32 metaFlags, NodeData? parent = null)
     {
@@ -135,19 +138,19 @@ public class NodeData
                     else //Class
                     {
                         var @class = current.Children(nodes);
-                        var obj = new List<NodeData>();
+                        var obj = new Dictionary<string, NodeData>();
                         for (int j = 0; j < @class.Count; j++)
                         {
                             var classmember = @class[j];
                             var name = classmember.Name;
-                            obj.Add(new NodeData(reader, nodes, @class[j]));
+                            obj[name] = new NodeData(reader, nodes, @class[j]);
                         }
                         value = obj;
                         break;
                     }
                 }
         }
-        Console.WriteLine($"{current.Type} {current.Name}: pos: {reader.Position}, align: {align}");
+        //Console.WriteLine($"{current.Type} {current.Name}: pos: {reader.Position}, align: {align}");
         if (align)
             reader.Align(4);
         return value;
@@ -181,6 +184,15 @@ public class NodeData
                     sb.Append(span[j]);
                 }
                 sb.AppendLine("]");
+                break;
+            }
+            case Dictionary<string, NodeData> dict:
+            {
+                sb.AppendLine();
+                foreach (var (key, value) in dict)
+                {
+                    sb.Append(value.ToString(i + 1));
+                }
                 break;
             }
             default:

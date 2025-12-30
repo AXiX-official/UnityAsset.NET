@@ -17,8 +17,7 @@ public static class Helper
         // workaround for generic type issues
         "Keyframe", // Keyframe should use generic type
         "AnimationCurve", // contains Keyframe
-        // TODO: better handling MonoBehaviour
-        "Node", // workaround for monobehaviour things
+        "MonoBehaviour",
         ""
     ];
     

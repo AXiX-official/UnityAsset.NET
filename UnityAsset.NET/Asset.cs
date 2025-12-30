@@ -9,7 +9,6 @@ public class Asset
 { 
     public AssetFileInfo Info;
     public IReader RawData;
-    //public NodeData NodeData;
     private IUnityAsset? _value;
     private string _name = string.Empty;
     private readonly object _lock = new();
@@ -24,6 +23,10 @@ public class Asset
                 {
                     RawData.Seek(0);
                     _value = UnityObjectFactory.Create(Info.Type, RawData);
+                    if (TypeTreeHelper.Compiler.Helper.IsNamedAsset(TypeTreeCache.Map[Info.Type.TypeHash]))
+                    {
+                        _name = ((INamedAsset)_value).m_Name;
+                    }
                 }
                 return _value;
             }
@@ -54,7 +57,6 @@ public class Asset
     {
         Info = info;
         RawData = reader; 
-        //NodeData = new NodeData(reader, info.Type.Nodes, info.Type.Nodes[0]);
     }
 
     public void Release()

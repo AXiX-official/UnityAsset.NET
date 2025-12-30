@@ -123,7 +123,10 @@ public class SemanticModelBuilder
             TypeTreeNode = current
         };
         
-        DiscoveredTypes[current.Hash] = classTypeInfo;
+        if (!DiscoveredTypes.TryAdd(current.Hash, classTypeInfo))
+        {
+            throw new InvalidOperationException($"Type with hash {current.Hash} has already been discovered.");
+        }
         return classTypeInfo;
     }
 
@@ -196,10 +199,7 @@ public class SemanticModelBuilder
         }
         else // Complex Type
         {
-            var classTypeInfo = Build(node);
-
-            DiscoveredTypes[hash] = classTypeInfo!;
-            typeInfo = classTypeInfo!;
+            typeInfo = Build(node)!;
         }
 
         _cache[hash] = typeInfo;

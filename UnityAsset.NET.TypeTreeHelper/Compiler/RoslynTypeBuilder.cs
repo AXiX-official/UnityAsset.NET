@@ -98,7 +98,7 @@ public class RoslynTypeBuilder
             statements.AddRange(CreateAssetNodeCreationStatement(fieldInfo.Name, fieldInfo.TypeInfo, "rootAssetNode"));
         }
 
-        statements.Add(SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("rootAssetNodend")));
+        statements.Add(SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("rootAssetNode")));
 
         var methodDeclaration = SyntaxFactory.MethodDeclaration(
             SyntaxFactory.IdentifierName("AssetNode?"), "ToAssetNode")
@@ -144,7 +144,7 @@ public class RoslynTypeBuilder
                 break;
 
             case VectorTypeInfo v:
-                var vectorNodeName = $"{node.Name}VectorNode";
+                var vectorNodeName = $"{fieldName}VectorNode";
                 statements.Add(
                     SyntaxFactory.LocalDeclarationStatement(
                         SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("var"))

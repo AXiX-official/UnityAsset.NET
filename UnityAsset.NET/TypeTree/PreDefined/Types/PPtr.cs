@@ -28,6 +28,13 @@ public class PPtr<T> : IPPtr where T : IUnityType
         _reader = (AssetReader)reader;
     }
 
+    public PPtr(Int32 fileID, Int64 pathID, IReader reader)
+    {
+        m_FileID = fileID;
+        m_PathID = pathID;
+        _reader = (AssetReader)reader;
+    }
+
     public AssetNode? ToAssetNode(string name = "Base")
     {
         var root = new AssetNode

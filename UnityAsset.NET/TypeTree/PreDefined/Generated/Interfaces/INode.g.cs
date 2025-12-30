@@ -6,10 +6,9 @@ using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IMonoBehaviour : INamedAsset
+    public partial interface INode : IPreDefinedInterface
     {
-        public PPtr<IGameObject> m_GameObject { get; }
-        public byte m_Enabled { get; }
-        public PPtr<IMonoScript> m_Script { get; }
+        public int m_ParentId { get; }
+        public int m_AxesId { get; }
     }
 }
