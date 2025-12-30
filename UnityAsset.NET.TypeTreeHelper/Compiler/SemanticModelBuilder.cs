@@ -17,7 +17,7 @@ public class SemanticModelBuilder
     
     private string GetGenricType(TypeTreeNode node)
     {
-        if (_cachedGenericTypes.TryGetValue(node.GetHashCode(), out var type))
+        if (_cachedGenericTypes.TryGetValue(node.Hash, out var type))
         {
             return type;
         }
@@ -25,19 +25,19 @@ public class SemanticModelBuilder
         if (node.TypeName == "Keyframe")
         {
             type = node.SubNodes[1].TypeName;
-            _cachedGenericTypes[node.GetHashCode()] = type;
+            _cachedGenericTypes[node.Hash] = type;
             return type;
         }
         
         if (node.TypeName == "AnimationCurve")
         {
             type = GetGenricType(node.SubNodes[0].SubNodes[0].SubNodes[1]); // keyframe<T> m_Curve
-            _cachedGenericTypes[node.GetHashCode()] = type;
+            _cachedGenericTypes[node.Hash] = type;
             return type;
         }
 
         type = string.Empty;
-        _cachedGenericTypes[node.GetHashCode()] = type;
+        _cachedGenericTypes[node.Hash] = type;
         return type;
     }
     
@@ -112,7 +112,7 @@ public class SemanticModelBuilder
             }
         }
         
-        var generatedClassName = Helper.SanitizeName($"{current.TypeName}_{current.GetHashCode()}");
+        var generatedClassName = Helper.SanitizeName($"{current.TypeName}_{current.Hash}");
 
         var classTypeInfo = new ClassTypeInfo
         {
@@ -123,13 +123,13 @@ public class SemanticModelBuilder
             TypeTreeNode = current
         };
         
-        DiscoveredTypes[current.GetHashCode()] = classTypeInfo;
+        DiscoveredTypes[current.Hash] = classTypeInfo;
         return classTypeInfo;
     }
 
     private IUnityTypeInfo ResolveNode(TypeTreeNode node)
     {
-        var hash = node.GetHashCode();
+        var hash = node.Hash;
         if (_cache.TryGetValue(hash, out var cachedInfo)) return cachedInfo;
 
         IUnityTypeInfo typeInfo;

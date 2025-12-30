@@ -172,7 +172,7 @@ public static class AssemblyManager
             {
                 if (type.SubNodes.Length == 0)
                     continue;
-                var concreteTypeName = Helper.SanitizeName($"{type.TypeName}_{type.GetHashCode()}");
+                var concreteTypeName = Helper.SanitizeName($"{type.TypeName}_{type.Hash}");
                 var generatedType = assembly.GetType($"{AssemblyNameSpace}.{concreteTypeName}");
                 if (generatedType != null)
                 {
