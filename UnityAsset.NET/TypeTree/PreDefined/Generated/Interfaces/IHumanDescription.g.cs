@@ -18,8 +18,11 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float m_LegStretch { get; }
         public float m_FeetSpacing { get; }
         public string m_RootMotionBoneName { get; }
+        public bool m_HasTranslationDoF { get; }
+        public bool m_HasExtraRoot { get; }
+        public bool m_SkeletonHasParents { get; }
 
-        public Quaternionf? m_RootMotionBoneRotation
+        public float? m_GlobalScale
         {
             get
             {
@@ -27,11 +30,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public bool m_HasTranslationDoF { get; }
-        public bool m_HasExtraRoot { get; }
-        public bool m_SkeletonHasParents { get; }
-
-        public float? m_GlobalScale
+        public Quaternionf? m_RootMotionBoneRotation
         {
             get
             {

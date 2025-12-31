@@ -12,13 +12,5 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public int outputContainerFormat { get; }
         public ISampleSettings editorOutputSettings { get; }
         public int editorOutputContainerFormat { get; }
-
-        public IStreamedResource? playerResource
-        {
-            get
-            {
-                return null;
-            }
-        }
     }
 }

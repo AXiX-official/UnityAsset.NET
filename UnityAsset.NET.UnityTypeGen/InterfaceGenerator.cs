@@ -39,12 +39,24 @@ public class InterfaceGenerator
         if (!Directory.Exists(subClassDir))
             Directory.CreateDirectory(subClassDir);
         
-        DiscoverAllSubNodes(rootTypeNodesMap.Values);
+        var includedRootTypes = rootTypeNodesMap.Where(kvp =>
+            !Helper.ExcludedTypes.Contains(kvp.Key) && (Helper.IncludedTypes.Contains(kvp.Key) || Helper.IncludedPPTrGenricTypes.Contains(kvp.Key))
+        ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         
-        foreach (var (className, rootNodes) in rootTypeNodesMap)
+        var excludedRootTypes = rootTypeNodesMap.Where(kvp =>
+            !Helper.IncludedTypes.Contains(kvp.Key)
+        ).Select(kvp => kvp.Value);
+        
+        DiscoverAllSubNodes(includedRootTypes.Values, out var subNodes);
+        DiscoverLeftSubNodes(excludedRootTypes, subNodes);
+        
+        _subNodes = subNodes.ToDictionary(
+            kvp => kvp.Key,
+            kvp => kvp.Value.ToList()
+        );
+        
+        foreach (var (className, rootNodes) in includedRootTypes)
         {
-            if (Helper.ExcludedTypes.Contains(className)) continue;
-            
             var compilationUnit = GenerateClassInterface(className, rootNodes, true);
                     
             var formattedSource = compilationUnit.NormalizeWhitespace(elasticTrivia: true).ToFullString();
@@ -53,9 +65,9 @@ public class InterfaceGenerator
             File.WriteAllText(filePath, formattedSource);
         }
 
-        foreach (var (className, subNodes) in _subNodes)
+        foreach (var (className, subNodeList) in _subNodes)
         {
-            var subCompilationUnit = GenerateClassInterface(className, subNodes, false);
+            var subCompilationUnit = GenerateClassInterface(className, subNodeList, false);
 
             var subFormattedSource = subCompilationUnit.NormalizeWhitespace(elasticTrivia: true).ToFullString();
             var subFilePath = Path.Combine(subClassDir, $"I{className}.g.cs");
@@ -71,8 +83,11 @@ public class InterfaceGenerator
         
             if (type.StartsWith("PPtr<"))
                 type = "PPtr";
-
-            if (!Helper.IsPrimitive(type) && !Helper.ExcludedTypes.Contains(type) && !Helper.NoInterfaceTypes.Contains(type))
+            
+            if (Helper.IsPrimitive(type))
+                continue;
+            
+            if (!Helper.ExcludedBasicTypes.Contains(type) && !Helper.NoInterfaceTypes.Contains(type) && !Helper.ExcludedTypes.Contains(type))
             {
                 if (!subNodes.TryGetValue(type, out var set))
                 {
@@ -84,21 +99,55 @@ public class InterfaceGenerator
             DiscoverSubNodesRecursive(subNode, subNodes);
         }
     }
-
-    private void DiscoverAllSubNodes(IEnumerable<IEnumerable<TpkUnityTreeNode>> allNodes)
+    
+    private void DiscoverLeftSubNodesRecursive(TpkUnityTreeNode node, Dictionary<string, HashSet<TpkUnityTreeNode>> subNodes, bool forceAdd = false)
     {
-        var subNodes = new Dictionary<string, HashSet<TpkUnityTreeNode>>();
+        foreach (var subNode in node.SubNodes)
+        {
+            var type = subNode.TypeName;
+        
+            if (type.StartsWith("PPtr<"))
+                type = "PPtr";
+            
+            if (Helper.IsPrimitive(type))
+                continue;
+            
+            if (subNodes.TryGetValue(type, out var set))
+            {
+                set.Add(subNode);
+                forceAdd = true;
+            }
+            else if (forceAdd)
+            {
+                if (!Helper.ExcludedBasicTypes.Contains(type) && !Helper.NoInterfaceTypes.Contains(type) && !Helper.ExcludedTypes.Contains(type))
+                {
+                    subNodes[type] = set = new HashSet<TpkUnityTreeNode>();
+                    set.Add(subNode);
+                }
+            }
+            
+            DiscoverLeftSubNodesRecursive(subNode, subNodes, forceAdd);
+        }
+    }
+    
+    private void DiscoverLeftSubNodes(IEnumerable<IEnumerable<TpkUnityTreeNode>> allNodes, Dictionary<string, HashSet<TpkUnityTreeNode>> subNodes)
+    {
+        foreach (var nodes in allNodes)
+        foreach (var rootNode in nodes)
+        {
+            DiscoverLeftSubNodesRecursive(rootNode, subNodes);
+        }
+    }
+
+    private void DiscoverAllSubNodes(IEnumerable<IEnumerable<TpkUnityTreeNode>> allNodes, out Dictionary<string, HashSet<TpkUnityTreeNode>> subNodes)
+    {
+        subNodes = new();
     
         foreach (var nodes in allNodes)
         foreach (var rootNode in nodes)
         {
             DiscoverSubNodesRecursive(rootNode, subNodes);
         }
-    
-        _subNodes = subNodes.ToDictionary(
-            kvp => kvp.Key,
-            kvp => kvp.Value.ToList()
-        );
     }
 
     // workaround for Keyframe and other generic types
@@ -127,29 +176,6 @@ public class InterfaceGenerator
         type = string.Empty;
         _cachedGenericTypes[node.Index] = type;
         return type;
-        /*var propertyNodes = node.SubNodes.Where(n => n.TypeName == "AnimationCurve").ToList();
-        if (propertyNodes.Count == 0)
-        {
-            type = string.Empty;
-            _cachedGenericTypes[node.Index] = type;
-            return type;
-        }
-
-        var uniqueTypes = new HashSet<string>(propertyNodes.Select(GetGenricType).Where(t => t != string.Empty));
-        
-        if (uniqueTypes.Count == 0)
-        {
-            type = string.Empty;
-            _cachedGenericTypes[node.Index] = type;
-            return type;
-        }
-            
-        if (uniqueTypes.Count != 1)
-            throw new Exception($"Type {node.TypeName} has more than one generic type");
-        
-        type = uniqueTypes.First();
-        _cachedGenericTypes[node.Index] = type;
-        return type;*/
     }
     
     private CompilationUnitSyntax GenerateClassInterface(string className, List<TpkUnityTreeNode> rootNodes, bool isRootClass)

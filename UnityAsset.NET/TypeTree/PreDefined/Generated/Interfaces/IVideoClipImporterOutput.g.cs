@@ -8,156 +8,17 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVideoClipImporterOutput : IPreDefinedInterface
     {
-        public int? format
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public IVideoClipImporterTargetSettings? settings
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public int? encodedWidth
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public int? encodedHeight
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public int? encodedStartFrame
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public int? encodedEndFrame
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public IStreamedResource? streamedResource
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public double? sourceFrameRate
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public ulong? sourceFileSize
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public List<ushort>? sourceAudioChannelCount
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public bool? sourceHasAlpha
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public List<uint>? sourceAudioSampleRate
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public int? originalWidth
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public int? originalHeight
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public int? originalFrameCount
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public IVideoClipImporterTargetSettings? encodedSettings
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public uint? sourcePixelAspectRatioNumerator
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public uint? sourcePixelAspectRatioDenominator
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public bool? transcodeSkipped
-        {
-            get
-            {
-                return null;
-            }
-        }
+        public uint sourcePixelAspectRatioNumerator { get; }
+        public uint sourcePixelAspectRatioDenominator { get; }
+        public double sourceFrameRate { get; }
+        public ulong sourceFileSize { get; }
+        public List<ushort> sourceAudioChannelCount { get; }
+        public bool sourceHasAlpha { get; }
+        public bool transcodeSkipped { get; }
+        public List<uint> sourceAudioSampleRate { get; }
+        public int originalWidth { get; }
+        public int originalHeight { get; }
+        public int originalFrameCount { get; }
+        public IVideoClipImporterTargetSettings encodedSettings { get; }
     }
 }

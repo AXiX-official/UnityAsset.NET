@@ -9,13 +9,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IPluginImportOutput : IPreDefinedInterface
     {
         public int dllType { get; }
-
-        public int? scriptingRuntimeVersion
-        {
-            get
-            {
-                return null;
-            }
-        }
+        public int scriptingRuntimeVersion { get; }
     }
 }

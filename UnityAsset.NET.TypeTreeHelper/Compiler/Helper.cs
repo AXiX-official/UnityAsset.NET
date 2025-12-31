@@ -7,18 +7,59 @@ namespace UnityAsset.NET.TypeTreeHelper.Compiler;
 
 public static class Helper
 {
-    public static HashSet<string> ExcludedTypes =
+    public static HashSet<string> ExcludedBasicTypes =
     [
         "vector",
         "staticvector",
         "map",
         "Array",
         "pair",
+        ""
+    ];
+    
+    public static HashSet<string> ExcludedTypes =
+    [
         // workaround for generic type issues
         "Keyframe", // Keyframe should use generic type
         "AnimationCurve", // contains Keyframe
         "MonoBehaviour",
         ""
+    ];
+
+    public static HashSet<string> IncludedTypes =
+    [
+        "AABB",
+        "AssetBundle",
+        "AssetInfo",
+        "BlendShapeData",
+        "BoneWeights4",
+        "Component",
+        "ComponentPair",
+        "CompressedMesh",
+        "GameObject",
+        "GLTextureSettings",
+        "Matrix4x4f",
+        "Mesh",
+        "MeshLodInfo",
+        "MinMaxAABB",
+        "MonoScript",
+        "PPtr",
+        "Rectf",
+        "SecondarySpriteTexture",
+        "SerializedShader",
+        "Shader",
+        "Sprite",
+        "SpriteAtlas",
+        "SpriteAtlasData",
+        "SpriteBone",
+        "SpriteRenderData",
+        "SubMesh",
+        "TextAsset",
+        "Texture2D",
+        "VariableBoneCountWeights",
+        "Vector2f",
+        "Vector3f",
+        "Vector4f",
     ];
     
     public static HashSet<string> PreDefinedTypes =

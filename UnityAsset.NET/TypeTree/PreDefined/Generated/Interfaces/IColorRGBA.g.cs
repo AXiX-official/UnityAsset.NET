@@ -8,14 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IColorRGBA : IPreDefinedInterface
     {
-        public uint? rgba
-        {
-            get
-            {
-                return null;
-            }
-        }
-
         public float? r
         {
             get
@@ -41,6 +33,14 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         }
 
         public float? a
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? rgba
         {
             get
             {
