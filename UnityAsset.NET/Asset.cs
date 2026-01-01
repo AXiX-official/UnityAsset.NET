@@ -12,6 +12,8 @@ public class Asset
     private IUnityAsset? _value;
     private string _name = string.Empty;
     private readonly object _lock = new();
+    private readonly bool _isNamedAsset;
+    private readonly int _nameFieldIndex;
 
     public IUnityAsset Value
     {
@@ -23,7 +25,7 @@ public class Asset
                 {
                     RawData.Seek(0);
                     _value = UnityObjectFactory.Create(Info.Type, RawData);
-                    if (TypeTreeHelper.Compiler.Helper.IsNamedAsset(TypeTreeCache.Map[Info.Type.TypeHash]))
+                    if (_isNamedAsset)
                     {
                         _name = ((INamedAsset)_value).m_Name;
                     }
@@ -41,12 +43,14 @@ public class Asset
         {
             lock (_lock)
             {
-                var nodes = Info.Type.Nodes;
-                if (TypeTreeHelper.Compiler.Helper.IsNamedAsset(TypeTreeCache.Map[Info.Type.TypeHash]) && string.IsNullOrEmpty(_name))
+                if (_isNamedAsset && string.IsNullOrEmpty(_name))
                 {
-                    RawData.Seek(0);
-                    _name = RawData.ReadSizedString();
-                    RawData.Seek(0);
+                    if (_nameFieldIndex == 1)
+                    {
+                        RawData.Seek(0);
+                        _name = RawData.ReadSizedString();
+                        RawData.Seek(0);
+                    }
                 }
                 return _name;
             }
@@ -57,6 +61,8 @@ public class Asset
     {
         Info = info;
         RawData = reader; 
+        _isNamedAsset = info.Type.Nodes.Any(n => n is {Name: "m_Name", Type: "string", Level: 1} );
+        _nameFieldIndex = _isNamedAsset ? info.Type.Nodes.FindIndex(n => n.Name == "m_Name") : -1;
     }
 
     public void Release()
