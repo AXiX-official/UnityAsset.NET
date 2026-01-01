@@ -2,6 +2,7 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
+using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
@@ -10,9 +11,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public string name { get; }
         public int type { get; }
-        public int offset { get; }
-        public int arraySize { get; }
-        public int rowCount { get; }
-        public int colCount { get; }
+        public OneOf<int, uint> offset { get; }
+        public OneOf<int, uint> arraySize { get; }
+        public OneOf<int, uint> rowCount { get; }
+        public OneOf<int, uint> colCount { get; }
     }
 }

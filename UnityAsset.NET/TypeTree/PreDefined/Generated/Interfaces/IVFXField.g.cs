@@ -2,12 +2,13 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
+using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVFXField : IPreDefinedInterface
     {
-        public IUnityType m_Array { get; }
+        public OneOf<List<IVFXEntryExpressionValue>, List<IVFXEntryExposed>> m_Array { get; }
     }
 }

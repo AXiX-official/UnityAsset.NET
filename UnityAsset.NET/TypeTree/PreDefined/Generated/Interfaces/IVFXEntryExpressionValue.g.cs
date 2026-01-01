@@ -2,6 +2,7 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
+using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
@@ -9,6 +10,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IVFXEntryExpressionValue : IPreDefinedInterface
     {
         public uint m_ExpressionIndex { get; }
-        public IUnityType m_Value { get; }
+        public object m_Value { get; }
     }
 }

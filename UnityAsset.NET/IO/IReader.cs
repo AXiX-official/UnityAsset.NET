@@ -37,6 +37,7 @@ public interface IReader : ISeek, IFile
     public Boolean ReadBoolean() => ReadByte() != 0;
     public sbyte ReadInt8() => (sbyte)ReadByte();
     public byte ReadUInt8() => ReadByte();
+    public char ReadChar() => BitConverter.ToChar(ReadBytes(2), 0);
     public Int16 ReadInt16()
     {
         return Endian == Endianness.BigEndian 

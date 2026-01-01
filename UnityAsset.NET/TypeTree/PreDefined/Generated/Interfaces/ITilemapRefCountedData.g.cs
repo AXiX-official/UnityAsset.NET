@@ -2,6 +2,7 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
+using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
@@ -9,6 +10,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ITilemapRefCountedData : IPreDefinedInterface
     {
         public int m_RefCount { get; }
-        public IUnityType m_Data { get; }
+        public OneOf<PPtr<UnityObject>, PPtr<ISprite>, IMatrix4x4f, IColorRGBA, PPtr<IGameObject>> m_Data { get; }
     }
 }

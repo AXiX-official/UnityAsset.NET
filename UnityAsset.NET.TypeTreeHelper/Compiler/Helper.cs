@@ -173,24 +173,6 @@ public static class Helper
         //"NamedObject"
     ];
     
-    public static Dictionary<string, int> PrimitiveNumericRankings = new()
-    {
-        { "bool", 0 },
-        { "byte", 1 },
-        { "sbyte", 1 },
-        { "char", 1 },
-        { "short", 2 },
-        { "ushort", 2 },
-        { "int", 3 },
-        { "uint", 3 },
-        { "long", 4 },
-        { "ulong", 4 },
-        { "float", 5 },
-        { "double", 6 }
-    };
-    
-    public static List<string> PrimitiveNumericMap = ["bool", "byte", "short", "int", "long", "float", "double"];
-    
     public static string GetGenericPPtrInterfaceName(string typeName)
     {
         if (typeName.StartsWith('$'))

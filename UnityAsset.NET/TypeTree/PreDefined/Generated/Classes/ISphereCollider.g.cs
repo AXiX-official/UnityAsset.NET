@@ -2,6 +2,7 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
+using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
@@ -9,7 +10,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ISphereCollider : IUnityAsset
     {
         public PPtr<IGameObject> m_GameObject { get; }
-        public IUnityType m_Material { get; }
+        public OneOf<PPtr<IPhysicMaterial>, PPtr<IPhysicsMaterial>> m_Material { get; }
         public bool m_IsTrigger { get; }
         public bool m_Enabled { get; }
         public float m_Radius { get; }

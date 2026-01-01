@@ -2,6 +2,7 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
+using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
@@ -10,7 +11,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public PPtr<ITransform> m_TransformParent { get; }
         public List<IPropertyModification> m_Modifications { get; }
-        public IUnityType m_RemovedComponents { get; }
+        public OneOf<List<PPtr<UnityObject>>, List<PPtr<IComponent>>> m_RemovedComponents { get; }
 
         public List<IAddedGameObject>? m_AddedGameObjects
         {

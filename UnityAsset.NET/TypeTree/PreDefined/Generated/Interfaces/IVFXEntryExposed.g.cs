@@ -2,13 +2,14 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
+using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVFXEntryExposed : IPreDefinedInterface
     {
-        public IUnityType m_Value { get; }
+        public object m_Value { get; }
         public bool m_Overridden { get; }
     }
 }

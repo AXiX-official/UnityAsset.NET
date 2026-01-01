@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using UnityAsset.NET.TypeTreeHelper.Compiler.IR;
@@ -95,7 +96,7 @@ public class RoslynTypeBuilder
 
         foreach (var fieldInfo in typeInfo.Fields)
         {
-            statements.AddRange(CreateAssetNodeCreationStatement(fieldInfo.Name, fieldInfo.TypeInfo, "rootAssetNode"));
+            statements.AddRange(CreateAssetNodeCreationStatement(fieldInfo.Name, fieldInfo.TypeInfo, "rootAssetNode", fieldInfo.IsNullable, fieldInfo.DeclaredTypeSyntax));
         }
 
         statements.Add(SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("rootAssetNode")));
@@ -111,7 +112,7 @@ public class RoslynTypeBuilder
         return methodDeclaration;
     }
 
-    private IEnumerable<StatementSyntax> CreateAssetNodeCreationStatement(string fieldName, IUnityTypeInfo typeInfo, string parentNode)
+    private IEnumerable<StatementSyntax> CreateAssetNodeCreationStatement(string fieldName, IUnityTypeInfo typeInfo, string parentNode, bool isNullable = false, TypeSyntax? declaredTypeSyntax = null)
     {
         var statements = new List<StatementSyntax>();
         var node = typeInfo.TypeTreeNode;
@@ -121,6 +122,21 @@ public class RoslynTypeBuilder
         {
             case PrimitiveTypeInfo p:
                 // parentNode.Children.Add(new AssetNode { Name = "...", TypeName = "...", Value = this.FieldName });
+                bool isObject = declaredTypeSyntax is IdentifierNameSyntax { Identifier.Text: "Object" };
+                
+                ExpressionSyntax pValueAccess = isObject
+                    ? SyntaxFactory.ParenthesizedExpression(
+                        SyntaxFactory.CastExpression(
+                            typeInfo switch
+                            {
+                                PrimitiveTypeInfo pr => pr.ToTypeSyntax(),
+                                _ => throw new Exception("Unreachable")
+                            },
+                            SyntaxFactory.IdentifierName(fieldName)
+                        )
+                    )
+                    : SyntaxFactory.IdentifierName(fieldName);
+                
                 statements.Add(
                     SyntaxFactory.ExpressionStatement(
                         SyntaxFactory.InvocationExpression(
@@ -134,7 +150,7 @@ public class RoslynTypeBuilder
                                         .AddExpressions(
                                             SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, SyntaxFactory.IdentifierName("Name"), SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(node.Name))),
                                             SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, SyntaxFactory.IdentifierName("TypeName"), SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(node.TypeName))),
-                                            SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, SyntaxFactory.IdentifierName("Value"), valueAccess)
+                                            SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, SyntaxFactory.IdentifierName("Value"), pValueAccess)
                                         )
                                     )
                             )
@@ -145,6 +161,33 @@ public class RoslynTypeBuilder
 
             case VectorTypeInfo v:
                 var vectorNodeName = $"{fieldName}VectorNode";
+
+                bool isOneOf = declaredTypeSyntax is GenericNameSyntax { Identifier.Text: "OneOf" };
+                
+                ExpressionSyntax vectorTargetExpression = isOneOf
+                    ? SyntaxFactory.ParenthesizedExpression(
+                        SyntaxFactory.CastExpression(
+                            SyntaxFactory.GenericName("List")
+                                .AddTypeArgumentListArguments(v.ElementType switch
+                                {
+                                    PrimitiveTypeInfo p => p.ToTypeSyntax(),
+                                    VectorTypeInfo ve => ve.ToTypeSyntax(),
+                                    MapTypeInfo m => m.ToTypeSyntax(),
+                                    PairTypeInfo pa => pa.ToTypeSyntax(),
+                                    ClassTypeInfo c => SyntaxFactory.ParseTypeName(c.InterfaceName),
+                                    PredefinedTypeInfo pd => pd.PredefinedTypeSyntax,
+                                    GenericPPtrTypeInfo gp => gp.ToTypeSyntax(),
+                                    _ => throw new Exception("Unreachable")
+                                }),
+                            SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                SyntaxFactory.IdentifierName(fieldName),
+                                SyntaxFactory.IdentifierName("Value")
+                            )
+                        )
+                    )
+                    : SyntaxFactory.IdentifierName(fieldName);
+                
                 statements.Add(
                     SyntaxFactory.LocalDeclarationStatement(
                         SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("var"))
@@ -164,7 +207,7 @@ public class RoslynTypeBuilder
                 );
 
                 // foreach (var item in this.FieldName) { ... }
-                var foreachStatement = SyntaxFactory.ForEachStatement(SyntaxFactory.IdentifierName("var"), $"item{valueAccess}", valueAccess,
+                var foreachStatement = SyntaxFactory.ForEachStatement(SyntaxFactory.IdentifierName("var"), $"item{valueAccess}", vectorTargetExpression,
                     SyntaxFactory.Block(CreateAssetNodeCreationStatement($"item{valueAccess}", v.ElementType, vectorNodeName))
                 );
                 statements.Add(foreachStatement);
@@ -257,28 +300,76 @@ public class RoslynTypeBuilder
                 );
                 break;
 
-            case ClassTypeInfo c:
-            case PredefinedTypeInfo pd:
-            case GenericPPtrTypeInfo g:
+            case ClassTypeInfo:
+            case PredefinedTypeInfo:
+            case GenericPPtrTypeInfo:
                 var childNodeName = $"childNode_{fieldName.Replace('.', '_')}";
                 // var childNode = this.FieldName?.ToAssetNode("FieldName");
+
+                bool needValueAccess = declaredTypeSyntax is GenericNameSyntax { Identifier.Text: "OneOf" };
+                bool needCast =
+                    needValueAccess
+                    || declaredTypeSyntax is IdentifierNameSyntax { Identifier.Text: "Object" };
+                
+                ExpressionSyntax targetExpression = needCast
+                    ? SyntaxFactory.ParenthesizedExpression(
+                        SyntaxFactory.CastExpression(
+                            typeInfo switch
+                            {
+                                ClassTypeInfo c => SyntaxFactory.ParseTypeName(c.InterfaceName),
+                                PredefinedTypeInfo pd => pd.PredefinedTypeSyntax,
+                                GenericPPtrTypeInfo gp => gp.ToTypeSyntax(),
+                                _ => throw new Exception("Unreachable")
+                            },
+                            needValueAccess
+                            ? SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.IdentifierName(fieldName),
+                                    SyntaxFactory.IdentifierName("Value")
+                                )
+                            : SyntaxFactory.IdentifierName(fieldName)
+                        )
+                    )
+                    : SyntaxFactory.IdentifierName(fieldName);
+                
+                ExpressionSyntax invocation = isNullable
+                    ? SyntaxFactory.ConditionalAccessExpression(
+                        targetExpression,
+                        SyntaxFactory.InvocationExpression(
+                            SyntaxFactory.MemberBindingExpression(
+                                SyntaxFactory.IdentifierName("ToAssetNode")
+                            )
+                        ).AddArgumentListArguments(
+                            SyntaxFactory.Argument(
+                                SyntaxFactory.LiteralExpression(
+                                    SyntaxKind.StringLiteralExpression,
+                                    SyntaxFactory.Literal(fieldName)
+                                )
+                            )
+                        )
+                    )
+                    : SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            targetExpression,
+                            SyntaxFactory.IdentifierName("ToAssetNode")
+                        )
+                    ).AddArgumentListArguments(
+                        SyntaxFactory.Argument(
+                            SyntaxFactory.LiteralExpression(
+                                SyntaxKind.StringLiteralExpression,
+                                SyntaxFactory.Literal(fieldName)
+                            )
+                        )
+                    );
+                
                 statements.Add(
                     SyntaxFactory.LocalDeclarationStatement(
                         SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("var"))
                             .AddVariables(
                                 SyntaxFactory.VariableDeclarator(childNodeName)
                                     .WithInitializer(SyntaxFactory.EqualsValueClause(
-                                        SyntaxFactory.ConditionalAccessExpression(
-                                            valueAccess,
-                                            SyntaxFactory.InvocationExpression(
-                                                    SyntaxFactory.MemberBindingExpression(
-                                                        SyntaxFactory.IdentifierName("ToAssetNode")))
-                                                .AddArgumentListArguments(
-                                                    SyntaxFactory.Argument(
-                                                        SyntaxFactory.LiteralExpression(
-                                                            SyntaxKind.StringLiteralExpression,
-                                                            SyntaxFactory.Literal(fieldName))))
-                                        )
+                                        invocation
                                     ))
                             )
                     )

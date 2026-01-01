@@ -41,7 +41,7 @@ public class SemanticModelBuilder
         return type;
     }
     
-    public ClassTypeInfo? Build(TypeTreeNode current)
+    public ClassTypeInfo? Build(TypeTreeNode current, bool isRootClass = false)
     {
         if (Helper.IsPreDefinedType(current))
             return null;
@@ -94,7 +94,7 @@ public class SemanticModelBuilder
         
         
         //var interfaceName = type?.Name ?? (Helper.IsNamedAsset(current) ? "INamedAsset" : current == nodes[0] ? "IAsset" : "IUnityType");
-        var interfaceName = "IUnityType";
+        var interfaceName = isRootClass ? "IUnityAsset" : "IUnityType";
 
         if (type != null)
         {

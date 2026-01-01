@@ -39,7 +39,22 @@ public static class AssemblyManager
 
     static AssemblyManager()
     {
-        var referencedAssemblies = Assembly.GetExecutingAssembly().GetReferencedAssemblies();
+        var references = new List<MetadataReference>();
+
+        var tpa = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
+            .Split(Path.PathSeparator);
+
+        foreach (var path in tpa)
+        {
+            references.Add(MetadataReference.CreateFromFile(path));
+        }
+
+        references.Add(MetadataReference.CreateFromFile(
+            Assembly.GetExecutingAssembly().Location));
+
+        References = references;
+        
+        /*var referencedAssemblies = Assembly.GetExecutingAssembly().GetReferencedAssemblies();
         var references = new List<MetadataReference>
         {
             MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
@@ -51,7 +66,7 @@ public static class AssemblyManager
             var assembly = Assembly.Load(assemblyName);
             references.Add(MetadataReference.CreateFromFile(assembly.Location));
         }
-        References = references;
+        References = references;*/
         
         var thisAssembly = Assembly.GetExecutingAssembly();
         

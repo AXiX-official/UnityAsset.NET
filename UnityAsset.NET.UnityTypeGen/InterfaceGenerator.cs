@@ -181,6 +181,7 @@ public class InterfaceGenerator
     private CompilationUnitSyntax GenerateClassInterface(string className, List<TpkUnityTreeNode> rootNodes, bool isRootClass)
     {
         var usingDirectives = SyntaxFactory.List([
+            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("OneOf")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree.PreDefined.Types"))
         ]);
         
@@ -203,7 +204,7 @@ public class InterfaceGenerator
         
         var members = new List<MemberDeclarationSyntax>();
 
-        var properties = new Dictionary<string , (string PropInterface, int Count)>();
+        var properties = new Dictionary<string , List<string>>();
 
         foreach (var rootNode in rootNodes)
         {
@@ -217,23 +218,21 @@ public class InterfaceGenerator
                     ? Helper.GetCSharpPrimitiveType(subNode.TypeName) 
                     : GetInterfaceName(subNode, out var genericTypeName);
 
-                if (!properties.ContainsKey(name))
+                if (properties.TryGetValue(name, out var prop))
                 {
-                    properties[name] = (interfaceName, 1);
+                    prop.Add(interfaceName);
                 }
                 else
                 {
-                    var property = properties[name];
-                    property.Count += 1;
-                    property.PropInterface = GetOptionalType(property.PropInterface, interfaceName);
-                    properties[name] = property;
+                    properties[name] = [interfaceName];
                 }
             }
         }
 
-        foreach (var (propertyName, (baseTypeName, count)) in properties)
+        foreach (var (propertyName, proptypes) in properties)
         {
-            bool isNullable = count != rootNodes.Count;
+            bool isNullable = proptypes.Count != rootNodes.Count;
+            var baseTypeName = GetOptionalType(proptypes);
             var typeName = isNullable ? $"{baseTypeName}?" : baseTypeName;
             var declaredType = SyntaxFactory.ParseTypeName(typeName);
             
@@ -280,19 +279,29 @@ public class InterfaceGenerator
             .WithLeadingTrivia(leadingTrivia);
     }
 
-    private static string GetOptionalType(string firstType, string secondType)
+    private static string GetOptionalType(List<string> types)
     {
-        if (firstType == secondType)
-            return firstType;
+        var uniqueTypes = types.Distinct().ToList();
         
-        if (!Helper.IsCSharpPrimitive(firstType) || !Helper.IsCSharpPrimitive(secondType))
-            return "IUnityType";
+        if (uniqueTypes.Count == 1)
+            return types.First();
         
-        if (firstType == "string" || secondType == "string")
-            return "IUnityType";
+        string MultiTypesToOne(List<string> typeList)
+        {
+            if (typeList.All(t => t.StartsWith("List")))
+                return $"List<{MultiTypesToOne(typeList.Select(t => t.Substring(5, t.Length - 6)).ToList())}>";
+            if (typeList.All(t => !Helper.IsCSharpPrimitive(t)))
+                return "IUnityType";
+            return "object";
+        }
+
+        if (uniqueTypes.Count > 8)
+        {
+            // OneOf supports up to 8 types
+            return MultiTypesToOne(uniqueTypes);
+        }
         
-        var rank = Math.Max(Helper.PrimitiveNumericRankings[firstType], Helper.PrimitiveNumericRankings[secondType]);
-        return Helper.PrimitiveNumericMap[rank];
+        return $"OneOf<{string.Join(", ", uniqueTypes)}>";
     }
 
     private string GetInterfaceName(TpkUnityTreeNode node, out string genericTypeName)

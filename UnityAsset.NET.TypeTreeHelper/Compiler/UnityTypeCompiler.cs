@@ -19,6 +19,7 @@ public class UnityTypeCompiler
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Text")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
+            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("OneOf")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.IO")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree.PreDefined")),
@@ -34,7 +35,7 @@ public class UnityTypeCompiler
         {
             if (rootNode.TypeName == "MonoBehaviour")
                 continue;
-            _semanticModelBuilder.Build(rootNode);
+            _semanticModelBuilder.Build(rootNode, true);
         }
 
         _builder.Build(_semanticModelBuilder.DiscoveredTypes.Values);

@@ -2,6 +2,7 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
+using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
@@ -32,7 +33,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public ushort atime5 { get; }
         public ushort atime6 { get; }
         public ushort atime7 { get; }
-        public int m_Mode { get; }
+        public OneOf<int, byte> m_Mode { get; }
         public byte m_NumColorKeys { get; }
         public byte m_NumAlphaKeys { get; }
 
