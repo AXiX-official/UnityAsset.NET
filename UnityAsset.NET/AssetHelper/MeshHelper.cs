@@ -179,9 +179,16 @@ public static class MeshHelper
         }
         return result.ToList();
     }
+
+    public class ProcessedSubMesh
+    {
+        public List<ushort> m_Indices = [];
+        public int m_IndexCount = 0;
+    }
     
     public class ProcessedMesh
     {
+        public int m_VertexCount = 0;
         public List<float> m_Vertices = [];
         public List<float> m_Normals = [];
         public List<float> m_Tangents = [];
@@ -196,10 +203,10 @@ public static class MeshHelper
         public List<float> m_UV7 = [];
         public List<IBoneWeights4> m_Skin = [];
         
-        public List<ushort> m_Indices = [];
+        public List<ProcessedSubMesh> m_SubMeshes = [];
     }
     
-    public static ProcessedMesh GetProcessedMesh(AssetManager assetManager, IMesh mesh, Endianness endianness, int maxChannel = -1)
+    public static ProcessedMesh GetProcessedMesh(AssetManager assetManager, IMesh mesh, Endianness endianness)
     {
         var version = assetManager.Version!;
         
@@ -208,11 +215,9 @@ public static class MeshHelper
         var vertexData = mesh.m_VertexData;
         var streams = vertexData.GetStreams(version!);
         var vertexCount = vertexData.m_VertexCount;
-
-        var channelCount = vertexData.m_Channels.Count;
-        if (maxChannel >= 0 && maxChannel < channelCount)
-            channelCount = maxChannel + 1;
-        for (var chn = 0; chn < channelCount; chn++)
+        processedMesh.m_VertexCount = (int)vertexCount;
+        
+        for (var chn = 0; chn < vertexData.m_Channels.Count; chn++)
         {
             var channel = vertexData.m_Channels[chn];
             
@@ -356,15 +361,8 @@ public static class MeshHelper
                     case 4: //kShaderChannelTexCoord1
                         processedMesh.m_UV1 = componentsFloatArray;
                         break;
-                    case 5:
-                        if (version.Major >= 5) //kShaderChannelTexCoord2
-                        {
-                            processedMesh.m_UV2 = componentsFloatArray;
-                        }
-                        else //kShaderChannelTangent
-                        {
-                            processedMesh.m_Tangents = componentsFloatArray;
-                        }
+                    case 5: //kShaderChannelTexCoord2
+                        processedMesh.m_UV2 = componentsFloatArray;
                         break;
                     case 6: //kShaderChannelTexCoord3
                         processedMesh.m_UV3 = componentsFloatArray;
@@ -402,16 +400,17 @@ public static class MeshHelper
                 .ToArray()
             : throw new Exception("Failed to extract mesh data: uint32 indices are not supported.");
 
-        var indices = processedMesh.m_Indices;
-
         foreach (var m_SubMesh in mesh.m_SubMeshes)
         {
+            var subMesh = new ProcessedSubMesh();
+            var indices = subMesh.m_Indices;
             var firstIndex = (int)(m_SubMesh.firstByte / 2);
             if (!m_Use16BitIndices)
             {
                 firstIndex /= 2;
             }
             var indexCount = m_SubMesh.indexCount;
+            subMesh.m_IndexCount = (int)indexCount;
             var topology = m_SubMesh.topology;
             if (topology == (int)GfxPrimitiveType.Triangles)
             {
@@ -441,8 +440,73 @@ public static class MeshHelper
             {
                 throw new NotSupportedException("Failed getting triangles. Submesh topology is lines or points.");
             }
+            
+            processedMesh.m_SubMeshes.Add(subMesh);
         }
         
         return processedMesh;
+    }
+
+    public static void ExportToObj(ProcessedMesh mesh, string dir, string name)
+    {
+        if (mesh.m_Vertices.Count == 0 || mesh.m_SubMeshes.Count == 0)
+            throw new Exception("Mesh is missing required data.");
+        var objPath = Path.Combine(dir, name + ".obj");
+        using var writer = new StreamWriter(objPath);
+        writer.WriteLine($"g {name}");
+        var vertices = mesh.m_Vertices;
+        var step = vertices.Count == mesh.m_VertexCount * 3 ? 3 : 4;
+        for (int i = 0; i < vertices.Count; i += step)
+        {
+            writer.WriteLine($"v {-vertices[i]} {vertices[i + 1]} {vertices[i + 2]}");
+        }
+        var uv0 = mesh.m_UV0;
+        step = uv0.Count == mesh.m_VertexCount * 2 
+            ? 2 
+            : uv0.Count == mesh.m_VertexCount * 3 
+                ? 3 
+                : 4;
+        if (uv0.Count > 0)
+        {
+            for (int i = 0; i < uv0.Count; i += step)
+            {
+                writer.WriteLine($"vt {uv0[i]} {uv0[i + 1]}");
+            }
+        }
+        var normals = mesh.m_Normals;
+        step = normals.Count == mesh.m_VertexCount * 3 ? 3 : 4;
+        if (normals.Count > 0)
+        {
+            for (int i = 0; i < normals.Count; i += step)
+            {
+                writer.WriteLine($"vn {-normals[i]} {normals[i + 1]} {normals[i + 2]}");
+            }
+        }
+        int subMeshIndex = 0;
+        foreach (var subMesh in mesh.m_SubMeshes)
+        {
+            writer.WriteLine($"g {name}_{subMeshIndex}");
+            var indices = subMesh.m_Indices;
+            for (int i = 0; i < indices.Count; i += 3)
+            {
+                int v1 = indices[i + 2] + 1;
+                int v2 = indices[i + 1] + 1;
+                int v3 = indices[i + 0] + 1;
+        
+                // f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
+                if (uv0.Count > 0 && normals.Count > 0)
+                {
+                    writer.WriteLine($"f {v1}/{v1}/{v1} {v2}/{v2}/{v2} {v3}/{v3}/{v3}");
+                }
+                else if (normals.Count > 0)
+                {
+                    writer.WriteLine($"f {v1}//{v1} {v2}//{v2} {v3}//{v3}");
+                }
+                else
+                {
+                    writer.WriteLine($"f {v1} {v2} {v3}");
+                }
+            }
+        }
     }
 }
