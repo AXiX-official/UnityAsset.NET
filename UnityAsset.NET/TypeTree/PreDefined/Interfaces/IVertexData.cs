@@ -1,4 +1,6 @@
-﻿using UnityAsset.NET.Files;
+﻿using System.Diagnostics;
+using UnityAsset.NET.AssetHelper;
+using UnityAsset.NET.Files;
 using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces;
@@ -7,20 +9,21 @@ public partial interface IVertexData
 {
     public List<StreamInfo> GetStreams(UnityRevision version)
     {
-        var streamCount = m_Channels!.Max(x => x.stream) + 1;
+        var streamCount = m_Channels.Max(x => x.stream) + 1;
         var streams = new List<StreamInfo>();
         uint offset = 0;
         for (int s = 0; s < streamCount; s++)
         {
             uint chnMask = 0;
             uint stride = 0;
-            for (int chn = 0; chn < m_Channels!.Count; chn++)
+            Debug.Assert(m_Channels.Count <= 32);
+            for (int chn = 0; chn < m_Channels.Count; chn++)
             {
-                var m_Channel = m_Channels![chn];
+                var m_Channel = m_Channels[chn];
                 if (m_Channel.stream == s && m_Channel.dimension > 0)
                 {
                     chnMask |= 1u << chn;
-                    stride += m_Channel.dimension! * MeshHelper.GetFormatSize(MeshHelper.ToVertexFormat(m_Channel.format!, version));
+                    stride += m_Channel.dimension * MeshHelper.GetFormatSize(MeshHelper.ToVertexFormat(m_Channel.format, version));
                 }
             }
             streams.Add(new StreamInfo
@@ -31,8 +34,8 @@ public partial interface IVertexData
                 dividerOp = 0,
                 frequency = 0
             });
-            offset += m_VertexCount! * stride;
-            offset = (offset + (16u - 1u)) & ~(16u - 1u);
+            offset += m_VertexCount * stride;
+            offset = (offset + (16u - 1u)) & ~(16u - 1u); // align to 16 bytes  
         }
 
         return streams;
