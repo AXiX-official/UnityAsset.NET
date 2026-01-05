@@ -193,12 +193,10 @@ public class InterfaceGenerator
             rootNode.SubNodes.Any(sb => sb.Name == "m_Name")
         );
         
-        // TODO: more specific base interfaces
         var interfaceDeclaration = SyntaxFactory.InterfaceDeclaration($"I{className}")
             .AddModifiers(
                 SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                 SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-            //.AddTypeParameterListParameters(SyntaxFactory.TypeParameter("T"))
             .AddBaseListTypes(SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(
                 isRootClass ? (isNamedAsset ? "INamedAsset" : "IUnityAsset") : "IPreDefinedInterface")));
         
@@ -324,7 +322,7 @@ public class InterfaceGenerator
         if (node.TypeName == "pair")
             return $"ValueTuple<{GetInterfaceName(node.SubNodes[0], out _)}, {GetInterfaceName(node.SubNodes[1], out _)}>";
 
-        if (node.TypeName == "vector" || node.TypeName == "staticvector" || node.TypeName == "map")
+        if (node.TypeName == "vector" || node.TypeName == "staticvector" || node.TypeName == "set" || node.TypeName == "map")
             return GetInterfaceName(node.SubNodes[0], out _);
         
         if (node.TypeName == "Array")

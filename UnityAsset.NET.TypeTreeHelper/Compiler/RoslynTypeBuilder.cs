@@ -207,8 +207,9 @@ public class RoslynTypeBuilder
                 );
 
                 // foreach (var item in this.FieldName) { ... }
-                var foreachStatement = SyntaxFactory.ForEachStatement(SyntaxFactory.IdentifierName("var"), $"item{valueAccess}", vectorTargetExpression,
-                    SyntaxFactory.Block(CreateAssetNodeCreationStatement($"item{valueAccess}", v.ElementType, vectorNodeName))
+                var itemIdentifier = Helper.SanitizeName($"item{valueAccess}");
+                var foreachStatement = SyntaxFactory.ForEachStatement(SyntaxFactory.IdentifierName("var"), itemIdentifier, vectorTargetExpression,
+                    SyntaxFactory.Block(CreateAssetNodeCreationStatement(itemIdentifier, v.ElementType, vectorNodeName))
                 );
                 statements.Add(foreachStatement);
                 
@@ -343,7 +344,7 @@ public class RoslynTypeBuilder
                             SyntaxFactory.Argument(
                                 SyntaxFactory.LiteralExpression(
                                     SyntaxKind.StringLiteralExpression,
-                                    SyntaxFactory.Literal(fieldName)
+                                    SyntaxFactory.Literal(node.Name)
                                 )
                             )
                         )
@@ -358,7 +359,7 @@ public class RoslynTypeBuilder
                         SyntaxFactory.Argument(
                             SyntaxFactory.LiteralExpression(
                                 SyntaxKind.StringLiteralExpression,
-                                SyntaxFactory.Literal(fieldName)
+                                SyntaxFactory.Literal(node.Name)
                             )
                         )
                     );
@@ -501,11 +502,10 @@ public class RoslynTypeBuilder
 
         foreach (var fieldInfo in fieldInfos)
         {
-            var fieldName = Helper.SanitizeName(fieldInfo.Name);
             assignments.Add(SyntaxFactory.ExpressionStatement(
                 SyntaxFactory.AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.IdentifierName(fieldName),
+                    SyntaxFactory.IdentifierName(fieldInfo.Name),
                         CreateReaderExpression(fieldInfo.TypeInfo, expectedType: fieldInfo.DeclaredTypeSyntax)
                 )
             ));

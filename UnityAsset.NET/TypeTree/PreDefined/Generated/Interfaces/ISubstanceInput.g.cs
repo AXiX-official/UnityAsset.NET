@@ -23,7 +23,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float maximum { get; }
         public float step { get; }
         public uint flags { get; }
-        public Iset alteredTexturesUID { get; }
+        public List<uint> alteredTexturesUID { get; }
         public List<ISubstanceEnumItem> enumValues { get; }
     }
 }

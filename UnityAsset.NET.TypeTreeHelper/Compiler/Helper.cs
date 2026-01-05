@@ -11,6 +11,7 @@ public static class Helper
     [
         "vector",
         "staticvector",
+        "set",
         "map",
         "Array",
         "pair",
@@ -178,7 +179,7 @@ public static class Helper
         if (node.TypeName == "pair")
             return $"ValueTuple<{GetInterfaceName(node.SubNodes[0])}, {GetInterfaceName(node.SubNodes[1])}>";
 
-        if (node.TypeName == "vector" || node.TypeName == "staticvector" || node.TypeName == "map")
+        if (node.TypeName == "vector" || node.TypeName == "staticvector" || node.TypeName == "set" || node.TypeName == "map")
             return GetInterfaceName(node.SubNodes[0]);
     
         if (node.TypeName == "Array")
@@ -296,7 +297,7 @@ public static class Helper
 
     public static bool IsVector(TypeTreeNode current)
     {
-        if (current.TypeName == "vector" || current.TypeName == "staticvector") return true;
+        if (current.TypeName == "vector" || current.TypeName == "staticvector" || current.TypeName == "set") return true;
         if (current.SubNodes.Length == 0) return false;
         if (current.SubNodes[0].TypeName == "Array") return true;
         return false;

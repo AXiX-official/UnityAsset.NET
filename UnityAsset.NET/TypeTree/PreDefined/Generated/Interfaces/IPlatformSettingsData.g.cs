@@ -9,14 +9,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IPlatformSettingsData : IPreDefinedInterface
     {
-        public bool? enabled
-        {
-            get
-            {
-                return null;
-            }
-        }
-
         public List<ValueTuple<string, string>> settings { get; }
     }
 }

@@ -7,8 +7,10 @@ using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IOutput : IPreDefinedInterface
+    public partial interface IVFXShaderSourceDesc : IPreDefinedInterface
     {
-        public bool hasEmptyFontData { get; }
+        public bool compute { get; }
+        public string name { get; }
+        public string source { get; }
     }
 }
