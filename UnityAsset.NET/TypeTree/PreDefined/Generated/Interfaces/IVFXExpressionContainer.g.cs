@@ -10,14 +10,63 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IVFXExpressionContainer : IPreDefinedInterface
     {
         public List<IExpression> m_Expressions { get; }
-        public uint m_MaxCommonExpressionsIndex { get; }
-        public uint m_ConstantBakeCurveCount { get; }
-        public uint m_ConstantBakeGradientCount { get; }
-        public uint m_DynamicBakeCurveCount { get; }
-        public uint m_DynamicBakeGradientCount { get; }
         public bool m_NeedsLocalToWorld { get; }
         public bool m_NeedsWorldToLocal { get; }
-        public bool m_NeedsMainCamera { get; }
-        public int m_NeededMainCameraBuffers { get; }
+
+        public int? m_NeededMainCameraBuffers
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? m_MaxCommonExpressionsIndex
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_NeedsMainCamera
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? m_ConstantBakeCurveCount
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? m_ConstantBakeGradientCount
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? m_DynamicBakeCurveCount
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? m_DynamicBakeGradientCount
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

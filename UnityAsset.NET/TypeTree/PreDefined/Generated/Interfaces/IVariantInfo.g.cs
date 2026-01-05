@@ -49,14 +49,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public long? shaderAssetLocalIdentifierInFile
-        {
-            get
-            {
-                return null;
-            }
-        }
-
         public string? keywordNames
         {
             get
@@ -82,6 +74,14 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         }
 
         public Iset? graphicsStateInfoSet
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public long? shaderAssetLocalIdentifierInFile
         {
             get
             {

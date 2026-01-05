@@ -11,10 +11,55 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public uint m_TileIndex { get; }
         public uint m_TileSpriteIndex { get; }
-        public ushort m_TileMatrixIndex { get; }
-        public ushort m_TileColorIndex { get; }
-        public ushort m_TileObjectToInstantiateIndex { get; }
-        public ushort dummyAlignment { get; }
-        public uint m_AllTileFlags { get; }
+        public OneOf<uint, ushort> m_TileMatrixIndex { get; }
+        public OneOf<uint, ushort> m_TileColorIndex { get; }
+
+        public PPtr<IGameObject>? m_ObjectToInstantiate
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public OneOf<uint, int>? m_TileFlags
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_ColliderType
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public ushort? m_TileObjectToInstantiateIndex
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? m_AllTileFlags
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public ushort? dummyAlignment
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

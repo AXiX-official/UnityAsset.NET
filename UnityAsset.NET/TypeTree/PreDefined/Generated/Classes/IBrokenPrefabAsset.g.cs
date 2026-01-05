@@ -14,5 +14,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public bool m_IsVariant { get; }
         public bool m_IsPrefabFileValid { get; }
         public PPtr<IBrokenPrefabAsset> m_BrokenParentPrefab { get; }
+
+        public int? m_ErrorCode
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

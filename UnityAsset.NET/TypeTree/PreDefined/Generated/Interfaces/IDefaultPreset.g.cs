@@ -10,7 +10,21 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IDefaultPreset : IPreDefinedInterface
     {
         public PPtr<IPreset> m_Preset { get; }
-        public string m_Filter { get; }
-        public bool m_Disabled { get; }
+
+        public string? m_Filter
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_Disabled
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

@@ -14,6 +14,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public bool allowAlphaSplitting { get; }
         public bool enableRotation { get; }
         public bool enableTightPacking { get; }
-        public bool enableAlphaDilation { get; }
+
+        public bool? enableAlphaDilation
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

@@ -16,6 +16,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float forceLimit { get; }
         public float target { get; }
         public float targetVelocity { get; }
-        public int driveType { get; }
+
+        public int? driveType
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

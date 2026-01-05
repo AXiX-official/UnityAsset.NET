@@ -21,11 +21,11 @@ class Program
             // versions are sorted 
             for (int i = 0; i < info.Classes.Count; i++)
             {
-                var (version, @class) = info.Classes[i];
+                var (_, @class) = info.Classes[i];
                 if (!isSupportedVersion && i < info.Classes.Count - 1)
                 {
                     var (nextVersion, _) = info.Classes[i + 1];
-                    if (minimalVersion >= version && minimalVersion < nextVersion)
+                    if (minimalVersion < nextVersion)
                     {
                         isSupportedVersion = true;
                     }

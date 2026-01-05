@@ -11,5 +11,45 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public int motionVectorGenerationMode { get; }
         public int shadowCastingMode { get; }
+
+        public bool? receiveShadows
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? reflectionProbeUsage
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? lightProbeUsage
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? transparencyPriority
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? rayTracingMode
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

@@ -16,7 +16,15 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public Quaternionf m_ParentAnchorRotation { get; }
         public Vector3f m_AnchorPosition { get; }
         public Quaternionf m_AnchorRotation { get; }
-        public bool m_MatchAnchors { get; }
+
+        public bool? m_ComputeParentAnchor
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public int m_ArticulationJointType { get; }
         public int m_LinearX { get; }
         public int m_LinearY { get; }
@@ -30,15 +38,86 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float m_LinearDamping { get; }
         public float m_AngularDamping { get; }
         public float m_JointFriction { get; }
-        public Vector3f m_CenterOfMass { get; }
-        public Vector3f m_InertiaTensor { get; }
-        public Quaternionf m_InertiaRotation { get; }
-        public IBitField m_IncludeLayers { get; }
-        public IBitField m_ExcludeLayers { get; }
-        public bool m_ImplicitCom { get; }
-        public bool m_ImplicitTensor { get; }
         public bool m_Immovable { get; }
-        public bool m_UseGravity { get; }
-        public int m_CollisionDetectionMode { get; }
+
+        public bool? m_UseGravity
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_CollisionDetectionMode
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_MatchAnchors
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public Vector3f? m_CenterOfMass
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public Vector3f? m_InertiaTensor
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public Quaternionf? m_InertiaRotation
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_ImplicitCom
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_ImplicitTensor
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public IBitField? m_IncludeLayers
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public IBitField? m_ExcludeLayers
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

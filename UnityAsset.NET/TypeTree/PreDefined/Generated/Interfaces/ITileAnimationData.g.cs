@@ -12,6 +12,21 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public List<PPtr<ISprite>> m_AnimatedSprites { get; }
         public float m_AnimationSpeed { get; }
         public float m_AnimationTimeOffset { get; }
-        public uint m_Flags { get; }
+
+        public bool? m_IsLooping
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? m_Flags
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

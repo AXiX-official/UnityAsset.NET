@@ -11,10 +11,24 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public int type { get; }
         public List<IVFXMapping> buffers { get; }
-        public List<IVFXMappingTemporary> temporaryBuffers { get; }
         public List<IVFXMapping> values { get; }
         public List<IVFXMapping> @params { get; }
         public PPtr<IUnityType> processor { get; }
-        public uint instanceSplitIndex { get; }
+
+        public List<IVFXMappingTemporary>? temporaryBuffers
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? instanceSplitIndex
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ITilemapRefCountedData : IPreDefinedInterface
     {
-        public int m_RefCount { get; }
+        public OneOf<uint, int> m_RefCount { get; }
         public OneOf<PPtr<UnityObject>, PPtr<ISprite>, IMatrix4x4f, IColorRGBA, PPtr<IGameObject>> m_Data { get; }
     }
 }

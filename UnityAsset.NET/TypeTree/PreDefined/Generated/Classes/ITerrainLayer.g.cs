@@ -22,6 +22,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public Vector4f m_DiffuseRemapMax { get; }
         public Vector4f m_MaskMapRemapMin { get; }
         public Vector4f m_MaskMapRemapMax { get; }
-        public int m_SmoothnessSource { get; }
+
+        public int? m_SmoothnessSource
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

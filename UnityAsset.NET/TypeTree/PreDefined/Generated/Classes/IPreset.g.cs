@@ -11,8 +11,29 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public IPresetType m_TargetType { get; }
         public List<IPropertyModification> m_Properties { get; }
-        public List<string> m_ExcludedProperties { get; }
-        public IPresetType m_CoupledType { get; }
-        public List<IPropertyModification> m_CoupledProperties { get; }
+
+        public List<string>? m_ExcludedProperties
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public IPresetType? m_CoupledType
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public List<IPropertyModification>? m_CoupledProperties
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

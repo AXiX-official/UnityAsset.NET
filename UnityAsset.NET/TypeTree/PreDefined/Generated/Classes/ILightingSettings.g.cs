@@ -9,12 +9,371 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ILightingSettings : INamedAsset
     {
+        public int? m_GIWorkflowMode
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public bool m_EnableBakedLightmaps { get; }
         public bool m_EnableRealtimeLightmaps { get; }
         public bool m_RealtimeEnvironmentLighting { get; }
         public float m_BounceScale { get; }
         public float m_AlbedoBoost { get; }
-        public float m_IndirectOutputScale { get; }
         public bool m_UsingShadowmask { get; }
+
+        public int? m_BakeBackend
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_LightmapMaxSize
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public float? m_BakeResolution
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_Padding
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_TextureCompression
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_AO
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public float? m_AOMaxDistance
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public float? m_CompAOExponent
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public float? m_CompAOExponentDirect
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_ExtractAO
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_MixedBakeMode
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_LightmapsBakeMode
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_FilterMode
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public PPtr<IUnityType>? m_LightmapParameters
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_ExportTrainingData
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public string? m_TrainingDataDestination
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public float? m_RealtimeResolution
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_ForceWhiteAlbedo
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_ForceUpdates
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_FinalGather
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_FinalGatherRayCount
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_FinalGatherFiltering
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public bool? m_PVRCulling
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRSampling
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRDirectSampleCount
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRSampleCount
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVREnvironmentSampleCount
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRBounces
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVREnvironmentMIS
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVREnvironmentReferencePointCount
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRFilteringMode
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRDenoiserTypeDirect
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRDenoiserTypeIndirect
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRDenoiserTypeAO
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRFilterTypeDirect
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRFilterTypeIndirect
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRFilterTypeAO
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRFilteringGaussRadiusDirect
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRFilteringGaussRadiusIndirect
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_PVRFilteringGaussRadiusAO
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public float? m_PVRFilteringAtrousPositionSigmaDirect
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public float? m_PVRFilteringAtrousPositionSigmaIndirect
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public float? m_PVRFilteringAtrousPositionSigmaAO
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public float? m_IndirectOutputScale
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

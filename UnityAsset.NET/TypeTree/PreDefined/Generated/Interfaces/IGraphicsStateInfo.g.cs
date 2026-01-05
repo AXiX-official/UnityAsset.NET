@@ -15,16 +15,51 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public int subPassIndex { get; }
         public int topology { get; }
         public int forceCullMode { get; }
-        public int shadingRateCombinerPrimitive { get; }
-        public int shadingRateCombinerFragment { get; }
-        public int baseShadingRate { get; }
         public float depthBias { get; }
         public float slopeDepthBias { get; }
         public bool userBackface { get; }
         public bool appBackface { get; }
         public bool wireframe { get; }
         public bool invertProjectionMatrix { get; }
-        public ulong unfilterableTextureBindings { get; }
-        public ulong nonfilteringSamplerBindings { get; }
+
+        public int? shadingRateCombinerPrimitive
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? shadingRateCombinerFragment
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? baseShadingRate
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public ulong? unfilterableTextureBindings
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public ulong? nonfilteringSamplerBindings
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

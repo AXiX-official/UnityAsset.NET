@@ -15,7 +15,29 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float m_PreWarmDeltaTime { get; }
         public uint m_PreWarmStepCount { get; }
         public string m_InitialEventName { get; }
-        public int m_InstancingMode { get; }
-        public uint m_InstancingCapacity { get; }
+
+        public int? m_InstancingMode
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? m_InstancingCapacity
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_InstancingDisabledReason
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

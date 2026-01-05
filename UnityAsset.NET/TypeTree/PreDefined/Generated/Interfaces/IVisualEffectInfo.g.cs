@@ -9,23 +9,86 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVisualEffectInfo : IPreDefinedInterface
     {
+        public IVFXExpressionContainer m_Expressions { get; }
+        public IVFXPropertySheetSerializedBase m_PropertySheet { get; }
+        public OneOf<List<IVFXMapping>, List<IVFXExposedMapping>> m_ExposedExpressions { get; }
+        public List<IVFXGPUBufferDesc> m_Buffers { get; }
+        public List<IVFXCPUBufferDesc> m_CPUBuffers { get; }
+        public List<IVFXEventDesc> m_Events { get; }
         public IVFXRendererSettings m_RendererSettings { get; }
         public int m_CullingFlags { get; }
         public int m_UpdateMode { get; }
-        public float m_PreWarmDeltaTime { get; }
-        public uint m_PreWarmStepCount { get; }
-        public string m_InitialEventName { get; }
-        public int m_InstancingMode { get; }
-        public uint m_InstancingCapacity { get; }
-        public IVFXExpressionContainer m_Expressions { get; }
-        public IVFXPropertySheetSerializedBase m_PropertySheet { get; }
-        public List<IVFXExposedMapping> m_ExposedExpressions { get; }
-        public List<IVFXGPUBufferDesc> m_Buffers { get; }
-        public List<IVFXTemporaryGPUBufferDesc> m_TemporaryBuffers { get; }
-        public List<IVFXCPUBufferDesc> m_CPUBuffers { get; }
-        public List<IVFXEventDesc> m_Events { get; }
-        public int m_InstancingDisabledReason { get; }
-        public uint m_RuntimeVersion { get; }
-        public uint m_CompilationVersion { get; }
+
+        public uint? m_RuntimeVersion
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public float? m_PreWarmDeltaTime
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? m_PreWarmStepCount
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public List<IVFXTemporaryGPUBufferDesc>? m_TemporaryBuffers
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public string? m_InitialEventName
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? m_CompilationVersion
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_InstancingMode
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public uint? m_InstancingCapacity
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? m_InstancingDisabledReason
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

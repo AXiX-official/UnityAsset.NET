@@ -10,6 +10,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ISecondaryTextureSettings : IPreDefinedInterface
     {
         public List<ITextureImporterPlatformSettings> platformSettings { get; }
-        public bool sRGB { get; }
+
+        public bool? sRGB
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

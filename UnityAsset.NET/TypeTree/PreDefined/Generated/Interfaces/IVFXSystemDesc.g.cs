@@ -13,10 +13,24 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public int flags { get; }
         public uint capacity { get; }
         public uint layer { get; }
-        public string name { get; }
         public List<IVFXMapping> buffers { get; }
         public List<IVFXMapping> values { get; }
         public List<IVFXTaskDesc> tasks { get; }
-        public List<IVFXInstanceSplitDesc> instanceSplitDescs { get; }
+
+        public string? name
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public List<IVFXInstanceSplitDesc>? instanceSplitDescs
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

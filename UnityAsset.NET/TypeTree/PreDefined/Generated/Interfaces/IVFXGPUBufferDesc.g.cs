@@ -9,11 +9,33 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVFXGPUBufferDesc : IPreDefinedInterface
     {
-        public int target { get; }
+        public int? type
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public uint size { get; }
         public List<IVFXLayoutElementDesc> layout { get; }
         public uint capacity { get; }
         public uint stride { get; }
-        public int mode { get; }
+
+        public int? target
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public int? mode
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }

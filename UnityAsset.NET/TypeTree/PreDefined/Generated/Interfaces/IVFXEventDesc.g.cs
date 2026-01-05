@@ -12,6 +12,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public string name { get; }
         public List<uint> playSystems { get; }
         public List<uint> stopSystems { get; }
-        public List<uint> initSystems { get; }
+
+        public List<uint>? initSystems
+        {
+            get
+            {
+                return null;
+            }
+        }
     }
 }
