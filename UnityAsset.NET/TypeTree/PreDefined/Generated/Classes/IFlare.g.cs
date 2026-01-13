@@ -9,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IFlare : INamedAsset
     {
-        public PPtr<IUnityType> m_FlareTexture { get; }
+        public PPtr<IUnityObject> m_FlareTexture { get; }
         public int m_TextureLayout { get; }
         public List<IFlareElement> m_Elements { get; }
         public bool m_UseFog { get; }

@@ -2,7 +2,7 @@
 
 namespace UnityAsset.NET.TypeTree.PreDefined;
 
-public interface IUnityType
+public interface IUnityObject
 {
     public string ClassName { get; }
 

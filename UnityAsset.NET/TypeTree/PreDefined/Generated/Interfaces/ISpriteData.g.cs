@@ -9,6 +9,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISpriteData : IPreDefinedInterface
     {
-        public PPtr<UnityObject> sprite { get; }
+        public PPtr<IUnityObject> sprite { get; }
     }
 }

@@ -12,7 +12,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float m_LineSpacing { get; }
         public PPtr<IMaterial> m_DefaultMaterial { get; }
         public float m_FontSize { get; }
-        public PPtr<IUnityType> m_Texture { get; }
+        public PPtr<IUnityObject> m_Texture { get; }
         public int m_AsciiStartOffset { get; }
         public float m_Tracking { get; }
         public int m_CharacterSpacing { get; }

@@ -9,6 +9,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IOffsetPtr : IPreDefinedInterface
     {
-        public IUnityType data { get; }
+        public IUnityObject data { get; }
     }
 }

@@ -26,7 +26,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         }
 
         public IShadowSettings m_Shadows { get; }
-        public PPtr<IUnityType> m_Cookie { get; }
+        public PPtr<IUnityObject> m_Cookie { get; }
         public bool m_DrawHalo { get; }
         public ILightBakingOutput m_BakingOutput { get; }
         public PPtr<IFlare> m_Flare { get; }

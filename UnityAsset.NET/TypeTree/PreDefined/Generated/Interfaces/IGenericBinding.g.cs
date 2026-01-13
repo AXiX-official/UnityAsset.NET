@@ -11,7 +11,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public uint path { get; }
         public uint attribute { get; }
-        public PPtr<UnityObject> script { get; }
+        public PPtr<IUnityObject> script { get; }
         public int typeID { get; }
         public byte customType { get; }
         public byte isPPtrCurve { get; }

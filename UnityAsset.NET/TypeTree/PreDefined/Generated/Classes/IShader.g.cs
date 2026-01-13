@@ -18,7 +18,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public List<PPtr<IShader>> m_Dependencies { get; }
         public bool m_ShaderIsBaked { get; }
 
-        public List<ValueTuple<string, PPtr<IUnityType>>>? m_NonModifiableTextures
+        public List<ValueTuple<string, PPtr<IUnityObject>>>? m_NonModifiableTextures
         {
             get
             {

@@ -3,7 +3,7 @@ using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Types;
 
-public class TypelessData : IPreDefinedType
+public class TypelessData : IPreDefinedObject
 {
     public Int32 size { get; }
     public byte[] data { get; }

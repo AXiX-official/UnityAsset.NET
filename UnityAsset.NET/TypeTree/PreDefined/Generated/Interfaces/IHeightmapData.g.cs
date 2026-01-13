@@ -17,7 +17,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public PPtr<UnityObject> terrainData { get; }
+        public PPtr<IUnityObject> terrainData { get; }
 
         public IMatrix4x4f? surfaceToTerrain
         {

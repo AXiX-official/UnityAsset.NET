@@ -11,6 +11,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public int preloadIndex { get; }
         public int preloadSize { get; }
-        public PPtr<UnityObject> asset { get; }
+        public PPtr<IUnityObject> asset { get; }
     }
 }

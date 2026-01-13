@@ -289,7 +289,7 @@ public class InterfaceGenerator
             if (typeList.All(t => t.StartsWith("List")))
                 return $"List<{MultiTypesToOne(typeList.Select(t => t.Substring(5, t.Length - 6)).ToList())}>";
             if (typeList.All(t => !Helper.IsCSharpPrimitive(t)))
-                return "IUnityType";
+                return "IUnityObject";
             return "object";
         }
 
@@ -313,10 +313,10 @@ public class InterfaceGenerator
         {
             var genericType = node.TypeName.Substring(5, node.TypeName.Length - 6);
             return genericType == "Object"
-                ? "PPtr<UnityObject>"
+                ? "PPtr<IUnityObject>"
                 : Helper.IncludedPPTrGenricTypes.Contains(genericType)
                     ? $"PPtr<I{genericType}>"
-                    : "PPtr<IUnityType>";
+                    : "PPtr<IUnityObject>";
         }
         
         if (node.TypeName == "pair")

@@ -9,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IObjectRolePair : IPreDefinedInterface
     {
-        public PPtr<UnityObject> m_Object { get; }
+        public PPtr<IUnityObject> m_Object { get; }
         public int m_RolesMask { get; }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Buffers.Binary;
+﻿// based on https://github.com/RazTools/Studio/blob/main/AssetStudio/Classes/Mesh.cs#L478
+using System.Buffers.Binary;
 using System.Collections;
+using System.Diagnostics;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
@@ -212,6 +214,7 @@ public static class MeshHelper
         
         var processedMesh = new ProcessedMesh();
         
+        // ReadVertexData
         var vertexData = mesh.m_VertexData;
         var streams = vertexData.GetStreams(version!);
         var vertexCount = vertexData.m_VertexCount;
@@ -399,6 +402,20 @@ public static class MeshHelper
                 })
                 .ToArray()
             : throw new Exception("Failed to extract mesh data: uint32 indices are not supported.");
+        
+        // DecompressCompressedMesh
+        
+        //Vertex
+        var compressedMesh = mesh.m_CompressedMesh;
+        if (compressedMesh.m_Vertices.m_NumItems > 0)
+        {
+            Debug.Assert(processedMesh.m_VertexCount == 0 ? true : processedMesh.m_VertexCount == compressedMesh.m_Vertices.m_NumItems / 3); // not verified
+            throw new NotImplementedException("Compressed meshes are not supported.");
+            /*processedMesh.m_VertexCount = (int)compressedMesh.m_Vertices.m_NumItems / 3;
+            m_Vertices = m_CompressedMesh.m_Vertices.UnpackFloats(3, 3 * 4);*/
+        }
+        
+        // GetTriangles
 
         foreach (var m_SubMesh in mesh.m_SubMeshes)
         {

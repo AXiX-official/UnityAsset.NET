@@ -20,7 +20,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public bool m_SpeedParameterActive { get; }
         public bool m_MirrorParameterActive { get; }
         public bool m_CycleOffsetParameterActive { get; }
-        public PPtr<IUnityType> m_Motion { get; }
+        public PPtr<IUnityObject> m_Motion { get; }
         public string m_Tag { get; }
         public string m_SpeedParameter { get; }
         public string m_MirrorParameter { get; }

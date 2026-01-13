@@ -9,6 +9,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IExposedReferenceTable : IPreDefinedInterface
     {
-        public List<ValueTuple<string, PPtr<UnityObject>>> m_References { get; }
+        public List<ValueTuple<string, PPtr<IUnityObject>>> m_References { get; }
     }
 }

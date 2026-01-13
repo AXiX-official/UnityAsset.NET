@@ -15,7 +15,7 @@ public class AssetManager
 {
     private IFileSystem _fileSystem;
     
-    private readonly ConcurrentDictionary<string, IFile> _loadedFiles;
+    public readonly ConcurrentDictionary<string, IFile> LoadedFiles;
     
     public UnityRevision? Version { get; private set; }
     public BuildTarget? BuildTarget { get; private set; }
@@ -23,7 +23,7 @@ public class AssetManager
     public AssetManager(IFileSystem? fileSystem = null, IFileSystem.ErrorHandler? onError = null)
     {
         _fileSystem = fileSystem ?? new FileSystem.DirectFileSystem.DirectFileSystem(onError);
-        _loadedFiles = new ();
+        LoadedFiles = new ();
     }
     
     public void SetFileSystem(IFileSystem fileSystem)
@@ -31,10 +31,8 @@ public class AssetManager
         Clear();
         _fileSystem = fileSystem;
     }
-    
-    public List<IVirtualFile> LoadedFiles => _fileSystem.LoadedFiles;
 
-    public List<Asset> LoadedAssets => _loadedFiles.Values
+    public List<Asset> LoadedAssets => LoadedFiles.Values
         .OfType<SerializedFile>()
         .SelectMany(sf => sf.Assets)
         .ToList();
@@ -59,10 +57,6 @@ public class AssetManager
                         bundleFile.ParseFilesWithTypeConversion();
                         foreach (var fw in bundleFile.Files)
                         {
-                            /*if (!_loadedFiles.TryAdd(fw.Info.Path, fw.File) && !ignoreDuplicatedFiles)
-                            {
-                                throw new InvalidOperationException($"File {fw.Info.Path} already loaded");
-                            }*/
                             fileWrappers.Add((fw.Info.Path, fw.File));
 
                             if (fw is { File: SerializedFile sf })
@@ -77,10 +71,6 @@ public class AssetManager
                     case FileType.SerializedFile:
                     {
                         var serializedFile = new SerializedFile(file);
-                        /*if (!_loadedFiles.TryAdd(file.Name, serializedFile) && !ignoreDuplicatedFiles)
-                        {
-                            throw new InvalidOperationException($"File {file.Name} already loaded");
-                        }*/
                         fileWrappers.Add((file.Name, serializedFile));
 
                         foreach(var type in serializedFile.Metadata.Types)
@@ -92,13 +82,13 @@ public class AssetManager
             
             foreach (var (path, file) in fileWrappers)
             {
-                if (!_loadedFiles.TryAdd(path, file) && !ignoreDuplicatedFiles)
+                if (!LoadedFiles.TryAdd(path, file) && !ignoreDuplicatedFiles)
                 {
                     throw new InvalidOperationException($"File {path} already loaded");
                 }
             }
 
-            var firstFile = _loadedFiles.Values
+            var firstFile = LoadedFiles.Values
                 .FirstOrDefault(file => file is SerializedFile);
             if (firstFile is SerializedFile firstSerializedFile)
             {
@@ -112,6 +102,12 @@ public class AssetManager
                 var typeSet = types.DistinctBy(t => t.TypeHash).ToList();
                 AssemblyManager.LoadTypes(TypeTreeCache.ToTypeTreeHelperNodes().ToList());
                 progress?.Report(new LoadProgress($"AssetManager: Generated {typeSet.Count} types", 2, 2));
+            }
+
+            foreach (var (_, file) in LoadedFiles)
+            {
+                if (file is SerializedFile sf)
+                    sf.ProcessAssetBundle();
             }
         });
     }
@@ -132,7 +128,7 @@ public class AssetManager
     public byte[]? LoadStreamingData(StreamingInfo streamingInfo)
     {
         var path = streamingInfo.path.Split('/')[^1];
-        if (_loadedFiles.TryGetValue(path, out IFile? file))
+        if (LoadedFiles.TryGetValue(path, out IFile? file))
         {
             if (file is IReader reader)
             {
@@ -146,7 +142,7 @@ public class AssetManager
 
     public void Clear()
     {
-        _loadedFiles.Clear();
+        LoadedFiles.Clear();
         _fileSystem.Clear();
         TypeTreeCache.CleanCache();
     }

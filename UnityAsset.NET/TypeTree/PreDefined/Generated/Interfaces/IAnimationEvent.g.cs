@@ -12,7 +12,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float time { get; }
         public string functionName { get; }
         public string data { get; }
-        public PPtr<UnityObject> objectReferenceParameter { get; }
+        public PPtr<IUnityObject> objectReferenceParameter { get; }
         public float floatParameter { get; }
         public int intParameter { get; }
         public int messageOptions { get; }

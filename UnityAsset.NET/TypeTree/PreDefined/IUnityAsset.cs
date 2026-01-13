@@ -1,6 +1,6 @@
 ﻿namespace UnityAsset.NET.TypeTree.PreDefined;
 
-public interface IUnityAsset : IUnityType
+public interface IUnityAsset : IUnityObject
 {
     
 }

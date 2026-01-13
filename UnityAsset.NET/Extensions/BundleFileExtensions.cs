@@ -17,7 +17,7 @@ public static class BundleFileExtensions
             ref var file = ref filesSpan[i];
             if (file is { File: IReader reader, CanBeSerializedFile: true })
             {
-                file = new FileWrapper(SerializedFile.Parse(reader), file.Info);
+                file = new FileWrapper(SerializedFile.Parse(bf, reader), file.Info);
             }
         }
     }

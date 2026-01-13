@@ -5,7 +5,7 @@ using UnityAsset.NET.IO.Reader;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Types;
 
-public class StreamingInfo  : IPreDefinedType
+public class StreamingInfo  : IPreDefinedObject
 {
     public string ClassName => "StreamingInfo";
     public UInt64 offset { get; }

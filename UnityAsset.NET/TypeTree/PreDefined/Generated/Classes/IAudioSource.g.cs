@@ -42,7 +42,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public OneOf<PPtr<IAudioResource>, PPtr<UnityObject>>? m_Resource
+        public OneOf<PPtr<IAudioResource>, PPtr<IUnityObject>>? m_Resource
         {
             get
             {

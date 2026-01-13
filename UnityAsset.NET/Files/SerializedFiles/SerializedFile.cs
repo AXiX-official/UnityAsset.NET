@@ -1,8 +1,12 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
+using UnityAsset.NET.TypeTree.PreDefined;
+using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
+using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.Files.SerializedFiles;
 
@@ -10,15 +14,22 @@ public sealed class SerializedFile : IFile
 {
     public SerializedFileHeader Header;
     public SerializedFileMetadata Metadata;
-    public List<Asset> Assets;
+    public List<Asset> Assets = new();
+    public List<PPtr<IUnityObject>> PreloadTable = new();
+    public Dictionary<Int64, string> Containers = new();
+    public BundleFile? ParentBundle { get; private set; }
+    public IVirtualFile? SourceVirtualFile { get; private set; }
     
-    public SerializedFile(SerializedFileHeader header, SerializedFileMetadata metadata, List<Asset> assets)
+    public SerializedFile(SerializedFileHeader header, SerializedFileMetadata metadata, List<Asset> assets, BundleFile? parentBundle)
     {
         Header = header;
         Metadata = metadata;
         if (string.IsNullOrEmpty(Metadata.UnityVersion))
             Metadata.UnityVersion = Setting.DefaultUnityVerion;
         Assets = assets;
+
+        ParentBundle = parentBundle;
+        SourceVirtualFile = parentBundle?.SourceVirtualFile;
     }
 
     public SerializedFile(IVirtualFile file)
@@ -30,14 +41,18 @@ public sealed class SerializedFile : IFile
         Metadata = SerializedFileMetadata.Parse(reader, Header.Version);
         if (string.IsNullOrEmpty(Metadata.UnityVersion))
             Metadata.UnityVersion = Setting.DefaultUnityVerion;
-        Assets = new List<Asset>();
         foreach (var assetInfo in Metadata.AssetInfos.AsSpan())
         {
-            Assets.Add(new Asset(assetInfo, new AssetReader(reader, (long)(Header.DataOffset + assetInfo.ByteOffset),assetInfo.ByteSize, this)));
+            Assets.Add(new Asset(this, assetInfo,
+                new AssetReader(reader, (long)(Header.DataOffset + assetInfo.ByteOffset), assetInfo.ByteSize, this)));
         }
+        
+        SourceVirtualFile = file;
     }
+
     
-    public static SerializedFile Parse(IReader reader)
+    
+    public static SerializedFile Parse(BundleFile bf, IReader reader)
     {
         reader.Seek(0);
         var header = SerializedFileHeader.Parse(reader);
@@ -48,10 +63,11 @@ public sealed class SerializedFile : IFile
             metadata.UnityVersion = Setting.DefaultUnityVerion;
         }
         var assets = new List<Asset>();
-        var sf = new SerializedFile(header, metadata, assets);
+        var sf = new SerializedFile(header, metadata, assets, bf);
         foreach (var assetInfo in metadata.AssetInfos.AsSpan())
         {
-            assets.Add(new Asset(assetInfo, new AssetReader(reader, (long)(header.DataOffset + assetInfo.ByteOffset),assetInfo.ByteSize, sf)));
+            assets.Add(new Asset(sf, assetInfo,
+                new AssetReader(reader, (long)(header.DataOffset + assetInfo.ByteOffset), assetInfo.ByteSize, sf)));
         }
         return sf;
     }

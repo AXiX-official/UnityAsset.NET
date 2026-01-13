@@ -93,8 +93,8 @@ public class SemanticModelBuilder
         }
         
         
-        //var interfaceName = type?.Name ?? (Helper.IsNamedAsset(current) ? "INamedAsset" : current == nodes[0] ? "IAsset" : "IUnityType");
-        var interfaceName = isRootClass ? "IUnityAsset" : "IUnityType";
+        //var interfaceName = type?.Name ?? (Helper.IsNamedAsset(current) ? "INamedAsset" : current == nodes[0] ? "IAsset" : "IUnityObject");
+        var interfaceName = isRootClass ? "IUnityAsset" : "IUnityObject";
 
         if (type != null)
         {
@@ -125,6 +125,7 @@ public class SemanticModelBuilder
         
         if (!DiscoveredTypes.TryAdd(current.Hash, classTypeInfo))
         {
+            var oldClass = DiscoveredTypes[current.Hash];
             throw new InvalidOperationException($"Type with hash {current.Hash} has already been discovered.");
         }
         return classTypeInfo;

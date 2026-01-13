@@ -9,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IDirectorGenericBinding : IPreDefinedInterface
     {
-        public PPtr<UnityObject> key { get; }
-        public PPtr<UnityObject> value { get; }
+        public PPtr<IUnityObject> key { get; }
+        public PPtr<IUnityObject> value { get; }
     }
 }

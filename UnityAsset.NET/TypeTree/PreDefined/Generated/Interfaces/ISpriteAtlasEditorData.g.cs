@@ -13,7 +13,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public List<ITextureImporterPlatformSettings> platformSettings { get; }
         public IPackingSettings packingSettings { get; }
         public float variantMultiplier { get; }
-        public List<PPtr<UnityObject>> packables { get; }
+        public List<PPtr<IUnityObject>> packables { get; }
 
         public uint? totalSpriteSurfaceArea
         {
@@ -34,7 +34,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         }
 
         public bool isAtlasV2 { get; }
-        public PPtr<IUnityType> cachedData { get; }
+        public PPtr<IUnityObject> cachedData { get; }
 
         public List<ValueTuple<string, ISecondaryTextureSettings>>? secondaryTextureSettings
         {

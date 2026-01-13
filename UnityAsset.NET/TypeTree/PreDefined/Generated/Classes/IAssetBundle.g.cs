@@ -9,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IAssetBundle : INamedAsset
     {
-        public List<PPtr<UnityObject>> m_PreloadTable { get; }
+        public List<PPtr<IUnityObject>> m_PreloadTable { get; }
         public List<ValueTuple<string, IAssetInfo>> m_Container { get; }
         public IAssetInfo m_MainAsset { get; }
         public uint m_RuntimeCompatibility { get; }

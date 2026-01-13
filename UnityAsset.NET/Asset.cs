@@ -1,4 +1,6 @@
-﻿using UnityAsset.NET.Files.SerializedFiles;
+﻿using System.Diagnostics.CodeAnalysis;
+using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.TypeTree;
 using UnityAsset.NET.TypeTree.PreDefined;
@@ -14,6 +16,8 @@ public class Asset
     private readonly object _lock = new();
     private readonly bool _isNamedAsset;
     private readonly int _nameFieldIndex;
+    
+    public SerializedFile? SourceFile { get; private set; }
 
     public IUnityAsset Value
     {
@@ -56,13 +60,32 @@ public class Asset
             }
         }
     }
+    
+    public long Size => Info.ByteSize;
 
-    public Asset(AssetFileInfo info, IReader reader)
+    public long PathId => Info.PathId;
+
+    public string Container
+    {
+        get
+        {
+            var containers = SourceFile?.Containers;
+            if (containers != null && containers.TryGetValue(PathId, out var container))
+            {
+                return container;
+            }
+            return string.Empty;
+        }
+    }
+
+    public Asset(SerializedFile sf, AssetFileInfo info, IReader reader)
     {
         Info = info;
         RawData = reader; 
         _isNamedAsset = info.Type.Nodes.Any(n => n is {Name: "m_Name", Type: "string", Level: 1} );
         _nameFieldIndex = _isNamedAsset ? info.Type.Nodes.FindIndex(n => n.Name == "m_Name") : -1;
+
+        SourceFile = sf;
     }
 
     public void Release()

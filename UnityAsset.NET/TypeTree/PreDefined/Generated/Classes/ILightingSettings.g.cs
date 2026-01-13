@@ -128,7 +128,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public PPtr<IUnityType>? m_LightmapParameters
+        public PPtr<IUnityObject>? m_LightmapParameters
         {
             get
             {

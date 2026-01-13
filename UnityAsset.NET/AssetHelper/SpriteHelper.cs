@@ -60,10 +60,10 @@ public static class SpriteHelper
     
     public static Image<Bgra32> GetImage(AssetManager assetManager, ISprite m_Sprite)
     {
-        if (m_Sprite.m_SpriteAtlas.TryGet(out var m_SpriteAtlas))
+        if (m_Sprite.m_SpriteAtlas.TryGet(assetManager, out var m_SpriteAtlas))
         {
             var spriteAtlasData = m_SpriteAtlas.m_RenderDataMap.Find(rdm => rdm.Item1.Equals(m_Sprite.m_RenderDataKey)).Item2;
-            if (spriteAtlasData != null && spriteAtlasData.texture.TryGet(out var m_Texture2D))
+            if (spriteAtlasData != null && spriteAtlasData.texture.TryGet(assetManager, out var m_Texture2D))
             {
                 return CutImage(assetManager, m_Sprite, m_Texture2D, spriteAtlasData.textureRect, spriteAtlasData.textureRectOffset, spriteAtlasData.downscaleMultiplier, (SpriteSettings)spriteAtlasData.settingsRaw);
             }
@@ -71,7 +71,7 @@ public static class SpriteHelper
         }
         else
         {
-            if (m_Sprite.m_RD.texture.TryGet(out var m_Texture2D))
+            if (m_Sprite.m_RD.texture.TryGet(assetManager, out var m_Texture2D))
             {
                 return CutImage(assetManager, m_Sprite, m_Texture2D, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.downscaleMultiplier, (SpriteSettings)m_Sprite.m_RD.settingsRaw);
             }

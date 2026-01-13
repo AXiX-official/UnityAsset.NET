@@ -10,6 +10,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IPPtrKeyframe : IPreDefinedInterface
     {
         public float time { get; }
-        public PPtr<UnityObject> value { get; }
+        public PPtr<IUnityObject> value { get; }
     }
 }

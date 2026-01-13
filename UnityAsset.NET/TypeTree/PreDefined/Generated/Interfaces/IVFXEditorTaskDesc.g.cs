@@ -13,7 +13,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public List<IVFXMapping> buffers { get; }
         public List<IVFXMapping> values { get; }
         public List<IVFXMapping> @params { get; }
-        public PPtr<IUnityType> processor { get; }
+        public PPtr<IUnityObject> processor { get; }
         public int shaderSourceIndex { get; }
 
         public List<IVFXMappingTemporary>? temporaryBuffers

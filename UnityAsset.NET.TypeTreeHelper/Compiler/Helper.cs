@@ -29,7 +29,7 @@ public static class Helper
 
     public static HashSet<string> IncludedTypes =
     [
-        "AnimationClip",
+        "Animator",
         "AssetBundle",
         "Shader",
         "Sprite",
@@ -154,7 +154,7 @@ public static class Helper
             typeName = typeName.Substring(1);
         
         if (typeName == "Object")
-            return "UnityObject";
+            return "IUnityObject";
         
         if (NoInterfaceTypes.Contains(typeName))
             return typeName;
@@ -162,7 +162,7 @@ public static class Helper
         if (IncludedPPTrGenricTypes.Contains(typeName))
             return $"I{typeName}";
         
-        return "IUnityType";
+        return "IUnityObject";
     }
     
     public static string GetInterfaceName(TypeTreeNode node)
@@ -171,7 +171,7 @@ public static class Helper
             return node.TypeName;
         
         if (NoInterfaceTypes.Contains(node.TypeName))
-            return "IUnityType";
+            return "IUnityObject";
     
         if (node.TypeName.StartsWith("PPtr<"))
             return $"PPtr<{GetGenericPPtrInterfaceName(node.TypeName.Substring(5, node.TypeName.Length - 6))}>";

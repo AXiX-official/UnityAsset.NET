@@ -7,7 +7,7 @@ using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Types;
 
-public class PPtr<T> : IPPtr where T : IUnityType
+public class PPtr<T> : IPPtr where T : IUnityObject
 {
     private static string GetGenericClassName()
     {
@@ -47,10 +47,12 @@ public class PPtr<T> : IPPtr where T : IUnityType
         return root;
     }
     
-    public bool TryGet([NotNullWhen(true)] out T? result)
+    public bool TryGet(AssetManager assetManager, [NotNullWhen(true)] out T? result)
     {
         result = default;
-        if (TryGetAssetsFile(out var sourceFile))
+        if (m_PathID == 0)
+            return false;
+        if (TryGetAssetsFile(assetManager, out var sourceFile))
         {
             var index = sourceFile.Assets.FindIndex(a => a.Info.PathId == m_PathID);
             if ( index != -1)
@@ -67,7 +69,7 @@ public class PPtr<T> : IPPtr where T : IUnityType
         return false;
     }
 
-    private bool TryGetAssetsFile([NotNullWhen(true)] out SerializedFile? sf)
+    private bool TryGetAssetsFile(AssetManager assetManager, [NotNullWhen(true)] out SerializedFile? sf)
     {
         sf = null;
         if (m_FileID == 0)
@@ -75,10 +77,23 @@ public class PPtr<T> : IPPtr where T : IUnityType
             sf = _reader.AssetsFile;
             return true;
         }
-        
-        if (m_FileID > 0 && m_FileID - 1 < _reader.AssetsFile.Metadata.Externals.Count)
+
+        var externals = _reader.AssetsFile.Metadata.Externals;
+        if (m_FileID > 0 && m_FileID - 1 < externals.Count)
         {
-            throw new NotImplementedException();
+            var m_External = externals[m_FileID - 1];
+            var path = m_External.PathName.Split('/')[^1];
+            var fileFound = assetManager.LoadedFiles.TryGetValue(path, out var sfw);
+            if (fileFound)
+            {
+                if (sfw is SerializedFile serializedFile)
+                {
+                    sf = serializedFile;
+                    return true;
+                }
+            }
+
+            throw new Exception("SerializedFile not loaded.");
         }
 
         return false;

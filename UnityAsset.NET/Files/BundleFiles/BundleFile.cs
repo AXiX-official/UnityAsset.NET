@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files.BundleFiles;
@@ -34,6 +35,8 @@ public class BundleFile : IFile
     public string? UnityCnKey;
 
     public uint? Crc32;
+    
+    public IVirtualFile? SourceVirtualFile { get; private set; }
 
     public static UnityCN? ParseUnityCnInfo(IReader reader, Header header, string? key)
     {
@@ -231,6 +234,8 @@ public class BundleFile : IFile
         {
             (Files, Crc32) = LazyParseFiles(reader, DataInfo, UnityCnInfo);
         }
+
+        SourceVirtualFile = file;
     }
     
     /*public void Serialize(MemoryBinaryIO writer, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
