@@ -5,6 +5,7 @@ using System.Diagnostics;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
+using Half = UnityAsset.NET.Extensions.Half;
 
 namespace UnityAsset.NET.AssetHelper;
 
@@ -162,8 +163,7 @@ public static class MeshHelper
                     result[i] = BinaryPrimitives.ReadSingleLittleEndian(inputBytes.AsSpan(i * 4));
                     break;
                 case VertexFormat.Float16:
-                    //result[i] = Half.ToHalf((inputBytes, i * 2));
-                    throw new NotImplementedException();
+                    result[i] = Half.ToHalf(inputBytes, i * 2);
                     break;
                 case VertexFormat.UNorm8:
                     result[i] = inputBytes[i] / 255f;
