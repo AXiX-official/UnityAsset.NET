@@ -14,8 +14,8 @@ public class Asset
     private IUnityAsset? _value;
     private string _name = string.Empty;
     private readonly object _lock = new();
-    private readonly bool _isNamedAsset;
-    private readonly int _nameFieldIndex;
+    private bool _isNamedAsset;
+    private int _nameFieldIndex;
     
     public SerializedFile? SourceFile { get; private set; }
 
@@ -39,7 +39,7 @@ public class Asset
         }
     }
 
-    public string Type => Info.Type.Nodes[0].Type;
+    public string Type => Info.Type.ToTypeName();
 
     public string Name
     {
@@ -86,6 +86,12 @@ public class Asset
         _nameFieldIndex = _isNamedAsset ? info.Type.Nodes.FindIndex(n => n.Name == "m_Name") : -1;
 
         SourceFile = sf;
+    }
+
+    public void UpdateTypeInfo()
+    {
+        _isNamedAsset = Info.Type.Nodes.Any(n => n is {Name: "m_Name", Type: "string", Level: 1} );
+        _nameFieldIndex = _isNamedAsset ? Info.Type.Nodes.FindIndex(n => n.Name == "m_Name") : -1;
     }
 
     public void Release()

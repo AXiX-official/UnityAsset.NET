@@ -79,10 +79,6 @@ public sealed class SerializedType
                     typeDependencies = reader.ReadIntArray(reader.ReadInt32());
             }
         }
-        else
-        {
-            throw new Exception($"Unexpected typeTreeEnabled false.");
-        }
         return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);
     }
 
@@ -154,5 +150,12 @@ public sealed class SerializedType
             sb.AppendLine(node.ToString());
         sb.AppendLine();
         return sb.ToString();
+    }
+    
+    public string ToTypeName()
+    {
+        if (Nodes.Count == 0)
+            return ((AssetClassID)TypeID).ToString();
+        return Nodes[0].Type;
     }
 }

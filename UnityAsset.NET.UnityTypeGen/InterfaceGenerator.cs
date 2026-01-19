@@ -1,21 +1,21 @@
-using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using UnityAsset.NET.TypeTreeHelper;
 using UnityAsset.NET.TypeTreeHelper.Compiler;
 
 namespace UnityAsset.NET.UnityTypeGen;
 
 public class InterfaceGenerator
 {
-    private Dictionary<string, List<TpkUnityTreeNode>> _subNodes = new();
+    private Dictionary<string, List<TypeTreeNode>> _subNodes = new();
 
     public static string RootClassFolderName { get; set; } = "Classes";
     public static string SubClassFolderName { get; set; } = "Interfaces";
     
     private Dictionary<int, string> _cachedGenericTypes = new();
     
-    public void GenerateInterfaces(string outputDirectory, Dictionary<string,List<TpkUnityTreeNode>> rootTypeNodesMap)
+    public void GenerateInterfaces(string outputDirectory, Dictionary<string,List<TypeTreeNode>> rootTypeNodesMap)
     {
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
@@ -75,7 +75,7 @@ public class InterfaceGenerator
         }
     }
     
-    private void DiscoverSubNodesRecursive(TpkUnityTreeNode node, in Dictionary<string, HashSet<TpkUnityTreeNode>> subNodes)
+    private void DiscoverSubNodesRecursive(TypeTreeNode node, in Dictionary<string, HashSet<TypeTreeNode>> subNodes)
     {
         foreach (var subNode in node.SubNodes)
         {
@@ -91,7 +91,7 @@ public class InterfaceGenerator
             {
                 if (!subNodes.TryGetValue(type, out var set))
                 {
-                    subNodes[type] = set = new HashSet<TpkUnityTreeNode>();
+                    subNodes[type] = set = new HashSet<TypeTreeNode>();
                 }
                 set.Add(subNode);
             }
@@ -100,7 +100,7 @@ public class InterfaceGenerator
         }
     }
     
-    private void DiscoverLeftSubNodesRecursive(TpkUnityTreeNode node, Dictionary<string, HashSet<TpkUnityTreeNode>> subNodes, bool forceAdd = false)
+    private void DiscoverLeftSubNodesRecursive(TypeTreeNode node, Dictionary<string, HashSet<TypeTreeNode>> subNodes, bool forceAdd = false)
     {
         foreach (var subNode in node.SubNodes)
         {
@@ -121,7 +121,7 @@ public class InterfaceGenerator
             {
                 if (!Helper.ExcludedBasicTypes.Contains(type) && !Helper.NoInterfaceTypes.Contains(type) && !Helper.ExcludedTypes.Contains(type))
                 {
-                    subNodes[type] = set = new HashSet<TpkUnityTreeNode>();
+                    subNodes[type] = set = new HashSet<TypeTreeNode>();
                     set.Add(subNode);
                 }
             }
@@ -130,7 +130,7 @@ public class InterfaceGenerator
         }
     }
     
-    private void DiscoverLeftSubNodes(IEnumerable<IEnumerable<TpkUnityTreeNode>> allNodes, Dictionary<string, HashSet<TpkUnityTreeNode>> subNodes)
+    private void DiscoverLeftSubNodes(IEnumerable<IEnumerable<TypeTreeNode>> allNodes, Dictionary<string, HashSet<TypeTreeNode>> subNodes)
     {
         foreach (var nodes in allNodes)
         foreach (var rootNode in nodes)
@@ -139,7 +139,7 @@ public class InterfaceGenerator
         }
     }
 
-    private void DiscoverAllSubNodes(IEnumerable<IEnumerable<TpkUnityTreeNode>> allNodes, out Dictionary<string, HashSet<TpkUnityTreeNode>> subNodes)
+    private void DiscoverAllSubNodes(IEnumerable<IEnumerable<TypeTreeNode>> allNodes, out Dictionary<string, HashSet<TypeTreeNode>> subNodes)
     {
         subNodes = new();
     
@@ -151,7 +151,7 @@ public class InterfaceGenerator
     }
 
     // workaround for Keyframe and other generic types
-    private string GetGenricType(TpkUnityTreeNode node)
+    private string GetGenricType(TypeTreeNode node)
     {
         if (_cachedGenericTypes.TryGetValue(node.Index, out var type))
         {
@@ -178,7 +178,7 @@ public class InterfaceGenerator
         return type;
     }
     
-    private CompilationUnitSyntax GenerateClassInterface(string className, List<TpkUnityTreeNode> rootNodes, bool isRootClass)
+    private CompilationUnitSyntax GenerateClassInterface(string className, List<TypeTreeNode> rootNodes, bool isRootClass)
     {
         var usingDirectives = SyntaxFactory.List([
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("OneOf")),
@@ -302,7 +302,7 @@ public class InterfaceGenerator
         return $"OneOf<{string.Join(", ", uniqueTypes)}>";
     }
 
-    private string GetInterfaceName(TpkUnityTreeNode node, out string genericTypeName)
+    private string GetInterfaceName(TypeTreeNode node, out string genericTypeName)
     {
         genericTypeName = string.Empty;
         

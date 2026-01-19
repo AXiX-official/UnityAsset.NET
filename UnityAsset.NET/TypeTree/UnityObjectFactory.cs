@@ -8,7 +8,7 @@ public static class UnityObjectFactory
 {
     public static IUnityAsset Create(SerializedType sType, IReader reader)
     {
-        if (sType.Nodes[0].Type == "MonoBehaviour")
+        if (sType.ToTypeName() == "MonoBehaviour")
         {
             return new PreDefined.Types.MonoBehaviour(reader, sType.Nodes);
         }

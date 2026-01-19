@@ -199,9 +199,9 @@ public static class AssemblyManager
 
     public static Type GetType(SerializedType type)
     {
-        if (Helper.PreDefinedTypes.Contains(type.Nodes[0].Type))
+        if (Helper.PreDefinedTypes.Contains(type.ToTypeName()))
         {
-            return _preDefinedTypeMap[type.Nodes[0].Type];
+            return _preDefinedTypeMap[type.ToTypeName()];
         }
         
         if (TypeCache.TryGetValue(TypeTreeCache.Map[type.TypeHash].Hash, out var cachedType))

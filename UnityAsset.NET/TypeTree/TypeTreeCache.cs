@@ -31,6 +31,22 @@ public static class TypeTreeCache
             }
         }
     }
+    
+    public static List<TypeTreeNode> GetOrAddNodes(Hash128 typeHash, TypeTreeHelper.TypeTreeNode newNodes)
+    {
+        lock (CacheLock)
+        {
+            if (Cache.TryGetValue(typeHash, out var cachedNodes))
+            {
+                return cachedNodes;
+            }
+            else
+            {
+                Cache.Add(typeHash, newNodes.Traverse().Select((x, index) => new TypeTreeNode(x.Node, index, x.Level)).ToList());
+                return Cache[typeHash];
+            }
+        }
+    }
 
     public static void CleanCache()
     {

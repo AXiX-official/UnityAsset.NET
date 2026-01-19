@@ -2,6 +2,8 @@ namespace UnityAsset.NET.TypeTreeHelper;
 
 public class TypeTreeNode
 {
+    public int Index = -1;
+    
     public required string TypeName;
 
     public required string Name;
@@ -16,8 +18,8 @@ public class TypeTreeNode
 
     public required TypeTreeNode[] SubNodes;
     
-    private int? _hash = null;
-
+    private int? _hash;
+    
     public int Hash
     {
         get { 
@@ -41,7 +43,6 @@ public class TypeTreeNode
         }
     }
     
-    
     public bool RequiresAlign()
     {
         switch (TypeName)
@@ -58,5 +59,16 @@ public class TypeTreeNode
     private bool InternalRequiresAlign()
     {
         return (MetaFlag & 0x4000) != 0;
+    }
+    
+    public IEnumerable<(TypeTreeNode Node, byte Level)> Traverse(byte level = 0)
+    {
+        yield return (this, level);
+
+        foreach (var child in SubNodes)
+        {
+            foreach (var item in child.Traverse((byte)(level + 1)))
+                yield return item;
+        }
     }
 }

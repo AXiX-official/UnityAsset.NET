@@ -36,6 +36,18 @@ public class TypeTreeNode
         RefTypeHash = refTypeHash;
     }
 
+    public TypeTreeNode(TypeTreeHelper.TypeTreeNode node, int index = 0, byte level = 0)
+    {
+        Version = (ushort)node.Version;
+        Level = level;
+        TypeFlags = (TypeTreeNodeFlags)node.TypeFlags;
+        ByteSize = node.ByteSize;
+        Index = (uint)index;
+        MetaFlags = node.MetaFlag;
+        Type = node.TypeName;
+        Name = node.Name;
+    }
+
     public static TypeTreeNode Parse(IReader reader) => new(
         reader.ReadUInt16(),
         reader.ReadByte(),

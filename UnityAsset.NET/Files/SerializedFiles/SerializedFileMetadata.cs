@@ -36,10 +36,6 @@ public sealed class SerializedFileMetadata
         var unityVersion = reader.ReadNullTerminatedString();
         var targetPlatform = (BuildTarget)reader.ReadUInt32();
         var typeTreeEnabled = reader.ReadBoolean();
-        if (!typeTreeEnabled)
-        {
-            throw new Exception($"Unexpected typeTreeEnabled false.");
-        }
         var types = reader.ReadList(
             reader.ReadInt32(), 
             r => SerializedType.Parse(r, version, typeTreeEnabled, false)

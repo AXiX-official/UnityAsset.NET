@@ -1,61 +1,12 @@
 ﻿using System.Diagnostics;
-using AssetRipper.Primitives;
 using AssetRipper.Tpk;
 using AssetRipper.Tpk.TypeTrees;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using SharpCompress;
+using UnityAsset.NET.TypeTreeHelper;
 
 namespace UnityAsset.NET.UnityTypeGen;
 
 class Program
 {
-    private static Dictionary<string, List<TpkUnityTreeNode>> GetRootTypeNodes(TpkTypeTreeBlob blob, string minimalVersionStr)
-    {
-        UnityVersion.TryParse(minimalVersionStr, out var minimalVersion, out _);
-        
-        Dictionary<string, HashSet<ushort>> rootTypeNodesMap = new();
-        foreach (var info in blob.ClassInformation)
-        {
-            bool isSupportedVersion = false;
-            // versions are sorted 
-            for (int i = 0; i < info.Classes.Count; i++)
-            {
-                var (_, @class) = info.Classes[i];
-                if (!isSupportedVersion && i < info.Classes.Count - 1)
-                {
-                    var (nextVersion, _) = info.Classes[i + 1];
-                    if (minimalVersion < nextVersion)
-                    {
-                        isSupportedVersion = true;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-
-                if (@class is null)
-                    continue;
-                
-                var name = blob.StringBuffer[@class.Name];
-
-                if ((@class.Flags & TpkUnityClassFlags.HasReleaseRootNode) == 0)
-                    continue;
-                
-                if (!rootTypeNodesMap.ContainsKey(name))
-                    rootTypeNodesMap[name] = new HashSet<ushort>();
-                
-                rootTypeNodesMap[name].Add(@class.ReleaseRootNode);
-            }
-        }
-
-        return rootTypeNodesMap.ToDictionary(
-            kvp => kvp.Key, 
-            kvp => kvp.Value.Select(TpkUnityTreeNodeFactory.Create).ToList()
-        );
-    }
-    
     static void Main(string[] args)
     {
         var tpkFilePath = args.Length >= 1 ? args[0] : "./uncompressed.tpk";
@@ -77,7 +28,7 @@ class Program
         {
             var time = Stopwatch.StartNew();
             TpkUnityTreeNodeFactory.Init(tpkTypeTreeBlob);
-            var rootTypeNodesMap = GetRootTypeNodes(tpkTypeTreeBlob, minimalVersionStr);
+            var rootTypeNodesMap = TpkUnityTreeNodeFactory.GetRootTypeNodesAfterVersion(minimalVersionStr);
 
             TpkUnityTreeNodeFactory.CompactInPlace();
         
