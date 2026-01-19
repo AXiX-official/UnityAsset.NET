@@ -126,7 +126,8 @@ public class SemanticModelBuilder
         if (!DiscoveredTypes.TryAdd(current.Hash, classTypeInfo))
         {
             var oldClass = DiscoveredTypes[current.Hash];
-            throw new InvalidOperationException($"Type with hash {current.Hash} has already been discovered.");
+            if (oldClass.Name != classTypeInfo.Name)
+                throw new InvalidOperationException($"Type with hash {current.Hash} has already been discovered.");
         }
         return classTypeInfo;
     }

@@ -1,4 +1,3 @@
-using UnityAsset.NET.Files;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 
