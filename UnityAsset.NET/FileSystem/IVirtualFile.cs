@@ -23,15 +23,15 @@ public static class FileTypeHelper
             var header = System.Text.Encoding.UTF8.GetString(signature);
             if (header == "UnityFS")
             {
-                reader.Seek(0);
                 return FileType.BundleFile;
             }
             
             if (stream.Length < 20)
             {
-                reader.Seek(0);
                 return FileType.Unknown;
             }
+            
+            reader.Seek(0);
             
             var metadataSize = reader.ReadUInt32();
             UInt64 fileSize = reader.ReadUInt32();
