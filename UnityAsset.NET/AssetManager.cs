@@ -20,6 +20,8 @@ public class AssetManager
 
     public readonly ConcurrentDictionary<string, IFile> LoadedFiles = new();
     
+    public readonly ConcurrentDictionary<IVirtualFile, IFile> VirtualFileToFileMap = new();
+    
     public UnityRevision? Version { get; private set; }
     public BuildTarget? BuildTarget { get; private set; }
 
@@ -50,13 +52,12 @@ public class AssetManager
             var fileWrappers = new ConcurrentBag<(string, IFile)>();
             var types = new ConcurrentBag<SerializedType>();
             int progressCount = 0;
+            var total = files.Count;
             
             bool anyTypeTreeDisabled = false;
 
             Parallel.ForEach(files, file =>
             {
-                int currentProgress = Interlocked.Increment(ref progressCount);
-                progress?.Report(new LoadProgress($"AssetManager: Loading {file.Name}", files.Count, currentProgress));
                 switch (file.FileType)
                 {
                     case FileType.BundleFile:
@@ -76,6 +77,7 @@ public class AssetManager
                             }
                         }
 
+                        VirtualFileToFileMap[file] = bundleFile;
                         break;
                     }
                     case FileType.SerializedFile:
@@ -88,9 +90,13 @@ public class AssetManager
                         
                         foreach(var type in serializedFile.Metadata.Types)
                             types.Add(type);
+
+                        VirtualFileToFileMap[file] = serializedFile;
                         break;
                     }
                 }
+                int currentProgress = Interlocked.Increment(ref progressCount);
+                progress?.Report(new LoadProgress($"AssetManager: Loading {file.Name}", total, currentProgress));
             });
             
             foreach (var (path, file) in fileWrappers)
@@ -168,6 +174,7 @@ public class AssetManager
     public void Clear()
     {
         LoadedFiles.Clear();
+        VirtualFileToFileMap.Clear();
         _fileSystem.Clear();
         TypeTreeCache.CleanCache();
     }

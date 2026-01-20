@@ -29,12 +29,15 @@ public static class Helper
 
     public static HashSet<string> IncludedTypes =
     [
+        "Animation",
         "Animator",
         "AssetBundle",
         "Shader",
         "Sprite",
         "TextAsset",
         "Texture2D",
+        "MeshFilter",
+        "SkinnedMeshRenderer"
     ];
     
     public static HashSet<string> PreDefinedTypes =
