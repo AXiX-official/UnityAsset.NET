@@ -97,7 +97,10 @@ public class BundleFile
                         blocksBuffer.ReadSpanBytes((int)blockInfo.UncompressedSize), 
                         i);
                 else
-                    throw new IOException($"Unsupported compression type {compressionType} for UnityCN");
+                    Compression.DecompressToBytes(
+                        db.ReadSpanBytes((int)blockInfo.CompressedSize), 
+                        blocksBuffer.ReadSpanBytes((int)blockInfo.UncompressedSize), 
+                        (CompressionType)(blockInfo.Flags & StorageBlockFlags.CompressionTypeMask));
             }
         }
         blocksBuffer.Seek(0);
