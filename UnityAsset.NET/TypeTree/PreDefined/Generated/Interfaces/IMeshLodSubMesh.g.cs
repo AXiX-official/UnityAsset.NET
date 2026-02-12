@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IMeshLodSubMesh : IPreDefinedInterface
     {
-        public List<IMeshLodRange> m_Levels { get; }
+        public IMeshLodRange[] m_Levels { get; }
     }
 }

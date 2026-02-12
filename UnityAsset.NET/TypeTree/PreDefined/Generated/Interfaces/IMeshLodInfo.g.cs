@@ -10,6 +10,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public ILodSelectionCurve m_LodSelectionCurve { get; }
         public int m_NumLevels { get; }
-        public List<IMeshLodSubMesh> m_SubMeshes { get; }
+        public IMeshLodSubMesh[] m_SubMeshes { get; }
     }
 }

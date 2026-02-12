@@ -21,9 +21,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float m_Level { get; }
         public float m_CycleOffset { get; }
         public float m_AverageAngularSpeed { get; }
-        public List<int> m_IndexArray { get; }
-        public List<IValueDelta> m_ValueArrayDelta { get; }
-        public List<float> m_ValueArrayReferencePose { get; }
+        public int[] m_IndexArray { get; }
+        public IValueDelta[] m_ValueArrayDelta { get; }
+        public float[] m_ValueArrayReferencePose { get; }
         public bool m_Mirror { get; }
         public bool m_LoopTime { get; }
         public bool m_LoopBlend { get; }

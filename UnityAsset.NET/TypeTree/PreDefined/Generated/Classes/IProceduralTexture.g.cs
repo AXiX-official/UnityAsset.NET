@@ -88,7 +88,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<byte>? m_BakedData
+        public byte[]? m_BakedData
         {
             get
             {

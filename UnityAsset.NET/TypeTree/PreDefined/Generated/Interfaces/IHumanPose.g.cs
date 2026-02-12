@@ -11,10 +11,10 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public Ixform m_RootX { get; }
         public Ifloat3 m_LookAtPosition { get; }
         public Ifloat4 m_LookAtWeight { get; }
-        public List<IHumanGoal> m_GoalArray { get; }
+        public IHumanGoal[] m_GoalArray { get; }
         public IHandPose m_LeftHandPose { get; }
         public IHandPose m_RightHandPose { get; }
-        public List<float> m_DoFArray { get; }
-        public List<Ifloat3> m_TDoFArray { get; }
+        public float[] m_DoFArray { get; }
+        public Ifloat3[] m_TDoFArray { get; }
     }
 }

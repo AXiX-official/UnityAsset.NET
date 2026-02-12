@@ -10,10 +10,10 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public IVFXExpressionContainer m_Expressions { get; }
         public IVFXPropertySheetSerializedBase m_PropertySheet { get; }
-        public RefSum<List<IVFXMapping>, List<IVFXExposedMapping>> m_ExposedExpressions { get; }
-        public List<IVFXGPUBufferDesc> m_Buffers { get; }
-        public List<IVFXCPUBufferDesc> m_CPUBuffers { get; }
-        public List<IVFXEventDesc> m_Events { get; }
+        public RefSum<IVFXMapping[], IVFXExposedMapping[]> m_ExposedExpressions { get; }
+        public IVFXGPUBufferDesc[] m_Buffers { get; }
+        public IVFXCPUBufferDesc[] m_CPUBuffers { get; }
+        public IVFXEventDesc[] m_Events { get; }
         public IVFXRendererSettings m_RendererSettings { get; }
         public int m_CullingFlags { get; }
         public int m_UpdateMode { get; }
@@ -42,7 +42,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IVFXTemporaryGPUBufferDesc>? m_TemporaryBuffers
+        public IVFXTemporaryGPUBufferDesc[]? m_TemporaryBuffers
         {
             get
             {

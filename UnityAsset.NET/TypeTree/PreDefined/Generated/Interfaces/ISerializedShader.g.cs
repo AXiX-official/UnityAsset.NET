@@ -9,13 +9,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ISerializedShader : IPreDefinedInterface
     {
         public ISerializedProperties m_PropInfo { get; }
-        public List<ISerializedSubShader> m_SubShaders { get; }
+        public ISerializedSubShader[] m_SubShaders { get; }
         public string m_CustomEditorName { get; }
         public string m_FallbackName { get; }
-        public List<ISerializedShaderDependency> m_Dependencies { get; }
+        public ISerializedShaderDependency[] m_Dependencies { get; }
         public bool m_DisableNoSubshadersMessage { get; }
 
-        public List<ISerializedCustomEditorForRenderPipeline>? m_CustomEditorForRenderPipelines
+        public ISerializedCustomEditorForRenderPipeline[]? m_CustomEditorForRenderPipelines
         {
             get
             {
@@ -23,7 +23,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<string>? m_KeywordNames
+        public string[]? m_KeywordNames
         {
             get
             {
@@ -31,7 +31,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<byte>? m_KeywordFlags
+        public byte[]? m_KeywordFlags
         {
             get
             {

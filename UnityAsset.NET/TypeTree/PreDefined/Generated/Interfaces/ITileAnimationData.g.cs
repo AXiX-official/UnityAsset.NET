@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ITileAnimationData : IPreDefinedInterface
     {
-        public List<PPtr<ISprite>> m_AnimatedSprites { get; }
+        public PPtr<ISprite>[] m_AnimatedSprites { get; }
         public float m_AnimationSpeed { get; }
         public float m_AnimationTimeOffset { get; }
 

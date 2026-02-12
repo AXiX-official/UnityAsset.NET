@@ -28,10 +28,10 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public bool keepOriginalPositionXZ { get; }
         public bool heightFromFeet { get; }
         public bool mirror { get; }
-        public List<uint> bodyMask { get; }
-        public List<IClipAnimationInfoCurve> curves { get; }
-        public List<IAnimationEvent> events { get; }
-        public List<ITransformMaskElement> transformMask { get; }
+        public uint[] bodyMask { get; }
+        public IClipAnimationInfoCurve[] curves { get; }
+        public IAnimationEvent[] events { get; }
+        public ITransformMaskElement[] transformMask { get; }
         public int maskType { get; }
         public PPtr<IAvatarMask> maskSource { get; }
         public float additiveReferencePoseFrame { get; }

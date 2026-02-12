@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVFXExpressionContainer : IPreDefinedInterface
     {
-        public List<IExpression> m_Expressions { get; }
+        public IExpression[] m_Expressions { get; }
         public bool m_NeedsLocalToWorld { get; }
         public bool m_NeedsWorldToLocal { get; }
 

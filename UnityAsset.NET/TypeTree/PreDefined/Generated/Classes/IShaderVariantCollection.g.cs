@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IShaderVariantCollection : INamedObject
     {
-        public List<ValueTuple<PPtr<IShader>, IShaderInfo>> m_Shaders { get; }
+        public ValueTuple<PPtr<IShader>, IShaderInfo>[] m_Shaders { get; }
     }
 }

@@ -11,7 +11,15 @@ public readonly struct MapTypeInfo : IUnityTypeInfo
 
     public TypeSyntax ToTypeSyntax()
     {
-        return SyntaxFactory.GenericName("List")
-            .AddTypeArgumentListArguments(PairType.ToTypeSyntax());
+        /*return SyntaxFactory.GenericName("List")
+            .AddTypeArgumentListArguments(PairType.ToTypeSyntax());*/
+        return SyntaxFactory.ArrayType(PairType.ToTypeSyntax())
+            .AddRankSpecifiers(
+                SyntaxFactory.ArrayRankSpecifier(
+                    SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
+                        SyntaxFactory.OmittedArraySizeExpression()
+                    )
+                )
+            );
     }
 }

@@ -197,7 +197,7 @@ public static class Helper
             return GetInterfaceName(node.SubNodes[0]);
     
         if (node.TypeName == "Array")
-            return $"List<{GetInterfaceName(node.SubNodes[1])}>";
+            return $"{GetInterfaceName(node.SubNodes[1])}[]";
     
         return $"I{node.TypeName}";
     }
@@ -377,10 +377,18 @@ public static class Helper
 
     public static TypeSyntax GetTypeSyntax(Type type)
     {
-        /*if (type.FullName == "UnityAsset.NET.TypeTreeHelper.PreDefined.Types.Object")
+        if (type.IsArray)
         {
-            return SyntaxFactory.ParseTypeName("global::UnityAsset.NET.TypeTree.PreDefined.Types.Object");
-        }*/
+            var elemType = GetTypeSyntax(type.GetElementType()!);
+            return SyntaxFactory.ArrayType(elemType)
+                .AddRankSpecifiers(
+                    SyntaxFactory.ArrayRankSpecifier(
+                        SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
+                            SyntaxFactory.OmittedArraySizeExpression()
+                        )
+                    )
+                );
+        }
         
         if (type.IsGenericType)
         {

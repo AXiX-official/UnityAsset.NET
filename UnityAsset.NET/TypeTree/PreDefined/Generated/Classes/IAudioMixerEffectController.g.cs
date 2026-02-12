@@ -11,7 +11,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public GUID m_EffectID { get; }
         public string m_EffectName { get; }
         public GUID m_MixLevel { get; }
-        public List<IParameter> m_Parameters { get; }
+        public IParameter[] m_Parameters { get; }
         public PPtr<IAudioMixerEffectController> m_SendTarget { get; }
         public bool m_EnableWetMix { get; }
         public bool m_Bypass { get; }

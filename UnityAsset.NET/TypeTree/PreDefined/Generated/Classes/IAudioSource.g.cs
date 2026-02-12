@@ -33,7 +33,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public IAnimationCurve<float> spreadCustomCurve { get; }
         public IAnimationCurve<float> reverbZoneMixCustomCurve { get; }
 
-        public List<IExtensionPropertyValue>? m_ExtensionPropertyValues
+        public IExtensionPropertyValue[]? m_ExtensionPropertyValues
         {
             get
             {

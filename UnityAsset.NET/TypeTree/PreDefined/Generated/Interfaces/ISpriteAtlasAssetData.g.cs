@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISpriteAtlasAssetData : IPreDefinedInterface
     {
-        public List<PPtr<IUnityObject>> packables { get; }
+        public PPtr<IUnityObject>[] packables { get; }
     }
 }

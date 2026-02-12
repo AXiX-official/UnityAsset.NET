@@ -8,11 +8,11 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IUnityPropertySheet : IPreDefinedInterface
     {
-        public List<ValueTuple<string, IUnityTexEnv>> m_TexEnvs { get; }
-        public List<ValueTuple<string, float>> m_Floats { get; }
-        public List<ValueTuple<string, IColorRGBA>> m_Colors { get; }
+        public ValueTuple<string, IUnityTexEnv>[] m_TexEnvs { get; }
+        public ValueTuple<string, float>[] m_Floats { get; }
+        public ValueTuple<string, IColorRGBA>[] m_Colors { get; }
 
-        public List<ValueTuple<string, int>>? m_Ints
+        public ValueTuple<string, int>[]? m_Ints
         {
             get
             {

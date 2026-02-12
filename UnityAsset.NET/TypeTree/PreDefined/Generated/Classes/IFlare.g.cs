@@ -10,7 +10,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public PPtr<IUnityObject> m_FlareTexture { get; }
         public int m_TextureLayout { get; }
-        public List<IFlareElement> m_Elements { get; }
+        public IFlareElement[] m_Elements { get; }
         public bool m_UseFog { get; }
     }
 }

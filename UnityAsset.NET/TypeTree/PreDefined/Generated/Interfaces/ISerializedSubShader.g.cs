@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISerializedSubShader : IPreDefinedInterface
     {
-        public List<ISerializedPass> m_Passes { get; }
+        public ISerializedPass[] m_Passes { get; }
         public ISerializedTagMap m_Tags { get; }
         public int m_LOD { get; }
     }

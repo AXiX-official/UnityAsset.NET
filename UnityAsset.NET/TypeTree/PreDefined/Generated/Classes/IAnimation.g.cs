@@ -11,7 +11,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public PPtr<GameObject> m_GameObject { get; }
         public byte m_Enabled { get; }
         public PPtr<IAnimationClip> m_Animation { get; }
-        public List<PPtr<IAnimationClip>> m_Animations { get; }
+        public PPtr<IAnimationClip>[] m_Animations { get; }
         public int m_WrapMode { get; }
         public bool m_PlayAutomatically { get; }
         public bool m_AnimatePhysics { get; }

@@ -86,7 +86,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<byte>? m_PlatformBlob
+        public byte[]? m_PlatformBlob
         {
             get
             {

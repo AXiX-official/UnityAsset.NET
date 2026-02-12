@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IBlendTreeConstant : IPreDefinedInterface
     {
-        public List<IOffsetPtr> m_NodeArray { get; }
+        public IOffsetPtr[] m_NodeArray { get; }
     }
 }

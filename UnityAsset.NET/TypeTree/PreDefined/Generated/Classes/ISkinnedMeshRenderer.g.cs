@@ -19,7 +19,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public ushort m_LightmapIndexDynamic { get; }
         public Vector4f m_LightmapTilingOffset { get; }
         public Vector4f m_LightmapTilingOffsetDynamic { get; }
-        public List<PPtr<IMaterial>> m_Materials { get; }
+        public PPtr<IMaterial>[] m_Materials { get; }
         public IStaticBatchInfo m_StaticBatchInfo { get; }
         public PPtr<ITransform> m_StaticBatchRoot { get; }
         public PPtr<ITransform> m_ProbeAnchor { get; }
@@ -31,8 +31,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public bool m_UpdateWhenOffscreen { get; }
         public bool m_SkinnedMotionVectors { get; }
         public PPtr<IMesh> m_Mesh { get; }
-        public List<PPtr<ITransform>> m_Bones { get; }
-        public List<float> m_BlendShapeWeights { get; }
+        public PPtr<ITransform>[] m_Bones { get; }
+        public float[] m_BlendShapeWeights { get; }
         public PPtr<ITransform> m_RootBone { get; }
         public IAABB m_AABB { get; }
         public bool m_DirtyAABB { get; }

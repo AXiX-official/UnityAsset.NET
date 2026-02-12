@@ -358,7 +358,7 @@ public class InterfaceGenerator
             return GetInterfaceName(node.SubNodes[0], out _);
         
         if (node.TypeName == "Array")
-            return $"List<{GetInterfaceName(node.SubNodes[1], out _)}>";
+            return $"{GetInterfaceName(node.SubNodes[1], out _)}[]";
         
         if (Helper.PreDefinedTypes.Contains(node.TypeName))
             return node.TypeName;

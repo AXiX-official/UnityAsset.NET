@@ -9,8 +9,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ISnapshotConstant : IPreDefinedInterface
     {
         public uint nameHash { get; }
-        public List<float> values { get; }
-        public List<uint> transitionTypes { get; }
-        public List<uint> transitionIndices { get; }
+        public float[] values { get; }
+        public uint[] transitionTypes { get; }
+        public uint[] transitionIndices { get; }
     }
 }

@@ -9,13 +9,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IVFXEditorTaskDesc : IPreDefinedInterface
     {
         public int type { get; }
-        public List<IVFXMapping> buffers { get; }
-        public List<IVFXMapping> values { get; }
-        public List<IVFXMapping> @params { get; }
+        public IVFXMapping[] buffers { get; }
+        public IVFXMapping[] values { get; }
+        public IVFXMapping[] @params { get; }
         public PPtr<INamedObject> processor { get; }
         public int shaderSourceIndex { get; }
 
-        public List<IVFXMappingTemporary>? temporaryBuffers
+        public IVFXMappingTemporary[]? temporaryBuffers
         {
             get
             {

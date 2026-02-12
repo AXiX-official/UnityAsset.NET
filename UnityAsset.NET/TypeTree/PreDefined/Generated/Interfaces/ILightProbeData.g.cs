@@ -9,8 +9,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ILightProbeData : IPreDefinedInterface
     {
         public IProbeSetTetrahedralization m_Tetrahedralization { get; }
-        public List<IProbeSetIndex> m_ProbeSets { get; }
-        public List<Vector3f> m_Positions { get; }
-        public List<ValueTuple<IHash128, int>> m_NonTetrahedralizedProbeSetIndexMap { get; }
+        public IProbeSetIndex[] m_ProbeSets { get; }
+        public Vector3f[] m_Positions { get; }
+        public ValueTuple<IHash128, int>[] m_NonTetrahedralizedProbeSetIndexMap { get; }
     }
 }

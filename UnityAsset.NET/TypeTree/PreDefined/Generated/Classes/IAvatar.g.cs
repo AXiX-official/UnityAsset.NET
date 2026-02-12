@@ -10,7 +10,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public uint m_AvatarSize { get; }
         public IAvatarConstant m_Avatar { get; }
-        public List<ValueTuple<uint, string>> m_TOS { get; }
+        public ValueTuple<uint, string>[] m_TOS { get; }
 
         public IHumanDescription? m_HumanDescription
         {

@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IProbeSetTetrahedralization : IPreDefinedInterface
     {
-        public List<ITetrahedron> m_Tetrahedra { get; }
-        public List<Vector3f> m_HullRays { get; }
+        public ITetrahedron[] m_Tetrahedra { get; }
+        public Vector3f[] m_HullRays { get; }
     }
 }

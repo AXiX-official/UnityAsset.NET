@@ -10,6 +10,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public PPtr<IAudioMixer> m_AudioMixer { get; }
         public GUID m_GroupID { get; }
-        public List<PPtr<IAudioMixerGroup>> m_Children { get; }
+        public PPtr<IAudioMixerGroup>[] m_Children { get; }
     }
 }

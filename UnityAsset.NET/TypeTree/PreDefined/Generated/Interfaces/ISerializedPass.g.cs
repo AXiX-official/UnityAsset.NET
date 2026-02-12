@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISerializedPass : IPreDefinedInterface
     {
-        public List<ValueTuple<string, int>> m_NameIndices { get; }
+        public ValueTuple<string, int>[] m_NameIndices { get; }
         public int m_Type { get; }
         public ISerializedShaderState m_State { get; }
         public uint m_ProgramMask { get; }
@@ -38,7 +38,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IHash128>? m_EditorDataHash
+        public IHash128[]? m_EditorDataHash
         {
             get
             {
@@ -46,7 +46,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<byte>? m_Platforms
+        public byte[]? m_Platforms
         {
             get
             {
@@ -54,7 +54,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<ushort>? m_LocalKeywordMask
+        public ushort[]? m_LocalKeywordMask
         {
             get
             {
@@ -62,7 +62,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<ushort>? m_GlobalKeywordMask
+        public ushort[]? m_GlobalKeywordMask
         {
             get
             {
@@ -70,7 +70,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<ushort>? m_SerializedKeywordStateMask
+        public ushort[]? m_SerializedKeywordStateMask
         {
             get
             {

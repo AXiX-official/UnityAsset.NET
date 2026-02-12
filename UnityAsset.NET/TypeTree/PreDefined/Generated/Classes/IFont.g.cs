@@ -17,15 +17,15 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public int m_CharacterSpacing { get; }
         public int m_CharacterPadding { get; }
         public int m_ConvertCase { get; }
-        public List<ICharacterInfo> m_CharacterRects { get; }
-        public List<ValueTuple<ValueTuple<ushort, ushort>, float>> m_KerningValues { get; }
+        public ICharacterInfo[] m_CharacterRects { get; }
+        public ValueTuple<ValueTuple<ushort, ushort>, float>[] m_KerningValues { get; }
         public float m_PixelScale { get; }
-        public List<char> m_FontData { get; }
+        public char[] m_FontData { get; }
         public float m_Ascent { get; }
         public float m_Descent { get; }
         public uint m_DefaultStyle { get; }
-        public List<string> m_FontNames { get; }
-        public List<PPtr<IFont>> m_FallbackFonts { get; }
+        public string[] m_FontNames { get; }
+        public PPtr<IFont>[] m_FallbackFonts { get; }
         public int m_FontRenderingMode { get; }
 
         public bool? m_UseLegacyBoundsCalculation

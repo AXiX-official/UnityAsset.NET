@@ -8,18 +8,18 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IMesh : INamedObject
     {
-        public List<ISubMesh> m_SubMeshes { get; }
+        public ISubMesh[] m_SubMeshes { get; }
         public IBlendShapeData m_Shapes { get; }
-        public List<IMatrix4x4f> m_BindPose { get; }
-        public List<uint> m_BoneNameHashes { get; }
+        public IMatrix4x4f[] m_BindPose { get; }
+        public uint[] m_BoneNameHashes { get; }
         public uint m_RootBoneNameHash { get; }
         public byte m_MeshCompression { get; }
         public bool m_IsReadable { get; }
         public bool m_KeepVertices { get; }
         public bool m_KeepIndices { get; }
-        public List<byte> m_IndexBuffer { get; }
+        public byte[] m_IndexBuffer { get; }
 
-        public List<BoneWeights4>? m_Skin
+        public BoneWeights4[]? m_Skin
         {
             get
             {
@@ -31,8 +31,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public ICompressedMesh m_CompressedMesh { get; }
         public IAABB m_LocalAABB { get; }
         public int m_MeshUsageFlags { get; }
-        public List<byte> m_BakedConvexCollisionMesh { get; }
-        public List<byte> m_BakedTriangleCollisionMesh { get; }
+        public byte[] m_BakedConvexCollisionMesh { get; }
+        public byte[] m_BakedTriangleCollisionMesh { get; }
 
         public int? m_IndexFormat
         {
@@ -66,7 +66,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IMinMaxAABB>? m_BonesAABB
+        public IMinMaxAABB[]? m_BonesAABB
         {
             get
             {

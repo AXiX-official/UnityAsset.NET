@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IAnimatorStateTransition : INamedObject
     {
-        public List<IAnimatorCondition> m_Conditions { get; }
+        public IAnimatorCondition[] m_Conditions { get; }
         public PPtr<IAnimatorStateMachine> m_DstStateMachine { get; }
         public PPtr<IAnimatorState> m_DstState { get; }
         public bool m_Solo { get; }

@@ -8,11 +8,11 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface INavMeshData : INamedObject
     {
-        public List<INavMeshTileData> m_NavMeshTiles { get; }
+        public INavMeshTileData[] m_NavMeshTiles { get; }
         public INavMeshBuildSettings m_NavMeshBuildSettings { get; }
-        public List<IHeightmapData> m_Heightmaps { get; }
-        public List<IHeightMeshData> m_HeightMeshes { get; }
-        public List<IAutoOffMeshLinkData> m_OffMeshLinks { get; }
+        public IHeightmapData[] m_Heightmaps { get; }
+        public IHeightMeshData[] m_HeightMeshes { get; }
+        public IAutoOffMeshLinkData[] m_OffMeshLinks { get; }
         public IAABB m_SourceBounds { get; }
         public Quaternionf m_Rotation { get; }
         public Vector3f m_Position { get; }

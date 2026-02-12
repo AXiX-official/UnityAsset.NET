@@ -10,7 +10,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public PPtr<IAudioMixerGroup> m_OutputGroup { get; }
         public PPtr<IAudioMixerGroup> m_MasterGroup { get; }
-        public List<PPtr<IAudioMixerSnapshot>> m_Snapshots { get; }
+        public PPtr<IAudioMixerSnapshot>[] m_Snapshots { get; }
         public PPtr<IAudioMixerSnapshot> m_StartSnapshot { get; }
         public float m_SuspendThreshold { get; }
         public bool m_EnableSuspend { get; }

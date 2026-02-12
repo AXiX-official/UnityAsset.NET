@@ -10,8 +10,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public int targetRenderer { get; }
         public int targetLevel { get; }
-        public List<IComputeShaderKernelParent> kernels { get; }
-        public List<IComputeShaderCB> constantBuffers { get; }
+        public IComputeShaderKernelParent[] kernels { get; }
+        public IComputeShaderCB[] constantBuffers { get; }
         public bool resourcesResolved { get; }
     }
 }

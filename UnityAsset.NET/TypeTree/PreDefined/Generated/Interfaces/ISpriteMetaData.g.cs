@@ -12,11 +12,11 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public int m_Alignment { get; }
         public Vector2f m_Pivot { get; }
         public Vector4f m_Border { get; }
-        public List<List<Vector2f>> m_Outline { get; }
-        public List<List<Vector2f>> m_PhysicsShape { get; }
+        public Vector2f[][] m_Outline { get; }
+        public Vector2f[][] m_PhysicsShape { get; }
         public float m_TessellationDetail { get; }
 
-        public List<ISpriteBone>? m_Bones
+        public ISpriteBone[]? m_Bones
         {
             get
             {
@@ -32,7 +32,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<Vector2f>? m_Vertices
+        public Vector2f[]? m_Vertices
         {
             get
             {
@@ -40,7 +40,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<int>? m_Indices
+        public int[]? m_Indices
         {
             get
             {
@@ -48,7 +48,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<Iint2_storage>? m_Edges
+        public Iint2_storage[]? m_Edges
         {
             get
             {
@@ -56,7 +56,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<BoneWeights4>? m_Weights
+        public BoneWeights4[]? m_Weights
         {
             get
             {

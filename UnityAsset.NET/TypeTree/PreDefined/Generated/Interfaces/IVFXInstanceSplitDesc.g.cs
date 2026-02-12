@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVFXInstanceSplitDesc : IPreDefinedInterface
     {
-        public List<uint> values { get; }
+        public uint[] values { get; }
     }
 }

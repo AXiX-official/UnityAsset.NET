@@ -11,14 +11,14 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public IOffsetPtr m_AvatarSkeleton { get; }
         public IOffsetPtr m_AvatarSkeletonPose { get; }
         public IOffsetPtr m_DefaultPose { get; }
-        public List<uint> m_SkeletonNameIDArray { get; }
+        public uint[] m_SkeletonNameIDArray { get; }
         public IOffsetPtr m_Human { get; }
-        public List<int> m_HumanSkeletonIndexArray { get; }
-        public List<int> m_HumanSkeletonReverseIndexArray { get; }
+        public int[] m_HumanSkeletonIndexArray { get; }
+        public int[] m_HumanSkeletonReverseIndexArray { get; }
         public int m_RootMotionBoneIndex { get; }
         public Ixform m_RootMotionBoneX { get; }
         public IOffsetPtr m_RootMotionSkeleton { get; }
         public IOffsetPtr m_RootMotionSkeletonPose { get; }
-        public List<int> m_RootMotionSkeletonIndexArray { get; }
+        public int[] m_RootMotionSkeletonIndexArray { get; }
     }
 }

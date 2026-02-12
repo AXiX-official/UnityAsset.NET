@@ -12,7 +12,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public IDetailDatabase m_DetailDatabase { get; }
         public IHeightmap m_Heightmap { get; }
 
-        public List<PPtr<IShader>>? m_PreloadShaders
+        public PPtr<IShader>[]? m_PreloadShaders
         {
             get
             {

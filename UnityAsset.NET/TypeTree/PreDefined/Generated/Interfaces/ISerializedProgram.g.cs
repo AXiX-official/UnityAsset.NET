@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISerializedProgram : IPreDefinedInterface
     {
-        public List<ISerializedSubProgram> m_SubPrograms { get; }
+        public ISerializedSubProgram[] m_SubPrograms { get; }
 
         public ISerializedProgramParameters? m_CommonParameters
         {
@@ -18,7 +18,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<List<ISerializedPlayerSubProgram>>? m_PlayerSubPrograms
+        public ISerializedPlayerSubProgram[][]? m_PlayerSubPrograms
         {
             get
             {
@@ -26,7 +26,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<List<uint>>? m_ParameterBlobIndices
+        public uint[][]? m_ParameterBlobIndices
         {
             get
             {
@@ -34,7 +34,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<ushort>? m_SerializedKeywordStateMask
+        public ushort[]? m_SerializedKeywordStateMask
         {
             get
             {

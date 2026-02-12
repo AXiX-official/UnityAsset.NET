@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IAvatarMask : INamedObject
     {
-        public List<uint> m_Mask { get; }
-        public List<ITransformMaskElement> m_Elements { get; }
+        public uint[] m_Mask { get; }
+        public ITransformMaskElement[] m_Elements { get; }
     }
 }

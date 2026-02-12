@@ -10,6 +10,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public float screenRelativeHeight { get; }
         public float fadeTransitionWidth { get; }
-        public List<ILODRenderer> renderers { get; }
+        public ILODRenderer[] renderers { get; }
     }
 }

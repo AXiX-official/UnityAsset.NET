@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IAnimationClipBindingConstant : IPreDefinedInterface
     {
-        public List<IGenericBinding> genericBindings { get; }
-        public List<PPtr<IUnityObject>> pptrCurveMapping { get; }
+        public IGenericBinding[] genericBindings { get; }
+        public PPtr<IUnityObject>[] pptrCurveMapping { get; }
     }
 }

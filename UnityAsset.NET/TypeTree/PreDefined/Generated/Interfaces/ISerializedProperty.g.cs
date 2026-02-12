@@ -9,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ISerializedProperty : IPreDefinedInterface
     {
         public string m_Description { get; }
-        public List<string> m_Attributes { get; }
+        public string[] m_Attributes { get; }
         public int m_Type { get; }
         public uint m_Flags { get; }
         public float m_DefValue_0_ { get; }

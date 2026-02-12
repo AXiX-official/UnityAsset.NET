@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IParserBindChannels : IPreDefinedInterface
     {
-        public List<IShaderBindChannel> m_Channels { get; }
+        public IShaderBindChannel[] m_Channels { get; }
         public int m_SourceMap { get; }
     }
 }

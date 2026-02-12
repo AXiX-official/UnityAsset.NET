@@ -12,6 +12,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public IMinMaxCurve rateOverTime { get; }
         public IMinMaxCurve rateOverDistance { get; }
         public int m_BurstCount { get; }
-        public List<IParticleSystemEmissionBurst> m_Bursts { get; }
+        public IParticleSystemEmissionBurst[] m_Bursts { get; }
     }
 }

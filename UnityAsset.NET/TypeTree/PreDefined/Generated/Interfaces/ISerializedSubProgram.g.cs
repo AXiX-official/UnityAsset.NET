@@ -11,7 +11,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public uint m_BlobIndex { get; }
         public IParserBindChannels m_Channels { get; }
 
-        public List<ushort>? m_KeywordIndices
+        public ushort[]? m_KeywordIndices
         {
             get
             {
@@ -22,7 +22,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public sbyte m_ShaderHardwareTier { get; }
         public sbyte m_GpuProgramType { get; }
 
-        public List<IVectorParameter>? m_VectorParams
+        public IVectorParameter[]? m_VectorParams
         {
             get
             {
@@ -30,7 +30,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IMatrixParameter>? m_MatrixParams
+        public IMatrixParameter[]? m_MatrixParams
         {
             get
             {
@@ -38,7 +38,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<ITextureParameter>? m_TextureParams
+        public ITextureParameter[]? m_TextureParams
         {
             get
             {
@@ -46,7 +46,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IBufferBinding>? m_BufferParams
+        public IBufferBinding[]? m_BufferParams
         {
             get
             {
@@ -54,7 +54,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IConstantBuffer>? m_ConstantBuffers
+        public IConstantBuffer[]? m_ConstantBuffers
         {
             get
             {
@@ -62,7 +62,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IBufferBinding>? m_ConstantBufferBindings
+        public IBufferBinding[]? m_ConstantBufferBindings
         {
             get
             {
@@ -70,7 +70,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IUAVParameter>? m_UAVParams
+        public IUAVParameter[]? m_UAVParams
         {
             get
             {
@@ -78,7 +78,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<ISamplerParameter>? m_Samplers
+        public ISamplerParameter[]? m_Samplers
         {
             get
             {
@@ -94,7 +94,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<ushort>? m_GlobalKeywordIndices
+        public ushort[]? m_GlobalKeywordIndices
         {
             get
             {
@@ -102,7 +102,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<ushort>? m_LocalKeywordIndices
+        public ushort[]? m_LocalKeywordIndices
         {
             get
             {

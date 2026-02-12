@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ITransitionConstant : IPreDefinedInterface
     {
-        public List<IOffsetPtr> m_ConditionConstantArray { get; }
+        public IOffsetPtr[] m_ConditionConstantArray { get; }
         public uint m_DestinationState { get; }
         public uint m_FullPathID { get; }
         public uint m_ID { get; }

@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISerializedTagMap : IPreDefinedInterface
     {
-        public List<ValueTuple<string, string>> tags { get; }
+        public ValueTuple<string, string>[] tags { get; }
     }
 }

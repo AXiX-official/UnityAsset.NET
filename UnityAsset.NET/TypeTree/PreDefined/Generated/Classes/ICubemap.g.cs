@@ -21,7 +21,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public int m_ColorSpace { get; }
         public TypelessData image_data { get; }
         public StreamingInfo m_StreamData { get; }
-        public List<PPtr<ITexture2D>> m_SourceTextures { get; }
+        public PPtr<ITexture2D>[] m_SourceTextures { get; }
 
         public int? m_ForcedFallbackFormat
         {
@@ -87,7 +87,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<byte>? m_PlatformBlob
+        public byte[]? m_PlatformBlob
         {
             get
             {

@@ -13,7 +13,7 @@ public sealed class SerializedFile : IFile
     public SerializedFileHeader Header;
     public SerializedFileMetadata Metadata;
     public List<Asset> Assets = new();
-    public List<PPtr<IUnityObject>> PreloadTable = new();
+    public PPtr<IUnityObject>[] PreloadTable = [];
     public Dictionary<Int64, string> Containers = new();
     public BundleFile? ParentBundle { get; private set; }
     public IVirtualFile? SourceVirtualFile { get; private set; }

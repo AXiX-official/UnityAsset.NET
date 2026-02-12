@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface Ifixed_bitset : IPreDefinedInterface
     {
-        public List<uint> Array { get; }
+        public uint[] Array { get; }
     }
 }

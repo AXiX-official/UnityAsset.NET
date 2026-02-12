@@ -21,8 +21,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public uint m_LightmapFlags { get; }
         public bool m_EnableInstancingVariants { get; }
         public int m_CustomRenderQueue { get; }
-        public List<ValueTuple<string, string>> stringTagMap { get; }
-        public List<string> disabledShaderPasses { get; }
+        public ValueTuple<string, string>[] stringTagMap { get; }
+        public string[] disabledShaderPasses { get; }
         public IUnityPropertySheet m_SavedProperties { get; }
 
         public bool? m_DoubleSidedGI
@@ -33,7 +33,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IBuildTextureStackReference>? m_BuildTextureStacks
+        public IBuildTextureStackReference[]? m_BuildTextureStacks
         {
             get
             {
@@ -41,7 +41,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<string>? m_ValidKeywords
+        public string[]? m_ValidKeywords
         {
             get
             {
@@ -49,7 +49,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<string>? m_InvalidKeywords
+        public string[]? m_InvalidKeywords
         {
             get
             {

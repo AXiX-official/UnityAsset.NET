@@ -78,7 +78,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public bool collidesWithDynamic { get; }
         public bool interiorCollisions { get; }
 
-        public List<PPtr<ITransform>>? m_Planes
+        public PPtr<ITransform>[]? m_Planes
         {
             get
             {

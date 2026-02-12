@@ -9,15 +9,15 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IShader : INamedObject
     {
         public ISerializedShader m_ParsedForm { get; }
-        public List<uint> platforms { get; }
-        public RefSum<List<uint>, List<List<uint>>> offsets { get; }
-        public RefSum<List<uint>, List<List<uint>>> compressedLengths { get; }
-        public RefSum<List<uint>, List<List<uint>>> decompressedLengths { get; }
-        public List<byte> compressedBlob { get; }
-        public List<PPtr<IShader>> m_Dependencies { get; }
+        public uint[] platforms { get; }
+        public RefSum<uint[], uint[][]> offsets { get; }
+        public RefSum<uint[], uint[][]> compressedLengths { get; }
+        public RefSum<uint[], uint[][]> decompressedLengths { get; }
+        public byte[] compressedBlob { get; }
+        public PPtr<IShader>[] m_Dependencies { get; }
         public bool m_ShaderIsBaked { get; }
 
-        public List<ValueTuple<string, PPtr<IUnityObject>>>? m_NonModifiableTextures
+        public ValueTuple<string, PPtr<IUnityObject>>[]? m_NonModifiableTextures
         {
             get
             {
@@ -25,7 +25,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<uint>? stageCounts
+        public uint[]? stageCounts
         {
             get
             {

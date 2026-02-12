@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IOcclusionCullingData : INamedObject
     {
-        public List<byte> m_PVSData { get; }
-        public List<IOcclusionScene> m_Scenes { get; }
+        public byte[] m_PVSData { get; }
+        public IOcclusionScene[] m_Scenes { get; }
     }
 }

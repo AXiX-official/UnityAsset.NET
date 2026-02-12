@@ -10,8 +10,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public PPtr<ITexture2D> texture { get; }
         public PPtr<ITexture2D> alphaTexture { get; }
-        public List<ISubMesh> m_SubMeshes { get; }
-        public List<byte> m_IndexBuffer { get; }
+        public ISubMesh[] m_SubMeshes { get; }
+        public byte[] m_IndexBuffer { get; }
         public IVertexData m_VertexData { get; }
         public Rectf textureRect { get; }
         public Vector2f textureRectOffset { get; }
@@ -20,7 +20,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public Vector4f uvTransform { get; }
         public float downscaleMultiplier { get; }
 
-        public List<IMatrix4x4f>? m_Bindpose
+        public IMatrix4x4f[]? m_Bindpose
         {
             get
             {
@@ -28,7 +28,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<BoneWeights4>? m_SourceSkin
+        public BoneWeights4[]? m_SourceSkin
         {
             get
             {
@@ -36,7 +36,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<SecondarySpriteTexture>? secondaryTextures
+        public SecondarySpriteTexture[]? secondaryTextures
         {
             get
             {

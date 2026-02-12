@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVariableBoneCountWeights : IPreDefinedInterface
     {
-        public List<uint> m_Data { get; }
+        public uint[] m_Data { get; }
     }
 }

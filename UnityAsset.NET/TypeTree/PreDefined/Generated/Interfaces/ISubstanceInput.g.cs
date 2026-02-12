@@ -17,12 +17,12 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public int internalType { get; }
         public uint internalIndex { get; }
         public uint internalIdentifier { get; }
-        public List<string> componentLabels { get; }
+        public string[] componentLabels { get; }
         public float minimum { get; }
         public float maximum { get; }
         public float step { get; }
         public uint flags { get; }
-        public List<uint> alteredTexturesUID { get; }
-        public List<ISubstanceEnumItem> enumValues { get; }
+        public uint[] alteredTexturesUID { get; }
+        public ISubstanceEnumItem[] enumValues { get; }
     }
 }

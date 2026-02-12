@@ -11,7 +11,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public uint m_BlendType { get; }
         public uint m_BlendEventID { get; }
         public uint m_BlendEventYID { get; }
-        public List<uint> m_ChildIndices { get; }
+        public uint[] m_ChildIndices { get; }
         public IOffsetPtr m_Blend1dData { get; }
         public IOffsetPtr m_Blend2dData { get; }
         public IOffsetPtr m_BlendDirectData { get; }

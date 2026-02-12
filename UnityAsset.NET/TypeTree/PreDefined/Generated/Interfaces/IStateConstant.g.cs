@@ -8,9 +8,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IStateConstant : IPreDefinedInterface
     {
-        public List<IOffsetPtr> m_TransitionConstantArray { get; }
-        public List<int> m_BlendTreeConstantIndexArray { get; }
-        public List<IOffsetPtr> m_BlendTreeConstantArray { get; }
+        public IOffsetPtr[] m_TransitionConstantArray { get; }
+        public int[] m_BlendTreeConstantIndexArray { get; }
+        public IOffsetPtr[] m_BlendTreeConstantArray { get; }
         public uint m_NameID { get; }
         public uint m_PathID { get; }
         public uint m_FullPathID { get; }

@@ -8,14 +8,14 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IValueArray : IPreDefinedInterface
     {
-        public List<Ifloat3> m_PositionValues { get; }
-        public List<Ifloat4> m_QuaternionValues { get; }
-        public List<Ifloat3> m_ScaleValues { get; }
-        public List<float> m_FloatValues { get; }
-        public List<int> m_IntValues { get; }
-        public List<bool> m_BoolValues { get; }
+        public Ifloat3[] m_PositionValues { get; }
+        public Ifloat4[] m_QuaternionValues { get; }
+        public Ifloat3[] m_ScaleValues { get; }
+        public float[] m_FloatValues { get; }
+        public int[] m_IntValues { get; }
+        public bool[] m_BoolValues { get; }
 
-        public List<IEntityId>? m_EntityIdValues
+        public IEntityId[]? m_EntityIdValues
         {
             get
             {

@@ -9,9 +9,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IPreset : INamedObject
     {
         public IPresetType m_TargetType { get; }
-        public List<IPropertyModification> m_Properties { get; }
+        public IPropertyModification[] m_Properties { get; }
 
-        public List<string>? m_ExcludedProperties
+        public string[]? m_ExcludedProperties
         {
             get
             {
@@ -27,7 +27,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IPropertyModification>? m_CoupledProperties
+        public IPropertyModification[]? m_CoupledProperties
         {
             get
             {

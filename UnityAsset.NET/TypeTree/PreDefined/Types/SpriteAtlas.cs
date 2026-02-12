@@ -8,9 +8,9 @@ public class SpriteAtlas : ISpriteAtlas
 {
     public string ClassName => "SpriteAtlas";
     public string m_Name { get; }
-    public List<PPtr<ISprite>> m_PackedSprites { get; }
-    public List<string> m_PackedSpriteNamesToIndex { get; }
-    public List<((GUID, Int64), SpriteAtlasData)> m_RenderDataMap { get; }
+    public PPtr<ISprite>[] m_PackedSprites { get; }
+    public string[] m_PackedSpriteNamesToIndex { get; }
+    public ((GUID, Int64), SpriteAtlasData)[] m_RenderDataMap { get; }
     public string m_Tag { get; }
     public bool m_IsVariant { get; }
     
@@ -18,11 +18,11 @@ public class SpriteAtlas : ISpriteAtlas
     {
         m_Name = reader.ReadSizedString();
         reader.Align(4);
-        m_PackedSprites = reader.ReadListWithAlign(reader.ReadInt32(), r => new PPtr<ISprite>(r), false);
+        m_PackedSprites = reader.ReadArrayWithAlign(reader.ReadInt32(), r => new PPtr<ISprite>(r), false);
 
-        m_PackedSpriteNamesToIndex = reader.ReadListWithAlign(reader.ReadInt32(), r => r.ReadSizedString(), true);
+        m_PackedSpriteNamesToIndex = reader.ReadArrayWithAlign(reader.ReadInt32(), r => r.ReadSizedString(), true);
         
-        m_RenderDataMap = reader.ReadListWithAlign(
+        m_RenderDataMap = reader.ReadArrayWithAlign(
 	        reader.ReadInt32(), 
 	        r => r.ReadPairWithAlign(
 		        r => r.ReadPairWithAlign<GUID, Int64>(r => new GUID(r), 

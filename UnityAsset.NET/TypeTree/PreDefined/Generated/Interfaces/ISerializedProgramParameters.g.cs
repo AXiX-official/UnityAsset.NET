@@ -8,13 +8,13 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISerializedProgramParameters : IPreDefinedInterface
     {
-        public List<IVectorParameter> m_VectorParams { get; }
-        public List<IMatrixParameter> m_MatrixParams { get; }
-        public List<ITextureParameter> m_TextureParams { get; }
-        public List<IBufferBinding> m_BufferParams { get; }
-        public List<IConstantBuffer> m_ConstantBuffers { get; }
-        public List<IBufferBinding> m_ConstantBufferBindings { get; }
-        public List<IUAVParameter> m_UAVParams { get; }
-        public List<ISamplerParameter> m_Samplers { get; }
+        public IVectorParameter[] m_VectorParams { get; }
+        public IMatrixParameter[] m_MatrixParams { get; }
+        public ITextureParameter[] m_TextureParams { get; }
+        public IBufferBinding[] m_BufferParams { get; }
+        public IConstantBuffer[] m_ConstantBuffers { get; }
+        public IBufferBinding[] m_ConstantBufferBindings { get; }
+        public IUAVParameter[] m_UAVParams { get; }
+        public ISamplerParameter[] m_Samplers { get; }
     }
 }

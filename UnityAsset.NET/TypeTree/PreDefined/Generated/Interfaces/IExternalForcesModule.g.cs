@@ -34,7 +34,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<PPtr<IParticleSystemForceField>>? influenceList
+        public PPtr<IParticleSystemForceField>[]? influenceList
         {
             get
             {

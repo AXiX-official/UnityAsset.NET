@@ -9,11 +9,11 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IConstantBuffer : IPreDefinedInterface
     {
         public int m_NameIndex { get; }
-        public List<IMatrixParameter> m_MatrixParams { get; }
-        public List<IVectorParameter> m_VectorParams { get; }
+        public IMatrixParameter[] m_MatrixParams { get; }
+        public IVectorParameter[] m_VectorParams { get; }
         public int m_Size { get; }
 
-        public List<IStructParameter>? m_StructParams
+        public IStructParameter[]? m_StructParams
         {
             get
             {

@@ -72,7 +72,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IGraphicsStateInfo>? graphicsStateInfoSet
+        public IGraphicsStateInfo[]? graphicsStateInfoSet
         {
             get
             {

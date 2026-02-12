@@ -8,10 +8,10 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IEnlightenSceneMapping : IPreDefinedInterface
     {
-        public List<IEnlightenRendererInformation> m_Renderers { get; }
-        public List<IEnlightenSystemInformation> m_Systems { get; }
-        public List<IHash128> m_Probesets { get; }
-        public List<IEnlightenSystemAtlasInformation> m_SystemAtlases { get; }
-        public List<IEnlightenTerrainChunksInformation> m_TerrainChunks { get; }
+        public IEnlightenRendererInformation[] m_Renderers { get; }
+        public IEnlightenSystemInformation[] m_Systems { get; }
+        public IHash128[] m_Probesets { get; }
+        public IEnlightenSystemAtlasInformation[] m_SystemAtlases { get; }
+        public IEnlightenTerrainChunksInformation[] m_TerrainChunks { get; }
     }
 }

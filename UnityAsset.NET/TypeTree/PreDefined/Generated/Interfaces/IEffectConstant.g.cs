@@ -14,6 +14,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public uint wetMixLevelIndex { get; }
         public uint prevEffectIndex { get; }
         public bool bypass { get; }
-        public List<uint> parameterIndices { get; }
+        public uint[] parameterIndices { get; }
     }
 }

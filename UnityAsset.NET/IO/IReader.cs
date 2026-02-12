@@ -78,6 +78,27 @@ public interface IReader : ISeek, IFile
     }
     public List<T> ReadListWithAlign<T>(Func<IReader, T> constructor, bool requiresAlign) =>
         ReadListWithAlign(ReadInt32(), constructor, requiresAlign);
+    public T[] ReadArray<T>(int count, Func<IReader, T> constructor)
+    {
+        var array = new T[count];
+        for (int i = 0; i < count; i++)
+            array[i] = constructor(this);
+        return array;
+    }
+    public T[] ReadArray<T>(Func<IReader, T> constructor) => ReadArray(ReadInt32(), constructor);
+    public T[] ReadArrayWithAlign<T>(int count, Func<IReader, T> constructor, bool requiresAlign)
+    {
+        var array = new T[count];
+        for (int i = 0; i < count; i++)
+        {
+            array[i] = constructor(this);
+            if (requiresAlign) 
+                Align(4);
+        }
+        return array;
+    }
+    public T[] ReadArrayWithAlign<T>(Func<IReader, T> constructor, bool requiresAlign) =>
+        ReadArrayWithAlign(ReadInt32(), constructor, requiresAlign);
     public (TK, TV) ReadPairWithAlign<TK, TV>(Func<IReader, TK> keyConstructor,
         Func<IReader, TV> valueConstructor, bool keyRequiresAlign, bool valueRequiresAlign) where TK : notnull
     {

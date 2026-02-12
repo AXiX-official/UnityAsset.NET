@@ -16,9 +16,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public double m_FrameRate { get; }
         public ulong m_FrameCount { get; }
         public int m_Format { get; }
-        public List<ushort> m_AudioChannelCount { get; }
-        public List<uint> m_AudioSampleRate { get; }
-        public List<string> m_AudioLanguage { get; }
+        public ushort[] m_AudioChannelCount { get; }
+        public uint[] m_AudioSampleRate { get; }
+        public string[] m_AudioLanguage { get; }
         public IStreamedResource m_ExternalResources { get; }
         public bool m_HasSplitAlpha { get; }
 
@@ -46,7 +46,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<PPtr<IShader>>? m_VideoShaders
+        public PPtr<IShader>[]? m_VideoShaders
         {
             get
             {

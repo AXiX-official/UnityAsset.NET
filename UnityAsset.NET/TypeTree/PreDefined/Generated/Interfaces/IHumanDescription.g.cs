@@ -8,8 +8,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IHumanDescription : IPreDefinedInterface
     {
-        public List<IHumanBone> m_Human { get; }
-        public List<ISkeletonBone> m_Skeleton { get; }
+        public IHumanBone[] m_Human { get; }
+        public ISkeletonBone[] m_Skeleton { get; }
         public float m_ArmTwist { get; }
         public float m_ForeArmTwist { get; }
         public float m_UpperLegTwist { get; }

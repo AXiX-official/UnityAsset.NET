@@ -10,7 +10,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public uint capacity { get; }
         public uint stride { get; }
-        public List<IVFXLayoutElementDesc> layout { get; }
+        public IVFXLayoutElementDesc[] layout { get; }
         public IVFXCPUBufferData initialData { get; }
     }
 }

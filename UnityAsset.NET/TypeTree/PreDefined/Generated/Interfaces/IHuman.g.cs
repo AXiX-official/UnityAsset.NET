@@ -14,7 +14,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public IOffsetPtr m_LeftHand { get; }
         public IOffsetPtr m_RightHand { get; }
 
-        public List<IHandle>? m_Handles
+        public IHandle[]? m_Handles
         {
             get
             {
@@ -22,7 +22,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<ICollider>? m_ColliderArray
+        public ICollider[]? m_ColliderArray
         {
             get
             {
@@ -30,10 +30,10 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<int> m_HumanBoneIndex { get; }
-        public List<float> m_HumanBoneMass { get; }
+        public int[] m_HumanBoneIndex { get; }
+        public float[] m_HumanBoneMass { get; }
 
-        public List<int>? m_ColliderIndex
+        public int[]? m_ColliderIndex
         {
             get
             {

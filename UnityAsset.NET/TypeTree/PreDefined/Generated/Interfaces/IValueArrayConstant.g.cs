@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IValueArrayConstant : IPreDefinedInterface
     {
-        public List<IValueConstant> m_ValueArray { get; }
+        public IValueConstant[] m_ValueArray { get; }
     }
 }

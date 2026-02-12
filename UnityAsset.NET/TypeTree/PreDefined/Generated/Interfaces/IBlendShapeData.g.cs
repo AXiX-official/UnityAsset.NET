@@ -8,9 +8,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IBlendShapeData : IPreDefinedInterface
     {
-        public List<IBlendShapeVertex> vertices { get; }
-        public List<IMeshBlendShape> shapes { get; }
-        public List<IMeshBlendShapeChannel> channels { get; }
-        public List<float> fullWeights { get; }
+        public IBlendShapeVertex[] vertices { get; }
+        public IMeshBlendShape[] shapes { get; }
+        public IMeshBlendShapeChannel[] channels { get; }
+        public float[] fullWeights { get; }
     }
 }

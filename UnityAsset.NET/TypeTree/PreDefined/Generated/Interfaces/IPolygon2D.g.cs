@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IPolygon2D : IPreDefinedInterface
     {
-        public List<List<Vector2f>> m_Paths { get; }
+        public Vector2f[][] m_Paths { get; }
     }
 }

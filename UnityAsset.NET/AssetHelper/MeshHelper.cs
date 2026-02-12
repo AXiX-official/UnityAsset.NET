@@ -1,7 +1,6 @@
 ﻿// based on https://github.com/RazTools/Studio/blob/main/AssetStudio/Classes/Mesh.cs#L478
 using System.Buffers.Binary;
 using System.Collections;
-using System.Diagnostics;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files;
@@ -280,7 +279,7 @@ public static class MeshHelper
         var vertexCount = vertexData.m_VertexCount;
         processedMesh.m_VertexCount = (int)vertexCount;
         
-        for (var chn = 0; chn < vertexData.m_Channels.Count; chn++)
+        for (var chn = 0; chn < vertexData.m_Channels.Length; chn++)
         {
             var channel = vertexData.m_Channels[chn];
             
@@ -448,7 +447,7 @@ public static class MeshHelper
             throw new Exception("Failed to extract mesh data: uint32 indices are not supported.");
 
         var m_IndexBuffer = mesh.m_IndexBuffer;
-        var m_IndexBuffer_size = m_IndexBuffer.Count;
+        var m_IndexBuffer_size = m_IndexBuffer.Length;
         var indexBuffer = m_Use16BitIndices
             ? Enumerable.Range(0, m_IndexBuffer_size / 2)
                 .Select(i =>

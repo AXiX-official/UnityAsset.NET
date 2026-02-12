@@ -8,10 +8,10 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IBlend2dDataConstant : IPreDefinedInterface
     {
-        public List<Vector2f> m_ChildPositionArray { get; }
-        public List<float> m_ChildMagnitudeArray { get; }
-        public List<Vector2f> m_ChildPairVectorArray { get; }
-        public List<float> m_ChildPairAvgMagInvArray { get; }
-        public List<IMotionNeighborList> m_ChildNeighborListArray { get; }
+        public Vector2f[] m_ChildPositionArray { get; }
+        public float[] m_ChildMagnitudeArray { get; }
+        public Vector2f[] m_ChildPairVectorArray { get; }
+        public float[] m_ChildPairAvgMagInvArray { get; }
+        public IMotionNeighborList[] m_ChildNeighborListArray { get; }
     }
 }

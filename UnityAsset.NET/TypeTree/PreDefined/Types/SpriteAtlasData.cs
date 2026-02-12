@@ -17,7 +17,7 @@ public class SpriteAtlasData : IPreDefinedInterface
     public Vector4f uvTransform { get; }
     public float downscaleMultiplier { get; }
     public UInt32 settingsRaw { get; }
-    public List<SecondarySpriteTexture>? secondaryTextures { get; }
+    public SecondarySpriteTexture[]? secondaryTextures { get; }
 
     public SpriteAtlasData(IReader reader)
     {
@@ -36,7 +36,7 @@ public class SpriteAtlasData : IPreDefinedInterface
         if (version >= "2020.2") //2020.2 and up
         {
             secondaryTextures =
-                reader.ReadListWithAlign(reader.ReadInt32(), r => new SecondarySpriteTexture(r), true);
+                reader.ReadArrayWithAlign(reader.ReadInt32(), r => new SecondarySpriteTexture(r), true);
         }
     }
     

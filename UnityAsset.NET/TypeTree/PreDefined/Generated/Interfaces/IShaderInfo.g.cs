@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IShaderInfo : IPreDefinedInterface
     {
-        public List<IVariantInfo> variants { get; }
+        public IVariantInfo[] variants { get; }
     }
 }

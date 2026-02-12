@@ -10,6 +10,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public string name { get; }
         public int byteSize { get; }
-        public List<IComputeShaderParam> @params { get; }
+        public IComputeShaderParam[] @params { get; }
     }
 }

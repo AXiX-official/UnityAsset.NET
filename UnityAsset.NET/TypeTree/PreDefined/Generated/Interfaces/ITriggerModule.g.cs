@@ -72,7 +72,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<PPtr<IComponent>>? primitives
+        public PPtr<IComponent>[]? primitives
         {
             get
             {

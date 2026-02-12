@@ -29,7 +29,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<ISpriteData> sprites { get; }
+        public ISpriteData[] sprites { get; }
 
         public int? timeMode
         {

@@ -16,12 +16,12 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public uint m_Extrude { get; }
         public bool m_IsPolygon { get; }
         public ValueTuple<GUID, long> m_RenderDataKey { get; }
-        public List<string> m_AtlasTags { get; }
+        public string[] m_AtlasTags { get; }
         public PPtr<SpriteAtlas> m_SpriteAtlas { get; }
         public ISpriteRenderData m_RD { get; }
-        public List<List<Vector2f>> m_PhysicsShape { get; }
+        public Vector2f[][] m_PhysicsShape { get; }
 
-        public List<ISpriteBone>? m_Bones
+        public ISpriteBone[]? m_Bones
         {
             get
             {
@@ -29,7 +29,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<PPtr<IMonoBehaviour>>? m_ScriptableObjects
+        public PPtr<IMonoBehaviour>[]? m_ScriptableObjects
         {
             get
             {

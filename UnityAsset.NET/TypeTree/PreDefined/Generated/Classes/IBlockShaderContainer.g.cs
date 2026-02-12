@@ -9,9 +9,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IBlockShaderContainer : INamedObject
     {
         public GUID guid { get; }
-        public List<PPtr<IBlockShaderContainer>> dependencies { get; }
-        public List<string> generatedPaths { get; }
-        public List<uint> blob { get; }
+        public PPtr<IBlockShaderContainer>[] dependencies { get; }
+        public string[] generatedPaths { get; }
+        public uint[] blob { get; }
         public int state { get; }
     }
 }

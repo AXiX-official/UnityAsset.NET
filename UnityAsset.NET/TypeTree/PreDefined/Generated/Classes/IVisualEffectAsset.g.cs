@@ -9,6 +9,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IVisualEffectAsset : INamedObject
     {
         public IVisualEffectInfo m_Infos { get; }
-        public List<IVFXSystemDesc> m_Systems { get; }
+        public IVFXSystemDesc[] m_Systems { get; }
     }
 }

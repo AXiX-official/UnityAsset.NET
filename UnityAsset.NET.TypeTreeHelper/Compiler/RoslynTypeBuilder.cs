@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using UnityAsset.NET.TypeTreeHelper.Compiler.IR;
@@ -167,7 +166,7 @@ public class RoslynTypeBuilder
                 ExpressionSyntax vectorTargetExpression = isSumType
                     ? SyntaxFactory.ParenthesizedExpression(
                         SyntaxFactory.CastExpression(
-                            SyntaxFactory.GenericName("List")
+                            /*SyntaxFactory.GenericName("List")
                                 .AddTypeArgumentListArguments(v.ElementType switch
                                 {
                                     PrimitiveTypeInfo p => p.ToTypeSyntax(),
@@ -178,7 +177,25 @@ public class RoslynTypeBuilder
                                     PredefinedTypeInfo pd => pd.PredefinedTypeSyntax,
                                     GenericPPtrTypeInfo gp => gp.ToTypeSyntax(),
                                     _ => throw new Exception("Unreachable")
-                                }),
+                                }),*/
+                            SyntaxFactory.ArrayType(v.ElementType switch
+                                {
+                                    PrimitiveTypeInfo p => p.ToTypeSyntax(),
+                                    VectorTypeInfo ve => ve.ToTypeSyntax(),
+                                    MapTypeInfo m => m.ToTypeSyntax(),
+                                    PairTypeInfo pa => pa.ToTypeSyntax(),
+                                    ClassTypeInfo c => SyntaxFactory.ParseTypeName(c.InterfaceName),
+                                    PredefinedTypeInfo pd => pd.PredefinedTypeSyntax,
+                                    GenericPPtrTypeInfo gp => gp.ToTypeSyntax(),
+                                    _ => throw new Exception("Unreachable")
+                                })
+                                .AddRankSpecifiers(
+                                    SyntaxFactory.ArrayRankSpecifier(
+                                        SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
+                                            SyntaxFactory.OmittedArraySizeExpression()
+                                        )
+                                    )
+                                ),
                             SyntaxFactory.MemberAccessExpression(
                                 SyntaxKind.SimpleMemberAccessExpression,
                                 SyntaxFactory.IdentifierName(fieldName),
@@ -463,7 +480,7 @@ public class RoslynTypeBuilder
                     SyntaxFactory.MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
                         SyntaxFactory.IdentifierName(readerParamName),
-                        SyntaxFactory.GenericName("ReadListWithAlign")
+                        SyntaxFactory.GenericName("ReadArrayWithAlign")
                             .AddTypeArgumentListArguments(vectorTypeInfo.ElementType.ToTypeSyntax())
                     )
                 ).AddArgumentListArguments(
@@ -480,7 +497,7 @@ public class RoslynTypeBuilder
                     SyntaxFactory.MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
                         SyntaxFactory.IdentifierName(readerParamName),
-                        SyntaxFactory.GenericName("ReadListWithAlign")
+                        SyntaxFactory.GenericName("ReadArrayWithAlign")
                             .AddTypeArgumentListArguments(mapTypeInfo.PairType.ToTypeSyntax())
                     )
                 ).AddArgumentListArguments(

@@ -9,6 +9,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ISubCollider : IPreDefinedInterface
     {
         public PPtr<ICollider2D> m_Collider { get; }
-        public List<List<IIntPoint>> m_ColliderPaths { get; }
+        public IIntPoint[][] m_ColliderPaths { get; }
     }
 }

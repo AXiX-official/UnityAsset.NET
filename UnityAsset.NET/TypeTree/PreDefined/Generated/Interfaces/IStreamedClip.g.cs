@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IStreamedClip : IPreDefinedInterface
     {
-        public List<uint> data { get; }
+        public uint[] data { get; }
         public RefSum<uint, ushort> curveCount { get; }
 
         public ushort? discreteCurveCount

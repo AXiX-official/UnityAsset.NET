@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IMotionNeighborList : IPreDefinedInterface
     {
-        public List<uint> m_NeighborArray { get; }
+        public uint[] m_NeighborArray { get; }
     }
 }

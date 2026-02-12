@@ -10,8 +10,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public float m_Speed { get; }
         public float m_CycleOffset { get; }
-        public List<PPtr<IAnimatorStateTransition>> m_Transitions { get; }
-        public List<PPtr<IMonoBehaviour>> m_StateMachineBehaviours { get; }
+        public PPtr<IAnimatorStateTransition>[] m_Transitions { get; }
+        public PPtr<IMonoBehaviour>[] m_StateMachineBehaviours { get; }
         public Vector3f m_Position { get; }
         public bool m_IKOnFeet { get; }
         public bool m_WriteDefaultValues { get; }

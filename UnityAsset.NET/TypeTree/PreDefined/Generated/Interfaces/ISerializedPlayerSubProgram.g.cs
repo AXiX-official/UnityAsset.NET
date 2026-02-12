@@ -9,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ISerializedPlayerSubProgram : IPreDefinedInterface
     {
         public uint m_BlobIndex { get; }
-        public List<ushort> m_KeywordIndices { get; }
+        public ushort[] m_KeywordIndices { get; }
         public long m_ShaderRequirements { get; }
         public sbyte m_GpuProgramType { get; }
     }

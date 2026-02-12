@@ -4,6 +4,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 
 public interface IAnimatorController : IRuntimeAnimatorController
 {
-    public List<ValueTuple<uint, string>> m_TOS { get; }
-    public List<PPtr<IAnimationClip>> m_AnimationClips { get; }
+    public ValueTuple<uint, string>[] m_TOS { get; }
+    public PPtr<IAnimationClip>[] m_AnimationClips { get; }
 }

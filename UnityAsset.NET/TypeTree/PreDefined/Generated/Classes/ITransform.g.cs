@@ -12,7 +12,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public Quaternionf m_LocalRotation { get; }
         public Vector3f m_LocalPosition { get; }
         public Vector3f m_LocalScale { get; }
-        public List<PPtr<ITransform>> m_Children { get; }
+        public PPtr<ITransform>[] m_Children { get; }
         public PPtr<ITransform> m_Father { get; }
     }
 }

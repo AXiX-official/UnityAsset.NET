@@ -11,9 +11,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float width { get; }
         public float bottom { get; }
         public float height { get; }
-        public List<Vector4f> imageTexCoords { get; }
-        public List<Vector2f> vertices { get; }
-        public List<ushort> indices { get; }
+        public Vector4f[] imageTexCoords { get; }
+        public Vector2f[] vertices { get; }
+        public ushort[] indices { get; }
         public PPtr<IMaterial> material { get; }
     }
 }

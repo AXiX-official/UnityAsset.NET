@@ -8,12 +8,12 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IAnimatorStateMachine : INamedObject
     {
-        public List<IChildAnimatorState> m_ChildStates { get; }
-        public List<IChildAnimatorStateMachine> m_ChildStateMachines { get; }
-        public List<PPtr<IAnimatorStateTransition>> m_AnyStateTransitions { get; }
-        public List<PPtr<IAnimatorTransition>> m_EntryTransitions { get; }
-        public List<ValueTuple<PPtr<IAnimatorStateMachine>, List<PPtr<IAnimatorTransition>>>> m_StateMachineTransitions { get; }
-        public List<PPtr<IMonoBehaviour>> m_StateMachineBehaviours { get; }
+        public IChildAnimatorState[] m_ChildStates { get; }
+        public IChildAnimatorStateMachine[] m_ChildStateMachines { get; }
+        public PPtr<IAnimatorStateTransition>[] m_AnyStateTransitions { get; }
+        public PPtr<IAnimatorTransition>[] m_EntryTransitions { get; }
+        public ValueTuple<PPtr<IAnimatorStateMachine>, PPtr<IAnimatorTransition>[]>[] m_StateMachineTransitions { get; }
+        public PPtr<IMonoBehaviour>[] m_StateMachineBehaviours { get; }
         public Vector3f m_AnyStatePosition { get; }
         public Vector3f m_EntryPosition { get; }
         public Vector3f m_ExitPosition { get; }

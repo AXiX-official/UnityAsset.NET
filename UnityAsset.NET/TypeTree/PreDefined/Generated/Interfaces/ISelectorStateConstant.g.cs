@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISelectorStateConstant : IPreDefinedInterface
     {
-        public List<IOffsetPtr> m_TransitionConstantArray { get; }
+        public IOffsetPtr[] m_TransitionConstantArray { get; }
         public uint m_FullPathID { get; }
         public bool m_IsEntry { get; }
     }

@@ -8,8 +8,8 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVulkanDeviceFilterLists : INamedObject
     {
-        public List<IAndroidDeviceFilterData> m_VulkanAllowFilterList { get; }
-        public List<IAndroidDeviceFilterData> m_VulkanDenyFilterList { get; }
-        public List<IVulkanGraphicsJobsDeviceFilterData> m_GfxJobFilterList { get; }
+        public IAndroidDeviceFilterData[] m_VulkanAllowFilterList { get; }
+        public IAndroidDeviceFilterData[] m_VulkanDenyFilterList { get; }
+        public IVulkanGraphicsJobsDeviceFilterData[] m_GfxJobFilterList { get; }
     }
 }

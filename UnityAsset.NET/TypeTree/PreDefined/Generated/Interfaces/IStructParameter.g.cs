@@ -12,7 +12,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public int m_Index { get; }
         public int m_ArraySize { get; }
         public int m_StructSize { get; }
-        public List<IVectorParameter> m_VectorMembers { get; }
-        public List<IMatrixParameter> m_MatrixMembers { get; }
+        public IVectorParameter[] m_VectorMembers { get; }
+        public IMatrixParameter[] m_MatrixMembers { get; }
     }
 }

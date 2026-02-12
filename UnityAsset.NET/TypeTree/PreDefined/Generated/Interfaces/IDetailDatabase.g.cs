@@ -8,12 +8,12 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IDetailDatabase : IPreDefinedInterface
     {
-        public List<IDetailPatch> m_Patches { get; }
-        public List<IDetailPrototype> m_DetailPrototypes { get; }
+        public IDetailPatch[] m_Patches { get; }
+        public IDetailPrototype[] m_DetailPrototypes { get; }
         public int m_PatchCount { get; }
         public int m_PatchSamples { get; }
 
-        public List<Vector3f>? m_RandomRotations
+        public Vector3f[]? m_RandomRotations
         {
             get
             {
@@ -25,9 +25,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public float m_WavingGrassStrength { get; }
         public float m_WavingGrassAmount { get; }
         public float m_WavingGrassSpeed { get; }
-        public List<ITreeInstance> m_TreeInstances { get; }
-        public List<ITreePrototype> m_TreePrototypes { get; }
-        public List<PPtr<ITexture2D>> m_PreloadTextureAtlasData { get; }
+        public ITreeInstance[] m_TreeInstances { get; }
+        public ITreePrototype[] m_TreePrototypes { get; }
+        public PPtr<ITexture2D>[] m_PreloadTextureAtlasData { get; }
 
         public PPtr<IShader>? m_DetailBillboardShader
         {

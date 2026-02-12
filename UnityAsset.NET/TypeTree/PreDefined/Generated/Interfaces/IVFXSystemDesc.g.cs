@@ -12,9 +12,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public int flags { get; }
         public uint capacity { get; }
         public uint layer { get; }
-        public List<IVFXMapping> buffers { get; }
-        public List<IVFXMapping> values { get; }
-        public List<IVFXTaskDesc> tasks { get; }
+        public IVFXMapping[] buffers { get; }
+        public IVFXMapping[] values { get; }
+        public IVFXTaskDesc[] tasks { get; }
 
         public string? name
         {
@@ -24,7 +24,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IVFXInstanceSplitDesc>? instanceSplitDescs
+        public IVFXInstanceSplitDesc[]? instanceSplitDescs
         {
             get
             {

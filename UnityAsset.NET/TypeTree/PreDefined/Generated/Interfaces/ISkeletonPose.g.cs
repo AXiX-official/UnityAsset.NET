@@ -8,6 +8,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISkeletonPose : IPreDefinedInterface
     {
-        public List<Ixform> m_X { get; }
+        public Ixform[] m_X { get; }
     }
 }

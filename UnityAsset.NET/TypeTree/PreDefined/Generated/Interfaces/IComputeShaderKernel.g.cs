@@ -16,15 +16,15 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IComputeShaderResource> cbs { get; }
-        public List<IComputeShaderResource> textures { get; }
-        public List<IComputeShaderBuiltinSampler> builtinSamplers { get; }
-        public List<IComputeShaderResource> inBuffers { get; }
-        public List<IComputeShaderResource> outBuffers { get; }
-        public List<byte> code { get; }
-        public List<uint> threadGroupSize { get; }
+        public IComputeShaderResource[] cbs { get; }
+        public IComputeShaderResource[] textures { get; }
+        public IComputeShaderBuiltinSampler[] builtinSamplers { get; }
+        public IComputeShaderResource[] inBuffers { get; }
+        public IComputeShaderResource[] outBuffers { get; }
+        public byte[] code { get; }
+        public uint[] threadGroupSize { get; }
 
-        public List<uint>? cbVariantIndices
+        public uint[]? cbVariantIndices
         {
             get
             {

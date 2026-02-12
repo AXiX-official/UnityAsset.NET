@@ -16,9 +16,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<byte> layerIndices { get; }
+        public byte[] layerIndices { get; }
 
-        public List<byte>? numberOfObjects
+        public byte[]? numberOfObjects
         {
             get
             {
@@ -26,7 +26,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<byte>? coverage
+        public byte[]? coverage
         {
             get
             {

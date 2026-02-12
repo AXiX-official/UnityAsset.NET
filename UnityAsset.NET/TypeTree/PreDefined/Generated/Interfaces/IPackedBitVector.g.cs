@@ -26,7 +26,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<byte> m_Data { get; }
+        public byte[] m_Data { get; }
 
         public byte? m_BitSize
         {

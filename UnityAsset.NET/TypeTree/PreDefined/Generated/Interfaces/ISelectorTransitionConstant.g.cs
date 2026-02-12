@@ -9,6 +9,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ISelectorTransitionConstant : IPreDefinedInterface
     {
         public uint m_Destination { get; }
-        public List<IOffsetPtr> m_ConditionConstantArray { get; }
+        public IOffsetPtr[] m_ConditionConstantArray { get; }
     }
 }

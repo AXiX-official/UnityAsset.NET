@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISubstanceArchive : INamedObject
     {
-        public List<byte>? m_PackageData
+        public byte[]? m_PackageData
         {
             get
             {

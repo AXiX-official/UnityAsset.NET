@@ -10,7 +10,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public string name { get; }
 
-        public List<ValueTuple<string, IComputeShaderKernel>>? variantMap
+        public ValueTuple<string, IComputeShaderKernel>[]? variantMap
         {
             get
             {
@@ -18,7 +18,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<string>? validKeywords
+        public string[]? validKeywords
         {
             get
             {
@@ -26,7 +26,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<string>? globalKeywords
+        public string[]? globalKeywords
         {
             get
             {
@@ -34,7 +34,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<string>? localKeywords
+        public string[]? localKeywords
         {
             get
             {
@@ -42,7 +42,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<IComputeShaderKernel>? uniqueVariants
+        public IComputeShaderKernel[]? uniqueVariants
         {
             get
             {
@@ -50,7 +50,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<ValueTuple<string, uint>>? variantIndices
+        public ValueTuple<string, uint>[]? variantIndices
         {
             get
             {
@@ -58,7 +58,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<string>? dynamicKeywords
+        public string[]? dynamicKeywords
         {
             get
             {

@@ -8,7 +8,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISplatDatabase : IPreDefinedInterface
     {
-        public List<ISplatPrototype>? m_Splats
+        public ISplatPrototype[]? m_Splats
         {
             get
             {
@@ -16,7 +16,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<PPtr<ITexture2D>> m_AlphaTextures { get; }
+        public PPtr<ITexture2D>[] m_AlphaTextures { get; }
         public int m_AlphamapResolution { get; }
         public int m_BaseMapResolution { get; }
 
@@ -44,7 +44,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<PPtr<ITerrainLayer>>? m_TerrainLayers
+        public PPtr<ITerrainLayer>[]? m_TerrainLayers
         {
             get
             {

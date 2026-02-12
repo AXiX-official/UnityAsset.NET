@@ -9,10 +9,10 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface ISpriteAtlasEditorData : IPreDefinedInterface
     {
         public ITextureSettings textureSettings { get; }
-        public List<ITextureImporterPlatformSettings> platformSettings { get; }
+        public ITextureImporterPlatformSettings[] platformSettings { get; }
         public IPackingSettings packingSettings { get; }
         public float variantMultiplier { get; }
-        public List<PPtr<IUnityObject>> packables { get; }
+        public PPtr<IUnityObject>[] packables { get; }
 
         public uint? totalSpriteSurfaceArea
         {
@@ -35,7 +35,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public bool isAtlasV2 { get; }
         public PPtr<IUnityObject> cachedData { get; }
 
-        public List<ValueTuple<string, ISecondaryTextureSettings>>? secondaryTextureSettings
+        public ValueTuple<string, ISecondaryTextureSettings>[]? secondaryTextureSettings
         {
             get
             {

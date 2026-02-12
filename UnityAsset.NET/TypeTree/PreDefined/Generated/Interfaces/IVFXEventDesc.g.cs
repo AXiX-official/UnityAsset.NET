@@ -9,10 +9,10 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IVFXEventDesc : IPreDefinedInterface
     {
         public string name { get; }
-        public List<uint> playSystems { get; }
-        public List<uint> stopSystems { get; }
+        public uint[] playSystems { get; }
+        public uint[] stopSystems { get; }
 
-        public List<uint>? initSystems
+        public uint[]? initSystems
         {
             get
             {

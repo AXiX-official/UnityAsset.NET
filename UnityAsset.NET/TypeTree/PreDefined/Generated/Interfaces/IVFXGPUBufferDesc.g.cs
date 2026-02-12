@@ -17,7 +17,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         }
 
         public uint size { get; }
-        public List<IVFXLayoutElementDesc> layout { get; }
+        public IVFXLayoutElementDesc[] layout { get; }
         public uint capacity { get; }
         public uint stride { get; }
 

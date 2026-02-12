@@ -19,7 +19,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public ushort m_LightmapIndexDynamic { get; }
         public Vector4f m_LightmapTilingOffset { get; }
         public Vector4f m_LightmapTilingOffsetDynamic { get; }
-        public List<PPtr<IMaterial>> m_Materials { get; }
+        public PPtr<IMaterial>[] m_Materials { get; }
         public IStaticBatchInfo m_StaticBatchInfo { get; }
         public PPtr<ITransform> m_StaticBatchRoot { get; }
         public PPtr<ITransform> m_ProbeAnchor { get; }

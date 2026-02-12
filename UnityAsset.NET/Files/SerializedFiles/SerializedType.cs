@@ -76,7 +76,7 @@ public sealed class SerializedType
                 if (isRefType)
                     typeReference = SerializedTypeReference.Parse(reader);
                 else
-                    typeDependencies = reader.ReadList(r => r.ReadInt32()).ToArray();
+                    typeDependencies = reader.ReadArray(r => r.ReadInt32());
             }
         }
         return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);

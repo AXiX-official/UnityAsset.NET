@@ -12,9 +12,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public int flags { get; }
         public uint capacity { get; }
         public uint layer { get; }
-        public List<IVFXMapping> buffers { get; }
-        public List<IVFXMapping> values { get; }
-        public List<IVFXEditorTaskDesc> tasks { get; }
+        public IVFXMapping[] buffers { get; }
+        public IVFXMapping[] values { get; }
+        public IVFXEditorTaskDesc[] tasks { get; }
 
         public string? name
         {

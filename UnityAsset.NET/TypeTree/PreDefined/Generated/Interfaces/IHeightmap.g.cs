@@ -8,9 +8,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IHeightmap : IPreDefinedInterface
     {
-        public List<short> m_Heights { get; }
-        public List<float> m_PrecomputedError { get; }
-        public List<float> m_MinMaxPatchHeights { get; }
+        public short[] m_Heights { get; }
+        public float[] m_PrecomputedError { get; }
+        public float[] m_MinMaxPatchHeights { get; }
 
         public int? m_Width
         {
@@ -39,7 +39,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public int m_Levels { get; }
         public Vector3f m_Scale { get; }
 
-        public List<byte>? m_SurfaceMask
+        public byte[]? m_SurfaceMask
         {
             get
             {
@@ -47,7 +47,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<byte>? m_SurfaceMaskLOD
+        public byte[]? m_SurfaceMaskLOD
         {
             get
             {
@@ -71,7 +71,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<byte>? m_Holes
+        public byte[]? m_Holes
         {
             get
             {
@@ -79,7 +79,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public List<byte>? m_HolesLOD
+        public byte[]? m_HolesLOD
         {
             get
             {

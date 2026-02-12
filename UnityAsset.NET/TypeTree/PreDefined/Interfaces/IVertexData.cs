@@ -16,8 +16,8 @@ public partial interface IVertexData
         {
             uint chnMask = 0;
             uint stride = 0;
-            Debug.Assert(m_Channels.Count <= 32);
-            for (int chn = 0; chn < m_Channels.Count; chn++)
+            Debug.Assert(m_Channels.Length <= 32);
+            for (int chn = 0; chn < m_Channels.Length; chn++)
             {
                 var m_Channel = m_Channels[chn];
                 if (m_Channel.stream == s && m_Channel.dimension > 0)

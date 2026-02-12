@@ -12,6 +12,6 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public uint m_CurveCount { get; }
         public float m_SampleRate { get; }
         public float m_BeginTime { get; }
-        public List<float> m_SampleArray { get; }
+        public float[] m_SampleArray { get; }
     }
 }

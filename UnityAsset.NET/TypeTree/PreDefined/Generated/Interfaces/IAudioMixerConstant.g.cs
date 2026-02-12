@@ -8,20 +8,20 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IAudioMixerConstant : IPreDefinedInterface
     {
-        public List<IGroupConstant> groups { get; }
-        public List<GUID> groupGUIDs { get; }
-        public List<IEffectConstant> effects { get; }
-        public List<GUID> effectGUIDs { get; }
+        public IGroupConstant[] groups { get; }
+        public GUID[] groupGUIDs { get; }
+        public IEffectConstant[] effects { get; }
+        public GUID[] effectGUIDs { get; }
         public uint numSideChainBuffers { get; }
-        public List<ISnapshotConstant> snapshots { get; }
-        public List<GUID> snapshotGUIDs { get; }
-        public List<char> groupNameBuffer { get; }
-        public List<char> snapshotNameBuffer { get; }
-        public List<char> pluginEffectNameBuffer { get; }
-        public List<uint> exposedParameterNames { get; }
-        public List<uint> exposedParameterIndices { get; }
+        public ISnapshotConstant[] snapshots { get; }
+        public GUID[] snapshotGUIDs { get; }
+        public char[] groupNameBuffer { get; }
+        public char[] snapshotNameBuffer { get; }
+        public char[] pluginEffectNameBuffer { get; }
+        public uint[] exposedParameterNames { get; }
+        public uint[] exposedParameterIndices { get; }
 
-        public List<IGroupConnection>? groupConnections
+        public IGroupConnection[]? groupConnections
         {
             get
             {

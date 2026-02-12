@@ -8,9 +8,9 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IStateMachineConstant : IPreDefinedInterface
     {
-        public List<IOffsetPtr> m_StateConstantArray { get; }
-        public List<IOffsetPtr> m_AnyStateTransitionConstantArray { get; }
-        public List<IOffsetPtr> m_SelectorStateConstantArray { get; }
+        public IOffsetPtr[] m_StateConstantArray { get; }
+        public IOffsetPtr[] m_AnyStateTransitionConstantArray { get; }
+        public IOffsetPtr[] m_SelectorStateConstantArray { get; }
         public uint m_DefaultState { get; }
 
         public uint? m_MotionSetCount
