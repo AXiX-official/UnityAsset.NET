@@ -110,11 +110,11 @@ public static class AssemblyManager
         Directory.CreateDirectory(AssemblyCachePath);
     }
 
-    public static void LoadTypes(List<(Hash128 hash, TypeTreeRepr repr)> typesToGenerate)
+    public static void LoadTypes(Dictionary<Hash128, TypeTreeRepr> typesToGenerate)
     {
         CleanCache();
         var compiler = new UnityTypeCompiler(PreDefinedInterfaceMap);
-        var syntax = compiler.Generate(typesToGenerate.Select(i => i.repr));
+        var syntax = compiler.Generate(typesToGenerate.Values);
         Directory.CreateDirectory(AssemblyCachePath);
         var formattedSource = syntax.NormalizeWhitespace(elasticTrivia: true).ToFullString();
         File.WriteAllText(CachedSourcePath, formattedSource, Encoding.UTF8);

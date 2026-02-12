@@ -7,11 +7,11 @@ namespace UnityAsset.NET;
 
 public class Asset
 {
-    private readonly AssetFileInfo _info;
+    public readonly AssetFileInfo Info;
     private IUnityAsset? _value;
     private string? _name;
     private readonly Lock _lock = new();
-    private bool _isNamedAsset;
+    public bool IsNamedAsset;
 
     private AssetReader DataReader
     {
@@ -19,8 +19,8 @@ public class Asset
         {
             var sf = SourceFile;
             var readerProvider = sf.ReaderProvider;
-            var start = sf.Header.DataOffset + _info.ByteOffset;
-            var length = _info.ByteSize;
+            var start = sf.Header.DataOffset + Info.ByteOffset;
+            var length = Info.ByteSize;
             var endian = sf.Header.Endianness;
             return new AssetReader(readerProvider, start, length, sf, endian);
         }
@@ -36,8 +36,8 @@ public class Asset
             {
                 if (_value == null)
                 {
-                    _value = UnityObjectFactory.Create(_info.Type, DataReader);
-                    if (_isNamedAsset)
+                    _value = UnityObjectFactory.Create(Info.Type, DataReader);
+                    if (IsNamedAsset)
                     {
                         _name = ((INamedObject)_value).m_Name;
                     }
@@ -47,7 +47,7 @@ public class Asset
         }
     }
 
-    public string Type => _info.Type.ToTypeName();
+    public string Type => Info.Type.ToTypeName();
 
     public string Name
     {
@@ -55,7 +55,7 @@ public class Asset
         {
             lock (_lock)
             {
-                if (!_isNamedAsset)
+                if (!IsNamedAsset)
                     return string.Empty;
 
                 _name ??= ((INamedObject)Value).m_Name;
@@ -65,9 +65,9 @@ public class Asset
         }
     }
     
-    public long Size => _info.ByteSize;
+    public long Size => Info.ByteSize;
 
-    public long PathId => _info.PathId;
+    public long PathId => Info.PathId;
 
     public string Container
     {
@@ -84,16 +84,11 @@ public class Asset
 
     public Asset(SerializedFile sf, AssetFileInfo info)
     {
-        _info = info;
-        _isNamedAsset = info.Type.Nodes.Any(n => n is {Name: "m_Name", Type: "string", Level: 1} );
+        Info = info;
+        IsNamedAsset = info.Type.Nodes.Any(n => n is {Name: "m_Name", Type: "string", Level: 1} );
 
         SourceFile = sf;
     }
-
-    /*public void UpdateTypeInfo()
-    {
-        _isNamedAsset = _info.Type.Nodes.Any(n => n is {Name: "m_Name", Type: "string", Level: 1} );
-    }*/
 
     public void Release()
     {

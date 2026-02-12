@@ -151,7 +151,7 @@ public class AssetManager
         
         var rootTypeNodesMap = anyTypeTreeDisabled ? TpkUnityTreeNodeFactory.GetRootTypeNodes(Version!.ToString()) : null;
         
-        var rootTypes = new List<(Hash128, TypeTreeRepr)>();
+        var rootTypes = new Dictionary<Hash128, TypeTreeRepr>();
         
         foreach (var type in _loadedTypes)
         {
@@ -159,32 +159,45 @@ public class AssetManager
             if (nodes.Count == 0 && anyTypeTreeDisabled)
             {
                 var typeName = type.ToTypeName();
-                rootTypes.Add((type.TypeHash, rootTypeNodesMap![typeName]));
+                rootTypes.Add(type.TypeHash, rootTypeNodesMap![typeName]);
             }
-            rootTypes.Add((type.TypeHash, nodes[0].ToTypeTreeRepr(nodes)));
+            else
+            {
+                rootTypes.Add(type.TypeHash, nodes[0].ToTypeTreeRepr(nodes));
+            }
         }
         
         AssemblyManager.LoadTypes(rootTypes);
         progress?.Report(new LoadProgress($"AssetManager: Generated {_loadedTypes.Count} types", 2, 2));
 
-        /*foreach (var (_, file) in LoadedFiles)
+        foreach (var (_, file) in LoadedFiles)
         {
             if (file is SerializedFile sf)
                 sf.ProcessAssetBundle();
-        }*/
+        }
 
-        // TODO
-        /*if (anyTypeTreeDisabled)
+        if (anyTypeTreeDisabled)
         {
             foreach (var (_, file) in LoadedFiles)
             {
                 if (file is SerializedFile {Metadata.TypeTreeEnabled : false} sf)
                 {
                     foreach (var asset in sf.Assets)
-                        asset.UpdateTypeInfo();
+                    {
+                        if (asset.IsNamedAsset) continue;
+                        var typeTreeRepr = rootTypes[asset.Info.Type.TypeHash];
+                        foreach (var field in typeTreeRepr.SubNodes)
+                        {
+                            if (field.Name == "m_Name")
+                            {
+                                asset.IsNamedAsset = true;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
-        }*/
+        }
     }
     
     public async Task LoadAsync(List<string> paths, bool ignoreDuplicatedFiles = false, IProgress<LoadProgress>? progress = null)
