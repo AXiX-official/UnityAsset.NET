@@ -7,7 +7,7 @@ public class DirectFileSystem : IFileSystem
     public IFileSystem.ErrorHandler? OnError { get; set; }
     public List<IVirtualFile> LoadedFiles { get; private set; } = new();
 
-    public DirectFileSystem(IFileSystem.ErrorHandler? onError)
+    public DirectFileSystem(IFileSystem.ErrorHandler? onError = null)
     {
         OnError = onError;
     }
@@ -41,11 +41,6 @@ public class DirectFileSystem : IFileSystem
     
     public void Clear()
     {
-        LoadedFiles.Clear();
-    }
-    
-    public void Dispose()
-    {
-        Clear();
+        LoadedFiles = new();
     }
 }

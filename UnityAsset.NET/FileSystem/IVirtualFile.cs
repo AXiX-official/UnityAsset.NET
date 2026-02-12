@@ -8,8 +8,7 @@ public static class FileTypeHelper
 {
     public static FileType GetFileType(IStreamProvider streamProvider)
     {
-        IReader reader = new CustomStreamReader(streamProvider);
-        reader.Seek(0);
+        using var reader = new CustomStreamReader(streamProvider);
         if (reader.Length > 7)
         {
             var signature = reader.ReadBytes(7);
@@ -23,8 +22,8 @@ public static class FileTypeHelper
             {
                 return FileType.Unknown;
             }
-            
-            reader.Seek(0);
+
+            reader.Position = 0;
             
             var metadataSize = reader.ReadUInt32();
             UInt64 fileSize = reader.ReadUInt32();
@@ -38,7 +37,7 @@ public static class FileTypeHelper
             {
                 if (reader.Length < 48)
                 {
-                    reader.Seek(0);
+                    ((IReader)reader).Seek(0);
                     return FileType.Unknown;
                 }
                 metadataSize = reader.ReadUInt32();
@@ -47,7 +46,6 @@ public static class FileTypeHelper
                 unknown = reader.ReadInt64(); // unknown
             }
             
-            reader.Seek(0);
             if ((long)fileSize != reader.Length || (long)dataOffset > reader.Length)
             {
                 return FileType.Unknown;

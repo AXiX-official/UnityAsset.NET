@@ -116,4 +116,9 @@ public class MemoryReader : IReader
     
     // TEMPORARY: make it writable 
     public Span<byte> AsWritableSpan => _data.Span;
+
+    public void Dispose()
+    {
+        
+    }
 }

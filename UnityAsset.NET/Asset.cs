@@ -36,7 +36,8 @@ public class Asset
             {
                 if (_value == null)
                 {
-                    _value = UnityObjectFactory.Create(Info.Type, DataReader);
+                    using var reader = DataReader;
+                    _value = UnityObjectFactory.Create(Info.Type, reader);
                     if (IsNamedAsset)
                     {
                         _name = ((INamedObject)_value).m_Name;

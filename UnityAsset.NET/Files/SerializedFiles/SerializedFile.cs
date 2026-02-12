@@ -36,7 +36,7 @@ public sealed class SerializedFile : IFile
     public SerializedFile(IVirtualFile file)
     {
         ReaderProvider = new CustomStreamReaderProvider(file);
-        var reader = ReaderProvider.CreateReader();
+        using var reader = ReaderProvider.CreateReader();
         Header = SerializedFileHeader.Parse(reader);
         reader.Endian = Header.Endianness;
         Metadata = SerializedFileMetadata.Parse(reader, Header.Version);
@@ -53,7 +53,7 @@ public sealed class SerializedFile : IFile
     
     public static SerializedFile Parse(BundleFile bf, IReaderProvider readerProvider)
     {
-        var reader = readerProvider.CreateReader();
+        using var reader = readerProvider.CreateReader();
         var header = SerializedFileHeader.Parse(reader);
         reader.Endian = header.Endianness;
         var metadata = SerializedFileMetadata.Parse(reader, header.Version);

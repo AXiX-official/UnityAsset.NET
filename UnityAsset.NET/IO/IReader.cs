@@ -5,7 +5,7 @@ using UnityAsset.NET.Files;
 
 namespace UnityAsset.NET.IO;
 
-public interface IReader : ISeek, IFile
+public interface IReader : ISeek, IDisposable
 {
     # region ISeek
 

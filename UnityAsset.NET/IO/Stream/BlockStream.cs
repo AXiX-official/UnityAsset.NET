@@ -120,7 +120,7 @@ public class BlockStream : System.IO.Stream
                 key: new(_baseReaderProvider, blockIndex),
                 factory: () =>
                 {
-                    var reader = _baseReaderProvider.CreateReader();
+                    using var reader = _baseReaderProvider.CreateReader();
                     reader.Position = (long)block.CompressedOffset;
                     var compressedData = reader.ReadBytes((int)block.CompressedSize);
                     if (_unityCnInfo != null && (block.CompressionType == CompressionType.Lz4 || block.CompressionType == CompressionType.Lz4HC))

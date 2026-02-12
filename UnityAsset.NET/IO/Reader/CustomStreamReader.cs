@@ -5,7 +5,7 @@ using UnityAsset.NET.Enums;
 
 namespace UnityAsset.NET.IO.Reader;
 
-public class CustomStreamReader : IReader, IDisposable
+public class CustomStreamReader : IReader
 {
     private readonly System.IO.Stream _stream; 
     
@@ -288,4 +288,16 @@ public class CustomStreamReader : IReader, IDisposable
     {
         _stream.Dispose();
     }
+}
+
+public class CustomStreamReaderProvider : IReaderProvider
+{
+    private readonly IStreamProvider _streamProvider;
+
+    public CustomStreamReaderProvider(IStreamProvider streamProvider)
+    {
+        _streamProvider = streamProvider;
+    }
+    
+    public IReader CreateReader(Endianness endian = Endianness.BigEndian) => new CustomStreamReader(_streamProvider, endian);
 }

@@ -230,12 +230,12 @@ public class AssetManager
 
     public void Clear()
     {
-        LoadedFiles = new();
+        LoadedAssets = new();
+        _loadedTypes = new();
         VirtualFileToFileMap = new();
+        LoadedFiles = new();
         Version = null;
         BuildTarget = null;
-        _loadedTypes = new();
-        LoadedAssets = new();
         
         _fileSystem.Clear();
         

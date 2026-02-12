@@ -113,4 +113,25 @@ public class SlicedReader : IReader
         Length = (long)length;
         BaseReader.Position = (long)_offset;
     }
+
+    public void Dispose()
+    {
+        BaseReader.Dispose();
+    }
+}
+
+public class SlicedReaderProvider : IReaderProvider
+{
+    protected readonly IReaderProvider BaseReaderProvider;
+    protected readonly ulong Start;
+    protected readonly ulong Length;
+    
+    public SlicedReaderProvider(IReaderProvider readerProvider, ulong start, ulong length)
+    {
+        BaseReaderProvider = readerProvider;
+        Start = start;
+        Length = length;
+    }
+
+    public IReader CreateReader(Endianness endian) => new SlicedReader(BaseReaderProvider, Start, Length, endian);
 }

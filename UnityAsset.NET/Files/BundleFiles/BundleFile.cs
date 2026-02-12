@@ -130,7 +130,7 @@ public class BundleFile : IFile
     public BundleFile(IStreamProvider streamProvider, string? key = null, bool lazyLoad = true)
     {
         var csProvider = new CustomStreamReaderProvider(streamProvider);
-        var reader = csProvider.CreateReader();
+        using var reader = csProvider.CreateReader();
         UnityCnKey = key;
         Header = Header.Parse(reader);
         if (Header.UnityRevision == "0.0.0")
@@ -159,9 +159,9 @@ public class BundleFile : IFile
         for (int i = 0; i < Files.Count; i++)
         {
             var subFile = Files[i];
-            if (subFile is { Parsed: false})
+            if (subFile is { CanBeSerializedFile: true, File: IReaderProvider provider})
             {
-                Files[i] = new FileWrapper(SerializedFile.Parse(this, subFile.FileProvider!), subFile.Info);
+                Files[i] = new FileWrapper(SerializedFile.Parse(this, provider), subFile.Info);
             }
         }
     }

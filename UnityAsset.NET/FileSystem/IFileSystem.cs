@@ -1,6 +1,6 @@
 ﻿namespace UnityAsset.NET.FileSystem;
 
-public interface IFileSystem : IDisposable
+public interface IFileSystem
 {
     public delegate void ErrorHandler(string filePath, Exception ex, string errorMessage);
     public ErrorHandler? OnError { get; set; }

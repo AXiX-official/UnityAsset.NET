@@ -15,7 +15,7 @@ public static class AssemblyManager
     private static ConcurrentDictionary<Hash128, Type> TypeCache = new();
     private static readonly List<MetadataReference> References;
     
-    private static readonly object CompilationLock = new ();
+    private static readonly Lock CompilationLock = new ();
     private static readonly string AssemblyCachePath = Path.Combine(AppContext.BaseDirectory, "AssemblyCache");
     private static readonly string AssemblyNameSpace = "UnityAsset.NET.RuntimeTypes";
     private static readonly string CachedAssemblyPath = Path.Combine(AssemblyCachePath, $"{AssemblyNameSpace}.dll");
@@ -194,11 +194,6 @@ public static class AssemblyManager
         {
             return cachedType;
         }
-        
-        /*if (RoslynBuilderHelper.PreDefinedTypeMap.TryGetValue(type.Nodes[0].Type, out var preDefinedType))
-        {
-            return preDefinedType;
-        }*/
 
         throw new Exception($"Unexpected type: {type}");
     }

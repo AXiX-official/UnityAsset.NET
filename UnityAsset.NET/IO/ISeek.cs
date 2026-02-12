@@ -26,7 +26,6 @@ public interface ISeek
                 break;
             }
         }
-        
     }
 
     public void Align(uint alignment)
