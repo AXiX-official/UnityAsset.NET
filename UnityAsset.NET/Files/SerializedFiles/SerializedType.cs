@@ -29,7 +29,7 @@ public sealed class SerializedType
         ScriptIdHash = scriptIdHash;
         TypeHash = typeHash;
         IsRefType = isRefType;
-        Nodes = TypeTreeCache.GetOrAddNodes(typeHash, nodes);
+        Nodes = TypeTreeNode.Cache.GetOrAdd(typeHash, nodes);
         StringBufferBytes = stringBufferBytes;
         TypeDependencies = typeDependencies;
         TypeReference = typeReference;
@@ -76,7 +76,7 @@ public sealed class SerializedType
                 if (isRefType)
                     typeReference = SerializedTypeReference.Parse(reader);
                 else
-                    typeDependencies = reader.ReadIntArray(reader.ReadInt32());
+                    typeDependencies = reader.ReadList(r => r.ReadInt32()).ToArray();
             }
         }
         return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);

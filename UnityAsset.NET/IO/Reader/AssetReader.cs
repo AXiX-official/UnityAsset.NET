@@ -1,13 +1,15 @@
-﻿using UnityAsset.NET.Files.SerializedFiles;
+﻿using UnityAsset.NET.Enums;
+using UnityAsset.NET.Files.SerializedFiles;
 
 namespace UnityAsset.NET.IO.Reader;
 
 public class AssetReader : SlicedReader
 {
-    public SerializedFile AssetsFile;
+    public readonly SerializedFile AssetsFile;
     
-    public AssetReader(IReader reader, long start, long length, SerializedFile assetsFile) : base(reader, start, length)
+    public AssetReader(IReaderProvider readerProvider, ulong start, ulong length, SerializedFile assetsFile, Endianness endian) : base(readerProvider, start, length)
     {
         AssetsFile = assetsFile;
+        BaseReader.Endian = endian;
     }
 }

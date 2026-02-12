@@ -11,6 +11,7 @@ public class AssetsFileExternal
     public AssetsFileExternalType Type;
     public string PathName;
     public string OriginalPathName;
+    public string FileName;
 
     public AssetsFileExternal(string virtualAssetPathName, GUID128 guid, AssetsFileExternalType type, string pathName,
         string originalPathName)
@@ -20,6 +21,7 @@ public class AssetsFileExternal
         Type = type;
         PathName = pathName;
         OriginalPathName = originalPathName;
+        FileName = PathName.Split('/')[^1];
     }
 
     public static AssetsFileExternal Parse(IReader reader)

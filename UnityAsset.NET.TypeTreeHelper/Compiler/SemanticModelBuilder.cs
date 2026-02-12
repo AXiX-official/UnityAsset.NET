@@ -15,7 +15,7 @@ public class SemanticModelBuilder
         _preDefinedInterfaceMap = preDefinedInterfaceMap;
     }
     
-    private string GetGenricType(TypeTreeNode node)
+    private string GetGenricType(TypeTreeRepr node)
     {
         if (_cachedGenericTypes.TryGetValue(node.Hash, out var type))
         {
@@ -41,7 +41,7 @@ public class SemanticModelBuilder
         return type;
     }
     
-    public ClassTypeInfo? Build(TypeTreeNode current, bool isRootClass = false)
+    public ClassTypeInfo? Build(TypeTreeRepr current, bool isRootClass = false)
     {
         if (Helper.IsPreDefinedType(current))
             return null;
@@ -81,7 +81,7 @@ public class SemanticModelBuilder
             fields.Add(new UnityFieldInfo
             {
                 Name = fieldName,
-                RequireAlign = node.RequiresAlign(),
+                RequireAlign = node.RequiresAlign,
                 IsNullable = isNullable,
                 DeclaredTypeSyntax =
                     !isGenericType
@@ -93,7 +93,7 @@ public class SemanticModelBuilder
         }
         
         
-        //var interfaceName = type?.Name ?? (Helper.IsNamedAsset(current) ? "INamedAsset" : current == nodes[0] ? "IAsset" : "IUnityObject");
+        //var interfaceName = type?.Name ?? (Helper.IsNamedAsset(current) ? "INamedObject" : current == nodes[0] ? "IAsset" : "IUnityObject");
         var interfaceName = isRootClass ? "IUnityAsset" : "IUnityObject";
 
         if (type != null)
@@ -120,7 +120,7 @@ public class SemanticModelBuilder
             GeneratedClassName = generatedClassName,
             InterfaceName = interfaceName,
             Fields = fields,
-            TypeTreeNode = current
+            TypeTreeRepr = current
         };
         
         if (!DiscoveredTypes.TryAdd(current.Hash, classTypeInfo))
@@ -132,9 +132,9 @@ public class SemanticModelBuilder
         return classTypeInfo;
     }
 
-    private IUnityTypeInfo ResolveNode(TypeTreeNode node)
+    private IUnityTypeInfo ResolveNode(TypeTreeRepr node)
     {
-        var hash = node.Hash;
+        var hash = node.GetHashCode();
         if (_cache.TryGetValue(hash, out var cachedInfo)) return cachedInfo;
 
         IUnityTypeInfo typeInfo;
@@ -143,7 +143,7 @@ public class SemanticModelBuilder
             var csharpType = Helper.GetCSharpPrimitiveType(node.TypeName);
             typeInfo = new PrimitiveTypeInfo
             {
-                TypeTreeNode = node,
+                TypeTreeRepr = node,
                 OriginalTypeName = node.TypeName,
                 PrimitiveSyntax = SyntaxFactory.ParseTypeName(csharpType)
             };
@@ -153,7 +153,7 @@ public class SemanticModelBuilder
             var genericTypeName = node.TypeName.Substring(5, node.TypeName.Length - 6);
             typeInfo = new GenericPPtrTypeInfo
             {
-                TypeTreeNode = node,
+                TypeTreeRepr = node,
                 GenericTypeSyntax = SyntaxFactory.ParseTypeName(Helper.GetGenericPPtrInterfaceName(genericTypeName))
             };
         }
@@ -161,7 +161,7 @@ public class SemanticModelBuilder
         {
             typeInfo = new PredefinedTypeInfo
             {
-                TypeTreeNode = node,
+                TypeTreeRepr = node,
                 PredefinedTypeSyntax = SyntaxFactory.ParseTypeName(Helper.SanitizeName(node.TypeName))
             };
         }
@@ -172,11 +172,11 @@ public class SemanticModelBuilder
             var item2Node = children[1];
             typeInfo = new PairTypeInfo
             {
-                TypeTreeNode = node,
+                TypeTreeRepr = node,
                 Item1Type = ResolveNode(item1Node),
                 Item2Type = ResolveNode(item2Node),
-                Item1RequireAlign = item1Node.RequiresAlign(),
-                Item2RequireAlign = item2Node.RequiresAlign()
+                Item1RequireAlign = item1Node.RequiresAlign,
+                Item2RequireAlign = item2Node.RequiresAlign
             };
         }
         else if (Helper.IsVector(node))
@@ -184,9 +184,9 @@ public class SemanticModelBuilder
             var elementNode = node.SubNodes[0].SubNodes[1];
             typeInfo = new VectorTypeInfo
             {
-                TypeTreeNode = node,
+                TypeTreeRepr = node,
                 ElementType = ResolveNode(elementNode),
-                ElementRequireAlign = elementNode.RequiresAlign()
+                ElementRequireAlign = elementNode.RequiresAlign
             };
         }
         else if (Helper.IsMap(node))
@@ -194,9 +194,9 @@ public class SemanticModelBuilder
             var pairNode = node.SubNodes[0].SubNodes[1];
             typeInfo = new MapTypeInfo
             {
-                TypeTreeNode = node,
+                TypeTreeRepr = node,
                 PairType = (PairTypeInfo)ResolveNode(pairNode),
-                PairRequireAlign = pairNode.RequiresAlign()
+                PairRequireAlign = pairNode.RequiresAlign
             };
         }
         else // Complex Type

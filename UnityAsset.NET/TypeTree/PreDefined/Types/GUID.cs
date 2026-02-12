@@ -1,10 +1,9 @@
-﻿using System.Text;
-using UnityAsset.NET.IO;
+﻿using UnityAsset.NET.IO;
 using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Types;
 
-public class GUID : IGUID, IEquatable<GUID>
+public struct GUID : IPreDefinedInterface, IEquatable<GUID>
 {
     public string ClassName => "GUID";
     public UInt32 data_0_ { get; }
@@ -34,9 +33,8 @@ public class GUID : IGUID, IEquatable<GUID>
         return root;
     }
     
-    public bool Equals(GUID? other)
+    public bool Equals(GUID other)
     {
-        if (other is null) return false;
         return data_0_ == other.data_0_ &&
                data_1_ == other.data_1_ &&
                data_2_ == other.data_2_ &&

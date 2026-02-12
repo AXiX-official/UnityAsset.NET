@@ -1,13 +1,12 @@
 ﻿using System.Buffers.Binary;
 using System.Text;
 using UnityAsset.NET.Enums;
-using UnityAsset.NET.Extensions;
 
 namespace UnityAsset.NET.IO.Reader;
 
 public class MemoryReader : IReader
 {
-    private Memory<byte> _data;
+    private readonly Memory<byte> _data;
     private int _position;
     private int _length;
 
@@ -35,12 +34,12 @@ public class MemoryReader : IReader
         get => _position;
         set => _position = (int)value;
     }
-    public void Seek(long offset) => _position = (int)offset;
+    public long Length => _length;
     # endregion
     
     # region IReader
     public Endianness Endian { get; set; }
-    public long Length => _length;
+    
     public byte ReadByte()
     {
         var b = _data.Span[_position];
@@ -91,7 +90,7 @@ public class MemoryReader : IReader
             ? BinaryPrimitives.ReadUInt64BigEndian(ReadReadOnlySpanBytes(8))
             : BinaryPrimitives.ReadUInt64LittleEndian(ReadReadOnlySpanBytes(8));
     }
-    public float ReadFloat()
+    public float ReadSingle()
     {
         return Endian == Endianness.BigEndian 
             ? BinaryPrimitives.ReadSingleBigEndian(ReadReadOnlySpanBytes(4))

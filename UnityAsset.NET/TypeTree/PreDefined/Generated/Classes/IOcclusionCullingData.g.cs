@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IOcclusionCullingData : INamedAsset
+    public partial interface IOcclusionCullingData : INamedObject
     {
         public List<byte> m_PVSData { get; }
         public List<IOcclusionScene> m_Scenes { get; }

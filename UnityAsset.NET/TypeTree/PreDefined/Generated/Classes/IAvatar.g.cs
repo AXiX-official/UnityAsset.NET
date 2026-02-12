@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IAvatar : INamedAsset
+    public partial interface IAvatar : INamedObject
     {
         public uint m_AvatarSize { get; }
         public IAvatarConstant m_Avatar { get; }

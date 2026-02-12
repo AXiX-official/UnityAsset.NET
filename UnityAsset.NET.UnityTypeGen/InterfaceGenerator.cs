@@ -1,3 +1,4 @@
+using AssetRipper.Primitives;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -8,14 +9,14 @@ namespace UnityAsset.NET.UnityTypeGen;
 
 public class InterfaceGenerator
 {
-    private Dictionary<string, List<TypeTreeNode>> _subNodes = new();
+    private Dictionary<string, List<(UnityVersion, TypeTreeRepr)>> _subNodes = new();
 
     public static string RootClassFolderName { get; set; } = "Classes";
     public static string SubClassFolderName { get; set; } = "Interfaces";
     
     private Dictionary<int, string> _cachedGenericTypes = new();
     
-    public void GenerateInterfaces(string outputDirectory, Dictionary<string,List<TypeTreeNode>> rootTypeNodesMap)
+    public void GenerateInterfaces(string outputDirectory, Dictionary<string, List<(UnityVersion, TypeTreeRepr)>> rootTypeNodesMap)
     {
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
@@ -44,7 +45,7 @@ public class InterfaceGenerator
         ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         
         var excludedRootTypes = rootTypeNodesMap.Where(kvp =>
-            !Helper.IncludedTypes.Contains(kvp.Key)
+            !includedRootTypes.ContainsKey(kvp.Key)
         ).Select(kvp => kvp.Value);
         
         DiscoverAllSubNodes(includedRootTypes.Values, out var subNodes);
@@ -52,7 +53,7 @@ public class InterfaceGenerator
         
         _subNodes = subNodes.ToDictionary(
             kvp => kvp.Key,
-            kvp => kvp.Value.ToList()
+            kvp => kvp.Value.Select(v => (v.Value, v.Key)).ToList()
         );
         
         foreach (var (className, rootNodes) in includedRootTypes)
@@ -75,7 +76,7 @@ public class InterfaceGenerator
         }
     }
     
-    private void DiscoverSubNodesRecursive(TypeTreeNode node, in Dictionary<string, HashSet<TypeTreeNode>> subNodes)
+    private void DiscoverSubNodesRecursive(TypeTreeRepr node, in Dictionary<string, Dictionary<TypeTreeRepr, UnityVersion>> subNodes, UnityVersion version)
     {
         foreach (var subNode in node.SubNodes)
         {
@@ -89,18 +90,27 @@ public class InterfaceGenerator
             
             if (!Helper.ExcludedBasicTypes.Contains(type) && !Helper.NoInterfaceTypes.Contains(type) && !Helper.ExcludedTypes.Contains(type))
             {
-                if (!subNodes.TryGetValue(type, out var set))
+                if (!subNodes.TryGetValue(type, out var dict))
                 {
-                    subNodes[type] = set = new HashSet<TypeTreeNode>();
+                    subNodes[type] = dict = new();
                 }
-                set.Add(subNode);
+
+                if (dict.TryGetValue(subNode, out var otherVersion))
+                {
+                    if (version < otherVersion)
+                        dict[subNode] = version;
+                }
+                else
+                {
+                    dict[subNode] = version;
+                }
             }
 
-            DiscoverSubNodesRecursive(subNode, subNodes);
+            DiscoverSubNodesRecursive(subNode, subNodes, version);
         }
     }
     
-    private void DiscoverLeftSubNodesRecursive(TypeTreeNode node, Dictionary<string, HashSet<TypeTreeNode>> subNodes, bool forceAdd = false)
+    private void DiscoverLeftSubNodesRecursive(TypeTreeRepr node, Dictionary<string, Dictionary<TypeTreeRepr, UnityVersion>> subNodes, UnityVersion version, bool forceAdd = false)
     {
         foreach (var subNode in node.SubNodes)
         {
@@ -112,48 +122,64 @@ public class InterfaceGenerator
             if (Helper.IsPrimitive(type))
                 continue;
             
-            if (subNodes.TryGetValue(type, out var set))
+            if (subNodes.TryGetValue(type, out var dict))
             {
-                set.Add(subNode);
+                if (dict.TryGetValue(subNode, out var otherVersion))
+                {
+                    if (version < otherVersion)
+                        dict[subNode] = version;
+                }
+                else
+                {
+                    dict[subNode] = version;
+                }
                 forceAdd = true;
             }
             else if (forceAdd)
             {
                 if (!Helper.ExcludedBasicTypes.Contains(type) && !Helper.NoInterfaceTypes.Contains(type) && !Helper.ExcludedTypes.Contains(type))
                 {
-                    subNodes[type] = set = new HashSet<TypeTreeNode>();
-                    set.Add(subNode);
+                    subNodes[type] = dict = new();
+                    if (dict.TryGetValue(subNode, out var otherVersion))
+                    {
+                        if (version < otherVersion)
+                            dict[subNode] = version;
+                    }
+                    else
+                    {
+                        dict[subNode] = version;
+                    }
                 }
             }
             
-            DiscoverLeftSubNodesRecursive(subNode, subNodes, forceAdd);
+            DiscoverLeftSubNodesRecursive(subNode, subNodes, version, forceAdd);
         }
     }
     
-    private void DiscoverLeftSubNodes(IEnumerable<IEnumerable<TypeTreeNode>> allNodes, Dictionary<string, HashSet<TypeTreeNode>> subNodes)
+    private void DiscoverLeftSubNodes(IEnumerable<IEnumerable<(UnityVersion, TypeTreeRepr)>> allNodes, Dictionary<string, Dictionary<TypeTreeRepr, UnityVersion>> subNodes)
     {
         foreach (var nodes in allNodes)
-        foreach (var rootNode in nodes)
+        foreach (var (version, rootNode) in nodes)
         {
-            DiscoverLeftSubNodesRecursive(rootNode, subNodes);
+            DiscoverLeftSubNodesRecursive(rootNode, subNodes, version);
         }
     }
 
-    private void DiscoverAllSubNodes(IEnumerable<IEnumerable<TypeTreeNode>> allNodes, out Dictionary<string, HashSet<TypeTreeNode>> subNodes)
+    private void DiscoverAllSubNodes(IEnumerable<IEnumerable<(UnityVersion, TypeTreeRepr)>> allNodes, out Dictionary<string, Dictionary<TypeTreeRepr, UnityVersion>> subNodes)
     {
         subNodes = new();
     
         foreach (var nodes in allNodes)
-        foreach (var rootNode in nodes)
+        foreach (var (version, rootNode) in nodes)
         {
-            DiscoverSubNodesRecursive(rootNode, subNodes);
+            DiscoverSubNodesRecursive(rootNode, subNodes, version);
         }
     }
 
     // workaround for Keyframe and other generic types
-    private string GetGenricType(TypeTreeNode node)
+    private string GetGenricType(TypeTreeRepr node)
     {
-        if (_cachedGenericTypes.TryGetValue(node.Index, out var type))
+        if (_cachedGenericTypes.TryGetValue(node.Hash, out var type))
         {
             return type;
         }
@@ -161,27 +187,26 @@ public class InterfaceGenerator
         if (node.TypeName == "Keyframe")
         {
             type = node.SubNodes[1].TypeName;
-            _cachedGenericTypes[node.Index] = type;
+            _cachedGenericTypes[node.Hash] = type;
             return type;
         }
         
         if (node.TypeName == "AnimationCurve")
         {
             type = GetGenricType(node.SubNodes[0].SubNodes[0].SubNodes[1]); // keyframe<T> m_Curve
-            _cachedGenericTypes[node.Index] = type;
+            _cachedGenericTypes[node.Hash] = type;
             return type;
         }
         
         // assert we can cut generic type spreading here
         type = string.Empty;
-        _cachedGenericTypes[node.Index] = type;
+        _cachedGenericTypes[node.Hash] = type;
         return type;
     }
     
-    private CompilationUnitSyntax GenerateClassInterface(string className, List<TypeTreeNode> rootNodes, bool isRootClass)
+    private CompilationUnitSyntax GenerateClassInterface(string className, List<(UnityVersion version, TypeTreeRepr node)> rootNodes, bool isRootClass)
     {
         var usingDirectives = SyntaxFactory.List([
-            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("OneOf")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree.PreDefined.Types"))
         ]);
         
@@ -190,7 +215,7 @@ public class InterfaceGenerator
             );
         
         bool isNamedAsset = rootNodes.All(rootNode =>
-            rootNode.SubNodes.Any(sb => sb.Name == "m_Name")
+            rootNode.node.SubNodes.Any(sb => sb.Name == "m_Name")
         );
         
         var interfaceDeclaration = SyntaxFactory.InterfaceDeclaration($"I{className}")
@@ -198,7 +223,7 @@ public class InterfaceGenerator
                 SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                 SyntaxFactory.Token(SyntaxKind.PartialKeyword))
             .AddBaseListTypes(SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(
-                isRootClass ? (isNamedAsset ? "INamedAsset" : "IUnityAsset") : "IPreDefinedInterface")));
+                isRootClass ? (isNamedAsset ? "INamedObject" : "IUnityAsset") : "IPreDefinedInterface")));
         
         var members = new List<MemberDeclarationSyntax>();
 
@@ -206,7 +231,7 @@ public class InterfaceGenerator
 
         foreach (var rootNode in rootNodes)
         {
-            foreach (var subNode in rootNode.SubNodes)
+            foreach (var subNode in rootNode.node.SubNodes)
             {
                 
                 var name = subNode.Name;
@@ -276,6 +301,18 @@ public class InterfaceGenerator
             .AddMembers(namespaceDeclaration.AddMembers(interfaceDeclaration))
             .WithLeadingTrivia(leadingTrivia);
     }
+    
+    static readonly Dictionary<(string, string), string> NumericUnifyMap = new()
+    {
+        { ("sbyte", "byte"), "byte" },
+        { ("byte", "sbyte"), "byte" },
+        { ("short", "ushort"), "ushort" },
+        { ("ushort", "short"), "ushort" },
+        { ("int", "uint"), "uint" },
+        { ("uint", "int"), "uint" },
+        { ("long", "ulong"), "ulong" },
+        { ("ulong", "long"), "ulong" },
+    };
 
     private static string GetOptionalType(List<string> types)
     {
@@ -283,26 +320,19 @@ public class InterfaceGenerator
         
         if (uniqueTypes.Count == 1)
             return types.First();
-        
-        string MultiTypesToOne(List<string> typeList)
-        {
-            if (typeList.All(t => t.StartsWith("List")))
-                return $"List<{MultiTypesToOne(typeList.Select(t => t.Substring(5, t.Length - 6)).ToList())}>";
-            if (typeList.All(t => !Helper.IsCSharpPrimitive(t)))
-                return "IUnityObject";
-            return "object";
-        }
 
-        if (uniqueTypes.Count > 8)
+        if (uniqueTypes.Count == 2)
         {
-            // OneOf supports up to 8 types
-            return MultiTypesToOne(uniqueTypes);
+            var a = uniqueTypes[0];
+            var b = uniqueTypes[1];
+            if (NumericUnifyMap.TryGetValue((a, b), out var unified))
+                return unified;
         }
         
-        return $"OneOf<{string.Join(", ", uniqueTypes)}>";
+        return $"RefSum<{string.Join(", ", uniqueTypes)}>";
     }
 
-    private string GetInterfaceName(TypeTreeNode node, out string genericTypeName)
+    private string GetInterfaceName(TypeTreeRepr node, out string genericTypeName)
     {
         genericTypeName = string.Empty;
         
@@ -315,8 +345,10 @@ public class InterfaceGenerator
             return genericType == "Object"
                 ? "PPtr<IUnityObject>"
                 : Helper.IncludedPPTrGenricTypes.Contains(genericType)
-                    ? $"PPtr<I{genericType}>"
-                    : "PPtr<IUnityObject>";
+                    ? Helper.NoInterfaceTypes.Contains(genericType)
+                        ? $"PPtr<{genericType}>"
+                        : $"PPtr<I{genericType}>"
+                            : "PPtr<IUnityObject>";
         }
         
         if (node.TypeName == "pair")

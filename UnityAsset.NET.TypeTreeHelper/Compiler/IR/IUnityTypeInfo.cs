@@ -4,6 +4,6 @@ namespace UnityAsset.NET.TypeTreeHelper.Compiler.IR;
 
 public interface IUnityTypeInfo
 {
-    TypeTreeNode TypeTreeNode { get; }
+    TypeTreeRepr TypeTreeRepr { get; }
     TypeSyntax ToTypeSyntax();
 }

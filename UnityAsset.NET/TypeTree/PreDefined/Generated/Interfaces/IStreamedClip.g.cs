@@ -2,7 +2,6 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
@@ -10,7 +9,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     public partial interface IStreamedClip : IPreDefinedInterface
     {
         public List<uint> data { get; }
-        public OneOf<uint, ushort> curveCount { get; }
+        public RefSum<uint, ushort> curveCount { get; }
 
         public ushort? discreteCurveCount
         {

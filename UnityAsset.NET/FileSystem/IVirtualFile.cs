@@ -6,18 +6,11 @@ namespace UnityAsset.NET.FileSystem;
 
 public static class FileTypeHelper
 {
-    public static FileType GetFileType(IVirtualFile file)
+    public static FileType GetFileType(IStreamProvider streamProvider)
     {
-        using var stream = file.OpenStream();
-        return GetFileType(stream);
-    }
-        
-    public static FileType GetFileType(Stream stream)
-    {
-        
-        IReader reader = new CustomStreamReader(stream);
+        IReader reader = new CustomStreamReader(streamProvider);
         reader.Seek(0);
-        if (stream.Length > 7)
+        if (reader.Length > 7)
         {
             var signature = reader.ReadBytes(7);
             var header = System.Text.Encoding.UTF8.GetString(signature);
@@ -26,7 +19,7 @@ public static class FileTypeHelper
                 return FileType.BundleFile;
             }
             
-            if (stream.Length < 20)
+            if (reader.Length < 20)
             {
                 return FileType.Unknown;
             }
@@ -43,7 +36,7 @@ public static class FileTypeHelper
         
             if (version >= SerializedFileFormatVersion.LargeFilesSupport)
             {
-                if (stream.Length < 48)
+                if (reader.Length < 48)
                 {
                     reader.Seek(0);
                     return FileType.Unknown;
@@ -55,7 +48,7 @@ public static class FileTypeHelper
             }
             
             reader.Seek(0);
-            if ((long)fileSize != stream.Length || (long)dataOffset > stream.Length)
+            if ((long)fileSize != reader.Length || (long)dataOffset > reader.Length)
             {
                 return FileType.Unknown;
             }
@@ -65,10 +58,9 @@ public static class FileTypeHelper
     }
 }
 
-public interface IVirtualFile
+public interface IVirtualFile : IStreamProvider
 {
     public string Path { get; }
     public string Name { get; }
     public FileType FileType { get; }
-    Stream OpenStream();
 }

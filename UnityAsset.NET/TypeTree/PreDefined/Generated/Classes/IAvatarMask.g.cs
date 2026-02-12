@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IAvatarMask : INamedAsset
+    public partial interface IAvatarMask : INamedObject
     {
         public List<uint> m_Mask { get; }
         public List<ITransformMaskElement> m_Elements { get; }

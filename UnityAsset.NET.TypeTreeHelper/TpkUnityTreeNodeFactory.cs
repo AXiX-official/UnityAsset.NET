@@ -5,16 +5,22 @@ namespace UnityAsset.NET.TypeTreeHelper;
 
 public static class TpkUnityTreeNodeFactory
 {
-    public static TypeTreeNode?[] Cache = [];
+    public static TypeTreeRepr?[] Cache = [];
     private static TpkTypeTreeBlob? _blob;
 
     public static void Init(TpkTypeTreeBlob blob)
     {
         _blob = blob;
-        Cache = new TypeTreeNode[blob.NodeBuffer.Count];
+        Cache = new TypeTreeRepr[blob.NodeBuffer.Count];
     }
 
-    public static TypeTreeNode Create(ushort index)
+    public static void Deinit()
+    {
+        _blob = null;
+        Cache = [];
+    }
+    
+    public static TypeTreeRepr Create(ushort index)
     {
         if (_blob == null)
             throw new InvalidOperationException("TpkUnityTreeNodeFactory is not initialized.");
@@ -23,17 +29,13 @@ public static class TpkUnityTreeNodeFactory
             return Cache[index]!;
         
         var node = _blob.NodeBuffer[index];
-        var ret = new TypeTreeNode
-        {
-            Index = index,
-            TypeName = _blob.StringBuffer[node.TypeName],
-            Name = _blob.StringBuffer[node.Name],
-            ByteSize = node.ByteSize,
-            Version = node.Version,
-            TypeFlags = node.TypeFlags,
-            MetaFlag = node.MetaFlag,
-            SubNodes = node.SubNodes.Select(Create).ToArray()
-        };
+        var ret = TypeTreeRepr.Create
+        (
+            _blob.StringBuffer[node.Name],
+            _blob.StringBuffer[node.TypeName],
+            node.SubNodes.Select(Create).ToArray(),
+            (node.MetaFlag & 0x4000) != 0
+        );
         Cache[index] = ret;
         return ret;
     }
@@ -49,28 +51,27 @@ public static class TpkUnityTreeNodeFactory
             if (node is null) continue;
             
             Cache[writeIndex] = node;
-            node.Index = writeIndex;
             writeIndex++;
         }
     
         Array.Resize(ref Cache, writeIndex);
     }
     
-    public static Dictionary<string, List<TypeTreeNode>> GetRootTypeNodesAfterVersion(string minimalVersionStr)
+    public static Dictionary<string, List<(UnityVersion, TypeTreeRepr)>> GetRootTypeNodesAfterVersion(string minimalVersionStr)
     {
         if (_blob is null)
             throw new InvalidOperationException("TpkUnityTreeNodeFactory is not initialized.");
         
         UnityVersion.TryParse(minimalVersionStr, out var minimalVersion, out _);
         
-        Dictionary<string, HashSet<ushort>> rootTypeNodesMap = new();
+        Dictionary<string, HashSet<(UnityVersion version, ushort index)>> rootTypeNodesMap = new();
         foreach (var info in _blob.ClassInformation)
         {
             bool isSupportedVersion = false;
             // versions are sorted 
             for (int i = 0; i < info.Classes.Count; i++)
             {
-                var (_, @class) = info.Classes[i];
+                var (currentVersion, @class) = info.Classes[i];
                 if (!isSupportedVersion && i < info.Classes.Count - 1)
                 {
                     var (nextVersion, _) = info.Classes[i + 1];
@@ -93,19 +94,19 @@ public static class TpkUnityTreeNodeFactory
                     continue;
                 
                 if (!rootTypeNodesMap.ContainsKey(name))
-                    rootTypeNodesMap[name] = new HashSet<ushort>();
+                    rootTypeNodesMap[name] = new();
                 
-                rootTypeNodesMap[name].Add(@class.ReleaseRootNode);
+                rootTypeNodesMap[name].Add((currentVersion, @class.ReleaseRootNode));
             }
         }
 
         return rootTypeNodesMap.ToDictionary(
             kvp => kvp.Key, 
-            kvp => kvp.Value.Select(Create).ToList()
+            kvp => kvp.Value.Select(v => (v.version, Create(v.index))).ToList()
         );
     }
     
-    public static Dictionary<string, TypeTreeNode> GetRootTypeNodes(string versionStr)
+    public static Dictionary<string, TypeTreeRepr> GetRootTypeNodes(string versionStr)
     {
         if (_blob is null)
             throw new InvalidOperationException("TpkUnityTreeNodeFactory is not initialized.");

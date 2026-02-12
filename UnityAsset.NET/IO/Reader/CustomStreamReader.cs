@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Buffers.Binary;
+using System.Diagnostics;
+using System.Text;
 using UnityAsset.NET.Enums;
 
 namespace UnityAsset.NET.IO.Reader;
@@ -6,19 +8,30 @@ namespace UnityAsset.NET.IO.Reader;
 public class CustomStreamReader : IReader, IDisposable
 {
     private readonly System.IO.Stream _stream; 
-    private readonly bool _leaveOpen;
     
     private readonly byte[] _buffer;
-    private int _bufferOffset;
-    private int _bufferCount;
-
-    public CustomStreamReader(System.IO.Stream stream, Endianness endian = Endianness.BigEndian, bool leaveOpen = false, int bufferSize = 8192)
+    private uint _bufferOffset;
+    private uint _bufferCount;
+    
+    public CustomStreamReader(System.IO.Stream stream, Endianness endian = Endianness.BigEndian, int bufferSize = 8192)
     {
         if (!stream.CanRead || !stream.CanSeek)
             throw new ArgumentException("Stream must be readable and seekable", nameof(stream));
         _stream = stream;
         Endian = endian;
-        _leaveOpen = leaveOpen;
+        
+        _buffer = new byte[bufferSize];
+        _bufferOffset = 0;
+        _bufferCount = 0;
+    }
+
+    public CustomStreamReader(IStreamProvider streamProvider, Endianness endian = Endianness.BigEndian, int bufferSize = 8192)
+    {
+        var stream = streamProvider.OpenStream();
+        if (!stream.CanRead || !stream.CanSeek)
+            throw new ArgumentException("Stream must be readable and seekable", nameof(stream));
+        _stream = stream;
+        Endian = endian;
         
         _buffer = new byte[bufferSize];
         _bufferOffset = 0;
@@ -28,39 +41,40 @@ public class CustomStreamReader : IReader, IDisposable
     private void FillBuffer()
     {
         _bufferOffset = 0;
-        _bufferCount = _stream.Read(_buffer, 0, _buffer.Length);
+        _bufferCount = (uint)_stream.Read(_buffer, 0, _buffer.Length);
     }
     
     # region ISeek
     public long Position
     {
-        get => _stream.Position - _bufferCount + _bufferOffset;
-        set => Seek(value);
-    }
-
-    public void Seek(long offset)
-    {
-        var currentPos = Position;
-        if (currentPos == offset)
-        {
-            return;
+        get {
+            var pos = _stream.Position - _bufferCount + _bufferOffset;
+            Debug.Assert(pos >= 0);
+            return pos;
         }
-
-        if (offset > currentPos && offset < currentPos + (_bufferCount - _bufferOffset))
-        {
-            _bufferOffset += (int)(offset - currentPos);
-            return;
+        set {
+            var currentPos = Position;
+            if (currentPos == value)
+            {
+                return;
+            }
+            
+            if (value > currentPos && value < currentPos + (_bufferCount - _bufferOffset))
+            {
+                _bufferOffset += (uint)(value - currentPos);
+                return;
+            }
+            
+            _bufferOffset = 0;
+            _bufferCount = 0;
+            _stream.Seek(value, SeekOrigin.Begin);
         }
-        
-        _bufferOffset = 0;
-        _bufferCount = 0;
-        _stream.Seek(offset, SeekOrigin.Begin);
     }
+    public long Length => _stream.Length;
     # endregion
     
     # region IReader
     public Endianness Endian { get; set; }
-    public long Length => _stream.Length;
 
     public byte ReadByte()
     {
@@ -74,34 +88,182 @@ public class CustomStreamReader : IReader, IDisposable
     }
     public byte[] ReadBytes(int count)
     {
+        if (count < 0)
+            throw new ArgumentOutOfRangeException(nameof(count));
         if (count == 0)
             return [];
-        if (Position + count > _stream.Length)
+        if ((uint)count > ((IReader)this).Remaining)
             throw new EndOfStreamException();
         byte[] bytes = new byte[count];
-        int bytesRead = 0;
-        while (bytesRead < count)
+        ReadExactly(bytes);
+        return bytes;
+    }
+
+    public void ReadExactly(Span<byte> buffer)
+    {
+        int written = 0;
+        while (written < buffer.Length)
         {
-            int bytesAvailable = _bufferCount - _bufferOffset;
-            if (bytesAvailable == 0)
+            if (_bufferOffset >= _bufferCount)
             {
                 FillBuffer();
-                bytesAvailable = _bufferCount;
-                if (bytesAvailable == 0)
-                    break;
+                if (_bufferCount == 0)
+                    throw new EndOfStreamException();
             }
-            
-            int bytesToCopy = Math.Min(count - bytesRead, bytesAvailable);
-            Buffer.BlockCopy(_buffer, _bufferOffset, bytes, bytesRead, bytesToCopy);
-            
-            _bufferOffset += bytesToCopy;
-            bytesRead += bytesToCopy;
-        }
 
-        if (bytesRead < count)
-            throw new EndOfStreamException();
+            var available = (int)(_bufferCount - _bufferOffset);
+            var toCopy = Math.Min(buffer.Length - written, available);
+
+            _buffer.AsSpan((int)_bufferOffset, toCopy)
+                .CopyTo(buffer.Slice(written, toCopy));
+
+            _bufferOffset += (uint)toCopy;
+            written += toCopy;
+        }
+    }
+    public short ReadInt16()
+    {
+        if (_bufferCount - _bufferOffset >= 2)
+        {
+            var span = _buffer.AsSpan((int)_bufferOffset, 2);
+            _bufferOffset += 2;
+
+            return Endian == Endianness.BigEndian
+                ? BinaryPrimitives.ReadInt16BigEndian(span)
+                : BinaryPrimitives.ReadInt16LittleEndian(span);
+        }
         
-        return bytes;
+        Span<byte> tmp = stackalloc byte[2];
+        ReadExactly(tmp);
+        return Endian == Endianness.BigEndian
+            ? BinaryPrimitives.ReadInt16BigEndian(tmp)
+            : BinaryPrimitives.ReadInt16LittleEndian(tmp);
+    }
+    public ushort ReadUInt16()
+    {
+        if (_bufferCount - _bufferOffset >= 2)
+        {
+            var span = _buffer.AsSpan((int)_bufferOffset, 2);
+            _bufferOffset += 2;
+
+            return Endian == Endianness.BigEndian
+                ? BinaryPrimitives.ReadUInt16BigEndian(span)
+                : BinaryPrimitives.ReadUInt16LittleEndian(span);
+        }
+        
+        Span<byte> tmp = stackalloc byte[2];
+        ReadExactly(tmp);
+        return Endian == Endianness.BigEndian
+            ? BinaryPrimitives.ReadUInt16BigEndian(tmp)
+            : BinaryPrimitives.ReadUInt16LittleEndian(tmp);
+    }
+    public int ReadInt32()
+    {
+        if (_bufferCount - _bufferOffset >= 4)
+        {
+            var span = _buffer.AsSpan((int)_bufferOffset, 4);
+            _bufferOffset += 4;
+
+            return Endian == Endianness.BigEndian
+                ? BinaryPrimitives.ReadInt32BigEndian(span)
+                : BinaryPrimitives.ReadInt32LittleEndian(span);
+        }
+        
+        Span<byte> tmp = stackalloc byte[4];
+        ReadExactly(tmp);
+        return Endian == Endianness.BigEndian
+            ? BinaryPrimitives.ReadInt32BigEndian(tmp)
+            : BinaryPrimitives.ReadInt32LittleEndian(tmp);
+    }
+    public uint ReadUInt32()
+    {
+        if (_bufferCount - _bufferOffset >= 4)
+        {
+            var span = _buffer.AsSpan((int)_bufferOffset, 4);
+            _bufferOffset += 4;
+
+            return Endian == Endianness.BigEndian
+                ? BinaryPrimitives.ReadUInt32BigEndian(span)
+                : BinaryPrimitives.ReadUInt32LittleEndian(span);
+        }
+        
+        Span<byte> tmp = stackalloc byte[4];
+        ReadExactly(tmp);
+        return Endian == Endianness.BigEndian
+            ? BinaryPrimitives.ReadUInt32BigEndian(tmp)
+            : BinaryPrimitives.ReadUInt32LittleEndian(tmp);
+    }
+    public long ReadInt64()
+    {
+        if (_bufferCount - _bufferOffset >= 8)
+        {
+            var span = _buffer.AsSpan((int)_bufferOffset, 8);
+            _bufferOffset += 8;
+
+            return Endian == Endianness.BigEndian
+                ? BinaryPrimitives.ReadInt64BigEndian(span)
+                : BinaryPrimitives.ReadInt64LittleEndian(span);
+        }
+        
+        Span<byte> tmp = stackalloc byte[8];
+        ReadExactly(tmp);
+        return Endian == Endianness.BigEndian
+            ? BinaryPrimitives.ReadInt64BigEndian(tmp)
+            : BinaryPrimitives.ReadInt64LittleEndian(tmp);
+    }
+    public ulong ReadUInt64()
+    {
+        if (_bufferCount - _bufferOffset >= 8)
+        {
+            var span = _buffer.AsSpan((int)_bufferOffset, 8);
+            _bufferOffset += 8;
+
+            return Endian == Endianness.BigEndian
+                ? BinaryPrimitives.ReadUInt64BigEndian(span)
+                : BinaryPrimitives.ReadUInt64LittleEndian(span);
+        }
+        
+        Span<byte> tmp = stackalloc byte[8];
+        ReadExactly(tmp);
+        return Endian == Endianness.BigEndian
+            ? BinaryPrimitives.ReadUInt64BigEndian(tmp)
+            : BinaryPrimitives.ReadUInt64LittleEndian(tmp);
+    }
+    public float ReadSingle()
+    {
+        if (_bufferCount - _bufferOffset >= 4)
+        {
+            var span = _buffer.AsSpan((int)_bufferOffset, 4);
+            _bufferOffset += 4;
+
+            return Endian == Endianness.BigEndian
+                ? BinaryPrimitives.ReadSingleBigEndian(span)
+                : BinaryPrimitives.ReadSingleLittleEndian(span);
+        }
+        
+        Span<byte> tmp = stackalloc byte[4];
+        ReadExactly(tmp);
+        return Endian == Endianness.BigEndian
+            ? BinaryPrimitives.ReadSingleBigEndian(tmp)
+            : BinaryPrimitives.ReadSingleLittleEndian(tmp);
+    }
+    public double ReadDouble()
+    {
+        if (_bufferCount - _bufferOffset >= 8)
+        {
+            var span = _buffer.AsSpan((int)_bufferOffset, 8);
+            _bufferOffset += 8;
+
+            return Endian == Endianness.BigEndian
+                ? BinaryPrimitives.ReadDoubleBigEndian(span)
+                : BinaryPrimitives.ReadDoubleLittleEndian(span);
+        }
+        
+        Span<byte> tmp = stackalloc byte[8];
+        ReadExactly(tmp);
+        return Endian == Endianness.BigEndian
+            ? BinaryPrimitives.ReadDoubleBigEndian(tmp)
+            : BinaryPrimitives.ReadDoubleLittleEndian(tmp);
     }
     public string ReadNullTerminatedString()
     {
@@ -124,7 +286,6 @@ public class CustomStreamReader : IReader, IDisposable
     # endregion
     public void Dispose()
     {
-        if (!_leaveOpen)
-            _stream.Dispose();
+        _stream.Dispose();
     }
 }

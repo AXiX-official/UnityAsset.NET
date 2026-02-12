@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface ID3D12DeviceFilterLists : INamedAsset
+    public partial interface ID3D12DeviceFilterLists : INamedObject
     {
         public List<ID3D12DeviceFilterData> m_AllowFilterList { get; }
         public List<ID3D12DeviceFilterData> m_DenyFilterList { get; }

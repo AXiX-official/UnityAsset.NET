@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IAudioMixer : INamedAsset
+    public partial interface IAudioMixer : INamedObject
     {
         public PPtr<IAudioMixerGroup> m_OutputGroup { get; }
         public PPtr<IAudioMixerGroup> m_MasterGroup { get; }

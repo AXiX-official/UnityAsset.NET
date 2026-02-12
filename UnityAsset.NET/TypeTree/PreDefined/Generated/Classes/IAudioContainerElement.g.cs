@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IAudioContainerElement : INamedAsset
+    public partial interface IAudioContainerElement : INamedObject
     {
         public PPtr<IAudioClip> m_AudioClip { get; }
         public float m_Volume { get; }

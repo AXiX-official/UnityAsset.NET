@@ -1,23 +1,11 @@
 ﻿using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.TypeTreeHelper;
 
 namespace UnityAsset.NET.Extensions;
 
 public static class TypeTreeNodeExtensions
 {
     public static bool RequiresAlign(this TypeTreeNode node) => (node.MetaFlags & 0x4000) != 0;
-    
-    public static bool RequiresAlign(this TypeTreeNode node, List<TypeTreeNode> nodes)
-    {
-        switch (node.Type)
-        {
-            case "string" :
-            case "vector" :
-                return node.RequiresAlign() || node.Children(nodes)[0].RequiresAlign();
-            case "map" :
-                return node.RequiresAlign() || node.Children(nodes)[0].Children(nodes)[1].RequiresAlign();
-            default: return node.RequiresAlign();
-        }
-    }
     
     public static TypeTreeNode Parent(this TypeTreeNode current, List<TypeTreeNode> nodes)
     {
@@ -46,5 +34,19 @@ public static class TypeTreeNodeExtensions
                 children.Add(nodesSpan[i]);
         }
         return children;
+    }
+    
+    public static TypeTreeRepr ToTypeTreeRepr(this TypeTreeNode current, List<TypeTreeNode> nodes)
+    {
+        if (String.IsNullOrEmpty(current.Type) || String.IsNullOrEmpty(current.Name))
+            throw new Exception("Type/Name is empty");
+
+        return TypeTreeRepr.Create
+        (
+            current.Name,
+            current.Type,
+            current.Children(nodes).Select(n => n.ToTypeTreeRepr(nodes)).ToArray(),
+            current.RequiresAlign()
+        );
     }
 }

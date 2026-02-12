@@ -9,7 +9,7 @@ public class ClassTypeInfo : IUnityTypeInfo
     public required string GeneratedClassName { get; init; }
     public required string InterfaceName { get; init; }
     public required List<UnityFieldInfo> Fields { get; init; }
-    public required TypeTreeNode TypeTreeNode { get; init; }
+    public required TypeTreeRepr TypeTreeRepr { get; init; }
 
     public TypeSyntax ToTypeSyntax() => SyntaxFactory.ParseTypeName(InterfaceName);
     public TypeSyntax ToConcreteTypeSyntax() => SyntaxFactory.ParseTypeName(GeneratedClassName);

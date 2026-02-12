@@ -4,7 +4,7 @@ using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Types;
 
-public class Vector4f : IVector4f
+public struct Vector4f : IPreDefinedInterface
 {
     public string ClassName => "Vector4f";
     public float x { get; }
@@ -14,10 +14,10 @@ public class Vector4f : IVector4f
 
     public Vector4f(IReader reader)
     {
-        x = reader.ReadFloat();
-        y = reader.ReadFloat();
-        z = reader.ReadFloat();
-        w = reader.ReadFloat();
+        x = reader.ReadSingle();
+        y = reader.ReadSingle();
+        z = reader.ReadSingle();
+        w = reader.ReadSingle();
     }
     
     public Vector4f(float x, float y, float z, float w)
@@ -40,5 +40,10 @@ public class Vector4f : IVector4f
         root.Children.Add(new AssetNode { Name = "z", TypeName = "float", Value = this.z });
         root.Children.Add(new AssetNode { Name = "w", TypeName = "float", Value = this.w });
         return root;
+    }
+    
+    public override int GetHashCode()
+    {
+        return x.GetHashCode() ^ (y.GetHashCode() << 2) ^ (z.GetHashCode() >> 2) ^ (w.GetHashCode() >> 1);
     }
 }

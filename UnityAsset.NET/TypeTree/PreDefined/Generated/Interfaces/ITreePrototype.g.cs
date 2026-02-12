@@ -2,14 +2,13 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ITreePrototype : IPreDefinedInterface
     {
-        public PPtr<IGameObject> prefab { get; }
+        public PPtr<GameObject> prefab { get; }
         public float bendFactor { get; }
 
         public int? navMeshLod

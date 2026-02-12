@@ -6,7 +6,7 @@ using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Types;
 
-public class SpriteAtlasData : ISpriteAtlasData
+public class SpriteAtlasData : IPreDefinedInterface
 {
     public string ClassName => "SpriteAtlasData";
     public PPtr<ITexture2D> texture { get; }
@@ -31,7 +31,7 @@ public class SpriteAtlasData : ISpriteAtlasData
             atlasRectOffset =new Vector2f(reader);
         }
         uvTransform = new Vector4f(reader);
-        downscaleMultiplier = reader.ReadFloat();
+        downscaleMultiplier = reader.ReadSingle();
         settingsRaw = reader.ReadUInt32();
         if (version >= "2020.2") //2020.2 and up
         {
@@ -51,8 +51,8 @@ public class SpriteAtlasData : ISpriteAtlasData
         root.Children.Add(alphaTexture.ToAssetNode("alphaTexture")!);
         root.Children.Add(textureRect.ToAssetNode("textureRect")!);
         root.Children.Add(textureRectOffset.ToAssetNode("textureRectOffset")!);
-        if (atlasRectOffset != null)
-            root.Children.Add(atlasRectOffset.ToAssetNode("atlasRectOffset")!);
+        if (atlasRectOffset is not null)
+            root.Children.Add(atlasRectOffset.Value.ToAssetNode("atlasRectOffset")!);
         root.Children.Add(uvTransform.ToAssetNode("uvTransform")!);
         root.Children.Add(new AssetNode { Name = "downscaleMultiplier", TypeName = "float", Value = downscaleMultiplier });
         root.Children.Add(new AssetNode { Name = "settingsRaw", TypeName = "UInt32", Value = settingsRaw });

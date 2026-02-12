@@ -23,6 +23,7 @@ public static class Helper
         // workaround for generic type issues
         "Keyframe", // Keyframe should use generic type
         "AnimationCurve", // contains Keyframe
+        "GameObject",
         "MonoBehaviour",
         ""
     ];
@@ -46,6 +47,7 @@ public static class Helper
         "PPtr",
         "StreamingInfo",
         "TypelessData",
+        "GameObject",
         "GUID",
         "SpriteAtlas",
         "SpriteAtlasData",
@@ -54,17 +56,26 @@ public static class Helper
         "Vector4f",
         "Quaternionf",
         "Rectf",
-        "SecondarySpriteTexture"
+        "SecondarySpriteTexture",
+        "BoneWeights4",
     ];
 
     public static HashSet<string> NoInterfaceTypes =
     [
         "Object",
-        //"SpriteAtlas",
+        "SpriteAtlas",
         "StreamingInfo",
         "TypelessData",
+        "GameObject",
+        "GUID",
         "EditorSettings", // workaround
+        "SpriteAtlasData",
+        "Vector2f",
+        "Vector3f",
+        "Vector4f",
         "Quaternionf", // workaround
+        "Rectf",
+        "BoneWeights4",
     ];
 
     public static HashSet<string> IncludedPPTrGenricTypes =
@@ -114,7 +125,7 @@ public static class Helper
         "Prefab",
         "Avatar",
         "NavMeshData",
-        //"RuntimeAnimatorController",
+        "RuntimeAnimatorController",
         "AnimatorStateMachine",
         "AnimatorState",
         "AnimatorStateTransition",
@@ -148,7 +159,7 @@ public static class Helper
         "Collider2D",
         "Preset",
         "Texture3D",
-        //"NamedObject"
+        "NamedObject"
     ];
     
     public static string GetGenericPPtrInterfaceName(string typeName)
@@ -168,7 +179,7 @@ public static class Helper
         return "IUnityObject";
     }
     
-    public static string GetInterfaceName(TypeTreeNode node)
+    public static string GetInterfaceName(TypeTreeRepr node)
     {
         if (IsPrimitive(node.TypeName))
             return node.TypeName;
@@ -191,12 +202,12 @@ public static class Helper
         return $"I{node.TypeName}";
     }
     
-    public static bool IsNamedAsset(TypeTreeNode current)
+    public static bool IsNamedAsset(TypeTreeRepr current)
     {
         return current.SubNodes.Any(sb => sb is {TypeName: "string", Name: "m_Name"});
     }
     
-    #region IdentifierSanitizer Logic
+    # region IdentifierSanitizer Logic
     
     public static string SanitizeName(string name)
     {
@@ -226,9 +237,9 @@ public static class Helper
         return SyntaxFacts.IsReservedKeyword(SyntaxFacts.GetKeywordKind(fixedName)) ? "@" + fixedName : fixedName;
     }
 
-    #endregion
+    # endregion
 
-    #region Type Helper Logic
+    # region Type Helper Logic
 
     public static string GetCSharpPrimitiveType(string unityType)
     {
@@ -261,7 +272,7 @@ public static class Helper
         };
     }
 
-    public static bool IsPrimitive(TypeTreeNode current)
+    public static bool IsPrimitive(TypeTreeRepr current)
     {
         return IsPrimitive(current.TypeName);
     }
@@ -290,7 +301,7 @@ public static class Helper
             "UInt32" or "unsigned int" or "Type*" => "ReadUInt32",
             "long long" or "SInt64" => "ReadInt64",
             "UInt64" or "unsigned long long" or "FileSize" => "ReadUInt64",
-            "float" => "ReadFloat",
+            "float" => "ReadSingle",
             "double" => "ReadDouble",
             "bool" => "ReadBoolean",
             "string" => "ReadSizedString",
@@ -298,7 +309,7 @@ public static class Helper
         };
     }
 
-    public static bool IsVector(TypeTreeNode current)
+    public static bool IsVector(TypeTreeRepr current)
     {
         if (current.TypeName == "vector" || current.TypeName == "staticvector" || current.TypeName == "set") return true;
         if (current.SubNodes.Length == 0) return false;
@@ -306,27 +317,27 @@ public static class Helper
         return false;
     }
 
-    public static bool IsGenericPPtr(TypeTreeNode current)
+    public static bool IsGenericPPtr(TypeTreeRepr current)
     {
         return current.TypeName.StartsWith("PPtr<") && current.TypeName.EndsWith(">");
     }
     
-    public static bool IsPreDefinedType(TypeTreeNode current) => PreDefinedTypes.Contains(current.TypeName);
+    public static bool IsPreDefinedType(TypeTreeRepr current) => PreDefinedTypes.Contains(current.TypeName);
     
-    public static bool IsMap(TypeTreeNode current)
+    public static bool IsMap(TypeTreeRepr current)
     {
         if (current.TypeName == "map") return true;
         return false;
     }
 
-    public static bool IsPair(TypeTreeNode current)
+    public static bool IsPair(TypeTreeRepr current)
     {
         return current.TypeName == "pair";
     }
 
-    #endregion
+    # endregion
 
-    #region Predefined Interface Logic
+    # region Predefined Interface Logic
 
     public static bool IsNullable(Type csharpType)
     {
@@ -362,7 +373,7 @@ public static class Helper
         return properties;
     }
 
-    #endregion
+    # endregion
 
     public static TypeSyntax GetTypeSyntax(Type type)
     {

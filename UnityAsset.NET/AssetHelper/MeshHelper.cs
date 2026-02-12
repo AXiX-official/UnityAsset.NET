@@ -3,8 +3,10 @@ using System.Buffers.Binary;
 using System.Collections;
 using System.Diagnostics;
 using UnityAsset.NET.Enums;
+using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
+using UnityAsset.NET.TypeTree.PreDefined.Types;
 using Half = UnityAsset.NET.Extensions.Half;
 
 namespace UnityAsset.NET.AssetHelper;
@@ -203,9 +205,67 @@ public static class MeshHelper
         public List<float> m_UV5 = [];
         public List<float> m_UV6 = [];
         public List<float> m_UV7 = [];
-        public List<IBoneWeights4> m_Skin = [];
+        public List<BoneWeights4> m_Skin = [];
         
         public List<ProcessedSubMesh> m_SubMeshes = [];
+        
+        public List<float> GetUV(int uv)
+        {
+            switch (uv)
+            {
+                case 0:
+                    return m_UV0;
+                case 1:
+                    return m_UV1;
+                case 2:
+                    return m_UV2;
+                case 3:
+                    return m_UV3;
+                case 4:
+                    return m_UV4;
+                case 5:
+                    return m_UV5;
+                case 6:
+                    return m_UV6;
+                case 7:
+                    return m_UV7;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        
+        public void SetUV(int uv, List<float> m_UV)
+        {
+            switch (uv)
+            {
+                case 0:
+                    m_UV0 = m_UV;
+                    break;
+                case 1:
+                    m_UV1 = m_UV;
+                    break;
+                case 2:
+                    m_UV2 = m_UV;
+                    break;
+                case 3:
+                    m_UV3 = m_UV;
+                    break;
+                case 4:
+                    m_UV4 = m_UV;
+                    break;
+                case 5:
+                    m_UV5 = m_UV;
+                    break;
+                case 6:
+                    m_UV6 = m_UV;
+                    break;
+                case 7:
+                    m_UV7 = m_UV;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
     
     public static ProcessedMesh GetProcessedMesh(AssetManager assetManager, IMesh mesh, Endianness endianness)
@@ -311,37 +371,35 @@ public static class MeshHelper
                         break;
                     //2018.2 and up
                     case 12: //kShaderChannelBlendWeight
-                        /*if (m_Skin == null)
+                        if (processedMesh.m_Skin.Count == 0)
+                            processedMesh.m_Skin = Enumerable.Repeat(new BoneWeights4(), (int)vertexCount).ToList();
+                        for (int i = 0; i < vertexCount; i++)
                         {
-                            InitMSkin();
-                        }
-                        for (int i = 0; i < m_VertexCount; i++)
-                        {
-                            for (int j = 0; j < m_Channel.dimension; j++)
+                            for (int j = 0; j < dimension; j++)
                             {
-                                m_Skin[i].weight[j] = componentsFloatArray[i * m_Channel.dimension + j];
+                                processedMesh.m_Skin[i].weight[j] = componentsFloatArray[i * dimension + j];
                             }
-                        }*/
+                        }
                         break;
                     case 13: //kShaderChannelBlendIndices
-                        /*if (m_Skin == null)
+                        if (processedMesh.m_Skin.Count == 0)
                         {
-                            InitMSkin();
-                            if (m_Channel.dimension == 1)
+                            processedMesh.m_Skin = Enumerable.Repeat(new BoneWeights4(), (int)vertexCount).ToList();
+                            if (dimension == 1)
                             {
-                                for (var i = 0; i < m_VertexCount; i++)
+                                for (var i = 0; i < vertexCount; i++)
                                 {
-                                    m_Skin[i].weight[0] = 1f;
+                                    processedMesh.m_Skin[i].weight[0] = 1f;
                                 }
                             }
                         }
-                        for (int i = 0; i < m_VertexCount; i++)
+                        for (int i = 0; i < vertexCount; i++)
                         {
-                            for (int j = 0; j < m_Channel.dimension; j++)
+                            for (int j = 0; j < dimension; j++)
                             {
-                                m_Skin[i].boneIndex[j] = componentsIntArray[i * m_Channel.dimension + j];
+                                processedMesh.m_Skin[i].boneIndex[j] = componentsIntArray[i * dimension + j];
                             }
-                        }*/
+                        }
                         break;
                 }
             }
@@ -409,10 +467,154 @@ public static class MeshHelper
         var compressedMesh = mesh.m_CompressedMesh;
         if (compressedMesh.m_Vertices.m_NumItems > 0)
         {
-            Debug.Assert(processedMesh.m_VertexCount == 0 ? true : processedMesh.m_VertexCount == compressedMesh.m_Vertices.m_NumItems / 3); // not verified
-            throw new NotImplementedException("Compressed meshes are not supported.");
-            /*processedMesh.m_VertexCount = (int)compressedMesh.m_Vertices.m_NumItems / 3;
-            m_Vertices = m_CompressedMesh.m_Vertices.UnpackFloats(3, 3 * 4);*/
+            processedMesh.m_VertexCount = (int)(compressedMesh.m_Vertices.m_NumItems / 3);
+            processedMesh.m_Vertices = compressedMesh.m_Vertices.UnpackFloats(3, 3 * 4);
+        }
+        //UV
+        if (compressedMesh.m_UV.m_NumItems > 0)
+        {
+            var m_UVInfo = compressedMesh.m_UVInfo;
+            if (m_UVInfo != 0)
+            {
+                const int kInfoBitsPerUV = 4;
+                const int kUVDimensionMask = 3;
+                const int kUVChannelExists = 4;
+                const int kMaxTexCoordShaderChannels = 8;
+
+                int uvSrcOffset = 0;
+                for (int uv = 0; uv < kMaxTexCoordShaderChannels; uv++)
+                {
+                    var texCoordBits = m_UVInfo >> (uv * kInfoBitsPerUV);
+                    texCoordBits &= (1u << kInfoBitsPerUV) - 1u;
+                    if ((texCoordBits & kUVChannelExists) != 0)
+                    {
+                        var uvDim = 1 + (int)(texCoordBits & kUVDimensionMask);
+                        var m_UV = compressedMesh.m_UV.UnpackFloats(uvDim, uvDim * 4, uvSrcOffset, processedMesh.m_VertexCount);
+                        processedMesh.SetUV(uv, m_UV);
+                        uvSrcOffset += uvDim * processedMesh.m_VertexCount;
+                    }
+                }
+            }
+            else
+            {
+                processedMesh.m_UV0 = compressedMesh.m_UV.UnpackFloats(2, 2 * 4, 0, processedMesh.m_VertexCount);
+                if (compressedMesh.m_UV.m_NumItems >= processedMesh.m_VertexCount * 4)
+                {
+                    processedMesh.m_UV1 = compressedMesh.m_UV.UnpackFloats(2, 2 * 4, processedMesh.m_VertexCount * 2, processedMesh.m_VertexCount);
+                }
+            }
+        }
+        //Normal
+        if (compressedMesh.m_Normals.m_NumItems > 0)
+        {
+            var normalData = compressedMesh.m_Normals.UnpackFloats(2, 4 * 2);
+            var signs = compressedMesh.m_NormalSigns.UnpackInts();
+            var m_Normals = new float[compressedMesh.m_Normals.m_NumItems / 2 * 3];
+            for (int i = 0; i < compressedMesh.m_Normals.m_NumItems / 2; ++i)
+            {
+                var x = normalData[i * 2 + 0];
+                var y = normalData[i * 2 + 1];
+                var zsqr = 1 - x * x - y * y;
+                float z;
+                if (zsqr >= 0f)
+                    z = (float)Math.Sqrt(zsqr);
+                else
+                {
+                    z = 0;
+                    (x, y, z) = (x, y, z).Normalize();
+                }
+                if (signs[i] == 0)
+                    z = -z;
+                m_Normals[i * 3] = x;
+                m_Normals[i * 3 + 1] = y;
+                m_Normals[i * 3 + 2] = z;
+            }
+            processedMesh.m_Normals = new(m_Normals);
+        }
+        //Tangent
+        if (compressedMesh.m_Tangents.m_NumItems > 0)
+        {
+            var tangentData = compressedMesh.m_Tangents.UnpackFloats(2, 4 * 2);
+            var signs = compressedMesh.m_TangentSigns.UnpackInts();
+            var m_Tangents = new float[compressedMesh.m_Tangents.m_NumItems / 2 * 4];
+            for (int i = 0; i < compressedMesh.m_Tangents.m_NumItems / 2; ++i)
+            {
+                var x = tangentData[i * 2 + 0];
+                var y = tangentData[i * 2 + 1];
+                var zsqr = 1 - x * x - y * y;
+                float z;
+                if (zsqr >= 0f)
+                    z = (float)Math.Sqrt(zsqr);
+                else
+                {
+                    z = 0;
+                    (x, y, z) = (x, y, z).Normalize();
+                }
+                if (signs[i * 2 + 0] == 0)
+                    z = -z;
+                var w = signs[i * 2 + 1] > 0 ? 1.0f : -1.0f;
+                m_Tangents[i * 4] = x;
+                m_Tangents[i * 4 + 1] = y;
+                m_Tangents[i * 4 + 2] = z;
+                m_Tangents[i * 4 + 3] = w;
+            }
+            processedMesh.m_Tangents = new(m_Tangents);
+        }
+        //FloatColor
+        if (compressedMesh.m_FloatColors.m_NumItems > 0)
+        {
+            processedMesh.m_Colors = compressedMesh.m_FloatColors.UnpackFloats(1, 4);
+        }
+        //Skin
+        if (compressedMesh.m_Weights.m_NumItems > 0)
+        {
+            var weights = compressedMesh.m_Weights.UnpackInts();
+            var boneIndices = compressedMesh.m_BoneIndices.UnpackInts();
+
+            var m_Skin = new BoneWeights4[processedMesh.m_VertexCount];
+
+            int bonePos = 0;
+            int boneIndexPos = 0;
+            int j = 0;
+            int sum = 0;
+
+            for (int i = 0; i < compressedMesh.m_Weights.m_NumItems; i++)
+            {
+                //read bone index and weight.
+                m_Skin[bonePos].weight[j] = weights[i] / 31.0f;
+                m_Skin[bonePos].boneIndex[j] = boneIndices[boneIndexPos++];
+                j++;
+                sum += weights[i];
+
+                //the weights add up to one. fill the rest for this vertex with zero, and continue with next one.
+                if (sum >= 31)
+                {
+                    for (; j < 4; j++)
+                    {
+                        m_Skin[bonePos].weight[j] = 0;
+                        m_Skin[bonePos].boneIndex[j] = 0;
+                    }
+                    bonePos++;
+                    j = 0;
+                    sum = 0;
+                }
+                //we read three weights, but they don't add up to one. calculate the fourth one, and read
+                //missing bone index. continue with next vertex.
+                else if (j == 3)
+                {
+                    m_Skin[bonePos].weight[j] = (31 - sum) / 31.0f;
+                    m_Skin[bonePos].boneIndex[j] = boneIndices[boneIndexPos++];
+                    bonePos++;
+                    j = 0;
+                    sum = 0;
+                }
+            }
+            processedMesh.m_Skin = new(m_Skin);
+        }
+        //IndexBuffer
+        if (compressedMesh.m_Triangles.m_NumItems > 0)
+        {
+            indexBuffer = compressedMesh.m_Triangles.UnpackInts().Select(x => checked((ushort)x)).ToArray();
         }
         
         // GetTriangles

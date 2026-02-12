@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IAnimatorState : INamedAsset
+    public partial interface IAnimatorState : INamedObject
     {
         public float m_Speed { get; }
         public float m_CycleOffset { get; }

@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface ISprite : INamedAsset
+    public partial interface ISprite : INamedObject
     {
         public Rectf m_Rect { get; }
         public Vector2f m_Offset { get; }
@@ -18,7 +17,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public bool m_IsPolygon { get; }
         public ValueTuple<GUID, long> m_RenderDataKey { get; }
         public List<string> m_AtlasTags { get; }
-        public PPtr<ISpriteAtlas> m_SpriteAtlas { get; }
+        public PPtr<SpriteAtlas> m_SpriteAtlas { get; }
         public ISpriteRenderData m_RD { get; }
         public List<List<Vector2f>> m_PhysicsShape { get; }
 

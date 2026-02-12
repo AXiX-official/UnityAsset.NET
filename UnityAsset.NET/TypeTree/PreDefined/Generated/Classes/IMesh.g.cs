@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IMesh : INamedAsset
+    public partial interface IMesh : INamedObject
     {
         public List<ISubMesh> m_SubMeshes { get; }
         public IBlendShapeData m_Shapes { get; }
@@ -20,7 +19,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public bool m_KeepIndices { get; }
         public List<byte> m_IndexBuffer { get; }
 
-        public List<IBoneWeights4>? m_Skin
+        public List<BoneWeights4>? m_Skin
         {
             get
             {

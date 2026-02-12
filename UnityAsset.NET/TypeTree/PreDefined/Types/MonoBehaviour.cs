@@ -7,7 +7,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Types;
 public class MonoBehaviour : IMonoBehaviour
 {
     public string ClassName => "MonoBehaviour";
-    public PPtr<IGameObject> m_GameObject { get; }
+    public PPtr<GameObject> m_GameObject { get; }
     public byte m_Enabled { get; }
     public PPtr<IMonoScript> m_Script { get; }
     public string m_Name { get; }
@@ -18,7 +18,7 @@ public class MonoBehaviour : IMonoBehaviour
         NodeData = new NodeData(reader, nodes, nodes[0]);
         var @class = NodeData.As<Dictionary<string, NodeData>>();
         var m_GameObjectClass = @class["m_GameObject"].As<Dictionary<string, NodeData>>();
-        m_GameObject = new PPtr<IGameObject>(
+        m_GameObject = new PPtr<GameObject>(
             m_GameObjectClass["m_FileID"].As<int>(),
             m_GameObjectClass["m_PathID"].As<long>(),
             reader

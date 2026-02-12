@@ -2,13 +2,12 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IOffsetPtr : IPreDefinedInterface
     {
-        public IUnityObject data { get; }
+        public RefSum<IClip, IValueArrayConstant, ISkeleton, ISkeletonPose, IHuman, IHand, ILayerConstant, ISkeletonMask, IStateMachineConstant, IStateConstant, ITransitionConstant, IConditionConstant, IBlendTreeConstant, IBlendTreeNodeConstant, IBlend1dDataConstant, IBlend2dDataConstant, IBlendDirectDataConstant, ISelectorStateConstant, ISelectorTransitionConstant, IValueArray> data { get; }
     }
 }

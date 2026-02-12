@@ -19,20 +19,20 @@ public class PPtr<T> : IPPtr where T : IUnityObject
     public string ClassName => $"PPtr<{GetGenericClassName()}>";
     public Int32 m_FileID { get; }
     public Int64 m_PathID { get; }
-    internal readonly AssetReader _reader;
+    private SerializedFile m_SerializedFile;
 
     public PPtr(IReader reader)
     {
         m_FileID = reader.ReadInt32();
         m_PathID = reader.ReadInt64();
-        _reader = (AssetReader)reader;
+        m_SerializedFile = ((AssetReader)reader).AssetsFile;
     }
 
     public PPtr(Int32 fileID, Int64 pathID, IReader reader)
     {
         m_FileID = fileID;
         m_PathID = pathID;
-        _reader = (AssetReader)reader;
+        m_SerializedFile = ((AssetReader)reader).AssetsFile;
     }
 
     public AssetNode? ToAssetNode(string name = "Base")
@@ -54,10 +54,8 @@ public class PPtr<T> : IPPtr where T : IUnityObject
             return false;
         if (TryGetAssetsFile(assetManager, out var sourceFile))
         {
-            var index = sourceFile.Assets.FindIndex(a => a.Info.PathId == m_PathID);
-            if ( index != -1)
+            if (sourceFile.PathToAsset.TryGetValue(m_PathID, out var obj))
             {
-                var obj = sourceFile.Assets[index];
                 if (obj.Value is T variable)
                 {
                     result = variable;
@@ -74,16 +72,15 @@ public class PPtr<T> : IPPtr where T : IUnityObject
         sf = null;
         if (m_FileID == 0)
         {
-            sf = _reader.AssetsFile;
+            sf = m_SerializedFile;
             return true;
         }
 
-        var externals = _reader.AssetsFile.Metadata.Externals;
+        var externals = m_SerializedFile.Metadata.Externals;
         if (m_FileID > 0 && m_FileID - 1 < externals.Count)
         {
             var m_External = externals[m_FileID - 1];
-            var path = m_External.PathName.Split('/')[^1];
-            var fileFound = assetManager.LoadedFiles.TryGetValue(path, out var sfw);
+            var fileFound = assetManager.LoadedFiles.TryGetValue(m_External.FileName, out var sfw);
             if (fileFound)
             {
                 if (sfw is SerializedFile serializedFile)
@@ -92,8 +89,6 @@ public class PPtr<T> : IPPtr where T : IUnityObject
                     return true;
                 }
             }
-
-            throw new Exception("SerializedFile not loaded.");
         }
 
         return false;

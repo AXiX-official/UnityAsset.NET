@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface ISpriteAtlas : INamedAsset
+    public partial interface ISpriteAtlas : INamedObject
     {
         public List<PPtr<ISprite>> m_PackedSprites { get; }
         public List<string> m_PackedSpriteNamesToIndex { get; }

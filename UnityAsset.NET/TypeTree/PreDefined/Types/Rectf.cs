@@ -4,7 +4,7 @@ using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Types;
 
-public class Rectf : IRectf
+public struct Rectf : IPreDefinedInterface
 {
     public string ClassName => "Rectf";
     public float x { get; }
@@ -14,10 +14,10 @@ public class Rectf : IRectf
 
     public Rectf(IReader reader)
     {
-        x = reader.ReadFloat();
-        y = reader.ReadFloat();
-        width = reader.ReadFloat();
-        height = reader.ReadFloat();
+        x = reader.ReadSingle();
+        y = reader.ReadSingle();
+        width = reader.ReadSingle();
+        height = reader.ReadSingle();
     }
 
     public AssetNode? ToAssetNode(string name = "Base")

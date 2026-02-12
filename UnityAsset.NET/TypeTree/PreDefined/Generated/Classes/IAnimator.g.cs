@@ -2,17 +2,16 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IAnimator : IUnityAsset
     {
-        public PPtr<IGameObject> m_GameObject { get; }
+        public PPtr<GameObject> m_GameObject { get; }
         public byte m_Enabled { get; }
         public PPtr<IAvatar> m_Avatar { get; }
-        public PPtr<IUnityObject> m_Controller { get; }
+        public PPtr<IRuntimeAnimatorController> m_Controller { get; }
         public int m_CullingMode { get; }
         public int m_UpdateMode { get; }
         public bool m_ApplyRootMotion { get; }

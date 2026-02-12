@@ -5,13 +5,14 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.TypeTreeHelper;
 using UnityAsset.NET.TypeTreeHelper.Compiler;
 
 namespace UnityAsset.NET.TypeTree;
 
 public static class AssemblyManager
 {
-    private static readonly ConcurrentDictionary<int, Type> TypeCache = new();
+    private static ConcurrentDictionary<Hash128, Type> TypeCache = new();
     private static readonly List<MetadataReference> References;
     
     private static readonly object CompilationLock = new ();
@@ -22,8 +23,8 @@ public static class AssemblyManager
     
     private static CollectibleAssemblyContext? _loadContext;
     
-    private static Dictionary<string, Type> _preDefinedTypeMap;
-    private static Dictionary<string, Type> _preDefinedInterfaceMap;
+    private static readonly Dictionary<string, Type> PreDefinedTypeMap;
+    private static readonly Dictionary<string, Type> PreDefinedInterfaceMap;
 
     private class CollectibleAssemblyContext : AssemblyLoadContext
     {
@@ -54,29 +55,15 @@ public static class AssemblyManager
 
         References = references;
         
-        /*var referencedAssemblies = Assembly.GetExecutingAssembly().GetReferencedAssemblies();
-        var references = new List<MetadataReference>
-        {
-            MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-            MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
-        };
-
-        foreach (var assemblyName in referencedAssemblies)
-        {
-            var assembly = Assembly.Load(assemblyName);
-            references.Add(MetadataReference.CreateFromFile(assembly.Location));
-        }
-        References = references;*/
-        
         var thisAssembly = Assembly.GetExecutingAssembly();
         
-        _preDefinedTypeMap = thisAssembly
+        PreDefinedTypeMap = thisAssembly
             .GetTypes()
             .Where(t => t is {IsClass : true, Namespace : "UnityAsset.NET.TypeTree.PreDefined.Types"})
             .Where(t => Helper.PreDefinedTypes.Contains(t.Name))
             .ToDictionary(t => t.Name, t => t, StringComparer.OrdinalIgnoreCase);
         
-        _preDefinedInterfaceMap = thisAssembly
+        PreDefinedInterfaceMap = thisAssembly
             .GetTypes()
             .Where(t => t is {IsInterface : true, Namespace : "UnityAsset.NET.TypeTree.PreDefined.Interfaces"})
             .ToDictionary(t => t.Name, t => t, StringComparer.OrdinalIgnoreCase);
@@ -106,9 +93,8 @@ public static class AssemblyManager
             _loadContext?.Unload();
             _loadContext = null;
         }
-        
-        TypeCache.Clear();
-        //TypeGenerator.CleanCache();
+
+        TypeCache = new();
         if (Directory.Exists(AssemblyCachePath))
         {
             foreach (var file in Directory.GetFiles(AssemblyCachePath))
@@ -124,11 +110,11 @@ public static class AssemblyManager
         Directory.CreateDirectory(AssemblyCachePath);
     }
 
-    public static void LoadTypes(List<TypeTreeHelper.TypeTreeNode> typesToGenerate)
+    public static void LoadTypes(List<(Hash128 hash, TypeTreeRepr repr)> typesToGenerate)
     {
         CleanCache();
-        var compiler = new UnityTypeCompiler(_preDefinedInterfaceMap);
-        var syntax = compiler.Generate(typesToGenerate);
+        var compiler = new UnityTypeCompiler(PreDefinedInterfaceMap);
+        var syntax = compiler.Generate(typesToGenerate.Select(i => i.repr));
         Directory.CreateDirectory(AssemblyCachePath);
         var formattedSource = syntax.NormalizeWhitespace(elasticTrivia: true).ToFullString();
         File.WriteAllText(CachedSourcePath, formattedSource, Encoding.UTF8);
@@ -182,7 +168,7 @@ public static class AssemblyManager
             ms.Seek(0, SeekOrigin.Begin);
             
             var assembly = _loadContext.LoadFromStream(ms);
-            foreach (var type in typesToGenerate)
+            foreach (var (hash128, type) in typesToGenerate)
             {
                 if (type.SubNodes.Length == 0)
                     continue;
@@ -190,7 +176,7 @@ public static class AssemblyManager
                 var generatedType = assembly.GetType($"{AssemblyNameSpace}.{concreteTypeName}");
                 if (generatedType != null)
                 {
-                    TypeCache.TryAdd(type.Hash, generatedType);
+                    TypeCache.TryAdd(hash128, generatedType);
                 }
             }
             File.WriteAllBytes(CachedAssemblyPath, assemblyBytes);
@@ -201,10 +187,10 @@ public static class AssemblyManager
     {
         if (Helper.PreDefinedTypes.Contains(type.ToTypeName()))
         {
-            return _preDefinedTypeMap[type.ToTypeName()];
+            return PreDefinedTypeMap[type.ToTypeName()];
         }
         
-        if (TypeCache.TryGetValue(TypeTreeCache.Map[type.TypeHash].Hash, out var cachedType))
+        if (TypeCache.TryGetValue(type.TypeHash, out var cachedType))
         {
             return cachedType;
         }

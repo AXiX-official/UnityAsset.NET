@@ -2,18 +2,17 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IShader : INamedAsset
+    public partial interface IShader : INamedObject
     {
         public ISerializedShader m_ParsedForm { get; }
         public List<uint> platforms { get; }
-        public OneOf<List<uint>, List<List<uint>>> offsets { get; }
-        public OneOf<List<uint>, List<List<uint>>> compressedLengths { get; }
-        public OneOf<List<uint>, List<List<uint>>> decompressedLengths { get; }
+        public RefSum<List<uint>, List<List<uint>>> offsets { get; }
+        public RefSum<List<uint>, List<List<uint>>> compressedLengths { get; }
+        public RefSum<List<uint>, List<List<uint>>> decompressedLengths { get; }
         public List<byte> compressedBlob { get; }
         public List<PPtr<IShader>> m_Dependencies { get; }
         public bool m_ShaderIsBaked { get; }

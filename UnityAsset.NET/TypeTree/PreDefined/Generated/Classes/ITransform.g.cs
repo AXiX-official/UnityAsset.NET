@@ -2,14 +2,13 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ITransform : IUnityAsset
     {
-        public PPtr<IGameObject> m_GameObject { get; }
+        public PPtr<GameObject> m_GameObject { get; }
         public Quaternionf m_LocalRotation { get; }
         public Vector3f m_LocalPosition { get; }
         public Vector3f m_LocalScale { get; }

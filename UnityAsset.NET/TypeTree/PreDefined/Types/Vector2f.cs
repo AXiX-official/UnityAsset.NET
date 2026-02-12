@@ -4,7 +4,7 @@ using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Types;
 
-public class Vector2f : IVector2f
+public struct Vector2f : IPreDefinedInterface
 {
     public string ClassName => "Vector2f";
     public float x { get; }
@@ -12,8 +12,8 @@ public class Vector2f : IVector2f
 
     public Vector2f(IReader reader)
     {
-        x = reader.ReadFloat();
-        y = reader.ReadFloat();
+        x = reader.ReadSingle();
+        y = reader.ReadSingle();
     }
 
     public Vector2f(float x, float y)

@@ -8,20 +8,6 @@ namespace UnityAsset.NET.Extensions;
 
 public static class BundleFileExtensions
 {
-    public static void ParseFilesWithTypeConversion(this BundleFile bf)
-    {
-        if (bf.Files == null) throw new NullReferenceException();
-        var filesSpan = bf.Files.AsSpan();
-        for (int i = 0; i < filesSpan.Length; i++)
-        {
-            ref var file = ref filesSpan[i];
-            if (file is { File: IReader reader, CanBeSerializedFile: true })
-            {
-                file = new FileWrapper(SerializedFile.Parse(bf, reader), file.Info);
-            }
-        }
-    }
-    
     public static List<Asset> Assets(this BundleFile bf) =>
         bf.Files
             .Where(file => file.File is SerializedFile)

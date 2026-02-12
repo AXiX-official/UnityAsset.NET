@@ -2,14 +2,13 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IAddedComponent : IPreDefinedInterface
     {
-        public PPtr<IGameObject> targetCorrespondingSourceObject { get; }
+        public PPtr<GameObject> targetCorrespondingSourceObject { get; }
         public int insertIndex { get; }
         public PPtr<IComponent> addedObject { get; }
     }

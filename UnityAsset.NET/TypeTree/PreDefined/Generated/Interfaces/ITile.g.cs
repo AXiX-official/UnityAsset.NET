@@ -2,7 +2,6 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
@@ -11,10 +10,10 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public uint m_TileIndex { get; }
         public uint m_TileSpriteIndex { get; }
-        public OneOf<uint, ushort> m_TileMatrixIndex { get; }
-        public OneOf<uint, ushort> m_TileColorIndex { get; }
+        public RefSum<uint, ushort> m_TileMatrixIndex { get; }
+        public RefSum<uint, ushort> m_TileColorIndex { get; }
 
-        public PPtr<IGameObject>? m_ObjectToInstantiate
+        public PPtr<GameObject>? m_ObjectToInstantiate
         {
             get
             {
@@ -22,7 +21,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public OneOf<uint, int>? m_TileFlags
+        public uint? m_TileFlags
         {
             get
             {

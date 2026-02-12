@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IMonoScript : INamedAsset
+    public partial interface IMonoScript : INamedObject
     {
         public int m_ExecutionOrder { get; }
         public IHash128 m_PropertiesHash { get; }

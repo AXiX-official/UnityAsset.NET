@@ -2,16 +2,15 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface ICubemap : INamedAsset
+    public partial interface ICubemap : INamedObject
     {
         public int m_Width { get; }
         public int m_Height { get; }
-        public OneOf<int, uint> m_CompleteImageSize { get; }
+        public uint m_CompleteImageSize { get; }
         public int m_TextureFormat { get; }
         public int m_MipCount { get; }
         public bool m_IsReadable { get; }

@@ -5,7 +5,7 @@ namespace UnityAsset.NET.TypeTreeHelper.Compiler.IR;
 
 public readonly struct MapTypeInfo : IUnityTypeInfo
 {
-    public required TypeTreeNode TypeTreeNode { get; init; }
+    public required TypeTreeRepr TypeTreeRepr { get; init; }
     public PairTypeInfo PairType { get; init; }
     public bool PairRequireAlign { get; init; }
 

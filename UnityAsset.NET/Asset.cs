@@ -1,23 +1,32 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using UnityAsset.NET.Files.SerializedFiles;
-using UnityAsset.NET.FileSystem;
-using UnityAsset.NET.IO;
+﻿using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.IO.Reader;
 using UnityAsset.NET.TypeTree;
 using UnityAsset.NET.TypeTree.PreDefined;
 
 namespace UnityAsset.NET;
 
 public class Asset
-{ 
-    public AssetFileInfo Info;
-    public IReader RawData;
+{
+    private readonly AssetFileInfo _info;
     private IUnityAsset? _value;
-    private string _name = string.Empty;
-    private readonly object _lock = new();
+    private string? _name;
+    private readonly Lock _lock = new();
     private bool _isNamedAsset;
-    private int _nameFieldIndex;
+
+    private AssetReader DataReader
+    {
+        get
+        {
+            var sf = SourceFile;
+            var readerProvider = sf.ReaderProvider;
+            var start = sf.Header.DataOffset + _info.ByteOffset;
+            var length = _info.ByteSize;
+            var endian = sf.Header.Endianness;
+            return new AssetReader(readerProvider, start, length, sf, endian);
+        }
+    }
     
-    public SerializedFile? SourceFile { get; private set; }
+    public SerializedFile SourceFile { get; }
 
     public IUnityAsset Value
     {
@@ -27,11 +36,10 @@ public class Asset
             {
                 if (_value == null)
                 {
-                    RawData.Seek(0);
-                    _value = UnityObjectFactory.Create(Info.Type, RawData);
+                    _value = UnityObjectFactory.Create(_info.Type, DataReader);
                     if (_isNamedAsset)
                     {
-                        _name = ((INamedAsset)_value).m_Name;
+                        _name = ((INamedObject)_value).m_Name;
                     }
                 }
                 return _value;
@@ -39,7 +47,7 @@ public class Asset
         }
     }
 
-    public string Type => Info.Type.ToTypeName();
+    public string Type => _info.Type.ToTypeName();
 
     public string Name
     {
@@ -47,30 +55,26 @@ public class Asset
         {
             lock (_lock)
             {
-                if (_isNamedAsset && string.IsNullOrEmpty(_name))
-                {
-                    if (_nameFieldIndex == 1)
-                    {
-                        RawData.Seek(0);
-                        _name = RawData.ReadSizedString();
-                        RawData.Seek(0);
-                    }
-                }
+                if (!_isNamedAsset)
+                    return string.Empty;
+
+                _name ??= ((INamedObject)Value).m_Name;
+
                 return _name;
             }
         }
     }
     
-    public long Size => Info.ByteSize;
+    public long Size => _info.ByteSize;
 
-    public long PathId => Info.PathId;
+    public long PathId => _info.PathId;
 
     public string Container
     {
         get
         {
-            var containers = SourceFile?.Containers;
-            if (containers != null && containers.TryGetValue(PathId, out var container))
+            var containers = SourceFile.Containers;
+            if (containers.TryGetValue(PathId, out var container))
             {
                 return container;
             }
@@ -78,21 +82,18 @@ public class Asset
         }
     }
 
-    public Asset(SerializedFile sf, AssetFileInfo info, IReader reader)
+    public Asset(SerializedFile sf, AssetFileInfo info)
     {
-        Info = info;
-        RawData = reader; 
+        _info = info;
         _isNamedAsset = info.Type.Nodes.Any(n => n is {Name: "m_Name", Type: "string", Level: 1} );
-        _nameFieldIndex = _isNamedAsset ? info.Type.Nodes.FindIndex(n => n.Name == "m_Name") : -1;
 
         SourceFile = sf;
     }
 
-    public void UpdateTypeInfo()
+    /*public void UpdateTypeInfo()
     {
-        _isNamedAsset = Info.Type.Nodes.Any(n => n is {Name: "m_Name", Type: "string", Level: 1} );
-        _nameFieldIndex = _isNamedAsset ? Info.Type.Nodes.FindIndex(n => n.Name == "m_Name") : -1;
-    }
+        _isNamedAsset = _info.Type.Nodes.Any(n => n is {Name: "m_Name", Type: "string", Level: 1} );
+    }*/
 
     public void Release()
     {

@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IAssetBundle : INamedAsset
+    public partial interface IAssetBundle : INamedObject
     {
         public List<PPtr<IUnityObject>> m_PreloadTable { get; }
         public List<ValueTuple<string, IAssetInfo>> m_Container { get; }

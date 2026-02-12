@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IBlockShaderContainer : INamedAsset
+    public partial interface IBlockShaderContainer : INamedObject
     {
         public GUID guid { get; }
         public List<PPtr<IBlockShaderContainer>> dependencies { get; }

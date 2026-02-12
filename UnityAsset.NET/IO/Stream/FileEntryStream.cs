@@ -2,16 +2,31 @@
 
 namespace UnityAsset.NET.IO.Stream;
 
+public class FileEntryStreamProvider : IStreamProvider
+{
+    private readonly IStreamProvider _streamProvider;
+    private readonly FileEntry _fileEntry;
+
+    public FileEntryStreamProvider(IStreamProvider streamProvider, FileEntry fileEntry)
+    {
+        _streamProvider = streamProvider;
+        _fileEntry = fileEntry;
+    }
+
+    public System.IO.Stream OpenStream() => new FileEntryStream(_streamProvider, _fileEntry);
+}
+
 public class FileEntryStream : System.IO.Stream
 {
-    private readonly BlockStream _blockStream;
+    private readonly System.IO.Stream _blockStream;
     private readonly FileEntry _fileEntry;
     private long _position;
 
-    public FileEntryStream(BlockStream blockStream, FileEntry fileEntry)
+    public FileEntryStream(IStreamProvider streamProvider, FileEntry fileEntry)
     {
-        _blockStream = blockStream;
+        _blockStream = streamProvider.OpenStream();
         _fileEntry = fileEntry;
+        _blockStream.Seek(_fileEntry.Offset, SeekOrigin.Begin);
     }
 
     public override bool CanRead => true;
@@ -27,14 +42,14 @@ public class FileEntryStream : System.IO.Stream
 
     public override int ReadByte()
     {
-        _blockStream.Seek(_fileEntry.Offset + _position, SeekOrigin.Begin);
         _position++;
+        if (_position > Length)
+            throw new EndOfStreamException();
         return _blockStream.ReadByte();
     }
 
     public override int Read(Span<byte> buffer)
     {
-        _blockStream.Seek(_fileEntry.Offset + _position, SeekOrigin.Begin);
         long remaining = _fileEntry.Size - _position;
         if (remaining <= 0)
             return 0;
@@ -42,6 +57,8 @@ public class FileEntryStream : System.IO.Stream
         var count = (int)Math.Min(buffer.Length, remaining);
         int bytesRead = _blockStream.Read(buffer.Slice(0, count));
         _position += bytesRead;
+        if (_position > Length)
+            throw new EndOfStreamException();
         return bytesRead;
     }
     
@@ -58,7 +75,7 @@ public class FileEntryStream : System.IO.Stream
             _ => throw new ArgumentException("Invalid seek origin")
         };
         
-        if (newPosition < 0 || newPosition >= Length)
+        if (newPosition < 0 || newPosition > Length)
             throw new ArgumentOutOfRangeException(nameof(offset));
         
         _position = newPosition;

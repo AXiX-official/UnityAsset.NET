@@ -32,7 +32,7 @@ public struct Half : IComparable, IFormattable, IConvertible, IComparable<Half>,
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal ushort value;
 
-    #region Constants
+    # region Constants
     /// <summary>
     /// Represents the smallest positive System.Half value greater than zero. This field is constant.
     /// </summary>
@@ -57,9 +57,9 @@ public struct Half : IComparable, IFormattable, IConvertible, IComparable<Half>,
     /// Represents positive infinity. This field is constant.
     /// </summary>
     public static readonly Half PositiveInfinity = Half.ToHalf(0x7c00);
-    #endregion
+    # endregion
 
-    #region Constructors
+    # region Constructors
     /// <summary>
     /// Initializes a new instance of System.Half to the value of the specified single-precision floating-point number.
     /// </summary>
@@ -95,9 +95,9 @@ public struct Half : IComparable, IFormattable, IConvertible, IComparable<Half>,
     /// </summary>
     /// <param name="value">The value to represent as a System.Half.</param>
     public Half(ulong value) : this((float)value) { }
-    #endregion
+    # endregion
 
-    #region Numeric operators
+    # region Numeric operators
 
     /// <summary>
     /// Returns the result of multiplying the specified System.Half value by negative one.
@@ -229,9 +229,9 @@ public struct Half : IComparable, IFormattable, IConvertible, IComparable<Half>,
     /// <param name="half2">A System.Half.</param>
     /// <returns>true if half1 is greater than or equal to half2; otherwise, false.</returns>
     public static bool operator >=(Half half1, Half half2) { return (half1 == half2) || (half1 > half2); }
-    #endregion
+    # endregion
 
-    #region Type casting operators
+    # region Type casting operators
     /// <summary>
     /// Converts an 8-bit unsigned integer to a System.Half.
     /// </summary>
@@ -376,7 +376,7 @@ public struct Half : IComparable, IFormattable, IConvertible, IComparable<Half>,
     /// <param name="value">A System.Half to convert.</param>
     /// <returns>A 64-bit unsigned integer that represents the converted System.Half.</returns>
     public static explicit operator ulong(Half value) { return (ulong)(float)value; }
-    #endregion
+    # endregion
 
     /// <summary>
     /// Compares this instance to a specified System.Half object.
@@ -490,7 +490,7 @@ public struct Half : IComparable, IFormattable, IConvertible, IComparable<Half>,
         return (TypeCode)255;
     }
 
-    #region BitConverter & Math methods for Half
+    # region BitConverter & Math methods for Half
     /// <summary>
     /// Returns the specified half-precision floating point value as an array of bytes.
     /// </summary>
@@ -600,7 +600,7 @@ public struct Half : IComparable, IFormattable, IConvertible, IComparable<Half>,
     {
         return (value1 < value2) ? value1 : value2;
     }
-    #endregion
+    # endregion
 
     /// <summary>
     /// Returns a value indicating whether the specified number evaluates to not a number (System.Half.NaN).
@@ -639,7 +639,7 @@ public struct Half : IComparable, IFormattable, IConvertible, IComparable<Half>,
         return HalfHelper.IsPositiveInfinity(half);
     }
 
-    #region String operations (Parse and ToString)
+    # region String operations (Parse and ToString)
     /// <summary>
     /// Converts the string representation of a number to its System.Half equivalent.
     /// </summary>
@@ -813,9 +813,9 @@ public struct Half : IComparable, IFormattable, IConvertible, IComparable<Half>,
     {
         return ((float)this).ToString(format, formatProvider);
     }
-    #endregion
+    # endregion
 
-    #region IConvertible Members
+    # region IConvertible Members
     float IConvertible.ToSingle(IFormatProvider? provider)
     {
         return (float)this;
@@ -884,5 +884,5 @@ public struct Half : IComparable, IFormattable, IConvertible, IComparable<Half>,
     {
         return Convert.ToUInt64((float)this);
     }
-    #endregion
+    # endregion
 }

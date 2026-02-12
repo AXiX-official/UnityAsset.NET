@@ -2,14 +2,13 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IAudioSource : IUnityAsset
     {
-        public PPtr<IGameObject> m_GameObject { get; }
+        public PPtr<GameObject> m_GameObject { get; }
         public byte m_Enabled { get; }
         public PPtr<IAudioMixerGroup> OutputAudioMixerGroup { get; }
         public PPtr<IAudioClip> m_audioClip { get; }
@@ -42,7 +41,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
             }
         }
 
-        public OneOf<PPtr<IAudioResource>, PPtr<IUnityObject>>? m_Resource
+        public RefSum<PPtr<IAudioResource>, PPtr<IUnityObject>>? m_Resource
         {
             get
             {

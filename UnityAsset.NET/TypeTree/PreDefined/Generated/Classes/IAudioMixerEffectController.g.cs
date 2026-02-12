@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IAudioMixerEffectController : INamedAsset
+    public partial interface IAudioMixerEffectController : INamedObject
     {
         public GUID m_EffectID { get; }
         public string m_EffectName { get; }

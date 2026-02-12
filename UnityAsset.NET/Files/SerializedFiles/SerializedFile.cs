@@ -1,11 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text;
+﻿using System.Text;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
 using UnityAsset.NET.TypeTree.PreDefined;
-using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.Files.SerializedFiles;
@@ -19,23 +17,26 @@ public sealed class SerializedFile : IFile
     public Dictionary<Int64, string> Containers = new();
     public BundleFile? ParentBundle { get; private set; }
     public IVirtualFile? SourceVirtualFile { get; private set; }
+    public readonly Dictionary<Int64, Asset> PathToAsset = new();
+    public IReaderProvider ReaderProvider { get; }
     
-    public SerializedFile(SerializedFileHeader header, SerializedFileMetadata metadata, List<Asset> assets, BundleFile? parentBundle)
+    public SerializedFile(SerializedFileHeader header, SerializedFileMetadata metadata, List<Asset> assets, IReaderProvider readerProvider, BundleFile? parentBundle)
     {
         Header = header;
         Metadata = metadata;
         if (string.IsNullOrEmpty(Metadata.UnityVersion))
             Metadata.UnityVersion = Setting.DefaultUnityVerion;
         Assets = assets;
-
+        ReaderProvider = readerProvider;
         ParentBundle = parentBundle;
         SourceVirtualFile = parentBundle?.SourceVirtualFile;
+        BuildMap();
     }
 
     public SerializedFile(IVirtualFile file)
     {
-        CustomStreamReader reader = new CustomStreamReader(file.OpenStream());
-        reader.Seek(0);
+        ReaderProvider = new CustomStreamReaderProvider(file);
+        var reader = ReaderProvider.CreateReader();
         Header = SerializedFileHeader.Parse(reader);
         reader.Endian = Header.Endianness;
         Metadata = SerializedFileMetadata.Parse(reader, Header.Version);
@@ -43,18 +44,16 @@ public sealed class SerializedFile : IFile
             Metadata.UnityVersion = Setting.DefaultUnityVerion;
         foreach (var assetInfo in Metadata.AssetInfos.AsSpan())
         {
-            Assets.Add(new Asset(this, assetInfo,
-                new AssetReader(reader, (long)(Header.DataOffset + assetInfo.ByteOffset), assetInfo.ByteSize, this)));
+            Assets.Add(new Asset(this, assetInfo));
         }
         
         SourceVirtualFile = file;
+        BuildMap();
     }
-
     
-    
-    public static SerializedFile Parse(BundleFile bf, IReader reader)
+    public static SerializedFile Parse(BundleFile bf, IReaderProvider readerProvider)
     {
-        reader.Seek(0);
+        var reader = readerProvider.CreateReader();
         var header = SerializedFileHeader.Parse(reader);
         reader.Endian = header.Endianness;
         var metadata = SerializedFileMetadata.Parse(reader, header.Version);
@@ -63,15 +62,23 @@ public sealed class SerializedFile : IFile
             metadata.UnityVersion = Setting.DefaultUnityVerion;
         }
         var assets = new List<Asset>();
-        var sf = new SerializedFile(header, metadata, assets, bf);
+        var sf = new SerializedFile(header, metadata, assets, readerProvider, bf);
         foreach (var assetInfo in metadata.AssetInfos.AsSpan())
         {
-            assets.Add(new Asset(sf, assetInfo,
-                new AssetReader(reader, (long)(header.DataOffset + assetInfo.ByteOffset), assetInfo.ByteSize, sf)));
+            assets.Add(new Asset(sf, assetInfo));
         }
+        sf.BuildMap();
         return sf;
     }
 
+    public void BuildMap()
+    {
+        foreach (var asset in Assets)
+        {
+            PathToAsset.Add(asset.PathId, asset);
+        }
+    }
+    
     /*public void Serialize(IWriter writer)
     {
         if (writer is MemoryBinaryIO mbio)

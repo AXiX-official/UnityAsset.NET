@@ -1,4 +1,6 @@
-﻿using UnityAsset.NET.Files.SerializedFiles;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.TypeTree.PreDefined;
 

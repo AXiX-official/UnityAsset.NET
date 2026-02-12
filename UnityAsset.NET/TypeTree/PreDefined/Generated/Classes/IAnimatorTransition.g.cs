@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IAnimatorTransition : INamedAsset
+    public partial interface IAnimatorTransition : INamedObject
     {
         public List<IAnimatorCondition> m_Conditions { get; }
         public PPtr<IAnimatorStateMachine> m_DstStateMachine { get; }

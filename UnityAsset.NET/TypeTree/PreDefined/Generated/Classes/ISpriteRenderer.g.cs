@@ -2,14 +2,13 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface ISpriteRenderer : IUnityAsset
     {
-        public PPtr<IGameObject> m_GameObject { get; }
+        public PPtr<GameObject> m_GameObject { get; }
         public bool m_Enabled { get; }
         public byte m_CastShadows { get; }
         public byte m_ReceiveShadows { get; }
@@ -24,7 +23,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public IStaticBatchInfo m_StaticBatchInfo { get; }
         public PPtr<ITransform> m_StaticBatchRoot { get; }
         public PPtr<ITransform> m_ProbeAnchor { get; }
-        public PPtr<IGameObject> m_LightProbeVolumeOverride { get; }
+        public PPtr<GameObject> m_LightProbeVolumeOverride { get; }
         public int m_SortingLayerID { get; }
         public short m_SortingLayer { get; }
         public short m_SortingOrder { get; }

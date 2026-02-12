@@ -2,14 +2,13 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IDetailPrototype : IPreDefinedInterface
     {
-        public PPtr<IGameObject> prototype { get; }
+        public PPtr<GameObject> prototype { get; }
         public PPtr<ITexture2D> prototypeTexture { get; }
         public float minWidth { get; }
         public float maxWidth { get; }

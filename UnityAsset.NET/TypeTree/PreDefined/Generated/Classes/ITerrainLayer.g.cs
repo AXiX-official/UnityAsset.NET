@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface ITerrainLayer : INamedAsset
+    public partial interface ITerrainLayer : INamedObject
     {
         public PPtr<ITexture2D> m_DiffuseTexture { get; }
         public PPtr<ITexture2D> m_NormalMapTexture { get; }

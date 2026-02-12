@@ -8,6 +8,7 @@ using UnityAsset.NET.Files;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
+using UnityAsset.NET.IO.Stream;
 using UnityAsset.NET.TypeTree;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 using UnityAsset.NET.TypeTreeHelper;
@@ -18,16 +19,15 @@ public class AssetManager
 {
     private IFileSystem _fileSystem;
 
-    public readonly ConcurrentDictionary<string, IFile> LoadedFiles = new();
+    public ConcurrentDictionary<string, IFile> LoadedFiles = new();
     
-    public readonly ConcurrentDictionary<IVirtualFile, IFile> VirtualFileToFileMap = new();
+    public ConcurrentDictionary<IVirtualFile, IFile> VirtualFileToFileMap = new();
     
     public UnityRevision? Version { get; private set; }
     public BuildTarget? BuildTarget { get; private set; }
 
     private List<SerializedType> _loadedTypes = new();
-    
-    public bool NeedTpk { get; private set; }
+    public List<Asset> LoadedAssets { get; private set; } = new();
     
     public AssetManager(IFileSystem? fileSystem = null, IFileSystem.ErrorHandler? onError = null)
     {
@@ -39,11 +39,6 @@ public class AssetManager
         Clear();
         _fileSystem = fileSystem;
     }
-
-    public List<Asset> LoadedAssets => LoadedFiles.Values
-        .OfType<SerializedFile>()
-        .SelectMany(sf => sf.Assets)
-        .ToList();
 
     public async Task LoadAsync(List<IVirtualFile> files, bool ignoreDuplicatedFiles = false, IProgress<LoadProgress>? progress = null)
     {
@@ -115,32 +110,81 @@ public class AssetManager
                 Version = firstSerializedFile.Metadata.UnityVersion;
             }
 
-            _loadedTypes = new(types);
-
-            if (anyTypeTreeDisabled)
+            var seenHashes = new HashSet<Hash128>();
+            foreach (var type in types)
             {
-                NeedTpk = true;
-                return;
+                if (seenHashes.Add(type.TypeHash))
+                {
+                    _loadedTypes.Add(type);
+                }
             }
 
-            BuildUnityTypes(progress);
+            BuildUnityTypes(anyTypeTreeDisabled, progress);
+            
+            LoadedAssets = LoadedFiles.Values
+                .OfType<SerializedFile>()
+                .SelectMany(sf => sf.Assets)
+                .ToList();
         });
     }
 
-    public void BuildUnityTypes(IProgress<LoadProgress>? progress = null)
+    private void BuildUnityTypes(bool anyTypeTreeDisabled, IProgress<LoadProgress>? progress = null)
     {
-        if (TypeTreeCache.Cache.Count > 0)
-        {
-            progress?.Report(new LoadProgress($"AssetManager: Generating Types", 2, 1));
-            AssemblyManager.LoadTypes(TypeTreeCache.ToTypeTreeHelperNodes().ToList());
-            progress?.Report(new LoadProgress($"AssetManager: Generated {_loadedTypes.Count} types", 2, 2));
-        }
+        progress?.Report(new LoadProgress($"AssetManager: Generating Types", 2, 1));
 
-        foreach (var (_, file) in LoadedFiles)
+        if (anyTypeTreeDisabled)
+        {
+            var tpkFile = TpkFile.FromFile(Setting.DefaultTpkFilePath);
+            var blob = tpkFile.GetDataBlob();
+        
+            Debug.Assert(blob is TpkTypeTreeBlob);
+            
+            if (blob is TpkTypeTreeBlob tpkTypeTreeBlob)
+            {
+                TpkUnityTreeNodeFactory.Init(tpkTypeTreeBlob);
+            }
+            else
+            {
+                throw new Exception($"Unsupported blob type: {blob.GetType().FullName}, expected TpkTypeTreeBlob.");
+            }
+        }
+        
+        var rootTypeNodesMap = anyTypeTreeDisabled ? TpkUnityTreeNodeFactory.GetRootTypeNodes(Version!.ToString()) : null;
+        
+        var rootTypes = new List<(Hash128, TypeTreeRepr)>();
+        
+        foreach (var type in _loadedTypes)
+        {
+            var nodes = type.Nodes;
+            if (nodes.Count == 0 && anyTypeTreeDisabled)
+            {
+                var typeName = type.ToTypeName();
+                rootTypes.Add((type.TypeHash, rootTypeNodesMap![typeName]));
+            }
+            rootTypes.Add((type.TypeHash, nodes[0].ToTypeTreeRepr(nodes)));
+        }
+        
+        AssemblyManager.LoadTypes(rootTypes);
+        progress?.Report(new LoadProgress($"AssetManager: Generated {_loadedTypes.Count} types", 2, 2));
+
+        /*foreach (var (_, file) in LoadedFiles)
         {
             if (file is SerializedFile sf)
                 sf.ProcessAssetBundle();
-        }
+        }*/
+
+        // TODO
+        /*if (anyTypeTreeDisabled)
+        {
+            foreach (var (_, file) in LoadedFiles)
+            {
+                if (file is SerializedFile {Metadata.TypeTreeEnabled : false} sf)
+                {
+                    foreach (var asset in sf.Assets)
+                        asset.UpdateTypeInfo();
+                }
+            }
+        }*/
     }
     
     public async Task LoadAsync(List<string> paths, bool ignoreDuplicatedFiles = false, IProgress<LoadProgress>? progress = null)
@@ -173,50 +217,19 @@ public class AssetManager
 
     public void Clear()
     {
-        LoadedFiles.Clear();
-        VirtualFileToFileMap.Clear();
-        _fileSystem.Clear();
-        TypeTreeCache.CleanCache();
-    }
-
-    public async Task LoadTpkFile(string path, string? version = null, IProgress<LoadProgress>? progress = null)
-    {
-        await Task.Run(() =>
-        {
-            var tpkFile = TpkFile.FromFile(path);
-            var blob = tpkFile.GetDataBlob();
+        LoadedFiles = new();
+        VirtualFileToFileMap = new();
+        Version = null;
+        BuildTarget = null;
+        _loadedTypes = new();
+        LoadedAssets = new();
         
-            Debug.Assert(blob is TpkTypeTreeBlob);
-            
-            if (blob is TpkTypeTreeBlob tpkTypeTreeBlob)
-            {
-                TpkUnityTreeNodeFactory.Init(tpkTypeTreeBlob);
-                var rootTypeNodesMap = TpkUnityTreeNodeFactory.GetRootTypeNodes(version ?? Version!.ToString());
-                foreach (var loadedType in _loadedTypes)
-                {
-                    if (loadedType.Nodes.Count == 0)
-                    {
-                        var type = loadedType.ToTypeName();
-                        Debug.Assert(rootTypeNodesMap.ContainsKey(type));
-                        loadedType.Nodes = TypeTreeCache.GetOrAddNodes(loadedType.TypeHash, rootTypeNodesMap[type]);
-                    }
-                }
-            
-                BuildUnityTypes(progress);
-
-                foreach (var (_, file) in LoadedFiles)
-                {
-                    if (file is SerializedFile {Metadata.TypeTreeEnabled : false} sf)
-                    {
-                        foreach (var asset in sf.Assets)
-                            asset.UpdateTypeInfo();
-                    }
-                }
-            }
-            else
-            {
-                throw new Exception($"Unsupported blob type: {blob.GetType().FullName}, expected TpkTypeTreeBlob.");
-            }
-        });
+        _fileSystem.Clear();
+        
+        TypeTreeNode.Cache = new();
+        TypeTreeRepr.Cache = new();
+        TpkUnityTreeNodeFactory.Deinit();
+        AssemblyManager.CleanCache();
+        BlockStream.Cache.Reset(Setting.DefaultBlockCacheSize);
     }
 }

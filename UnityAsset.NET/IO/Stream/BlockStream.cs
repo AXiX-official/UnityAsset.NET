@@ -1,71 +1,97 @@
 ﻿using UnityAsset.NET.Enums;
 using UnityAsset.NET.Files.BundleFiles;
-using UnityAsset.NET.IO.Reader;
 
 namespace UnityAsset.NET.IO.Stream;
 
-public class BlockStream : System.IO.Stream
+public class BlockStreamProvider : IStreamProvider
 {
-    private readonly record struct BlockInfo(
-        uint UncompressedSize,
-        uint CompressedSize,
-        long CompressedOffset,
-        long UncompressedOffset,
-        CompressionType CompressionType);
-
-    private readonly List<BlockInfo> _blocks;
-    private readonly CustomStreamReader _baseReader;
-    private byte[]? _uncompressedBuffer;
-    private MemoryStream? _currentBlockData;
-    private int _currentBlockIndex = -1;
-    private long _position;
-    private readonly long _length;
-    private readonly long _baseOffset;
+    private readonly BlockStream.BlockInfo[] _blocks;
+    private readonly IReaderProvider _baseReaderProvider;
+    private readonly ulong _length;
     private readonly UnityCN? _unityCnInfo;
-    private bool _disposed;
-
-    public BlockStream(List<StorageBlockInfo> blocks, CustomStreamReader baseReader, UnityCN? unityCnInfo = null)
+    
+    public BlockStreamProvider(List<StorageBlockInfo> blocks, IReaderProvider readerProvider,
+        UnityCN? unityCnInfo = null)
     {
-        _blocks = new List<BlockInfo>(blocks.Count);
-        long currentOffset = 0;
-        long uncompressedOffset = 0;
-        foreach (var block in blocks)
+        _blocks = new BlockStream.BlockInfo[blocks.Count];
+        ulong currentOffset = 0;
+        ulong uncompressedOffset = 0;
+        for (int i = 0; i < blocks.Count; i++)
         {
+            var block = blocks[i];
             var compressionType = (CompressionType)(block.Flags & StorageBlockFlags.CompressionTypeMask);
-            _blocks.Add(new BlockInfo(block.UncompressedSize, block.CompressedSize, currentOffset, uncompressedOffset, compressionType));
+            _blocks[i] = new BlockStream.BlockInfo(
+                block.UncompressedSize, 
+                block.CompressedSize, 
+                currentOffset, 
+                uncompressedOffset, 
+                compressionType
+            );
             currentOffset += block.CompressedSize;
             uncompressedOffset += block.UncompressedSize;
         }
         
-        _baseReader = baseReader;
-        _baseOffset = baseReader.Position;
+        _baseReaderProvider = readerProvider;
         _length = uncompressedOffset;
+        _unityCnInfo = unityCnInfo;
+    }
+
+    public System.IO.Stream OpenStream() => new BlockStream(_blocks, _baseReaderProvider, _length, _unityCnInfo);
+}
+
+public class BlockStream : System.IO.Stream
+{
+    public readonly record struct BlockInfo(
+        uint UncompressedSize,
+        uint CompressedSize,
+        ulong CompressedOffset,
+        ulong UncompressedOffset,
+        CompressionType CompressionType);
+
+    public readonly BlockInfo[] Blocks;
+    private readonly IReaderProvider _baseReaderProvider;
+    private MemoryStream? _currentBlockData;
+    public int CurrentBlockIndex = -1;
+    private ulong _position;
+    private readonly ulong _length;
+    private readonly UnityCN? _unityCnInfo;
+    private bool _disposed;
+
+    public readonly record struct CacheKey(IReaderProvider Provider, int BlockIndex);
+    
+    public static CustomMemoryCache<CacheKey, byte[]> Cache = new (maxSize: Setting.DefaultBlockCacheSize);
+
+    public BlockStream(BlockInfo[] blocks, IReaderProvider baseReaderProvider, ulong length, UnityCN? unityCnInfo = null)
+    {
+        Blocks = blocks;
+        _baseReaderProvider = baseReaderProvider;
+        _length = length;
         _unityCnInfo = unityCnInfo;
     }
 
     public override bool CanRead => true;
     public override bool CanSeek => true;
     public override bool CanWrite => false;
-    public override long Length => _length;
+    public override long Length => (long)_length;
 
     public override long Position
     {
-        get => _position;
+        get => (long)_position;
         set => Seek(value, SeekOrigin.Begin);
     }
 
-    private void EnsureBlockLoaded(long position)
+    private void EnsureBlockLoaded(ulong position)
     {
         if (_disposed) throw new ObjectDisposedException(nameof(BlockStream));
         
         int low = 0;
-        int high = _blocks.Count - 1;
+        int high = Blocks.Length - 1;
         int blockIndex = -1;
 
         while (low <= high)
         {
             int mid = low + (high - low) / 2;
-            var block = _blocks[mid];
+            var block = Blocks[mid];
             if (position >= block.UncompressedOffset && position < block.UncompressedOffset + block.UncompressedSize)
             {
                 blockIndex = mid;
@@ -86,30 +112,36 @@ public class BlockStream : System.IO.Stream
             throw new ArgumentOutOfRangeException(nameof(position), "Position is beyond the end of the data");
         }
 
-        if (blockIndex != _currentBlockIndex)
+        if (blockIndex != CurrentBlockIndex)
         {
-            var block = _blocks[blockIndex];
-            _baseReader.Seek(_baseOffset + block.CompressedOffset);
-            var compressedData = _baseReader.ReadBytes((int)block.CompressedSize);
-            
-            if (_uncompressedBuffer == null || _uncompressedBuffer.Length < block.UncompressedSize)
-            {
-                _uncompressedBuffer = new byte[block.UncompressedSize];
-            }
+            var block = Blocks[blockIndex];
 
-            if (_unityCnInfo != null && (block.CompressionType == CompressionType.Lz4 || block.CompressionType == CompressionType.Lz4HC))
-            {
-                _unityCnInfo.DecryptBlock(compressedData, compressedData.Length, blockIndex);
-            }
+            var blockBuffer = Cache.GetOrCreate(
+                key: new(_baseReaderProvider, blockIndex),
+                factory: () =>
+                {
+                    var reader = _baseReaderProvider.CreateReader();
+                    reader.Position = (long)block.CompressedOffset;
+                    var compressedData = reader.ReadBytes((int)block.CompressedSize);
+                    if (_unityCnInfo != null && (block.CompressionType == CompressionType.Lz4 || block.CompressionType == CompressionType.Lz4HC))
+                    {
+                        _unityCnInfo.DecryptBlock(compressedData, compressedData.Length, blockIndex);
+                    }
+                    
+                    var uncompressedBuffer = new byte[block.UncompressedSize];
+                    Compression.DecompressToBytes(compressedData, uncompressedBuffer.AsSpan(0, (int)block.UncompressedSize), block.CompressionType);
+                    
+                    return uncompressedBuffer;
+                },
+                size: block.UncompressedSize
+            );
             
-            Compression.DecompressToBytes(compressedData, _uncompressedBuffer.AsSpan(0, (int)block.UncompressedSize), block.CompressionType);
+            _currentBlockData = new MemoryStream(blockBuffer);
             
-            _currentBlockData?.Dispose();
-            _currentBlockData = new MemoryStream(_uncompressedBuffer, 0, (int)block.UncompressedSize, false, true);
-            _currentBlockIndex = blockIndex;
+            CurrentBlockIndex = blockIndex;
         }
         
-        _currentBlockData!.Position = position - _blocks[blockIndex].UncompressedOffset;
+        _currentBlockData!.Position = (long)(position - Blocks[blockIndex].UncompressedOffset);
     }
 
     public override int ReadByte()
@@ -145,7 +177,7 @@ public class BlockStream : System.IO.Stream
             totalRead += bytesRead;
             offset += bytesRead;
             count -= bytesRead;
-            _position += bytesRead;
+            _position += (uint)bytesRead;
         }
 
         return totalRead;
@@ -160,15 +192,15 @@ public class BlockStream : System.IO.Stream
         long newPosition = origin switch
         {
             SeekOrigin.Begin => offset,
-            SeekOrigin.Current => _position + offset,
+            SeekOrigin.Current => (long)(offset > 0 ? _position + (ulong)offset : _position - ((ulong)-offset)),
             SeekOrigin.End => Length + offset,
             _ => throw new ArgumentException("Invalid seek origin")
         };
 
-        if (newPosition < 0 || newPosition >= _length)
+        if (newPosition < 0 || newPosition > (long)_length)
             throw new IOException("An attempt was made to move the position before the beginning of the stream.");
 
-        _position = newPosition;
+        _position = (ulong)newPosition;
         return newPosition;
     }
     

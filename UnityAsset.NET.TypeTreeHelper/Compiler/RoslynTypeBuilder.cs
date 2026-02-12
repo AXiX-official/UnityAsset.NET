@@ -84,7 +84,7 @@ public class RoslynTypeBuilder
                                                 SyntaxFactory.IdentifierName("TypeName"),
                                                 SyntaxFactory.LiteralExpression(
                                                     SyntaxKind.StringLiteralExpression, 
-                                                    SyntaxFactory.Literal(typeInfo.TypeTreeNode.TypeName)
+                                                    SyntaxFactory.Literal(typeInfo.TypeTreeRepr.TypeName)
                                                 )
                                             )
                                     )
@@ -115,7 +115,7 @@ public class RoslynTypeBuilder
     private IEnumerable<StatementSyntax> CreateAssetNodeCreationStatement(string fieldName, IUnityTypeInfo typeInfo, string parentNode, bool isNullable = false, TypeSyntax? declaredTypeSyntax = null)
     {
         var statements = new List<StatementSyntax>();
-        var node = typeInfo.TypeTreeNode;
+        var node = typeInfo.TypeTreeRepr;
         var valueAccess = SyntaxFactory.IdentifierName(fieldName);
 
         switch (typeInfo)
@@ -162,9 +162,9 @@ public class RoslynTypeBuilder
             case VectorTypeInfo v:
                 var vectorNodeName = $"{fieldName}VectorNode";
 
-                bool isOneOf = declaredTypeSyntax is GenericNameSyntax { Identifier.Text: "OneOf" };
+                bool isSumType = declaredTypeSyntax is GenericNameSyntax { Identifier.Text: "RefSum" };
                 
-                ExpressionSyntax vectorTargetExpression = isOneOf
+                ExpressionSyntax vectorTargetExpression = isSumType
                     ? SyntaxFactory.ParenthesizedExpression(
                         SyntaxFactory.CastExpression(
                             SyntaxFactory.GenericName("List")
@@ -307,7 +307,7 @@ public class RoslynTypeBuilder
                 var childNodeName = $"childNode_{fieldName.Replace('.', '_')}";
                 // var childNode = this.FieldName?.ToAssetNode("FieldName");
 
-                bool needValueAccess = declaredTypeSyntax is GenericNameSyntax { Identifier.Text: "OneOf" };
+                bool needValueAccess = declaredTypeSyntax is GenericNameSyntax { Identifier.Text: "RefSum" };
                 bool needCast =
                     needValueAccess
                     || declaredTypeSyntax is IdentifierNameSyntax { Identifier.Text: "Object" };

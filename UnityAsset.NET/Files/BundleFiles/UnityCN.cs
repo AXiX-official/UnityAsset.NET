@@ -41,10 +41,10 @@ public sealed unsafe class UnityCN
         Value = reader.ReadUInt32();
         InfoBytes = reader.ReadBytes(0x10);
         InfoKey = reader.ReadBytes(0x10);
-        reader.Advance(1);
+        reader.Seek(1, SeekOrigin.Current);
         SignatureBytes = reader.ReadBytes(0x10);
         SignatureKey = reader.ReadBytes(0x10);
-        reader.Advance(1);
+        reader.Seek(1, SeekOrigin.Current);
         
         Reset();
         

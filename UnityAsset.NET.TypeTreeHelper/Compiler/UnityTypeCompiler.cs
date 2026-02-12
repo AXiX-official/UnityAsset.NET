@@ -13,13 +13,12 @@ public class UnityTypeCompiler
         _semanticModelBuilder = new SemanticModelBuilder(preDefinedInterfaceMap);
     }
 
-    public CompilationUnitSyntax Generate(IEnumerable<TypeTreeNode> rootNodes)
+    public CompilationUnitSyntax Generate(IEnumerable<TypeTreeRepr> rootNodes)
     {
         var usingDirectives = SyntaxFactory.List([
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Text")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
-            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("OneOf")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.IO")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree.PreDefined")),

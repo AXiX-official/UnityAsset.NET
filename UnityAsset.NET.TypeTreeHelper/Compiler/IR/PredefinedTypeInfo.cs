@@ -4,7 +4,7 @@ namespace UnityAsset.NET.TypeTreeHelper.Compiler.IR;
 
 public readonly struct PredefinedTypeInfo : IUnityTypeInfo
 {
-    public required TypeTreeNode TypeTreeNode { get; init; }
+    public required TypeTreeRepr TypeTreeRepr { get; init; }
     public TypeSyntax PredefinedTypeSyntax { get; init; }
     public TypeSyntax ToTypeSyntax() => PredefinedTypeSyntax;
 }

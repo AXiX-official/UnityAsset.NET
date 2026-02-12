@@ -2,12 +2,11 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
-    public partial interface IAnimationClip : INamedAsset
+    public partial interface IAnimationClip : INamedObject
     {
         public bool m_Legacy { get; }
         public bool m_Compressed { get; }

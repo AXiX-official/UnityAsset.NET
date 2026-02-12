@@ -81,7 +81,7 @@ public class NodeData
                 value = reader.ReadUInt64();
                 break;
             case "float":
-                value = reader.ReadFloat();
+                value = reader.ReadSingle();
                 break;
             case "double":
                 value = reader.ReadDouble();

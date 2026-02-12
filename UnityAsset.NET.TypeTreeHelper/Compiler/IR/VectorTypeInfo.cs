@@ -5,7 +5,7 @@ namespace UnityAsset.NET.TypeTreeHelper.Compiler.IR;
 
 public readonly struct VectorTypeInfo : IUnityTypeInfo
 {
-    public required TypeTreeNode TypeTreeNode { get; init; }
+    public required TypeTreeRepr TypeTreeRepr { get; init; }
     //public required TypeTreeNode DataTypeTreeNode { get; init; }
     //public required TypeTreeNode SizeTypeTreeNode { get; init; }
     public IUnityTypeInfo ElementType { get; init; }

@@ -1,8 +1,7 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
+using System.Text;
 using UnityAsset.NET.Enums;
-using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
-using UnityAsset.NET.TypeTreeHelper;
 
 namespace UnityAsset.NET.Files.SerializedFiles;
 
@@ -19,7 +18,8 @@ public class TypeTreeNode
     public UInt64 RefTypeHash;
     public string Type = String.Empty;
     public string Name = String.Empty;
-    private int? _hash = null;
+    
+    public static ConcurrentDictionary<Hash128, List<TypeTreeNode>> Cache = new();
     
     public TypeTreeNode(UInt16 version, byte level, TypeTreeNodeFlags typeFlags,
         UInt32 typeStringOffset, UInt32 nameStringOffset, Int32 byteSize, UInt32 index, UInt32 metaFlags,
@@ -34,18 +34,6 @@ public class TypeTreeNode
         Index = index;
         MetaFlags = metaFlags;
         RefTypeHash = refTypeHash;
-    }
-
-    public TypeTreeNode(TypeTreeHelper.TypeTreeNode node, int index = 0, byte level = 0)
-    {
-        Version = (ushort)node.Version;
-        Level = level;
-        TypeFlags = (TypeTreeNodeFlags)node.TypeFlags;
-        ByteSize = node.ByteSize;
-        Index = (uint)index;
-        MetaFlags = node.MetaFlag;
-        Type = node.TypeName;
-        Name = node.Name;
     }
 
     public static TypeTreeNode Parse(IReader reader) => new(
@@ -90,26 +78,5 @@ public class TypeTreeNode
         sb.Append($"MetaFlags: {MetaFlags} | ");
         sb.Append($"RefTypeHash: {RefTypeHash}");
         return sb.ToString();
-    }
-
-    public int GetHashCode(List<TypeTreeNode> nodes)
-    {
-        if (_hash != null)
-            return _hash.Value;
-        
-        unchecked
-        {
-            int hash = 17;
-            hash = hash * 31 + Type.GetDeterministicHashCode();
-            hash = hash * 31 + MetaFlags.GetHashCode();
-            
-            foreach (var child in this.Children(nodes))
-            {
-                hash = hash * 31 + child.GetHashCode(nodes);
-            }
-            
-            _hash = hash;
-            return hash;
-        }
     }
 }

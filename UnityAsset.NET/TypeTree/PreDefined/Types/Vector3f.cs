@@ -4,21 +4,21 @@ using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Types;
 
-public class Vector3f : IVector3f
+public struct Vector3f : IPreDefinedInterface
 {
     public string ClassName => "Vector3f";
-    public float x { get; }
-    public float y { get; }
-    public float z { get; }
+    public float x { get; set; }
+    public float y { get; set; }
+    public float z { get; set; }
 
     public Vector3f(IReader reader)
     {
-        x = reader.ReadFloat();
-        y = reader.ReadFloat();
-        z = reader.ReadFloat();
+        x = reader.ReadSingle();
+        y = reader.ReadSingle();
+        z = reader.ReadSingle();
     }
 
-    public Vector3f(float x, float y, float z)
+    public Vector3f(float x = 0, float y = 0, float z = 0)
     {
         this.x = x;
         this.y = y;

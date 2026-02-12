@@ -3,13 +3,36 @@
 public interface ISeek
 {
     public long Position { get; set; }
-    public void Seek(long offset);
-    public void Advance(long count) => Seek(Position + count);
-    public void Rewind(long count) => Seek(Position - count);
-    public void Align(int alignment)
+    public long Length { get; }
+    public void Seek(long offset, SeekOrigin origin = SeekOrigin.Begin)
+    {
+        switch (origin)
+        {
+            case SeekOrigin.Begin:
+            {
+                if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset));
+                Position = offset;
+                break;
+            }
+            case SeekOrigin.Current:
+            {
+                Position += offset;
+                break;
+            }
+            case SeekOrigin.End:
+            {
+                if (offset > 0) throw new ArgumentOutOfRangeException(nameof(offset));
+                Position = Length + offset;
+                break;
+            }
+        }
+        
+    }
+
+    public void Align(uint alignment)
     {
         var offset = Position % alignment;
         if (offset != 0)
-            Advance(alignment - offset);
+            Seek(alignment - offset, SeekOrigin.Current);
     }
 }

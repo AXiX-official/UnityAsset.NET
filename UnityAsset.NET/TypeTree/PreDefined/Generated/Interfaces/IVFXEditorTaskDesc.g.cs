@@ -2,7 +2,6 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
@@ -13,7 +12,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         public List<IVFXMapping> buffers { get; }
         public List<IVFXMapping> values { get; }
         public List<IVFXMapping> @params { get; }
-        public PPtr<IUnityObject> processor { get; }
+        public PPtr<INamedObject> processor { get; }
         public int shaderSourceIndex { get; }
 
         public List<IVFXMappingTemporary>? temporaryBuffers

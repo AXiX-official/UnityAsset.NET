@@ -2,14 +2,13 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IMinMaxGradient : IPreDefinedInterface
     {
-        public OneOf<short, ushort> minMaxState { get; }
+        public ushort minMaxState { get; }
         public IGradient maxGradient { get; }
         public IGradient minGradient { get; }
         public IColorRGBA minColor { get; }

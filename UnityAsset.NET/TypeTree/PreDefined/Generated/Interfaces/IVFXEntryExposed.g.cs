@@ -2,14 +2,13 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
 {
     public partial interface IVFXEntryExposed : IPreDefinedInterface
     {
-        public object m_Value { get; }
+        public RefSum<float, Vector2f, Vector3f, Vector4f, uint, int, IMatrix4x4f, IAnimationCurve<float>, IGradient, PPtr<INamedObject>, bool, PPtr<IUnityObject>> m_Value { get; }
         public bool m_Overridden { get; }
     }
 }

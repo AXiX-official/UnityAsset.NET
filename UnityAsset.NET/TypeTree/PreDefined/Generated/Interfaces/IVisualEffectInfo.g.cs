@@ -2,7 +2,6 @@
 // Warning: This file is auto-generated. Do not edit manually.
 // </auto-generated>
 #nullable enable
-using OneOf;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
@@ -11,7 +10,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
     {
         public IVFXExpressionContainer m_Expressions { get; }
         public IVFXPropertySheetSerializedBase m_PropertySheet { get; }
-        public OneOf<List<IVFXMapping>, List<IVFXExposedMapping>> m_ExposedExpressions { get; }
+        public RefSum<List<IVFXMapping>, List<IVFXExposedMapping>> m_ExposedExpressions { get; }
         public List<IVFXGPUBufferDesc> m_Buffers { get; }
         public List<IVFXCPUBufferDesc> m_CPUBuffers { get; }
         public List<IVFXEventDesc> m_Events { get; }
