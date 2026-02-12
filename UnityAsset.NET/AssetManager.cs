@@ -244,5 +244,6 @@ public class AssetManager
         TpkUnityTreeNodeFactory.Deinit();
         AssemblyManager.CleanCache();
         BlockStream.Cache.Reset(Setting.DefaultBlockCacheSize);
+        BlockStream.AssetToBlockCache = new();
     }
 }

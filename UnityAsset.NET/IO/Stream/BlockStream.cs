@@ -1,26 +1,29 @@
-﻿using UnityAsset.NET.Enums;
+﻿using System.Collections.Concurrent;
+using UnityAsset.NET.Enums;
 using UnityAsset.NET.Files.BundleFiles;
+using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.IO.Reader;
 
 namespace UnityAsset.NET.IO.Stream;
 
 public class BlockStreamProvider : IStreamProvider
 {
-    private readonly BlockStream.BlockInfo[] _blocks;
-    private readonly IReaderProvider _baseReaderProvider;
+    public readonly BlockStream.BlockInfo[] Blocks;
+    public readonly IReaderProvider BaseReaderProvider;
     private readonly ulong _length;
     private readonly UnityCN? _unityCnInfo;
     
     public BlockStreamProvider(List<StorageBlockInfo> blocks, IReaderProvider readerProvider,
         UnityCN? unityCnInfo = null)
     {
-        _blocks = new BlockStream.BlockInfo[blocks.Count];
+        Blocks = new BlockStream.BlockInfo[blocks.Count];
         ulong currentOffset = 0;
         ulong uncompressedOffset = 0;
         for (int i = 0; i < blocks.Count; i++)
         {
             var block = blocks[i];
             var compressionType = (CompressionType)(block.Flags & StorageBlockFlags.CompressionTypeMask);
-            _blocks[i] = new BlockStream.BlockInfo(
+            Blocks[i] = new BlockStream.BlockInfo(
                 block.UncompressedSize, 
                 block.CompressedSize, 
                 currentOffset, 
@@ -31,12 +34,12 @@ public class BlockStreamProvider : IStreamProvider
             uncompressedOffset += block.UncompressedSize;
         }
         
-        _baseReaderProvider = readerProvider;
+        BaseReaderProvider = readerProvider;
         _length = uncompressedOffset;
         _unityCnInfo = unityCnInfo;
     }
 
-    public System.IO.Stream OpenStream() => new BlockStream(_blocks, _baseReaderProvider, _length, _unityCnInfo);
+    public System.IO.Stream OpenStream() => new BlockStream(Blocks, BaseReaderProvider, _length, _unityCnInfo);
 }
 
 public class BlockStream : System.IO.Stream
@@ -60,6 +63,59 @@ public class BlockStream : System.IO.Stream
     public readonly record struct CacheKey(IReaderProvider Provider, int BlockIndex);
     
     public static CustomMemoryCache<CacheKey, byte[]> Cache = new (maxSize: Setting.DefaultBlockCacheSize);
+    
+    public static ConcurrentDictionary<CacheKey, (int parsed, int total)> AssetToBlockCache = new();
+
+    public static void RegisterAssetToBlockMap(FileEntryStreamProvider fesp, BlockStreamProvider bsp, SerializedFile sf)
+    {
+        var offset = fesp.FileEntry.Offset;
+        var blocks = bsp.Blocks;
+        foreach (var info in sf.Metadata.AssetInfos)
+        {
+            var pos = offset + sf.Header.DataOffset + info.ByteOffset;
+            var index = FindBlockIndex(blocks, pos);
+            while (index < blocks.Length && pos + info.ByteSize > blocks[index].UncompressedOffset)
+            {
+                var key = new CacheKey(bsp.BaseReaderProvider, index);
+                AssetToBlockCache.AddOrUpdate(key,
+                    addValue: (0, 1),
+                    updateValueFactory: (k, existing) => 
+                        (existing.parsed, existing.total + 1));
+                index++;
+            }
+        }
+    }
+
+    public static void OnAssetParsed(Asset asset)
+    {
+        var sf = asset.SourceFile;
+        if (sf.ReaderProvider is CustomStreamReaderProvider csrp)
+        {
+            if (csrp.StreamProvider is FileEntryStreamProvider fesp)
+            {
+                if (fesp.StreamProvider is BlockStreamProvider bsp)
+                {
+                    var offset = fesp.FileEntry.Offset;
+                    var blocks = bsp.Blocks;
+                    var pos = offset + sf.Header.DataOffset + asset.Info.ByteOffset;
+                    var index = FindBlockIndex(blocks, pos);
+                    while (index < blocks.Length && pos + asset.Info.ByteSize > blocks[index].UncompressedOffset)
+                    {
+                        var key = new CacheKey(bsp.BaseReaderProvider, index);
+                        var newStats = AssetToBlockCache.AddOrUpdate(key,
+                            addValue: (0, 1),
+                            updateValueFactory: (_, existing) => 
+                                (existing.parsed + 1, existing.total));
+                        if (newStats.parsed == newStats.total)
+                        {
+                            Cache.Remove(key);
+                        }
+                        index++;
+                    }
+                }
+            }
+        }
+    }
 
     public BlockStream(BlockInfo[] blocks, IReaderProvider baseReaderProvider, ulong length, UnityCN? unityCnInfo = null)
     {
@@ -80,18 +136,16 @@ public class BlockStream : System.IO.Stream
         set => Seek(value, SeekOrigin.Begin);
     }
 
-    private void EnsureBlockLoaded(ulong position)
+    private static int FindBlockIndex(BlockInfo[] blocks, ulong position)
     {
-        if (_disposed) throw new ObjectDisposedException(nameof(BlockStream));
-        
         int low = 0;
-        int high = Blocks.Length - 1;
+        int high = blocks.Length - 1;
         int blockIndex = -1;
-
+        
         while (low <= high)
         {
             int mid = low + (high - low) / 2;
-            var block = Blocks[mid];
+            var block = blocks[mid];
             if (position >= block.UncompressedOffset && position < block.UncompressedOffset + block.UncompressedSize)
             {
                 blockIndex = mid;
@@ -107,6 +161,30 @@ public class BlockStream : System.IO.Stream
             }
         }
 
+        return blockIndex;
+    }
+
+    private byte[] DecompressBlock(int index)
+    {
+        var block = Blocks[index];
+        using var reader = _baseReaderProvider.CreateReader();
+        reader.Position = (long)block.CompressedOffset;
+        var compressedData = reader.ReadBytes((int)block.CompressedSize);
+        if (_unityCnInfo != null && (block.CompressionType == CompressionType.Lz4 || block.CompressionType == CompressionType.Lz4HC))
+        {
+            _unityCnInfo.DecryptBlock(compressedData, compressedData.Length, index);
+        }
+                    
+        var uncompressedBuffer = new byte[block.UncompressedSize];
+        Compression.DecompressToBytes(compressedData, uncompressedBuffer.AsSpan(0, (int)block.UncompressedSize), block.CompressionType);
+                    
+        return uncompressedBuffer;
+    }
+
+    private void EnsureBlockLoaded(ulong position)
+    {
+        var blockIndex = FindBlockIndex(Blocks, position);
+
         if (blockIndex == -1)
         {
             throw new ArgumentOutOfRangeException(nameof(position), "Position is beyond the end of the data");
@@ -115,26 +193,15 @@ public class BlockStream : System.IO.Stream
         if (blockIndex != CurrentBlockIndex)
         {
             var block = Blocks[blockIndex];
+            var key = new CacheKey(_baseReaderProvider, blockIndex);
 
-            var blockBuffer = Cache.GetOrCreate(
-                key: new(_baseReaderProvider, blockIndex),
-                factory: () =>
-                {
-                    using var reader = _baseReaderProvider.CreateReader();
-                    reader.Position = (long)block.CompressedOffset;
-                    var compressedData = reader.ReadBytes((int)block.CompressedSize);
-                    if (_unityCnInfo != null && (block.CompressionType == CompressionType.Lz4 || block.CompressionType == CompressionType.Lz4HC))
-                    {
-                        _unityCnInfo.DecryptBlock(compressedData, compressedData.Length, blockIndex);
-                    }
-                    
-                    var uncompressedBuffer = new byte[block.UncompressedSize];
-                    Compression.DecompressToBytes(compressedData, uncompressedBuffer.AsSpan(0, (int)block.UncompressedSize), block.CompressionType);
-                    
-                    return uncompressedBuffer;
-                },
-                size: block.UncompressedSize
-            );
+            var blockBuffer = AssetToBlockCache.ContainsKey(key)
+                ? Cache.GetOrCreate(
+                    key: new(_baseReaderProvider, blockIndex),
+                    factory: () => DecompressBlock(blockIndex),
+                    size: block.UncompressedSize
+                )
+                : DecompressBlock(blockIndex);
             
             _currentBlockData = new MemoryStream(blockBuffer);
             

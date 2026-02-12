@@ -1,8 +1,10 @@
 ﻿using System.Text;
+using SharpCompress.Common;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
+using UnityAsset.NET.IO.Stream;
 using UnityAsset.NET.TypeTree.PreDefined;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 
@@ -68,6 +70,16 @@ public sealed class SerializedFile : IFile
             assets.Add(new Asset(sf, assetInfo));
         }
         sf.BuildMap();
+
+        if (readerProvider is CustomStreamReaderProvider csrp)
+        {
+            if (csrp.StreamProvider is FileEntryStreamProvider fesp)
+            {
+                if (fesp.StreamProvider is BlockStreamProvider bsp)
+                    BlockStream.RegisterAssetToBlockMap(fesp, bsp, sf);
+            }
+        }
+        
         return sf;
     }
 

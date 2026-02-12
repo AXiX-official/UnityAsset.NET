@@ -292,12 +292,12 @@ public class CustomStreamReader : IReader
 
 public class CustomStreamReaderProvider : IReaderProvider
 {
-    private readonly IStreamProvider _streamProvider;
+    public readonly IStreamProvider StreamProvider;
 
     public CustomStreamReaderProvider(IStreamProvider streamProvider)
     {
-        _streamProvider = streamProvider;
+        StreamProvider = streamProvider;
     }
     
-    public IReader CreateReader(Endianness endian = Endianness.BigEndian) => new CustomStreamReader(_streamProvider, endian);
+    public IReader CreateReader(Endianness endian = Endianness.BigEndian) => new CustomStreamReader(StreamProvider, endian);
 }

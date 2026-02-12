@@ -1,5 +1,6 @@
 ﻿using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO.Reader;
+using UnityAsset.NET.IO.Stream;
 using UnityAsset.NET.TypeTree;
 using UnityAsset.NET.TypeTree.PreDefined;
 
@@ -38,6 +39,7 @@ public class Asset
                 {
                     using var reader = DataReader;
                     _value = UnityObjectFactory.Create(Info.Type, reader);
+                    BlockStream.OnAssetParsed(this);
                     if (IsNamedAsset)
                     {
                         _name = ((INamedObject)_value).m_Name;

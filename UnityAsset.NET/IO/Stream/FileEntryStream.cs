@@ -4,16 +4,16 @@ namespace UnityAsset.NET.IO.Stream;
 
 public class FileEntryStreamProvider : IStreamProvider
 {
-    private readonly IStreamProvider _streamProvider;
-    private readonly FileEntry _fileEntry;
+    public readonly IStreamProvider StreamProvider;
+    public readonly FileEntry FileEntry;
 
     public FileEntryStreamProvider(IStreamProvider streamProvider, FileEntry fileEntry)
     {
-        _streamProvider = streamProvider;
-        _fileEntry = fileEntry;
+        StreamProvider = streamProvider;
+        FileEntry = fileEntry;
     }
 
-    public System.IO.Stream OpenStream() => new FileEntryStream(_streamProvider, _fileEntry);
+    public System.IO.Stream OpenStream() => new FileEntryStream(StreamProvider, FileEntry);
 }
 
 public class FileEntryStream : System.IO.Stream
@@ -26,13 +26,13 @@ public class FileEntryStream : System.IO.Stream
     {
         _blockStream = streamProvider.OpenStream();
         _fileEntry = fileEntry;
-        _blockStream.Seek(_fileEntry.Offset, SeekOrigin.Begin);
+        _blockStream.Seek((long)_fileEntry.Offset, SeekOrigin.Begin);
     }
 
     public override bool CanRead => true;
     public override bool CanSeek => true;
     public override bool CanWrite => false;
-    public override long Length => _fileEntry.Size;
+    public override long Length => (long)_fileEntry.Size;
 
     public override long Position
     {
@@ -50,7 +50,7 @@ public class FileEntryStream : System.IO.Stream
 
     public override int Read(Span<byte> buffer)
     {
-        long remaining = _fileEntry.Size - _position;
+        long remaining = (long)_fileEntry.Size - _position;
         if (remaining <= 0)
             return 0;
             
@@ -79,7 +79,7 @@ public class FileEntryStream : System.IO.Stream
             throw new ArgumentOutOfRangeException(nameof(offset));
         
         _position = newPosition;
-        _blockStream.Seek(_fileEntry.Offset + newPosition, SeekOrigin.Begin);
+        _blockStream.Seek((long)_fileEntry.Offset + newPosition, SeekOrigin.Begin);
         return _position;
     }
 

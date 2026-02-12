@@ -5,12 +5,12 @@ namespace UnityAsset.NET.Files.BundleFiles;
 
 public sealed class FileEntry
 {
-    public Int64 Offset;
-    public Int64 Size;
+    public ulong Offset;
+    public ulong Size;
     public UInt32 Flags;
     public string Path;
 
-    public FileEntry(Int64 offset, Int64 size, UInt32 flags, string path)
+    public FileEntry(ulong offset, ulong size, UInt32 flags, string path)
     {
         Offset = offset;
         Size = size;
@@ -19,8 +19,8 @@ public sealed class FileEntry
     }
     
     public static FileEntry Parse(IReader reader) => new (
-        reader.ReadInt64(),
-        reader.ReadInt64(),
+        reader.ReadUInt64(),
+        reader.ReadUInt64(),
         reader.ReadUInt32(),
         reader.ReadNullTerminatedString()
     );
