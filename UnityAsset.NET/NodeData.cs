@@ -1,49 +1,33 @@
 ﻿using System.Text;
-using UnityAsset.NET.Extensions;
-using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
+using UnityAsset.NET.TypeTree.PreDefined.Types;
+using UnityAsset.NET.TypeTreeHelper;
 
 namespace UnityAsset.NET;
 
 public class NodeData
 {
-    public byte Level;
     public string Type;
     public string Name;
     public object Value;
-    public UInt32 MetaFlags;
-    public NodeData? Parent;
     
     public T As<T>()
     {
         return (T)Value;
     }
-
-    public NodeData(byte level, string type, string name, object value, UInt32 metaFlags, NodeData? parent = null)
-    {
-        Level = level;
-        Type = type;
-        Name = name;
-        Value = value;
-        MetaFlags = metaFlags;
-        Parent = parent;
-    }
     
-    public NodeData(IReader reader, List<TypeTreeNode> nodes, TypeTreeNode current, NodeData? parent = null)
+    public NodeData(IReader reader, TypeTreeRepr current)
     {
-        Level = current.Level;
-        Type = current.Type;
+        Type = current.TypeName;
         Name = current.Name;
-        MetaFlags = current.MetaFlags;
-        Parent = parent;
-        Value = ReadValue(reader, nodes, current);
+        Value = ReadValue(reader, current);
     }
     
-    public static object ReadValue(IReader reader, List<TypeTreeNode> nodes, TypeTreeNode current)
+    public static object ReadValue(IReader reader, TypeTreeRepr current)
     {
         object value;
-        var align = current.RequiresAlign();
-        switch (current.Type)
+        var align = current.RequiresAlign;
+        switch (current.TypeName)
         {
             case "SInt8":
                 value = reader.ReadInt8();
@@ -90,60 +74,58 @@ public class NodeData
                 value = reader.ReadBoolean();
                 break;
             case "string":
-                align |= current.Children(nodes)[0].RequiresAlign();
                 value = reader.ReadSizedString();
                 break;
             case "map":
             {
-                var pair = current.Children(nodes)[0].Children(nodes)[1];
-                align |= pair.RequiresAlign();
-                var first = pair.Children(nodes)[0];
-                var second = pair.Children(nodes)[1];
+                var pair = current.SubNodes[0].SubNodes[1];
+                align |= pair.RequiresAlign;
+                var first = pair.SubNodes[0];
+                var second = pair.SubNodes[1];
                 var size = reader.ReadInt32();
-                var dic = new List<KeyValuePair<object, object>>();
+                var dic = new List<KeyValuePair<object, object>>(size);
                 for (int j = 0; j < size; j++)
                 {
-                    dic.Add(new KeyValuePair<object, object>(ReadValue(reader, nodes, first), ReadValue(reader, nodes, second)));
+                    dic.Add(new KeyValuePair<object, object>(ReadValue(reader, first), ReadValue(reader, second)));
                 }
                 value = dic;
                 break;
                 }
             case "TypelessData":
                 {
-                    var size = reader.ReadInt32();
-                    value = reader.ReadBytes(size);
+                    value = new TypelessData(reader);
                     break;
                 }
             default:
                 {
-                    if (current.Children(nodes).Count == 1 && current.Children(nodes)[0].Type == "Array") //Array
+                    if (current.SubNodes.Length == 1 && current.SubNodes[0].TypeName == "Array") //Array
                     {
-                        var vector = current.Children(nodes)[0];
-                        align |= vector.RequiresAlign();
+                        var vector = current.SubNodes[0];
+                        align |= vector.RequiresAlign;
                         var size = reader.ReadInt32();
                         if (size == 0)
                         {
                             value = new List<NodeData>();
                             break;
                         }
-                        var list = new List<NodeData>();
-                        var array_node = vector.Children(nodes)[1];
+                        var list = new List<NodeData>(size);
+                        var array_node = vector.SubNodes[1];
                         for (int j = 0; j < size; j++)
                         {
-                            list.Add(new NodeData(reader, nodes, array_node));
+                            list.Add(new NodeData(reader, array_node));
                         }
                         value = list;
                         break;
                     }
                     else //Class
                     {
-                        var @class = current.Children(nodes);
+                        var @class = current.SubNodes;
                         var obj = new Dictionary<string, NodeData>();
-                        for (int j = 0; j < @class.Count; j++)
+                        for (int j = 0; j < @class.Length; j++)
                         {
                             var classmember = @class[j];
                             var name = classmember.Name;
-                            obj[name] = new NodeData(reader, nodes, @class[j]);
+                            obj[name] = new NodeData(reader, @class[j]);
                         }
                         value = obj;
                         break;

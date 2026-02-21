@@ -1,36 +1,21 @@
 ﻿using System.Buffers.Binary;
-using System.Diagnostics;
 using System.Text;
 using UnityAsset.NET.Enums;
+using UnityAsset.NET.FileSystem;
 
 namespace UnityAsset.NET.IO.Reader;
 
-public class CustomStreamReader : IReader
+public class CustomFileReader : IReader
 {
-    private readonly System.IO.Stream _stream; 
+    private readonly IVirtualFile _data; 
     
     private readonly byte[] _buffer;
     private uint _bufferOffset;
     private uint _bufferCount;
     
-    public CustomStreamReader(System.IO.Stream stream, Endianness endian = Endianness.BigEndian, int bufferSize = 8192)
+    public CustomFileReader(IVirtualFileInfo fileInfo, Endianness endian = Endianness.BigEndian, int bufferSize = 8192)
     {
-        if (!stream.CanRead || !stream.CanSeek)
-            throw new ArgumentException("Stream must be readable and seekable", nameof(stream));
-        _stream = stream;
-        Endian = endian;
-        
-        _buffer = new byte[bufferSize];
-        _bufferOffset = 0;
-        _bufferCount = 0;
-    }
-
-    public CustomStreamReader(IStreamProvider streamProvider, Endianness endian = Endianness.BigEndian, int bufferSize = 8192)
-    {
-        var stream = streamProvider.OpenStream();
-        if (!stream.CanRead || !stream.CanSeek)
-            throw new ArgumentException("Stream must be readable and seekable", nameof(stream));
-        _stream = stream;
+        _data = fileInfo.GetFile();
         Endian = endian;
         
         _buffer = new byte[bufferSize];
@@ -41,17 +26,15 @@ public class CustomStreamReader : IReader
     private void FillBuffer()
     {
         _bufferOffset = 0;
-        _bufferCount = (uint)_stream.Read(_buffer, 0, _buffer.Length);
+        _bufferCount = (uint)_data.Read(_buffer, 0, (uint)_buffer.Length);
+        if (_bufferCount == 0)
+            throw new EndOfStreamException();
     }
     
     # region ISeek
     public long Position
     {
-        get {
-            var pos = _stream.Position - _bufferCount + _bufferOffset;
-            Debug.Assert(pos >= 0);
-            return pos;
-        }
+        get => _data.Position - _bufferCount + _bufferOffset;
         set {
             var currentPos = Position;
             if (currentPos == value)
@@ -67,10 +50,10 @@ public class CustomStreamReader : IReader
             
             _bufferOffset = 0;
             _bufferCount = 0;
-            _stream.Seek(value, SeekOrigin.Begin);
+            _data.Position = value;
         }
     }
-    public long Length => _stream.Length;
+    public long Length => _data.Length;
     # endregion
     
     # region IReader
@@ -81,8 +64,6 @@ public class CustomStreamReader : IReader
         if (_bufferOffset >= _bufferCount)
         {
             FillBuffer();
-            if (_bufferCount == 0)
-                throw new EndOfStreamException();
         }
         return _buffer[_bufferOffset++];
     }
@@ -107,8 +88,6 @@ public class CustomStreamReader : IReader
             if (_bufferOffset >= _bufferCount)
             {
                 FillBuffer();
-                if (_bufferCount == 0)
-                    throw new EndOfStreamException();
             }
 
             var available = (int)(_bufferCount - _bufferOffset);
@@ -273,8 +252,6 @@ public class CustomStreamReader : IReader
             if (_bufferOffset >= _bufferCount)
             {
                 FillBuffer();
-                if (_bufferCount == 0)
-                    throw new EndOfStreamException();
             }
             byte b = _buffer[_bufferOffset++];
             if (b == 0)
@@ -284,20 +261,16 @@ public class CustomStreamReader : IReader
         return Encoding.UTF8.GetString(ms.ToArray());
     }
     # endregion
-    public void Dispose()
-    {
-        _stream.Dispose();
-    }
 }
 
-public class CustomStreamReaderProvider : IReaderProvider
+public class CustomFileReaderProvider : IReaderProvider
 {
-    public readonly IStreamProvider StreamProvider;
+    public readonly IVirtualFileInfo FileInfo;
 
-    public CustomStreamReaderProvider(IStreamProvider streamProvider)
+    public CustomFileReaderProvider(IVirtualFileInfo fileInfo)
     {
-        StreamProvider = streamProvider;
+        FileInfo = fileInfo;
     }
     
-    public IReader CreateReader(Endianness endian = Endianness.BigEndian) => new CustomStreamReader(StreamProvider, endian);
+    public IReader CreateReader(Endianness endian = Endianness.BigEndian) => new CustomFileReader(FileInfo, endian);
 }

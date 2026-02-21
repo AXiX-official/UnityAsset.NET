@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
@@ -77,7 +76,7 @@ public class PPtr<T> : IPPtr where T : IUnityObject
         }
 
         var externals = m_SerializedFile.Metadata.Externals;
-        if (m_FileID > 0 && m_FileID - 1 < externals.Count)
+        if (m_FileID > 0 && m_FileID - 1 < externals.Length)
         {
             var m_External = externals[m_FileID - 1];
             var fileFound = assetManager.LoadedFiles.TryGetValue(m_External.FileName, out var sfw);

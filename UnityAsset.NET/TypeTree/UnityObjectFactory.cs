@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
-using UnityAsset.NET.Files.SerializedFiles;
+﻿using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.TypeTree.PreDefined;
 
@@ -12,7 +10,7 @@ public static class UnityObjectFactory
     {
         if (sType.ToTypeName() == "MonoBehaviour")
         {
-            return new PreDefined.Types.MonoBehaviour(reader, sType.Nodes);
+            return new PreDefined.Types.MonoBehaviour(reader, AssetManager.LoadedTypes[sType.TypeHash]);
         }
         
         var generatedType = AssemblyManager.GetType(sType);

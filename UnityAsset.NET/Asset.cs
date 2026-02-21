@@ -1,15 +1,14 @@
 ﻿using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO.Reader;
-using UnityAsset.NET.IO.Stream;
 using UnityAsset.NET.TypeTree;
 using UnityAsset.NET.TypeTree.PreDefined;
 
 namespace UnityAsset.NET;
 
-public class Asset
+public class Asset : IEquatable<Asset>
 {
     public readonly AssetFileInfo Info;
-    private IUnityAsset? _value;
+    private WeakReference<IUnityAsset>? _value;
     private string? _name;
     private readonly Lock _lock = new();
     public bool IsNamedAsset;
@@ -29,23 +28,39 @@ public class Asset
     
     public SerializedFile SourceFile { get; }
 
+    private IUnityAsset GetValue()
+    {
+        var value = UnityObjectFactory.Create(Info.Type, DataReader);
+        BlockReader.OnAssetParsed(this);
+        return value;
+    }
+
+    
     public IUnityAsset Value
     {
         get
         {
             lock (_lock)
             {
-                if (_value == null)
+                if (_value is null)
                 {
-                    using var reader = DataReader;
-                    _value = UnityObjectFactory.Create(Info.Type, reader);
-                    BlockStream.OnAssetParsed(this);
+                    var value = GetValue();
+                    _value = new WeakReference<IUnityAsset>(value);
                     if (IsNamedAsset)
                     {
-                        _name = ((INamedObject)_value).m_Name;
+                        _name = ((INamedObject)value).m_Name;
                     }
+
+                    return value;
                 }
-                return _value;
+                else if (_value.TryGetTarget(out var value))
+                {
+                    return  value;
+                }
+
+                var newValue = GetValue();
+                _value = new WeakReference<IUnityAsset>(newValue);
+                return newValue;
             }
         }
     }
@@ -88,16 +103,31 @@ public class Asset
     public Asset(SerializedFile sf, AssetFileInfo info)
     {
         Info = info;
-        IsNamedAsset = info.Type.Nodes.Any(n => n is {Name: "m_Name", Type: "string", Level: 1} );
+        IsNamedAsset = info.Type.IsNamed;
 
         SourceFile = sf;
     }
-
-    public void Release()
+    
+    
+    public bool Equals(Asset? other)
     {
-        lock (_lock)
-        {
-            _value = null;
-        }
+        if (ReferenceEquals(this, other))
+            return true;
+
+        if (other is null)
+            return false;
+
+        return ReferenceEquals(SourceFile, other.SourceFile)
+               && PathId == other.PathId;
+    }
+
+    public override bool Equals(object? obj)
+        => obj is Asset other && Equals(other);
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(
+            SourceFile,
+            PathId);
     }
 }

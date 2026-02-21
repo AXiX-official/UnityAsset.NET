@@ -1,24 +1,18 @@
 ﻿using System.Text;
-using SharpCompress.Common;
-using UnityAsset.NET.Extensions;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
-using UnityAsset.NET.IO.Stream;
-using UnityAsset.NET.TypeTree.PreDefined;
-using UnityAsset.NET.TypeTree.PreDefined.Types;
 
 namespace UnityAsset.NET.Files.SerializedFiles;
 
 public sealed class SerializedFile : IFile
 {
-    public SerializedFileHeader Header;
-    public SerializedFileMetadata Metadata;
+    public readonly SerializedFileHeader Header;
+    public readonly SerializedFileMetadata Metadata;
     public List<Asset> Assets = new();
-    public PPtr<IUnityObject>[] PreloadTable = [];
-    public Dictionary<Int64, string> Containers = new();
+    public readonly Dictionary<Int64, string> Containers = new();
     public BundleFile? ParentBundle { get; private set; }
-    public IVirtualFile? SourceVirtualFile { get; private set; }
+    public IVirtualFileInfo? SourceVirtualFileInfo { get; private set; }
     public readonly Dictionary<Int64, Asset> PathToAsset = new();
     public IReaderProvider ReaderProvider { get; }
     
@@ -31,14 +25,14 @@ public sealed class SerializedFile : IFile
         Assets = assets;
         ReaderProvider = readerProvider;
         ParentBundle = parentBundle;
-        SourceVirtualFile = parentBundle?.SourceVirtualFile;
-        BuildMap();
+        SourceVirtualFileInfo = parentBundle?.SourceVirtualFile;
+        Process();
     }
 
-    public SerializedFile(IVirtualFile file)
+    public SerializedFile(IVirtualFileInfo fileInfo)
     {
-        ReaderProvider = new CustomStreamReaderProvider(file);
-        using var reader = ReaderProvider.CreateReader();
+        ReaderProvider = new CustomFileReaderProvider(fileInfo);
+        var reader = ReaderProvider.CreateReader();
         Header = SerializedFileHeader.Parse(reader);
         reader.Endian = Header.Endianness;
         Metadata = SerializedFileMetadata.Parse(reader, Header.Version);
@@ -49,13 +43,13 @@ public sealed class SerializedFile : IFile
             Assets.Add(new Asset(this, assetInfo));
         }
         
-        SourceVirtualFile = file;
-        BuildMap();
+        SourceVirtualFileInfo = fileInfo;
+        Process();
     }
     
     public static SerializedFile Parse(BundleFile bf, IReaderProvider readerProvider)
     {
-        using var reader = readerProvider.CreateReader();
+        var reader = readerProvider.CreateReader();
         var header = SerializedFileHeader.Parse(reader);
         reader.Endian = header.Endianness;
         var metadata = SerializedFileMetadata.Parse(reader, header.Version);
@@ -69,21 +63,20 @@ public sealed class SerializedFile : IFile
         {
             assets.Add(new Asset(sf, assetInfo));
         }
-        sf.BuildMap();
+        sf.Process();
 
-        if (readerProvider is CustomStreamReaderProvider csrp)
+        if (readerProvider is SlicedReaderProvider srp)
         {
-            if (csrp.StreamProvider is FileEntryStreamProvider fesp)
+            if (srp.BaseReaderProvider is BlockReaderProvider brp)
             {
-                if (fesp.StreamProvider is BlockStreamProvider bsp)
-                    BlockStream.RegisterAssetToBlockMap(fesp, bsp, sf);
+                BlockReader.RegisterAssetToBlockMap(srp, brp, sf);
             }
         }
         
         return sf;
     }
 
-    public void BuildMap()
+    public void Process()
     {
         foreach (var asset in Assets)
         {

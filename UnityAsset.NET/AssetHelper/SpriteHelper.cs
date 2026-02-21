@@ -162,9 +162,8 @@ public static class SpriteHelper
         // TODO: m_Streams Interface for IVertexData
         var m_Streams = m_VertexData.GetStreams(version);
         var m_Stream = m_Streams[m_Channel.stream];
-        using var vertexReader =
-            new CustomStreamReader(new MemoryStream(m_VertexData.m_DataSize.data), Endianness.LittleEndian);
-        using var indexReader = new CustomStreamReader(new MemoryStream(m_RD.m_IndexBuffer.ToArray()), Endianness.LittleEndian);
+        var vertexReader = new MemoryReader(m_VertexData.m_DataSize.data, endian: Endianness.LittleEndian);
+        var indexReader = new MemoryReader(m_RD.m_IndexBuffer, endian: Endianness.LittleEndian);
         foreach (var subMesh in m_RD.m_SubMeshes)
         {
             vertexReader.Position = m_Stream.offset + subMesh.firstVertex * m_Stream.stride + m_Channel.offset;

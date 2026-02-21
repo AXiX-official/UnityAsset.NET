@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Diagnostics;
 using AssetRipper.Tpk;
 using AssetRipper.Tpk.TypeTrees;
@@ -8,7 +9,7 @@ using UnityAsset.NET.Files;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
-using UnityAsset.NET.IO.Stream;
+using UnityAsset.NET.IO.Reader;
 using UnityAsset.NET.TypeTree;
 using UnityAsset.NET.TypeTree.PreDefined.Types;
 using UnityAsset.NET.TypeTreeHelper;
@@ -19,15 +20,16 @@ public class AssetManager
 {
     private IFileSystem _fileSystem;
 
-    public ConcurrentDictionary<string, IFile> LoadedFiles = new();
+    public FrozenDictionary<string, IFile> LoadedFiles = new Dictionary<string, IFile>().ToFrozenDictionary();
     
-    public ConcurrentDictionary<IVirtualFile, IFile> VirtualFileToFileMap = new();
+    public ConcurrentDictionary<IVirtualFileInfo, IFile> VirtualFileToFileMap = new();
     
     public UnityRevision? Version { get; private set; }
     public BuildTarget? BuildTarget { get; private set; }
 
-    private List<SerializedType> _loadedTypes = new();
     public List<Asset> LoadedAssets { get; private set; } = new();
+    
+    public static Dictionary<Hash128, TypeTreeRepr> LoadedTypes = new();
     
     public AssetManager(IFileSystem? fileSystem = null, IFileSystem.ErrorHandler? onError = null)
     {
@@ -40,12 +42,11 @@ public class AssetManager
         _fileSystem = fileSystem;
     }
 
-    public async Task LoadAsync(List<IVirtualFile> files, bool ignoreDuplicatedFiles = false, IProgress<LoadProgress>? progress = null)
+    public async Task LoadAsync(List<IVirtualFileInfo> files, bool ignoreDuplicatedFiles = false, IProgress<LoadProgress>? progress = null)
     {
         await Task.Run(() =>
         {
             var fileWrappers = new ConcurrentBag<(string, IFile)>();
-            var types = new ConcurrentBag<SerializedType>();
             int progressCount = 0;
             var total = files.Count;
             
@@ -57,18 +58,15 @@ public class AssetManager
                 {
                     case FileType.BundleFile:
                     {
-                        var bundleFile = new BundleFile(file);
-                        bundleFile.ParseFilesWithTypeConversion();
+                        var bundleFile = new BundleFile(file, lazyLoad: false);
                         foreach (var fw in bundleFile.Files)
                         {
                             fileWrappers.Add((fw.Info.Path, fw.File));
 
                             if (fw is { File: SerializedFile sf })
                             {
-                                if (!sf.Metadata.TypeTreeEnabled)
+                                if (!sf.Metadata.TypeTreeEnabled && !anyTypeTreeDisabled)
                                     Volatile.Write(ref anyTypeTreeDisabled, true);
-                                foreach(var type in sf.Metadata.Types)
-                                    types.Add(type);
                             }
                         }
 
@@ -82,9 +80,6 @@ public class AssetManager
 
                         if (!serializedFile.Metadata.TypeTreeEnabled)
                             Volatile.Write(ref anyTypeTreeDisabled, true);
-                        
-                        foreach(var type in serializedFile.Metadata.Types)
-                            types.Add(type);
 
                         VirtualFileToFileMap[file] = serializedFile;
                         break;
@@ -94,13 +89,20 @@ public class AssetManager
                 progress?.Report(new LoadProgress($"AssetManager: Loading {file.Name}", total, currentProgress));
             });
             
+            BlockReader.RemoveSingleReferenceBlocks();
+            BlockReader.Cache = new(maxSize: BlockReader.TotalBlockSize * 3 / 4); // it works good for BuildSceneHierarchy
+            
+            var tmpLoadedFilesDict = new Dictionary<string, IFile>();
+            
             foreach (var (path, file) in fileWrappers)
             {
-                if (!LoadedFiles.TryAdd(path, file) && !ignoreDuplicatedFiles)
+                if (!tmpLoadedFilesDict.TryAdd(path, file) && !ignoreDuplicatedFiles)
                 {
                     throw new InvalidOperationException($"File {path} already loaded");
                 }
             }
+
+            LoadedFiles = tmpLoadedFilesDict.ToFrozenDictionary();
 
             var firstFile = LoadedFiles.Values
                 .FirstOrDefault(file => file is SerializedFile);
@@ -108,15 +110,6 @@ public class AssetManager
             {
                 BuildTarget = firstSerializedFile.Metadata.TargetPlatform;
                 Version = firstSerializedFile.Metadata.UnityVersion;
-            }
-
-            var seenHashes = new HashSet<Hash128>();
-            foreach (var type in types)
-            {
-                if (seenHashes.Add(type.TypeHash))
-                {
-                    _loadedTypes.Add(type);
-                }
             }
 
             BuildUnityTypes(anyTypeTreeDisabled, progress);
@@ -151,24 +144,21 @@ public class AssetManager
         
         var rootTypeNodesMap = anyTypeTreeDisabled ? TpkUnityTreeNodeFactory.GetRootTypeNodes(Version!.ToString()) : null;
         
-        var rootTypes = new Dictionary<Hash128, TypeTreeRepr>();
-        
-        foreach (var type in _loadedTypes)
+        foreach (var (hash, (nodes, typeId, repr)) in TypeTreeNode.Cache)
         {
-            var nodes = type.Nodes;
-            if (nodes.Count == 0 && anyTypeTreeDisabled)
+            if (nodes.Length == 0 && anyTypeTreeDisabled)
             {
-                var typeName = type.ToTypeName();
-                rootTypes.Add(type.TypeHash, rootTypeNodesMap![typeName]);
+                var typeName = ((AssetClassID)typeId).ToString();
+                LoadedTypes.Add(hash, rootTypeNodesMap![typeName]);
             }
             else
             {
-                rootTypes.Add(type.TypeHash, nodes[0].ToTypeTreeRepr(nodes));
+                LoadedTypes.Add(hash, repr ?? nodes[0].ToTypeTreeRepr(nodes));
             }
         }
         
-        AssemblyManager.LoadTypes(rootTypes);
-        progress?.Report(new LoadProgress($"AssetManager: Generated {_loadedTypes.Count} types", 2, 2));
+        AssemblyManager.LoadTypes(LoadedTypes);
+        progress?.Report(new LoadProgress($"AssetManager: Generated {TypeTreeNode.Cache.Count} types", 2, 2));
 
         foreach (var (_, file) in LoadedFiles)
         {
@@ -185,7 +175,7 @@ public class AssetManager
                     foreach (var asset in sf.Assets)
                     {
                         if (asset.IsNamedAsset) continue;
-                        var typeTreeRepr = rootTypes[asset.Info.Type.TypeHash];
+                        var typeTreeRepr = LoadedTypes[asset.Info.Type.TypeHash];
                         foreach (var field in typeTreeRepr.SubNodes)
                         {
                             if (field.Name == "m_Name")
@@ -218,8 +208,9 @@ public class AssetManager
         var path = streamingInfo.path.Split('/')[^1];
         if (LoadedFiles.TryGetValue(path, out IFile? file))
         {
-            if (file is IReader reader)
+            if (file is IReaderProvider readerProvider)
             {
+                var reader = readerProvider.CreateReader();
                 reader.Seek((long)streamingInfo.offset);
                 return reader.ReadBytes((int)streamingInfo.size);
             }
@@ -231,9 +222,9 @@ public class AssetManager
     public void Clear()
     {
         LoadedAssets = new();
-        _loadedTypes = new();
+        LoadedTypes = new();
         VirtualFileToFileMap = new();
-        LoadedFiles = new();
+        LoadedFiles = new Dictionary<string, IFile>().ToFrozenDictionary();
         Version = null;
         BuildTarget = null;
         
@@ -243,7 +234,7 @@ public class AssetManager
         TypeTreeRepr.Cache = new();
         TpkUnityTreeNodeFactory.Deinit();
         AssemblyManager.CleanCache();
-        BlockStream.Cache.Reset(Setting.DefaultBlockCacheSize);
-        BlockStream.AssetToBlockCache = new();
+        BlockReader.Cache.Reset(Setting.DefaultBlockCacheSize);
+        BlockReader.AssetToBlockCache = new();
     }
 }

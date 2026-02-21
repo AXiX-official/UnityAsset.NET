@@ -1,9 +1,7 @@
 ﻿using System.Text;
 using UnityAsset.NET.Enums;
-using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
-using UnityAsset.NET.TypeTree;
 using static UnityAsset.NET.Enums.SerializedFileFormatVersion;
 
 namespace UnityAsset.NET.Files.SerializedFiles;
@@ -16,12 +14,13 @@ public sealed class SerializedType
     public Hash128? ScriptIdHash;
     public Hash128 TypeHash;
     public bool IsRefType;
-    public List<TypeTreeNode> Nodes;
+    public TypeTreeNode[] Nodes;
     public byte[]? StringBufferBytes;
     public int[]? TypeDependencies;
     public SerializedTypeReference? TypeReference;
+    public bool IsNamed;
     
-    public SerializedType(Int32 typeId, bool isStrippedType, Int16 scriptTypeIndex, Hash128? scriptIdHash, Hash128 typeHash, bool isRefType, List<TypeTreeNode> nodes, byte[]? stringBufferBytes, int[]? typeDependencies, SerializedTypeReference? typeReference)
+    public SerializedType(Int32 typeId, bool isStrippedType, Int16 scriptTypeIndex, Hash128? scriptIdHash, Hash128 typeHash, bool isRefType, TypeTreeNode[] nodes, byte[]? stringBufferBytes, int[]? typeDependencies, SerializedTypeReference? typeReference)
     {
         TypeID = typeId;
         IsStrippedType = isStrippedType;
@@ -29,7 +28,7 @@ public sealed class SerializedType
         ScriptIdHash = scriptIdHash;
         TypeHash = typeHash;
         IsRefType = isRefType;
-        Nodes = TypeTreeNode.Cache.GetOrAdd(typeHash, nodes);
+        (Nodes, IsNamed) = TypeTreeNode.GetOrAdd(typeHash, (nodes, typeId));
         StringBufferBytes = stringBufferBytes;
         TypeDependencies = typeDependencies;
         TypeReference = typeReference;
@@ -47,7 +46,7 @@ public sealed class SerializedType
             scriptIdHash = new Hash128(reader); 
         }
         var typeHash = new Hash128(reader);
-        List<TypeTreeNode> nodes = new List<TypeTreeNode>();
+        TypeTreeNode[] nodes = [];
         byte[]? stringBufferBytes = null;
         int[]? typeDependencies = null;
         SerializedTypeReference? typeReference = null;
@@ -55,7 +54,7 @@ public sealed class SerializedType
         {
             int typeTreeNodeCount = reader.ReadInt32();
             int stringBufferLen = reader.ReadInt32();
-            nodes = reader.ReadList(typeTreeNodeCount, TypeTreeNode.Parse);
+            nodes = reader.ReadArray(typeTreeNodeCount, TypeTreeNode.Parse);
             stringBufferBytes = reader.ReadBytes(stringBufferLen);
             MemoryReader sr = new MemoryReader(stringBufferBytes);
             for (int i = 0; i < typeTreeNodeCount; i++)
@@ -141,7 +140,7 @@ public sealed class SerializedType
         sb.AppendFormat("ScriptIdHash: {0} | ", ScriptIdHash?.ToString() ?? "null");
         sb.AppendFormat("TypeHash: {0} | ", TypeHash);
         sb.AppendFormat("IsRefType: {0} | ", IsRefType);
-        sb.AppendFormat("Nodes: {0} | ", Nodes.Count);
+        sb.AppendFormat("Nodes: {0} | ", Nodes.Length);
         sb.AppendFormat("StringBufferBytes: {0} | ", StringBufferBytes?.Length ?? 0);
         sb.AppendFormat("TypeDependencies: {0} | ", TypeDependencies?.Length ?? 0);
         sb.AppendFormat("TypeReference: {0} | ", TypeReference);
@@ -154,7 +153,7 @@ public sealed class SerializedType
     
     public string ToTypeName()
     {
-        if (Nodes.Count == 0)
+        if (Nodes.Length == 0)
             return ((AssetClassID)TypeID).ToString();
         return Nodes[0].Type;
     }

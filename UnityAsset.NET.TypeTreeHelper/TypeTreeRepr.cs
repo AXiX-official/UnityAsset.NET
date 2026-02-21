@@ -11,7 +11,7 @@ public class TypeTreeRepr : IEquatable<TypeTreeRepr>
     public readonly TypeTreeRepr[] SubNodes;
     
     public bool RequiresAlign { get; }
-    
+    public bool IsNamed { get; }
     public int Hash { get; }
 
     private TypeTreeRepr(string name, string typeName, TypeTreeRepr[] subNodes, bool requiresAlign)
@@ -20,6 +20,7 @@ public class TypeTreeRepr : IEquatable<TypeTreeRepr>
         TypeName = typeName;
         SubNodes = subNodes;
         RequiresAlign = requiresAlign;
+        IsNamed = subNodes.Any(x => x.Name == "m_Name");
         
         if (TypeName == "map")
             RequiresAlign |= SubNodes[0].SubNodes[1].RequiresAlign;
@@ -84,17 +85,5 @@ public class TypeTreeRepr : IEquatable<TypeTreeRepr>
         } 
         
         return true;
-    }
-
-    public static bool operator ==(TypeTreeRepr? left, TypeTreeRepr? right)
-    {
-        if (left is null) 
-            return right is null; 
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(TypeTreeRepr? left, TypeTreeRepr? right)
-    {
-        return !(left == right);
     }
 }

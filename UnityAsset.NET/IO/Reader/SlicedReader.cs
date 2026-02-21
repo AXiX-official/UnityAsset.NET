@@ -6,6 +6,7 @@ public class SlicedReader : IReader
 {
     protected readonly IReader BaseReader;
     private readonly ulong _offset;
+    public static Exception OutOfRange = new Exception("Trying to read beyond slice range.");
 
     # region ISeek
     public long Position
@@ -31,70 +32,77 @@ public class SlicedReader : IReader
     public byte ReadByte()
     {
         if (Position + 1 > Length)
-            throw new ArgumentOutOfRangeException(nameof(_offset));
+            throw OutOfRange;
         return BaseReader.ReadByte();
     }
 
     public byte[] ReadBytes(int count)
     {
         if (Position + count > Length)
-            throw new ArgumentOutOfRangeException(nameof(_offset));
+            throw OutOfRange;
         return BaseReader.ReadBytes(count);
+    }
+
+    public void ReadExactly(Span<byte> buffer)
+    {
+        if (Position + buffer.Length > Length)
+            throw OutOfRange;
+        BaseReader.ReadExactly(buffer);
     }
 
     public short ReadInt16()
     {
         if (Position + 2 > Length)
-            throw new ArgumentOutOfRangeException(nameof(_offset));
+            throw OutOfRange;
         return BaseReader.ReadInt16();
     }
 
     public ushort ReadUInt16()
     {
         if (Position + 2 > Length)
-            throw new ArgumentOutOfRangeException(nameof(_offset));
+            throw OutOfRange;
         return BaseReader.ReadUInt16();
     }
 
     public int ReadInt32()
     {
         if (Position + 4 > Length)
-            throw new ArgumentOutOfRangeException(nameof(_offset));
+            throw OutOfRange;
         return BaseReader.ReadInt32();
     }
 
     public uint ReadUInt32()
     {
         if (Position + 4 > Length)
-            throw new ArgumentOutOfRangeException(nameof(_offset));
+            throw OutOfRange;
         return BaseReader.ReadUInt32();
     }
 
     public long ReadInt64()
     {
         if (Position + 8 > Length)
-            throw new ArgumentOutOfRangeException(nameof(_offset));
+            throw OutOfRange;
         return BaseReader.ReadInt64();
     }
 
     public ulong ReadUInt64()
     {
         if (Position + 8 > Length)
-            throw new ArgumentOutOfRangeException(nameof(_offset));
+            throw OutOfRange;
         return BaseReader.ReadUInt64();
     }
 
     public float ReadSingle()
     {
         if (Position + 4 > Length)
-            throw new ArgumentOutOfRangeException(nameof(_offset));
+            throw OutOfRange;
         return BaseReader.ReadSingle();
     }
 
     public double ReadDouble()
     {
         if (Position + 8 > Length)
-            throw new ArgumentOutOfRangeException(nameof(_offset));
+            throw OutOfRange;
         return BaseReader.ReadDouble();
     }
 
@@ -102,7 +110,7 @@ public class SlicedReader : IReader
     {
         var str = BaseReader.ReadNullTerminatedString();
         if (Position + str.Length + 1 > Length)
-            throw new ArgumentOutOfRangeException(nameof(_offset));
+            throw OutOfRange;
         return str;
     }
     
@@ -113,25 +121,20 @@ public class SlicedReader : IReader
         Length = (long)length;
         BaseReader.Position = (long)_offset;
     }
-
-    public void Dispose()
-    {
-        BaseReader.Dispose();
-    }
 }
 
 public class SlicedReaderProvider : IReaderProvider
 {
-    protected readonly IReaderProvider BaseReaderProvider;
-    protected readonly ulong Start;
-    protected readonly ulong Length;
+    public readonly IReaderProvider BaseReaderProvider;
+    public readonly ulong Offset;
+    public readonly ulong Length;
     
-    public SlicedReaderProvider(IReaderProvider readerProvider, ulong start, ulong length)
+    public SlicedReaderProvider(IReaderProvider readerProvider, ulong offset, ulong length)
     {
         BaseReaderProvider = readerProvider;
-        Start = start;
+        Offset = offset;
         Length = length;
     }
 
-    public IReader CreateReader(Endianness endian) => new SlicedReader(BaseReaderProvider, Start, Length, endian);
+    public IReader CreateReader(Endianness endian) => new SlicedReader(BaseReaderProvider, Offset, Length, endian);
 }

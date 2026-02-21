@@ -1,6 +1,6 @@
 using UnityAsset.NET.IO;
 using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
-using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.TypeTreeHelper;
 
 namespace UnityAsset.NET.TypeTree.PreDefined.Types;
 
@@ -13,9 +13,9 @@ public class MonoBehaviour : IMonoBehaviour
     public string m_Name { get; }
     public NodeData NodeData { get; }
 
-    public MonoBehaviour(IReader reader, List<TypeTreeNode> nodes)
+    public MonoBehaviour(IReader reader, TypeTreeRepr typeTree)
     {
-        NodeData = new NodeData(reader, nodes, nodes[0]);
+        NodeData = new NodeData(reader, typeTree);
         var @class = NodeData.As<Dictionary<string, NodeData>>();
         var m_GameObjectClass = @class["m_GameObject"].As<Dictionary<string, NodeData>>();
         m_GameObject = new PPtr<GameObject>(

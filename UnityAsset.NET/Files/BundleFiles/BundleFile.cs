@@ -4,9 +4,9 @@ using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files.BundleFiles;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.FileSystem;
+using UnityAsset.NET.FileSystem.DirectFileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
-using UnityAsset.NET.IO.Stream;
 
 namespace UnityAsset.NET.Files;
 
@@ -15,27 +15,27 @@ public class BundleFile : IFile
     /// <summary>
     /// BundleFile's Header
     /// </summary>
-    public Header? Header;
+    public readonly Header? Header;
     /// <summary>
     /// Blocks and Cab info
     /// </summary>
-    public BlocksAndDirectoryInfo? DataInfo;
+    public readonly BlocksAndDirectoryInfo? DataInfo;
     /// <summary>
     /// SerializedFiles and BinaryData
     /// </summary>
-    public List<FileWrapper> Files;
+    public readonly List<FileWrapper> Files;
     /// <summary>
     /// Optional UnityCN encryption data
     /// </summary>
-    public UnityCN? UnityCnInfo;
+    public readonly UnityCN? UnityCnInfo;
     /// <summary>
     /// Optional key for UnityCN encryption
     /// </summary>
-    public string? UnityCnKey;
+    public readonly string? UnityCnKey;
 
     public uint? Crc32;
     
-    public IVirtualFile? SourceVirtualFile { get; private set; }
+    public IVirtualFileInfo? SourceVirtualFile { get; private set; }
 
     public static UnityCN? ParseUnityCnInfo(IReader reader, Header header, string? key)
     {
@@ -54,15 +54,9 @@ public class BundleFile : IFile
 
     public static void AlignAfterHeader(IReader reader, Header header)
     {
-        if (header.Version >= 7)
+        if (header.Version >= 7 || header.UnityRevision is {Major: 2019, Minor: 4, Patch: >= 15})
         {
             reader.Align(16);
-        } else { // temp fix for 2019.4.x
-            var version = header.UnityRevision;
-            if (version.Major == 2019 && version.Minor == 4 && version.Patch >= 30)
-            {
-                reader.Align(16);
-            }
         }
     }
 
@@ -92,19 +86,6 @@ public class BundleFile : IFile
             reader.Align(16);
         return dataInfo;
     }
-    
-    // crc calculate disabled
-    public static (List<FileWrapper>, uint?) LazyParseFiles(SlicedReaderProvider readerProvider, BlocksAndDirectoryInfo dataInfo, UnityCN? unityCnInfo = null)
-    {
-        var blockStreamProvider = new BlockStreamProvider(dataInfo.BlocksInfo, readerProvider, unityCnInfo);
-        var files = new List<FileWrapper>();
-        foreach (var dir in dataInfo.DirectoryInfo.AsReadOnlySpan())
-        {
-            files.Add(new FileWrapper(new CustomStreamReaderProvider(new FileEntryStreamProvider(blockStreamProvider, dir)), dir));
-        }
-
-        return (files, null);
-    }
 
     public BundleFile(Header header, BlocksAndDirectoryInfo dataInfo, List<FileWrapper> files, string? key = null)
     {
@@ -125,12 +106,12 @@ public class BundleFile : IFile
     /// <param name="key">Optional decryption key</param>
     /// <param name="lazyLoad"></param>
     public BundleFile(string path, string? key = null, bool lazyLoad = true)
-        : this(new FileStreamProvider(path), key, lazyLoad) {}
+        : this(new DirectFileInfo(path), key, lazyLoad) {}
     
-    public BundleFile(IStreamProvider streamProvider, string? key = null, bool lazyLoad = true)
+    public BundleFile(IVirtualFileInfo fileInfo, string? key = null, bool lazyLoad = true)
     {
-        var csProvider = new CustomStreamReaderProvider(streamProvider);
-        using var reader = csProvider.CreateReader();
+        var cfrProvider = new CustomFileReaderProvider(fileInfo);
+        var reader = cfrProvider.CreateReader();
         UnityCnKey = key;
         Header = Header.Parse(reader);
         if (Header.UnityRevision == "0.0.0")
@@ -141,17 +122,20 @@ public class BundleFile : IFile
         AlignAfterHeader(reader, Header);
         DataInfo = ParseDataInfo(reader, Header);
         
-        var readerProvider = new SlicedReaderProvider(csProvider, (ulong)reader.Position,
-            (ulong)(reader.Length - reader.Position));
-        (Files, Crc32) = LazyParseFiles(readerProvider, DataInfo, UnityCnInfo);
+        var blockReaderProvider = new BlockReaderProvider(DataInfo.BlocksInfo, new SliceFile(fileInfo.GetFile(), (ulong)reader.Position,
+            (ulong)(reader.Length - reader.Position)), UnityCnInfo);
+        Files = new List<FileWrapper>();
+        foreach (var dir in DataInfo.DirectoryInfo)
+        {
+            Files.Add(new FileWrapper(new SlicedReaderProvider(blockReaderProvider, dir.Offset, dir.Size), dir));
+        }
 
         if (!lazyLoad)
         {
             ParseFilesWithTypeConversion();
         }
 
-        if (streamProvider is IVirtualFile file)
-            SourceVirtualFile = file;
+        SourceVirtualFile = fileInfo;
     }
 
     public void ParseFilesWithTypeConversion()

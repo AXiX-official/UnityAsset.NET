@@ -22,7 +22,7 @@ public class AssetFileInfo
         Type = type;
     }
 
-    public static AssetFileInfo Parse(IReader reader, SerializedFileFormatVersion version, List<SerializedType> types)
+    public static AssetFileInfo Parse(IReader reader, SerializedFileFormatVersion version, SerializedType[] types)
     {
         reader.Align(4);
         var pathId = reader.ReadInt64();
@@ -30,7 +30,7 @@ public class AssetFileInfo
             reader.ReadUInt64() : reader.ReadUInt32();
         var byteSize = reader.ReadUInt32();
         var typeIdOrIndex = reader.ReadInt32();
-        if (typeIdOrIndex >= types.Count)
+        if (typeIdOrIndex >= types.Length)
             throw new IndexOutOfRangeException("TypeIndex is larger than type tree count!");
         var type = types[typeIdOrIndex];
         return new AssetFileInfo(pathId, byteOffset, byteSize, typeIdOrIndex, type);

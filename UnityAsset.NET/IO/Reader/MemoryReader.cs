@@ -10,6 +10,13 @@ public class MemoryReader : IReader
     private int _position;
     private int _length;
 
+    public MemoryReader(byte[] data, int position = 0, Endianness endian = Endianness.BigEndian)
+    {
+        _data = data;
+        _position = position;
+        _length = data.Length;
+        Endian = endian;
+    }
     public MemoryReader(Memory<byte> data, int position = 0, Endianness endian = Endianness.BigEndian)
     {
         _data = data;
@@ -54,6 +61,12 @@ public class MemoryReader : IReader
         return span;
     }
     public byte[] ReadBytes(int count) => ReadReadOnlySpanBytes(count).ToArray();
+
+    public void ReadExactly(Span<byte> buffer)
+    {
+        var span = ReadReadOnlySpanBytes(buffer.Length);
+        span.CopyTo(buffer);
+    }
     public Int16 ReadInt16()
     {
         return Endian == Endianness.BigEndian 
@@ -116,9 +129,4 @@ public class MemoryReader : IReader
     
     // TEMPORARY: make it writable 
     public Span<byte> AsWritableSpan => _data.Span;
-
-    public void Dispose()
-    {
-        
-    }
 }

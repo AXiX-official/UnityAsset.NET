@@ -13,15 +13,13 @@ public static class SerializedFileExtensions
             { 
                 var assetBundle = (IAssetBundle)asset.Value;
                 
-                sf.PreloadTable = assetBundle.m_PreloadTable;
-        
                 foreach (var (container, assetInfo) in assetBundle.m_Container)
                 {
                     var preloadIndex = assetInfo.preloadIndex;
                     var preloadSize = assetInfo.preloadSize;
                     for (int i = preloadIndex; i < preloadIndex + preloadSize; i++)
                     {
-                        var pptr = sf.PreloadTable[i];
+                        var pptr = assetBundle.m_PreloadTable[i];
                         sf.Containers[pptr.m_PathID] = container;
                     }
                 }

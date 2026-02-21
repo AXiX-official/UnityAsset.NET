@@ -1,11 +1,9 @@
-﻿using System.Buffers.Binary;
-using System.Text;
+﻿using System.Text;
 using UnityAsset.NET.Enums;
-using UnityAsset.NET.Files;
 
 namespace UnityAsset.NET.IO;
 
-public interface IReader : ISeek, IDisposable
+public interface IReader : ISeek
 {
     # region ISeek
 
@@ -34,6 +32,7 @@ public interface IReader : ISeek, IDisposable
     public byte ReadByte();
     public sbyte ReadSByte() => (sbyte)ReadByte();
     public byte[] ReadBytes(int count);
+    public void ReadExactly(Span<byte> buffer);
     public bool ReadBoolean() => ReadByte() != 0;
     public sbyte ReadInt8() => (sbyte)ReadByte();
     public byte ReadUInt8() => ReadByte();

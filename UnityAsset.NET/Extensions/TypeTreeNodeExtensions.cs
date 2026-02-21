@@ -20,23 +20,22 @@ public static class TypeTreeNodeExtensions
         throw new IndexOutOfRangeException();
     }
     
-    public static List<TypeTreeNode> Children(this TypeTreeNode current, List<TypeTreeNode> nodes)
+    public static List<TypeTreeNode> Children(this TypeTreeNode current, TypeTreeNode[] nodes)
     {
-        var nodesSpan = nodes.AsReadOnlySpan();
-        if ((int)current.Index + 1 >= nodesSpan.Length || nodesSpan[(int)current.Index + 1].Level <= current.Level)
+        if ((int)current.Index + 1 >= nodes.Length || nodes[(int)current.Index + 1].Level <= current.Level)
             return new();
         var children = new List<TypeTreeNode>();
-        for (int i = (int)current.Index + 1; i < nodesSpan.Length; i++)
+        for (int i = (int)current.Index + 1; i < nodes.Length; i++)
         {
-            if (nodesSpan[i].Level <= current.Level)
+            if (nodes[i].Level <= current.Level)
                 break;
-            if (nodesSpan[i].Level == current.Level + 1)
-                children.Add(nodesSpan[i]);
+            if (nodes[i].Level == current.Level + 1)
+                children.Add(nodes[i]);
         }
         return children;
     }
     
-    public static TypeTreeRepr ToTypeTreeRepr(this TypeTreeNode current, List<TypeTreeNode> nodes)
+    public static TypeTreeRepr ToTypeTreeRepr(this TypeTreeNode current, TypeTreeNode[] nodes)
     {
         if (String.IsNullOrEmpty(current.Type) || String.IsNullOrEmpty(current.Name))
             throw new Exception("Type/Name is empty");
