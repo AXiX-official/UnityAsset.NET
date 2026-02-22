@@ -5,13 +5,6 @@
 [![MIT](https://img.shields.io/github/license/AXiX-official/UnityAsset.NET)](https://github.com/AXiX-official/UnityAsset.NET/master/LICENSE)
 [![NuGet Stats](https://img.shields.io/nuget/v/UnityAsset.NET.svg)](https://www.nuget.org/packages/UnityAsset.NET)
 
-> 🚨 Major Breaking Changes in v0.2.0 🚨
->
-> This version introduces a complete, low-level refactoring with major breaking changes.
-> The API is not compatible with older versions (v0.1.x). 
-> This update aims to build a foundation that is more performant, type-safe, and provides a cleaner API.
-> Please read the notes below carefully before upgrading.
-
 A .NET library undergoing active refactoring, currently focused on high-performance parsing and reading of Unity Engine asset files.
 
 Only support Unity 2017.x or later.
@@ -72,7 +65,6 @@ Setting.DefaultUnityVerion = "2020.3.48f1"
 
 ## Roadmap
 
-- [ ] v0.3: More Asset Class Interface.
 - [ ] v0.4: Re-architect and re-implement a robust and flexible serialization API.
 - [ ] v0.5: Re-introduce patching capabilities based on the new object model.
 
