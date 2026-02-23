@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
@@ -31,5 +31,22 @@ public class StreamingInfo  : IPreDefinedObject
         root.Children.Add(new AssetNode { Name = "size", TypeName = "unsigned int", Value = this.size });
         root.Children.Add(new AssetNode { Name = "path", TypeName = "string", Value = this.path });
         return root;
+    }
+
+    public bool TryGetData(AssetManager mgr, [NotNullWhen(true)]out TypelessData? data)
+    {
+        data = null;
+        var filePath = path.Split("/")[^1];
+        if (mgr.LoadedFiles.TryGetValue(filePath, out var file))
+        {
+            if (file is IReaderProvider rp)
+            {
+                var reader = rp.CreateReader();
+                reader.Position = (long)offset;
+                data = new TypelessData((int)size, reader.ReadBytes((int)size));
+                return true;
+            }
+        }
+        return false;
     }
 }

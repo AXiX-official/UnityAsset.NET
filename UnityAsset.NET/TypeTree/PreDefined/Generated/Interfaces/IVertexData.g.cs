@@ -17,7 +17,7 @@ namespace UnityAsset.NET.TypeTree.PreDefined.Interfaces
         }
 
         public uint m_VertexCount { get; }
-        public IChannelInfo[] m_Channels { get; }
+        public ChannelInfo[] m_Channels { get; }
         public TypelessData m_DataSize { get; }
     }
 }

@@ -13,6 +13,12 @@ public class TypelessData : IPreDefinedObject
         size = reader.ReadInt32();
         data = reader.ReadBytes(size);
     }
+
+    public TypelessData(int size, byte[] data)
+    {
+        this.size = size;
+        this.data = data;
+    }
     
     public AssetNode? ToAssetNode(string name = "Base")
     {

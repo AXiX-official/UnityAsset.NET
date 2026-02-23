@@ -275,6 +275,13 @@ public static class MeshHelper
         
         // ReadVertexData
         var vertexData = mesh.m_VertexData;
+        var dataSize = vertexData.m_DataSize;
+        var streamData = mesh.m_StreamData;
+        if (streamData is not null && streamData.size > 0)
+        {
+            if (streamData.TryGetData(assetManager, out var data))
+                dataSize = data;
+        }
         var streams = vertexData.GetStreams(version!);
         var vertexCount = vertexData.m_VertexCount;
         processedMesh.m_VertexCount = (int)vertexCount;
@@ -305,7 +312,7 @@ public static class MeshHelper
                 for (int d = 0; d < dimension; d++)
                 {
                     var componentOffset = vertexOffset + componentByteSize * d;
-                    Buffer.BlockCopy(vertexData.m_DataSize.data, componentOffset, componentBytes, componentByteSize * (v * dimension + d), componentByteSize);
+                    Buffer.BlockCopy(dataSize.data, componentOffset, componentBytes, componentByteSize * (v * dimension + d), componentByteSize);
                 }
             }
             

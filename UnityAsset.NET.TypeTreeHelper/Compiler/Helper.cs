@@ -58,6 +58,7 @@ public static class Helper
         "Rectf",
         "SecondarySpriteTexture",
         "BoneWeights4",
+        "ChannelInfo",
     ];
 
     public static HashSet<string> NoInterfaceTypes =
@@ -76,6 +77,7 @@ public static class Helper
         "Quaternionf", // workaround
         "Rectf",
         "BoneWeights4",
+        "ChannelInfo",
     ];
 
     public static HashSet<string> IncludedPPTrGenricTypes =
