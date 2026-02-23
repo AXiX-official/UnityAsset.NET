@@ -56,12 +56,12 @@ public class BlockReader : IReader
     public readonly IVirtualFile File;
     private byte[] _buffer = [];
     private ulong _posOffset;
-    private ulong _bufferPos;
     private ulong _bufferSize;
     private int _currentBlockIndex = -1;
-    public readonly UnityCN? _unityCnInfo;
+    private readonly UnityCN? _unityCnInfo;
 
-    private ulong BufferRemaining => _bufferSize - _bufferPos;
+    private ulong BufferPos => (ulong)Position - _posOffset;
+    private ulong BufferRemaining => _bufferSize - BufferPos;
 
     #region Cache
 
@@ -253,7 +253,6 @@ public class BlockReader : IReader
             _bufferSize = block.UncompressedSize;
             _posOffset = block.UncompressedOffset;
         }
-        _bufferPos = (ulong)position - _posOffset;
     }
 
     # region IReader
@@ -262,8 +261,10 @@ public class BlockReader : IReader
 
     public byte ReadByte()
     {
-        EnsureBlockLoaded(Position++);
-        return _buffer[_bufferPos++];
+        EnsureBlockLoaded(Position);
+        var ret = _buffer[BufferPos];
+        Position++;
+        return ret;
     }
 
     public byte[] ReadBytes(int count)
@@ -288,10 +289,9 @@ public class BlockReader : IReader
             var available = (int)BufferRemaining;
             var toCopy = Math.Min(buffer.Length - written, available);
 
-            _buffer.AsSpan((int)_bufferPos, toCopy)
+            _buffer.AsSpan((int)BufferPos, toCopy)
                 .CopyTo(buffer.Slice(written, toCopy));
 
-            _bufferPos += (uint)toCopy;
             Position += (uint)toCopy;
             written += toCopy;
         }
@@ -301,8 +301,7 @@ public class BlockReader : IReader
         EnsureBlockLoaded(Position);
         if (BufferRemaining >= 2)
         {
-            var span = _buffer.AsSpan((int)_bufferPos, 2);
-            _bufferPos += 2;
+            var span = _buffer.AsSpan((int)BufferPos, 2);
             Position += 2;
 
             return Endian == Endianness.BigEndian
@@ -321,8 +320,7 @@ public class BlockReader : IReader
         EnsureBlockLoaded(Position);
         if (BufferRemaining >= 2)
         {
-            var span = _buffer.AsSpan((int)_bufferPos, 2);
-            _bufferPos += 2;
+            var span = _buffer.AsSpan((int)BufferPos, 2);
             Position += 2;
             
             return Endian == Endianness.BigEndian
@@ -341,8 +339,7 @@ public class BlockReader : IReader
         EnsureBlockLoaded(Position);
         if (BufferRemaining >= 4)
         {
-            var span = _buffer.AsSpan((int)_bufferPos, 4);
-            _bufferPos += 4;
+            var span = _buffer.AsSpan((int)BufferPos, 4);
             Position += 4;
 
             return Endian == Endianness.BigEndian
@@ -361,8 +358,7 @@ public class BlockReader : IReader
         EnsureBlockLoaded(Position);
         if (BufferRemaining >= 4)
         {
-            var span = _buffer.AsSpan((int)_bufferPos, 4);
-            _bufferPos += 4;
+            var span = _buffer.AsSpan((int)BufferPos, 4);
             Position += 4;
 
             return Endian == Endianness.BigEndian
@@ -381,8 +377,7 @@ public class BlockReader : IReader
         EnsureBlockLoaded(Position);
         if (BufferRemaining >= 8)
         {
-            var span = _buffer.AsSpan((int)_bufferPos, 8);
-            _bufferPos += 8;
+            var span = _buffer.AsSpan((int)BufferPos, 8);
             Position += 8;
 
             return Endian == Endianness.BigEndian
@@ -401,8 +396,7 @@ public class BlockReader : IReader
         EnsureBlockLoaded(Position);
         if (BufferRemaining >= 8)
         {
-            var span = _buffer.AsSpan((int)_bufferPos, 8);
-            _bufferPos += 8;
+            var span = _buffer.AsSpan((int)BufferPos, 8);
             Position += 8;
 
             return Endian == Endianness.BigEndian
@@ -421,8 +415,7 @@ public class BlockReader : IReader
         EnsureBlockLoaded(Position);
         if (BufferRemaining >= 4)
         {
-            var span = _buffer.AsSpan((int)_bufferPos, 4);
-            _bufferPos += 4;
+            var span = _buffer.AsSpan((int)BufferPos, 4);
             Position += 4;
 
             return Endian == Endianness.BigEndian
@@ -441,8 +434,7 @@ public class BlockReader : IReader
         EnsureBlockLoaded(Position);
         if (BufferRemaining >= 8)
         {
-            var span = _buffer.AsSpan((int)_bufferPos, 8);
-            _bufferPos += 8;
+            var span = _buffer.AsSpan((int)BufferPos, 8);
             Position += 8;
 
             return Endian == Endianness.BigEndian
@@ -460,8 +452,8 @@ public class BlockReader : IReader
     {
         EnsureBlockLoaded(Position);
         
-        var currentBlockRemaining = (int)(_bufferSize - _bufferPos);
-        var span = _buffer.AsSpan((int)_bufferPos, currentBlockRemaining);
+        var currentBlockRemaining = (int)BufferRemaining;
+        var span = _buffer.AsSpan((int)BufferPos, currentBlockRemaining);
         
         int nullIndex = span.IndexOf((byte)0);
         
@@ -469,7 +461,6 @@ public class BlockReader : IReader
         {
             string result = Encoding.UTF8.GetString(span.Slice(0, nullIndex));
             var advance = nullIndex + 1;
-            _bufferPos += (uint)advance;
             Position += advance;
             return result;
         }
@@ -477,11 +468,11 @@ public class BlockReader : IReader
         using var ms = new MemoryStream();
         while (true)
         {
-            if (_bufferPos >= _bufferSize)
+            if (BufferPos >= _bufferSize)
             {
                 EnsureBlockLoaded(Position);
             }
-            byte b = _buffer[_bufferPos++];
+            byte b = _buffer[BufferPos];
             Position++;
             if (b == 0)
                 break;

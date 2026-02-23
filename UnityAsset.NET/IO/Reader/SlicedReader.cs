@@ -22,10 +22,6 @@ public class SlicedReader : IReader
         set => BaseReader.Endian = value;
     }
     
-    void IReader.Align(uint alignment)
-    {
-        BaseReader.Align(alignment);
-    }
     # endregion
     
     
