@@ -26,14 +26,12 @@ public class SerializedTypeReference
         reader.ReadNullTerminatedString()
     );
 
-    /*public void Serialize(IWriter writer)
+    public void Serialize(IWriter writer)
     {
         writer.WriteNullTerminatedString(ClassName);
         writer.WriteNullTerminatedString(Namespace);
         writer.WriteNullTerminatedString(AsmName);
     }
-    
-    public long SerializeSize => 3 + ClassName.Length + Namespace.Length + AsmName.Length;*/
 
     public override string ToString()
     {

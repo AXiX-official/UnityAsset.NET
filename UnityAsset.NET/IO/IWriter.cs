@@ -28,7 +28,7 @@ public interface IWriter : ISeek
     public void WriteSByte(sbyte value) => WriteByte((byte)value);
     public void WriteBytes(ReadOnlySpan<byte> bytes);
     public ulong WriteBytes(IReader reader);
-    private void WriteBytes(byte value, ulong count)
+    public void WriteBytes(byte value, ulong count)
     {
         for (ulong i = 0; i < count; i++)
             WriteByte(value);
@@ -122,13 +122,18 @@ public interface IWriter : ISeek
     }
     public void WriteListWithAlign<T>(List<T> list, Action<IWriter, T> writer, bool requiresAlign) =>
         WriteListWithAlign(list.Count, list, writer, requiresAlign);
+    public void WriteArray<T>(T[] array, Action<IWriter, T> writer)
+    {
+        foreach (var item in array)
+            writer(this, item);
+    }
     public void WriteArray<T>(int count, T[] array, Action<IWriter, T> writer)
     {
         WriteInt32(count);
         foreach (var item in array)
             writer(this, item);
     }
-    public void WriteArray<T>(T[] array, Action<IWriter, T> writer) => WriteArray(array.Length, array, writer);
+    public void WriteArrayWithCount<T>(T[] array, Action<IWriter, T> writer) => WriteArray(array.Length, array, writer);
     public void WriteArrayWithAlign<T>(int count, T[] array, Action<IWriter, T> writer, bool requiresAlign)
     {
         WriteInt32(count);

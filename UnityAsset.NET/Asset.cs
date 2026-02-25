@@ -13,7 +13,7 @@ public class Asset : IEquatable<Asset>
     private readonly Lock _lock = new();
     public bool IsNamedAsset;
 
-    private AssetReader DataReader
+    public AssetReader DataReader
     {
         get
         {

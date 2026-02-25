@@ -262,7 +262,8 @@ public class BlockReader : IReader
     public int Read(Span<byte> buffer, int offset, int count)
     {
         int written = 0;
-        while (written < buffer.Length - offset && ((IReader)this).Remaining > 0)
+        var bytesLimit = Math.Min(count, buffer.Length - offset);
+        while (written < bytesLimit && ((IReader)this).Remaining > 0)
         {
             EnsureBlockLoaded(Position);
 

@@ -94,7 +94,7 @@ public sealed class SerializedType
         return offset.ToString();
     }
 
-    /*public void Serialize(IWriter writer, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
+    public void Serialize(IWriter writer, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
         writer.WriteInt32(TypeID);
         writer.WriteBoolean(IsStrippedType);
@@ -103,18 +103,18 @@ public sealed class SerializedType
             (isRefType && ScriptTypeIndex > 0))
             ScriptIdHash?.Serialize(writer);
         TypeHash.Serialize(writer);
-        if (Nodes == null || StringBufferBytes == null)
-            throw new NullReferenceException("Nodes or StringBufferBytes is null");
         if (typeTreeEnabled)
         {
-            writer.WriteInt32(Nodes.Count);
+            if (Nodes == null || StringBufferBytes == null)
+                throw new NullReferenceException("Nodes or StringBufferBytes is null");
+            writer.WriteInt32(Nodes.Length);
             writer.WriteInt32(StringBufferBytes.Length);
-            writer.WriteList(Nodes, (w, node) => node.Serialize(w));
+            writer.WriteArray(Nodes, (w, node) => node.Serialize(w));
             writer.WriteBytes(StringBufferBytes);
             if (version >= StoresTypeDependencies)
             {
                 if (!isRefType && TypeDependencies != null)
-                    writer.WriteIntArrayWithCount(TypeDependencies);
+                    writer.WriteArrayWithCount(TypeDependencies, (w, i) => w.WriteInt32(i));
                 else if(TypeReference != null)
                     TypeReference.Serialize(writer);
                 else
@@ -123,13 +123,6 @@ public sealed class SerializedType
         }
     }
 
-    public long SerializeSize => 39 + 
-                                 (Nodes == null || StringBufferBytes == null 
-                                     ? 0 
-                                     : 8 + Nodes.Sum(n => n.SerializeSize) + StringBufferBytes.Length
-                                     + (TypeDependencies == null ? 0 : 4 + TypeDependencies.Length)
-                                     + (TypeReference == null ? 0 : 4 + TypeReference.SerializeSize));
-    */
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();

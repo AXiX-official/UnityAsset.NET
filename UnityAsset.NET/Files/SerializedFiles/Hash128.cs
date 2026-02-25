@@ -64,5 +64,5 @@ public struct Hash128 : IEquatable<Hash128>
         return BitConverter.ToInt32(data, 0);
     }
     
-    //public void Serialize(IWriter writer) => writer.WriteBytes(data);
+    public void Serialize(IWriter writer) => writer.WriteBytes(data);
 }

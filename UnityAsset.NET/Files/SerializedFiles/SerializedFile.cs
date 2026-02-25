@@ -2,6 +2,7 @@
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
+using UnityAsset.NET.IO.Writer;
 
 namespace UnityAsset.NET.Files.SerializedFiles;
 
@@ -84,37 +85,34 @@ public sealed class SerializedFile : IFile
         }
     }
     
-    /*public void Serialize(IWriter writer)
+    public void Serialize(IWriter writer)
     {
-        if (writer is MemoryBinaryIO mbio)
-            mbio.EnsureCapacity((int)SerializeSize);
+        var pos = writer.Position;
         Header.Serialize(writer);
         writer.Endian = Header.Endianness;
         Metadata.Serialize(writer, Header.Version);
-        writer.Seek((int)Header.DataOffset);
-        var assetsSpan = Assets.AsSpan();
-        assetsSpan.Sort((a, b) => a.Info.ByteOffset.CompareTo(b.Info.ByteOffset));
-        foreach (var asset in assetsSpan)
+        var assets = new List<Asset>(Assets);
+        assets.Sort((a, b) => a.Info.ByteOffset.CompareTo(b.Info.ByteOffset));
+        foreach (var asset in assets)
         {
-            writer.Seek((int)(Header.DataOffset + asset.Info.ByteOffset));
-            asset.RawData.Position = 0;
-            writer.WriteBytes(asset.RawData.ReadBytes((int)asset.RawData.Length));
+            var assetOffset = Header.DataOffset + asset.Info.ByteOffset;
+            var bytesToSkip = (ulong)pos + assetOffset - (ulong)writer.Position;
+            writer.WriteBytes(0, bytesToSkip);
+            writer.WriteBytes(asset.DataReader);
         }
+    }
+    
+    public void Serialize(Stream output, bool leaveOpen = true)
+    {
+        using var writer = new CustomStreamWriter(output, leaveOpen: leaveOpen);
+        Serialize(writer);
     }
     
     public void Serialize(string path)
     {
-        using FileStreamWriter fsw = new FileStreamWriter(path);
-        Serialize(fsw);
+        using var output = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+        Serialize(output, false);
     }
-
-    public long SerializeSize
-    {
-        get {
-            var lastAssetInfo = Metadata.AssetInfos.MaxBy(info => info.ByteOffset);
-            return (long)(Header.DataOffset + lastAssetInfo.ByteOffset + lastAssetInfo.ByteSize);
-        }
-    }*/
 
     public override string ToString()
     {

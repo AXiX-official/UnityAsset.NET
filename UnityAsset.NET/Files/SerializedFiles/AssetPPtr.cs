@@ -22,14 +22,12 @@ public class AssetPPtr
         return new AssetPPtr(fileId, pathId);
     }
 
-    /*public void Serialize(IWriter writer)
+    public void Serialize(IWriter writer)
     {
         writer.WriteInt32(FileId);
         writer.Align(4);
         writer.WriteInt64(PathId);
     }
-
-    public long SerializeSize => 16;*/
 
     public override string ToString()
     {

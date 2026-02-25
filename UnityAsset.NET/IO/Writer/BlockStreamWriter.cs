@@ -13,13 +13,15 @@ public abstract class BlockStreamWriter : IWriter, IDisposable
     protected readonly int ChunkSize;
     protected Stream Stream;
     private bool _finished;
-    public List<StorageBlockInfo> BlockInfos = new();
+    public readonly List<StorageBlockInfo> BlockInfos = new();
+    private long _alignBeginOffset;
     
     protected BlockStreamWriter(CompressionType compressionType, int chunkSize)
     {
         CompressionType = compressionType;
         ChunkSize = chunkSize;
         Stream = new MemoryStream();
+        Endian = Endianness.BigEndian;
     }
 
     public static BlockStreamWriter GetBlockWriter(CompressionType compressionType)
@@ -34,14 +36,28 @@ public abstract class BlockStreamWriter : IWriter, IDisposable
             _ => throw new ArgumentOutOfRangeException(nameof(compressionType), compressionType, null)
         };
     }
+
+    public void SetAlignBegin()
+    {
+        _alignBeginOffset = Position;
+    }
     
     # region ISeek
-    public long Position
+    public virtual long Position
     {
         get => throw new NotImplementedException();
         set => throw new NotImplementedException();
     }
     public long Length => throw new NotImplementedException();
+    void IWriter.Align(uint alignment)
+    {
+        var offset = (Position - _alignBeginOffset) % alignment;
+        if (offset != 0)
+        {
+            var step = alignment - offset;
+            ((IWriter)this).WriteBytes(0, (ulong)step);
+        }
+    }
     # endregion
     
     # region IWriter
@@ -82,7 +98,13 @@ public class NoneCompressionBlockStreamWriter : BlockStreamWriter
     {
         
     }
-    
+
+    public override long Position
+    {
+        get => Stream.Position;
+        set => throw new NotImplementedException();
+    }
+
     public override void WriteByte(byte value)
     {
         Stream.WriteByte(value);
@@ -98,10 +120,11 @@ public class NoneCompressionBlockStreamWriter : BlockStreamWriter
     public override ulong WriteBytes(IReader reader)
     {
         var pos = Stream.Position;
-        var tempBuffer = new byte[8196];
+        var bufferLength = Math.Min(8196, reader.Length);
+        var tempBuffer = new byte[bufferLength];
         while (reader.Remaining > 0)
         {
-            var bytesRead = reader.Read(tempBuffer, 0, 8196);
+            var bytesRead = reader.Read(tempBuffer, 0, (int)bufferLength);
             Stream.Write(tempBuffer, 0, bytesRead);
             CheckMemoryLimit();
         }
@@ -141,10 +164,17 @@ public class Lz4CompressionBlockStreamWriter : BlockStreamWriter
     private readonly byte[] _buffer;
     private int _bufferPos;
     private int BuffRemaining => ChunkSize - _bufferPos;
+    private long _position;
     public Lz4CompressionBlockStreamWriter(CompressionType compressionType, int chunkSize)
         : base(compressionType, chunkSize)
     {
         _buffer = new byte[ChunkSize];
+    }
+    
+    public override long Position
+    {
+        get => _position;
+        set => throw new NotImplementedException();
     }
     
     public override void WriteByte(byte value)
@@ -152,6 +182,7 @@ public class Lz4CompressionBlockStreamWriter : BlockStreamWriter
         if (BuffRemaining == 0)
             FlushBlock();
         _buffer[_bufferPos++] = value;
+        _position++;
     }
 
     public override void WriteBytes(ReadOnlySpan<byte> bytes)
@@ -173,6 +204,7 @@ public class Lz4CompressionBlockStreamWriter : BlockStreamWriter
                 FlushBlock();
             }
         }
+        _position += bytes.Length;
     }
 
     public override ulong WriteBytes(IReader reader)
@@ -181,6 +213,7 @@ public class Lz4CompressionBlockStreamWriter : BlockStreamWriter
         while (reader.Remaining > 0)
         {
             var bytesRead = reader.Read(_buffer, _bufferPos, BuffRemaining);
+            _position += bytesRead;
             _bufferPos += bytesRead;
             totalBytesRead += (uint)bytesRead;
             
@@ -239,10 +272,17 @@ public class LzmaCompressionBlockStreamWriter : BlockStreamWriter
     private Stream _bufferStream;
     private long BuffRemaining => ChunkSize - _bufferStream.Position;
     private bool _isBufferInMemory = true;
+    private long _position;
     public LzmaCompressionBlockStreamWriter(CompressionType compressionType, int chunkSize)
         : base(compressionType, chunkSize)
     {
         _bufferStream = new MemoryStream();
+    }
+    
+    public override long Position
+    {
+        get => _position;
+        set => throw new NotImplementedException();
     }
     
     public override void WriteByte(byte value)
@@ -250,6 +290,7 @@ public class LzmaCompressionBlockStreamWriter : BlockStreamWriter
         if (BuffRemaining == 0)
             FlushBlock();
         _bufferStream.WriteByte(value);
+        _position++;
         CheckMemoryLimit();
     }
 
@@ -271,15 +312,17 @@ public class LzmaCompressionBlockStreamWriter : BlockStreamWriter
                 FlushBlock();
             }
         }
+        _position += bytes.Length;
     }
 
     public override ulong WriteBytes(IReader reader)
     {
-        var tempBuffer = new byte[8196];
+        var bufferLength = Math.Min(8196, reader.Length);
+        var tempBuffer = new byte[bufferLength];
         var totalBytesRead = 0;
         while (reader.Remaining > 0)
         {
-            var bytesRead = reader.Read(tempBuffer, 0, 8196);
+            var bytesRead = reader.Read(tempBuffer, 0, (int)bufferLength);
             WriteBytes(tempBuffer.AsSpan(0, bytesRead));
             CheckMemoryLimit();
             totalBytesRead += bytesRead;

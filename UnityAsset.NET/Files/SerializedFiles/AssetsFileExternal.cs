@@ -42,22 +42,14 @@ public class AssetsFileExternal
         return new AssetsFileExternal(virtualAssetPathName, guid, type, pathName, originalPathName);
     }
 
-    /*public void Serialize(IWriter writer)
+    public void Serialize(IWriter writer)
     {
         writer.WriteNullTerminatedString(VirtualAssetPathName);
         Guid.Serialize(writer);
         writer.WriteInt32((Int32)Type);
-        var toWritePathName = PathName;
-        if ((PathName == "Resources/unity_builtin_extra" ||
-             PathName == "Resources/unity default resources" ||
-             PathName == "Resources/unity editor resources")
-            && OriginalPathName != string.Empty)
-            toWritePathName = OriginalPathName;
-        writer.WriteNullTerminatedString(toWritePathName);
-    }*/
+        writer.WriteNullTerminatedString(OriginalPathName);
+    }
     
-    public long SerializeSize => 22 + VirtualAssetPathName.Length + Math.Max(OriginalPathName.Length, PathName.Length);
-
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();

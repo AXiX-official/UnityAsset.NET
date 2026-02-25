@@ -28,8 +28,8 @@ public sealed class BlocksAndDirectoryInfo
     public void Serialize(IWriter writer)
     {
         writer.WriteBytes(UncompressedDataHash);
-        writer.WriteArray(BlocksInfo, (w, info) => info.Serialize(w));
-        writer.WriteArray(DirectoryInfo, (w, info) => info.Serialize(w));
+        writer.WriteArrayWithCount(BlocksInfo, (w, info) => info.Serialize(w));
+        writer.WriteArrayWithCount(DirectoryInfo, (w, info) => info.Serialize(w));
     }
     
     public override string ToString()

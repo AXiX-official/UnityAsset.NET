@@ -36,7 +36,7 @@ public class AssetFileInfo
         return new AssetFileInfo(pathId, byteOffset, byteSize, typeIdOrIndex, type);
     }
     
-    /*public void Serialize(IWriter writer, SerializedFileFormatVersion version)
+    public void Serialize(IWriter writer, SerializedFileFormatVersion version)
     {
         writer.Align(4);
         writer.WriteInt64(PathId);
@@ -47,8 +47,6 @@ public class AssetFileInfo
         writer.WriteUInt32(ByteSize);
         writer.WriteInt32(TypeIdOrIndex);
     }
-
-    public long SerializeSize => 28;*/
 
     public override string ToString()
     {

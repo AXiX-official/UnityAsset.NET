@@ -173,6 +173,7 @@ public class BundleFile : IFile
         ulong offset = 0;
         foreach (var file in Files.AsReadOnlySpan())
         {
+            blockWriter.SetAlignBegin();
             ulong cabSize;
             switch (file.File)
             {
@@ -181,12 +182,10 @@ public class BundleFile : IFile
                     cabSize = blockWriter.WriteBytes(reader);
                     break;
                 case SerializedFile sf:
-                    throw new NotImplementedException();
-                    /*MemoryBinaryIO sfBuffer = new MemoryBinaryIO((int)sf.SerializeSize);
-                    sf.Serialize(sfBuffer);
-                    cabSize = (int)sfBuffer.Position;
-                    writer.WriteBytes(sfBuffer.ReadOnlySlice(0, cabSize));
-                    break;*/
+                    var pos = blockWriter.Position;
+                    sf.Serialize(blockWriter);
+                    cabSize = (ulong)(blockWriter.Position - pos);
+                    break;
                 default:
                     throw new Exception($"Unexpected type: {file.File.GetType().Name}");
             }

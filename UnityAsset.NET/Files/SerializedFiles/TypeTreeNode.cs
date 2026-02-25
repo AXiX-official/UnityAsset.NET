@@ -63,7 +63,7 @@ public class TypeTreeNode
         reader.ReadUInt64()
     );
 
-    /*public void Serialize(IWriter writer)
+    public void Serialize(IWriter writer)
     {
         writer.WriteUInt16(Version);
         writer.WriteByte(Level);
@@ -75,8 +75,6 @@ public class TypeTreeNode
         writer.WriteUInt32(MetaFlags); 
         writer.WriteUInt64(RefTypeHash);
     }
-
-    public long SerializeSize => 32;*/
     
     public override string ToString()
     {

@@ -16,14 +16,14 @@ Only support Unity 2017.x or later.
 ### BundleFile
 
 - [x] Parsing and Reading
-- [ ] ~~Serialization~~ (Temporarily removed, will be re-introduced with a new API in a future version)
+- [x] Serialization
 - [ ] ~~Patching~~ (Will be re-introduced in a future version)
 - [ ] Calculate/Patch crc32
 
 ### SerializedFile
 
 - [x] Parsing and Reading
-- [ ] ~~Serialization~~ (Temporarily removed)
+- [x] Serialization
 - [ ] ~~Patching~~ (Temporarily removed)
 
 ### Asset

@@ -36,13 +36,9 @@ public sealed class SerializedFileMetadata
         var unityVersion = reader.ReadNullTerminatedString();
         var targetPlatform = (BuildTarget)reader.ReadUInt32();
         var typeTreeEnabled = reader.ReadBoolean();
-        /*var types = reader.ReadArray(
+        var types = reader.ReadArray(
             r => SerializedType.Parse(r, version, typeTreeEnabled, false)
-            );*/
-        var typesCount = reader.ReadInt32();
-        var types = new SerializedType[typesCount];
-        for (int i = 0; i < typesCount; i++)
-            types[i] = SerializedType.Parse(reader, version, typeTreeEnabled, false);
+            );
         int assetCount = reader.ReadInt32();
         reader.Align(4);
         var assetInfos = reader.ReadArray(
@@ -58,33 +54,25 @@ public sealed class SerializedFileMetadata
         return new SerializedFileMetadata(unityVersion, targetPlatform, typeTreeEnabled, types, assetInfos, scriptTypes, externals, refTypes, userInformation);
     }
 
-    /*public void Serialize(IWriter writer, SerializedFileFormatVersion version)
+    public void Serialize(IWriter writer, SerializedFileFormatVersion version)
     {
         writer.WriteNullTerminatedString(UnityVersion);
         writer.WriteUInt32((UInt32)TargetPlatform);
         writer.WriteBoolean(TypeTreeEnabled);
-        writer.WriteListWithCount(Types, (d, type) => type.Serialize(d, version, TypeTreeEnabled, false));
-        writer.WriteInt32(AssetInfos.Count);
+        writer.WriteArrayWithCount(Types, (d, type) => type.Serialize(d, version, TypeTreeEnabled, false));
+        writer.WriteInt32(AssetInfos.Length);
         writer.Align(4);
-        writer.WriteList(AssetInfos, (d, assetInfo) => assetInfo.Serialize(d, version));
-        writer.WriteListWithCount(ScriptTypes, (d, assetPPtr) => assetPPtr.Serialize(d));
-        writer.WriteListWithCount(Externals, (d, external) => external.Serialize(d));
+        writer.WriteArray(AssetInfos, (d, assetInfo) => assetInfo.Serialize(d, version));
+        writer.WriteArrayWithCount(ScriptTypes, (d, assetPPtr) => assetPPtr.Serialize(d));
+        writer.WriteArrayWithCount(Externals, (d, external) => external.Serialize(d));
         if (version >= SerializedFileFormatVersion.SupportsRefObject)
         {
             if (RefTypes == null)
                 throw new NullReferenceException("RefTypes is null");
-            writer.WriteListWithCount(RefTypes, (d, type) => type.Serialize(d, version, TypeTreeEnabled, true));
+            writer.WriteArrayWithCount(RefTypes, (d, type) => type.Serialize(d, version, TypeTreeEnabled, true));
         }
         writer.WriteNullTerminatedString(UserInformation);
     }
-    
-    public long SerializeSize => UnityVersion.Length + UserInformation.Length + 27 + 
-                                 Types.Sum(t => t.SerializeSize) + 
-                                 AssetInfos.Sum(a => a.SerializeSize) + 
-                                 ScriptTypes.Sum(s => s.SerializeSize) + 
-                                 Externals.Sum(e => e.SerializeSize) + 
-                                 (RefTypes == null ? 0 : 4 + RefTypes.Sum(r => r.SerializeSize));
-    */
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();
