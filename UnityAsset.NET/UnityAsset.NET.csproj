@@ -7,14 +7,14 @@
         <WarningsAsErrors>nullable</WarningsAsErrors>
         <Authors>AXiX</Authors>
         <Description>A work-in-progress .NET library for parsing/serializing/patching Unity Engine asset files.</Description>
-        <Version>0.3.0</Version>
+        <Version>0.3.1</Version>
         <Title>UnityAsset.NET</Title>
         <Copyright>AXiX</Copyright>
         <PackageProjectUrl>https://github.com/AXiX-official/UnityAsset.NET</PackageProjectUrl>
         <RepositoryUrl>https://github.com/AXiX-official/UnityAsset.NET</RepositoryUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <AssemblyVersion>0.3.0</AssemblyVersion>
-        <FileVersion>0.3.0</FileVersion>
+        <AssemblyVersion>0.3.1</AssemblyVersion>
+        <FileVersion>0.3.1</FileVersion>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <PackageReadmeFile>README.md</PackageReadmeFile>
