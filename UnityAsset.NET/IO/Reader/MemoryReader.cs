@@ -131,3 +131,19 @@ public class MemoryReader : IReader
     // TEMPORARY: make it writable 
     public Span<byte> AsWritableSpan => _data.Span;
 }
+
+public class MemoryReaderProvider : IReaderProvider
+{
+    private readonly Memory<byte> _data;
+    public MemoryReaderProvider(byte[] data)
+    {
+        _data = new Memory<byte>(data);
+    }
+    
+    public MemoryReaderProvider(Memory<byte> data)
+    {
+        _data = data;
+    }
+    
+    public IReader CreateReader(Endianness endian = Endianness.BigEndian) => new MemoryReader(_data, 0, endian);
+}

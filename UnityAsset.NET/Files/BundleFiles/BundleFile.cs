@@ -33,8 +33,6 @@ public class BundleFile : IFile
     /// Optional key for UnityCN encryption
     /// </summary>
     public readonly string? UnityCnKey;
-
-    public uint? Crc32;
     
     public IVirtualFileInfo? SourceVirtualFile { get; private set; }
 

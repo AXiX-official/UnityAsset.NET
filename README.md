@@ -18,7 +18,7 @@ Only support Unity 2017.x or later.
 - [x] Parsing and Reading
 - [x] Serialization
 - [ ] ~~Patching~~ (Will be re-introduced in a future version)
-- [ ] Calculate/Patch crc32
+- [x] Calculate/Patch crc32
 
 ### SerializedFile
 
