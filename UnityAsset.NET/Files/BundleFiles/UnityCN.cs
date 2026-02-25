@@ -11,7 +11,7 @@ public sealed unsafe class UnityCN
     private const string Signature = "#$unity3dchina!@";
 
     private ICryptoTransform _encryptor;
-    
+    public string Key;
     public UInt32 Value;
     public readonly byte[] InfoBytes;
     public readonly byte[] InfoKey;
@@ -32,6 +32,7 @@ public sealed unsafe class UnityCN
     {
         if (key.Length != 32 && key.Length != 16)
             throw new ArgumentException("key must be 32 or 16 characters long");
+        Key = key;
         using var aes = Aes.Create();
         aes.Mode = CipherMode.ECB;
         aes.Key = Convert.FromHexString(key);
@@ -74,6 +75,7 @@ public sealed unsafe class UnityCN
     {
         if (key.Length != 32 && key.Length != 16)
             throw new ArgumentException("key must be 32 or 16 characters long");
+        Key = key;
         using var aes = Aes.Create();
         aes.Mode = CipherMode.ECB;
         aes.Key = Convert.FromHexString(key);
@@ -131,7 +133,7 @@ public sealed unsafe class UnityCN
         }
     }
     
-    /*public void Serialize(IWriter writer)
+    public void Serialize(IWriter writer)
     {
         writer.WriteUInt32(Value);
         writer.WriteBytes(InfoBytes);
@@ -142,7 +144,7 @@ public sealed unsafe class UnityCN
         writer.WriteByte(0);
     }
 
-    public long SerializeSize => 70;*/
+    public long SerializeSize => 70;
     
     public void DecryptBlock(Span<byte> bytes, int size, int index)
     {

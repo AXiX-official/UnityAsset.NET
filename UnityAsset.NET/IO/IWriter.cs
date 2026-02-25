@@ -27,6 +27,7 @@ public interface IWriter : ISeek
     public void WriteByte(byte value);
     public void WriteSByte(sbyte value) => WriteByte((byte)value);
     public void WriteBytes(ReadOnlySpan<byte> bytes);
+    public ulong WriteBytes(IReader reader);
     private void WriteBytes(byte value, ulong count)
     {
         for (ulong i = 0; i < count; i++)
@@ -51,6 +52,20 @@ public interface IWriter : ISeek
             WriteBytes(BitConverter.GetBytes(value));
     }
     public void WriteInt32(int value)
+    {
+        if (NeedReverse)
+            WriteBytes(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value)));
+        else
+            WriteBytes(BitConverter.GetBytes(value));
+    }
+    public void WriteUInt32(uint value)
+    {
+        if (NeedReverse)
+            WriteBytes(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value)));
+        else
+            WriteBytes(BitConverter.GetBytes(value));
+    }
+    public void WriteInt64(long value)
     {
         if (NeedReverse)
             WriteBytes(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value)));
@@ -107,6 +122,25 @@ public interface IWriter : ISeek
     }
     public void WriteListWithAlign<T>(List<T> list, Action<IWriter, T> writer, bool requiresAlign) =>
         WriteListWithAlign(list.Count, list, writer, requiresAlign);
+    public void WriteArray<T>(int count, T[] array, Action<IWriter, T> writer)
+    {
+        WriteInt32(count);
+        foreach (var item in array)
+            writer(this, item);
+    }
+    public void WriteArray<T>(T[] array, Action<IWriter, T> writer) => WriteArray(array.Length, array, writer);
+    public void WriteArrayWithAlign<T>(int count, T[] array, Action<IWriter, T> writer, bool requiresAlign)
+    {
+        WriteInt32(count);
+        foreach (var item in array)
+        {
+            writer(this, item);
+            if (requiresAlign) 
+                Align(4);
+        }
+    }
+    public void WriteArrayWithAlign<T>(T[] array, Action<IWriter, T> writer, bool requiresAlign) =>
+        WriteArrayWithAlign(array.Length, array, writer, requiresAlign);
     public void WritePairWithAlign<TK, TV>((TK, TV) value, Action<IWriter, TK> keyWriter,
         Action<IWriter, TV> valueWriter, bool keyRequiresAlign, bool valueRequiresAlign) where TK : notnull
     {

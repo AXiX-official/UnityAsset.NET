@@ -46,7 +46,13 @@ public class MemoryReader : IReader
     
     # region IReader
     public Endianness Endian { get; set; }
-    
+    public int Read(Span<byte> buffer, int offset, int count)
+    {
+        var bytesToRead = Math.Min(count, _length - _position);
+        var span = ReadReadOnlySpanBytes(bytesToRead);
+        span.CopyTo(buffer);
+        return bytesToRead;
+    }
     public byte ReadByte()
     {
         var b = _data.Span[_position];
@@ -61,12 +67,7 @@ public class MemoryReader : IReader
         return span;
     }
     public byte[] ReadBytes(int count) => ReadReadOnlySpanBytes(count).ToArray();
-
-    public void ReadExactly(Span<byte> buffer)
-    {
-        var span = ReadReadOnlySpanBytes(buffer.Length);
-        span.CopyTo(buffer);
-    }
+    
     public Int16 ReadInt16()
     {
         return Endian == Endianness.BigEndian 

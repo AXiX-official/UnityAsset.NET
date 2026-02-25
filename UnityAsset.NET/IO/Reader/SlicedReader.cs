@@ -23,7 +23,13 @@ public class SlicedReader : IReader
     }
     
     # endregion
-    
+
+    public int Read(Span<byte> buffer, int offset, int count)
+    {
+        if (Position + count > Length)
+            return BaseReader.Read(buffer, offset, (int)(Length - Position));
+        return BaseReader.Read(buffer, offset, count);
+    }
     
     public byte ReadByte()
     {
@@ -38,14 +44,7 @@ public class SlicedReader : IReader
             throw OutOfRange;
         return BaseReader.ReadBytes(count);
     }
-
-    public void ReadExactly(Span<byte> buffer)
-    {
-        if (Position + buffer.Length > Length)
-            throw OutOfRange;
-        BaseReader.ReadExactly(buffer);
-    }
-
+    
     public short ReadInt16()
     {
         if (Position + 2 > Length)

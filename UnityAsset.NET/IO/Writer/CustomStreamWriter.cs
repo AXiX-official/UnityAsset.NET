@@ -4,13 +4,14 @@ namespace UnityAsset.NET.IO.Writer;
 
 public class CustomStreamWriter : IWriter, IDisposable
 {
-    private readonly System.IO.Stream _stream; 
+    private readonly Stream _stream; 
     private readonly bool _leaveOpen;
     
     private readonly byte[] _buffer;
-    private uint _bufferCount;
+    private int _bufferPos;
+    private int BuffRemaining => _buffer.Length - _bufferPos;
     
-    public CustomStreamWriter(System.IO.Stream stream, Endianness endian = Endianness.BigEndian, bool leaveOpen = false, int bufferSize = 8192)
+    public CustomStreamWriter(Stream stream, Endianness endian = Endianness.BigEndian, bool leaveOpen = false, int bufferSize = 8192)
     {
         if (!stream.CanWrite || !stream.CanSeek)
             throw new ArgumentException("Stream must be writable and seekable", nameof(stream));
@@ -19,22 +20,21 @@ public class CustomStreamWriter : IWriter, IDisposable
         _leaveOpen = leaveOpen;
         
         _buffer = new byte[bufferSize];
-        _bufferCount = 0;
     }
 
     private void FlushBuffer()
     {
-        _stream.Write(_buffer, 0, (int)_bufferCount);
-        _bufferCount = 0;
+        _stream.Write(_buffer, 0, _bufferPos);
+        _bufferPos = 0;
     }
     
     # region ISeek
     public long Position
     {
-        get => _stream.Position + _bufferCount;
+        get => _stream.Position + _bufferPos;
         set {
             var streamPos = _stream.Position;
-            var currentPos = streamPos + _bufferCount;
+            var currentPos = streamPos + _bufferPos;
             
             if (currentPos == value)
             {
@@ -43,12 +43,12 @@ public class CustomStreamWriter : IWriter, IDisposable
 
             if (value >= streamPos && value <= streamPos + _buffer.Length)
             {
-                var newCount = (uint)(value - streamPos);
-                if (newCount > _bufferCount)
+                var newCount = (int)(value - streamPos);
+                if (newCount > _bufferPos)
                 {
-                    _buffer.AsSpan((int)_bufferCount, (int)(newCount - _bufferCount)).Clear();
+                    _buffer.AsSpan(_bufferPos, newCount - _bufferPos).Clear();
                 }
-                _bufferCount = newCount;
+                _bufferPos = newCount;
                 return;
             }
 
@@ -64,9 +64,9 @@ public class CustomStreamWriter : IWriter, IDisposable
     public Endianness Endian { get; set; }
     public void WriteByte(byte value)
     {
-        if (_bufferCount == _buffer.Length)
+        if (BuffRemaining == 0)
             FlushBuffer();
-        _buffer[_bufferCount++] = value;
+        _buffer[_bufferPos++] = value;
     }
     public void WriteBytes(ReadOnlySpan<byte> bytes)
     {
@@ -81,23 +81,52 @@ public class CustomStreamWriter : IWriter, IDisposable
         int remaining = bytes.Length;
         while (remaining > 0)
         {
-            int space = _buffer.Length - (int)_bufferCount;
-            if (space == 0)
-            {
-                FlushBuffer();
-                continue;
-            }
-
-            int toCopy = Math.Min(remaining, space);
+            int toCopy = Math.Min(remaining, BuffRemaining);
             bytes.Slice(offset, toCopy)
-                .CopyTo(_buffer.AsSpan((int)_bufferCount, toCopy));
+                .CopyTo(_buffer.AsSpan(_bufferPos, toCopy));
 
             offset += toCopy;
             remaining -= toCopy;
-            _bufferCount += (uint)toCopy;
+            _bufferPos += toCopy;
+            
+            if (BuffRemaining == 0)
+            {
+                FlushBuffer();
+            }
         }
     }
+    public ulong WriteBytes(IReader reader)
+    {
+        ulong totalBytesRead = 0;
+        while (reader.Remaining > 0)
+        {
+            var bytesRead = reader.Read(_buffer, _bufferPos, BuffRemaining);
+            if (bytesRead == BuffRemaining)
+            {
+                FlushBuffer();
+            }
+            else
+            {
+                _bufferPos += bytesRead;
+            }
+
+            totalBytesRead += (uint)bytesRead;
+        }
+
+        return totalBytesRead;
+    }
     # endregion
+
+    public void WriteStream(Stream stream)
+    {
+        FlushBuffer();
+        stream.CopyTo(_stream);
+    }
+
+    public void Finish()
+    {
+        FlushBuffer();
+    }
     
     public void Dispose()
     {

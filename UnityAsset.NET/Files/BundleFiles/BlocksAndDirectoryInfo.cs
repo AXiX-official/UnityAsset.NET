@@ -25,16 +25,12 @@ public sealed class BlocksAndDirectoryInfo
         reader.ReadArray(FileEntry.Parse)
     );
     
-    /*public void Serialize(IWriter writer)
+    public void Serialize(IWriter writer)
     {
         writer.WriteBytes(UncompressedDataHash);
-        writer.WriteListWithCount(BlocksInfo, (w, info) => info.Serialize(w));
-        writer.WriteListWithCount(DirectoryInfo, (w, info) => info.Serialize(w));
+        writer.WriteArray(BlocksInfo, (w, info) => info.Serialize(w));
+        writer.WriteArray(DirectoryInfo, (w, info) => info.Serialize(w));
     }
-
-    public long SerializeSize => UncompressedDataHash.Length + 8 + 
-                                 BlocksInfo.Sum(item => item.SerializeSize) + 
-                                 DirectoryInfo.Sum(item => item.SerializeSize);*/
     
     public override string ToString()
     {

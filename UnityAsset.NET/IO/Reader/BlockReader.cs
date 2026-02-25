@@ -259,6 +259,24 @@ public class BlockReader : IReader
 
     public Endianness Endian { get; set; }
 
+    public int Read(Span<byte> buffer, int offset, int count)
+    {
+        int written = 0;
+        while (written < buffer.Length - offset && ((IReader)this).Remaining > 0)
+        {
+            EnsureBlockLoaded(Position);
+
+            var toCopy = Math.Min(count - written, (int)BufferRemaining);
+
+            _buffer.AsSpan((int)BufferPos, toCopy)
+                .CopyTo(buffer.Slice(offset + written, toCopy));
+
+            Position += (uint)toCopy;
+            written += toCopy;
+        }
+
+        return written;
+    }
     public byte ReadByte()
     {
         EnsureBlockLoaded(Position);
@@ -269,32 +287,11 @@ public class BlockReader : IReader
 
     public byte[] ReadBytes(int count)
     {
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
-        if (count == 0)
-            return [];
         if ((uint)count > ((IReader)this).Remaining)
             throw new EndOfStreamException();
         byte[] bytes = new byte[count];
-        ReadExactly(bytes);
+        ((IReader)this).ReadExactly(bytes);
         return bytes;
-    }
-    public void ReadExactly(Span<byte> buffer)
-    {
-        int written = 0;
-        while (written < buffer.Length)
-        {
-            EnsureBlockLoaded(Position);
-
-            var available = (int)BufferRemaining;
-            var toCopy = Math.Min(buffer.Length - written, available);
-
-            _buffer.AsSpan((int)BufferPos, toCopy)
-                .CopyTo(buffer.Slice(written, toCopy));
-
-            Position += (uint)toCopy;
-            written += toCopy;
-        }
     }
     public short ReadInt16()
     {
@@ -310,7 +307,7 @@ public class BlockReader : IReader
         }
         
         Span<byte> tmp = stackalloc byte[2];
-        ReadExactly(tmp);
+        ((IReader)this).ReadExactly(tmp);
         return Endian == Endianness.BigEndian
             ? BinaryPrimitives.ReadInt16BigEndian(tmp)
             : BinaryPrimitives.ReadInt16LittleEndian(tmp);
@@ -329,7 +326,7 @@ public class BlockReader : IReader
         }
         
         Span<byte> tmp = stackalloc byte[2];
-        ReadExactly(tmp);
+        ((IReader)this).ReadExactly(tmp);
         return Endian == Endianness.BigEndian
             ? BinaryPrimitives.ReadUInt16BigEndian(tmp)
             : BinaryPrimitives.ReadUInt16LittleEndian(tmp);
@@ -348,7 +345,7 @@ public class BlockReader : IReader
         }
         
         Span<byte> tmp = stackalloc byte[4];
-        ReadExactly(tmp);
+        ((IReader)this).ReadExactly(tmp);
         return Endian == Endianness.BigEndian
             ? BinaryPrimitives.ReadInt32BigEndian(tmp)
             : BinaryPrimitives.ReadInt32LittleEndian(tmp);
@@ -367,7 +364,7 @@ public class BlockReader : IReader
         }
         
         Span<byte> tmp = stackalloc byte[4];
-        ReadExactly(tmp);
+        ((IReader)this).ReadExactly(tmp);
         return Endian == Endianness.BigEndian
             ? BinaryPrimitives.ReadUInt32BigEndian(tmp)
             : BinaryPrimitives.ReadUInt32LittleEndian(tmp);
@@ -386,7 +383,7 @@ public class BlockReader : IReader
         }
         
         Span<byte> tmp = stackalloc byte[8];
-        ReadExactly(tmp);
+        ((IReader)this).ReadExactly(tmp);
         return Endian == Endianness.BigEndian
             ? BinaryPrimitives.ReadInt64BigEndian(tmp)
             : BinaryPrimitives.ReadInt64LittleEndian(tmp);
@@ -405,7 +402,7 @@ public class BlockReader : IReader
         }
         
         Span<byte> tmp = stackalloc byte[8];
-        ReadExactly(tmp);
+        ((IReader)this).ReadExactly(tmp);
         return Endian == Endianness.BigEndian
             ? BinaryPrimitives.ReadUInt64BigEndian(tmp)
             : BinaryPrimitives.ReadUInt64LittleEndian(tmp);
@@ -424,7 +421,7 @@ public class BlockReader : IReader
         }
         
         Span<byte> tmp = stackalloc byte[4];
-        ReadExactly(tmp);
+        ((IReader)this).ReadExactly(tmp);
         return Endian == Endianness.BigEndian
             ? BinaryPrimitives.ReadSingleBigEndian(tmp)
             : BinaryPrimitives.ReadSingleLittleEndian(tmp);
@@ -443,7 +440,7 @@ public class BlockReader : IReader
         }
         
         Span<byte> tmp = stackalloc byte[8];
-        ReadExactly(tmp);
+        ((IReader)this).ReadExactly(tmp);
         return Endian == Endianness.BigEndian
             ? BinaryPrimitives.ReadDoubleBigEndian(tmp)
             : BinaryPrimitives.ReadDoubleLittleEndian(tmp);

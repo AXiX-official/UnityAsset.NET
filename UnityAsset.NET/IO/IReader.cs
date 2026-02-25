@@ -28,11 +28,17 @@ public interface IReader : ISeek
     
     public Endianness Endian { get; set; }
     public long Remaining => Length - Position;
-    
+    public int Read(Span<byte> buffer, int offset, int count);
     public byte ReadByte();
     public sbyte ReadSByte() => (sbyte)ReadByte();
     public byte[] ReadBytes(int count);
-    public void ReadExactly(Span<byte> buffer);
+
+    public void ReadExactly(Span<byte> buffer)
+    {
+        var bytesRead = Read(buffer, 0, buffer.Length);
+        if (bytesRead != buffer.Length)
+            throw new EndOfStreamException();
+    }
     public bool ReadBoolean() => ReadByte() != 0;
     public sbyte ReadInt8() => (sbyte)ReadByte();
     public byte ReadUInt8() => ReadByte();

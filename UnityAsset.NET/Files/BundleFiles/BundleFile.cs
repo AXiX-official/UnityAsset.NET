@@ -7,6 +7,7 @@ using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.FileSystem.DirectFileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
+using UnityAsset.NET.IO.Writer;
 
 namespace UnityAsset.NET.Files;
 
@@ -119,6 +120,7 @@ public class BundleFile : IFile
             Header.UnityRevision = Setting.DefaultUnityVerion;
         }
         UnityCnInfo = ParseUnityCnInfo(reader, Header, UnityCnKey);
+        UnityCnKey = UnityCnInfo?.Key;
         AlignAfterHeader(reader, Header);
         DataInfo = ParseDataInfo(reader, Header);
         
@@ -149,204 +151,127 @@ public class BundleFile : IFile
             }
         }
     }
-    
-    /*public void Serialize(MemoryBinaryIO writer, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
+
+    public void Serialize(string path, CompressionType infoPacker = CompressionType.Lz4HC,
+        CompressionType dataPacker = CompressionType.Lz4HC, string? unityCnKey = null)
     {
-        if (Header == null || DataInfo == null || Files == null)
-            throw new NullReferenceException("BundleFile has not read completely.");
-        var directoryInfo = new List<FileEntry>();
-        var filesCapacity = Files.Sum(c =>
-        {
-            if (c.File is IReader r) return r.Length;
-            if (c.File is SerializedFile sf) return sf.SerializeSize;
-            return 0;
-        });
-        MemoryBinaryIO filesBuffer = new MemoryBinaryIO((int)filesCapacity);
-        Int64 offset = 0;
-        foreach (var file in Files.AsReadOnlySpan())
-        {
-            int cabSize;
-            switch (file.File)
-            {
-                case IReader r:
-                    r.Position = 0;
-                    filesBuffer.WriteBytes(r.ReadBytes((int)r.Length));
-                    cabSize = (int)r.Length;
-                    break;
-                case SerializedFile sf:
-                    var pos = filesBuffer.Position;
-                    sf.Serialize(filesBuffer);
-                    cabSize = (int)(filesBuffer.Position - pos);
-                    break;
-                default:
-                    throw new Exception($"Unexpected type: {file.File.GetType().Name}");
-            }
-            directoryInfo.Add(new FileEntry(offset, cabSize, file.Info.Flags, file.Info.Path));
-            offset += cabSize;
-        }
-        filesBuffer.Seek(0);
-
-        var blocksInfo = new List<StorageBlockInfo>();
-        var blocksSize = offset;
-        MemoryBinaryIO compressedBlocksDataBuffer = new MemoryBinaryIO((int)blocksSize);
-        var defaultChunkSize = dataPacker == CompressionType.Lzma ? Int32.MaxValue : Setting.DefaultChunkSize;
-        int compressedBlocksOffset = 0;
-        while (blocksSize > 0)
-        {
-            int chunkSize = (int)Math.Min(blocksSize, defaultChunkSize);
-            var compressedSize = Compression.CompressToBytes(
-                filesBuffer.ReadOnlySlice(compressedBlocksOffset, chunkSize),
-                compressedBlocksDataBuffer.SliceForward(),
-                dataPacker);
-            blocksInfo.Add(new StorageBlockInfo((UInt32)chunkSize, (UInt32)compressedSize, (StorageBlockFlags)dataPacker));
-            blocksSize -= chunkSize;
-            compressedBlocksOffset += chunkSize;
-            ((ISeek)compressedBlocksDataBuffer).Advance((int)compressedSize);
-        }
-        int compressedBlocksDateSize = (int)compressedBlocksDataBuffer.Position;
-        compressedBlocksDataBuffer.Seek(0);
-
-        UnityCN? unityCnInfo = null;
-        var version = ParseVersion(Header);
-        if (unityCnKey != null)
-        {
-            unityCnInfo = new UnityCN(unityCnKey);
-            if (dataPacker == CompressionType.Lz4 || dataPacker == CompressionType.Lz4HC)
-            {
-                var blocksInfoSpan = blocksInfo.AsSpan();
-                for (int i = 0; i < blocksInfoSpan.Length; i++)
-                {
-                    var blockInfo = blocksInfoSpan[i];
-                    blockInfo.Flags |= (StorageBlockFlags)0x100;
-                    unityCnInfo.EncryptBlock(compressedBlocksDataBuffer.GetWritableSpan((int)blockInfo.CompressedSize), (int)blockInfo.CompressedSize, i);
-                }
-                compressedBlocksDataBuffer.Seek(0);
-            }
-            else
-                throw new Exception($"UnityCN Encryption only support Lz4/Lz4HC, but {dataPacker} was set.");
-        }
-        else if (UnityCnKey != null)
-        {
-            var unityCnMask = VersionJudge1(version)
-                ? ArchiveFlags.BlockInfoNeedPaddingAtStart
-                : ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew;
-            if (unityCnMask == (ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew))
-                unityCnMask = (Header.Flags & ArchiveFlags.UnityCNEncryptionNew) != 0 ?
-                    ArchiveFlags.UnityCNEncryptionNew : ArchiveFlags.UnityCNEncryption;
-            Header.Flags &= ~unityCnMask;
-        }
-
-        var dataInfo = new BlocksAndDirectoryInfo(DataInfo.UncompressedDataHash, blocksInfo, directoryInfo);
-        MemoryBinaryIO dataInfoBuffer = new MemoryBinaryIO((int)dataInfo.SerializeSize);
-        dataInfo.Serialize(dataInfoBuffer);
-        var uncompressedBlocksInfoSize = dataInfoBuffer.Length;
-        MemoryBinaryIO compressedDataInfoBuffer = new MemoryBinaryIO((int)uncompressedBlocksInfoSize);
-        var compressedBlocksInfoSize = Compression.CompressToBytes(dataInfoBuffer.AsReadOnlySpan, compressedDataInfoBuffer.GetWritableSpan((int)uncompressedBlocksInfoSize), infoPacker);
-        compressedDataInfoBuffer.Position = 0;
-        var header = new Header(Header.Signature, Header.Version, Header.UnityVersion, Header.UnityRevision,
-            0, (uint)compressedBlocksInfoSize, (uint)uncompressedBlocksInfoSize,
-            (Header.Flags & ~ArchiveFlags.CompressionTypeMask) | (ArchiveFlags)infoPacker);
-        writer.EnsureCapacity((int)(header.SerializeSize + 16 + compressedBlocksInfoSize + compressedBlocksDataBuffer.Length + unityCnInfo?.SerializeSize ?? 0));
-        var position = writer.Position;
-        header.Serialize(writer);
-        if (unityCnInfo != null)
-            unityCnInfo.Serialize(writer);
-        if (header.Version >= 7)
-            ((ISeek)writer).Align(16);
-        else // temp fix for 2019.4.x
-            if (version[0] == 2019 && version[1] == 4 && version[2] >= 30)
-                ((ISeek)writer).Align(16);
-        if ((header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) == 0) //0x40 BlocksAndDirectoryInfoCombined
-            writer.WriteBytes(compressedDataInfoBuffer.ReadOnlySlice(0, (int)compressedBlocksInfoSize));
-        if (!VersionJudge1(version) &&(header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
-            ((ISeek)writer).Align(16);
-        writer.WriteBytes(compressedBlocksDataBuffer.ReadOnlySlice(0, compressedBlocksDateSize));
-        if ((header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) != 0) //kArchiveBlocksInfoAtTheEnd
-            writer.WriteBytes(compressedDataInfoBuffer.ReadOnlySlice(0, (int)compressedBlocksInfoSize));
-        header.Size = writer.Position - position;
-        writer.Size = (int)header.Size;
-        writer.Seek(0);
-        header.Serialize(writer);
+        using var output = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+        Serialize(output, false, infoPacker, dataPacker, unityCnKey);
     }
     
-    public void StreamSerialize(FileStreamWriter writer, CompressionType infoPacker = CompressionType.None, CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
+    public void Serialize(Stream output, bool leaveOpen = false, CompressionType infoPacker = CompressionType.Lz4HC, CompressionType dataPacker = CompressionType.Lz4HC, string? unityCnKey = null)
     {
         if (Header == null || DataInfo == null || Files == null)
             throw new NullReferenceException("BundleFile has not read completely.");
-        Header.Serialize(writer);
-        var version = ParseVersion(Header);
-        if (unityCnKey != null && UnityCnInfo != null)
-            UnityCnInfo.Serialize(writer);
-        if (Header.Version >= 7)
-            writer.Align(16);
-        else // temp fix for 2019.4.x
-            if (version[0] == 2019 && version[1] == 4 && version[2] >= 30)
-                writer.Align(16);
-        if (!VersionJudge1(version) &&(Header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
-            writer.Align(16);
-        writer.EnableCompression = true;
-        writer.CompressionType = dataPacker;
-        //writer.BufferSize = dataPacker == CompressionType.Lzma ? Int32.MaxValue - 9 : Setting.DefaultChunkSize;
+        
+        if (unityCnKey is not null && (dataPacker is not CompressionType.Lz4 && dataPacker is not CompressionType.Lz4HC))
+            throw new Exception($"UnityCN Encryption only support packing data with Lz4/Lz4HC, but {dataPacker} was set.");
+        
+        using var blockWriter = BlockStreamWriter.GetBlockWriter(dataPacker);
+        
         var directoryInfo = new List<FileEntry>();
-        long offset = 0;
+        ulong offset = 0;
         foreach (var file in Files.AsReadOnlySpan())
         {
-            int cabSize;
+            ulong cabSize;
             switch (file.File)
             {
-                case IReader r:
-                    r.Position = 0;
-                    writer.WriteBytes(r.ReadBytes((int)r.Length));
-                    cabSize = (int)r.Length;
+                case IReaderProvider rp:
+                    var reader = rp.CreateReader();
+                    cabSize = blockWriter.WriteBytes(reader);
                     break;
                 case SerializedFile sf:
-                    MemoryBinaryIO sfBuffer = new MemoryBinaryIO((int)sf.SerializeSize);
+                    throw new NotImplementedException();
+                    /*MemoryBinaryIO sfBuffer = new MemoryBinaryIO((int)sf.SerializeSize);
                     sf.Serialize(sfBuffer);
                     cabSize = (int)sfBuffer.Position;
                     writer.WriteBytes(sfBuffer.ReadOnlySlice(0, cabSize));
-                    break;
+                    break;*/
                 default:
                     throw new Exception($"Unexpected type: {file.File.GetType().Name}");
             }
             directoryInfo.Add(new FileEntry(offset, cabSize, file.Info.Flags, file.Info.Path));
             offset += cabSize;
         }
-        writer.FlushBuffer();
-        writer.EnableCompression = false;
-        writer.Endian = Endianness.BigEndian;
-        var dataInfo = new BlocksAndDirectoryInfo(DataInfo.UncompressedDataHash, writer.BlockInfos, directoryInfo);
-        MemoryBinaryIO dataInfoBuffer = new MemoryBinaryIO((int)dataInfo.SerializeSize);
-        dataInfo.Serialize(dataInfoBuffer);
-        var uncompressedBlocksInfoSize = dataInfoBuffer.Length;
-        MemoryBinaryIO compressedDataInfoBuffer = new MemoryBinaryIO((int)uncompressedBlocksInfoSize);
-        var compressedBlocksInfoSize = Compression.CompressToBytes(dataInfoBuffer.AsReadOnlySpan, compressedDataInfoBuffer.GetWritableSpan((int)uncompressedBlocksInfoSize), infoPacker);
-        compressedDataInfoBuffer.Position = 0;
-        writer.WriteBytes(compressedDataInfoBuffer.ReadOnlySlice(0, (int)compressedBlocksInfoSize));
-        var header = new Header(Header.Signature, Header.Version, Header.UnityVersion, Header.UnityRevision,
-            writer.Position, (uint)compressedBlocksInfoSize, (uint)uncompressedBlocksInfoSize,
-            (Header.Flags & ~ArchiveFlags.CompressionTypeMask) | (ArchiveFlags)infoPacker | ArchiveFlags.BlocksInfoAtTheEnd);
+        blockWriter.Finish();
+        using var blockStream = blockWriter.GetDataStream();
+        
+        var dataInfo = new BlocksAndDirectoryInfo(DataInfo.UncompressedDataHash, blockWriter.BlockInfos.ToArray(), directoryInfo.ToArray());
+        using var dataInfoStream = new MemoryStream();
+        var dataInfoWriter = new CustomStreamWriter(dataInfoStream);
+        dataInfo.Serialize(dataInfoWriter);
+        dataInfoWriter.Finish();
+        var uncompressedBlocksInfoSize = dataInfoStream.Length;
+        var compressedDataInfoStream = Compression.CompressToStream(dataInfoStream.ToArray(), infoPacker);
+        var header = new Header(Header.Signature, Header.Version, Header.UnityVersion, Header.UnityRevision.ToString(),
+            0, (uint)compressedDataInfoStream.Length, (uint)uncompressedBlocksInfoSize,
+            (Header.Flags & ~ArchiveFlags.CompressionTypeMask) | (ArchiveFlags)infoPacker);
         if (unityCnKey == null && UnityCnKey != null)
         {
-            var unityCnMask = VersionJudge1(version)
-                ? ArchiveFlags.BlockInfoNeedPaddingAtStart
+            var unityCnMask = UnityCNVersionJudge(header.UnityRevision) 
+                ? ArchiveFlags.BlockInfoNeedPaddingAtStart 
                 : ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew;
             if (unityCnMask == (ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew))
                 unityCnMask = (Header.Flags & ArchiveFlags.UnityCNEncryptionNew) != 0 ?
                     ArchiveFlags.UnityCNEncryptionNew : ArchiveFlags.UnityCNEncryption;
             header.Flags &= ~unityCnMask;
         }
-        writer.Seek(0);
+
+        bool needAlignAfterHeader = false;
+        bool needAlignAfterInfo = false;
+        bool infoAtEnd = (header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) != 0;
+        if (!UnityCNVersionJudge(header.UnityRevision) &&
+            (header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
+            needAlignAfterInfo = true;
+        if (Header.Version >= 7
+            || Header.UnityRevision is { Major: 2019, Minor: 4, Patch: >= 15 }
+            || !UnityCNVersionJudge(Header.UnityRevision) &&
+            (Header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
+            needAlignAfterHeader = true;
+
+        header.Size = header.SerializeSize;
+        if (unityCnKey != null && UnityCnInfo != null)
+            header.Size += UnityCnInfo.SerializeSize;
+        if (needAlignAfterHeader)
+            header.Size = Align(header.Size, 16);
+        if (!infoAtEnd)
+        {
+            header.Size += compressedDataInfoStream.Length;
+            if (needAlignAfterInfo) header.Size = Align(header.Size, 16);
+        }
+        header.Size += blockStream.Length;
+        if (infoAtEnd)
+        {
+            header.Size += compressedDataInfoStream.Length;
+            if (needAlignAfterInfo) header.Size = Align(header.Size, 16);
+        }
+        
+        var writer = new CustomStreamWriter(output, leaveOpen: leaveOpen);
         header.Serialize(writer);
+        if (unityCnKey != null && UnityCnInfo != null)
+            UnityCnInfo.Serialize(writer);
+        if (needAlignAfterHeader)
+            ((IWriter)writer).Align(16);
+        if (!infoAtEnd)
+        {
+            writer.WriteStream(compressedDataInfoStream);
+            if (needAlignAfterInfo) ((IWriter)writer).Align(16);
+        }
+        writer.WriteStream(blockStream);
+        if (infoAtEnd)
+        {
+            writer.WriteStream(compressedDataInfoStream);
+            if (needAlignAfterInfo) ((IWriter)writer).Align(16);
+        }
     }
 
-    /*public int Serialize(string path, CompressionType infoPacker = CompressionType.None,
-        CompressionType dataPacker = CompressionType.None, string? unityCnKey = null)
+    private static long Align(long size, int alignment)
     {
-        DataBuffer db = new DataBuffer(0);
-        int size = Serialize(db, infoPacker, dataPacker, unityCnKey);
-        db.WriteToFile(path, size);
-        return size;
-    }*/
+        var offset = size % alignment;
+        if (offset == 0)
+            return size;
+        return size + alignment - offset;
+    }
     
     public override string ToString()
     {

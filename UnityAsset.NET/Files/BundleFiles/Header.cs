@@ -40,19 +40,19 @@ public sealed class Header
         (ArchiveFlags)reader.ReadUInt32()
     );
 
-    /*public void Serialize(IWriter writer)
+    public void Serialize(IWriter writer)
     {
         writer.WriteNullTerminatedString(Signature);
         writer.WriteUInt32(Version);
         writer.WriteNullTerminatedString(UnityVersion);
-        writer.WriteNullTerminatedString(UnityRevision);
+        writer.WriteNullTerminatedString(UnityRevision.ToString());
         writer.WriteInt64(Size);
         writer.WriteUInt32(CompressedBlocksInfoSize);
         writer.WriteUInt32(UncompressedBlocksInfoSize);
         writer.WriteUInt32((UInt32)Flags);
     }
 
-    public long SerializeSize => 27 + Signature.Length + UnityVersion.Length + UnityRevision.Length;*/
+    public long SerializeSize => 27 + Signature.Length + UnityVersion.Length + UnityRevision.ToString().Length;
 
     public override string ToString()
     {
