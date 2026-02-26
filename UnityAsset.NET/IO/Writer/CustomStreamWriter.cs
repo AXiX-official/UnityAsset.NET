@@ -101,13 +101,11 @@ public class CustomStreamWriter : IWriter, IDisposable
         while (reader.Remaining > 0)
         {
             var bytesRead = reader.Read(_buffer, _bufferPos, BuffRemaining);
-            if (bytesRead == BuffRemaining)
+            _bufferPos += bytesRead;
+            
+            if (BuffRemaining == 0)
             {
                 FlushBuffer();
-            }
-            else
-            {
-                _bufferPos += bytesRead;
             }
 
             totalBytesRead += (uint)bytesRead;
