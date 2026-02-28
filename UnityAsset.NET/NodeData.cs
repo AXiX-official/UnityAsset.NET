@@ -105,16 +105,16 @@ public class NodeData
                         var size = reader.ReadInt32();
                         if (size == 0)
                         {
-                            value = new List<NodeData>();
+                            value = Array.Empty<NodeData>();
                             break;
                         }
-                        var list = new List<NodeData>(size);
-                        var array_node = vector.SubNodes[1];
+                        var array = new NodeData[size];
+                        var arrayNode = vector.SubNodes[1];
                         for (int j = 0; j < size; j++)
                         {
-                            list.Add(new NodeData(reader, array_node));
+                            array[j] = new NodeData(reader, arrayNode);
                         }
-                        value = list;
+                        value = array;
                         break;
                     }
                     else //Class
@@ -132,7 +132,6 @@ public class NodeData
                     }
                 }
         }
-        //Console.WriteLine($"{current.Type} {current.Name}: pos: {reader.Position}, align: {align}");
         if (align)
             reader.Align(4);
         return value;
