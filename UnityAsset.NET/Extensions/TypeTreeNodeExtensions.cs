@@ -11,11 +11,10 @@ public static class TypeTreeNodeExtensions
     {
         if (current.Index == 0)
             throw new IndexOutOfRangeException();
-        var nodesSpan = nodes.AsReadOnlySpan();
         for (int i = (int)current.Index - 1; i >= 0; i--)
         {
-            if (nodesSpan[i].Level < current.Level)
-                return nodesSpan[i];
+            if (nodes[i].Level < current.Level)
+                return nodes[i];
         }
         throw new IndexOutOfRangeException();
     }

@@ -207,11 +207,11 @@ public class InterfaceGenerator
     private CompilationUnitSyntax GenerateClassInterface(string className, List<(UnityVersion version, TypeTreeRepr node)> rootNodes, bool isRootClass)
     {
         var usingDirectives = SyntaxFactory.List([
-            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree.PreDefined.Types"))
+            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.Types.PreDefined.Types"))
         ]);
         
         var namespaceDeclaration = SyntaxFactory.NamespaceDeclaration(
-            SyntaxFactory.ParseName("UnityAsset.NET.TypeTree.PreDefined.Interfaces")
+            SyntaxFactory.ParseName("UnityAsset.NET.Types.PreDefined.Interfaces")
             );
         
         bool isNamedAsset = rootNodes.All(rootNode =>

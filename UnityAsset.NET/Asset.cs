@@ -1,7 +1,7 @@
 ﻿using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO.Reader;
-using UnityAsset.NET.TypeTree;
-using UnityAsset.NET.TypeTree.PreDefined;
+using UnityAsset.NET.Types;
+using UnityAsset.NET.Types.PreDefined;
 
 namespace UnityAsset.NET;
 
@@ -31,7 +31,7 @@ public class Asset : IEquatable<Asset>
     private IUnityAsset GetValue()
     {
         var value = UnityObjectFactory.Create(Info.Type, DataReader);
-        BlockReader.OnAssetParsed(this);
+        AssetManager.OnAssetParsed(this);
         return value;
     }
 

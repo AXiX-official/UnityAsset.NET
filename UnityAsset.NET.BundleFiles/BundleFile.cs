@@ -1,0 +1,269 @@
+using System.Text;
+using UnityAsset.NET.Files;
+using UnityAsset.NET.FileSystem;
+using UnityAsset.NET.IO;
+using UnityAsset.NET.IO.Reader;
+using UnityAsset.NET.IO.Writer;
+
+namespace UnityAsset.NET.BundleFiles
+{
+    public class BundleFile : IFile
+    {
+        /// <summary>
+        /// BundleFile's Header
+        /// </summary>
+        public readonly Header? Header;
+
+        /// <summary>
+        /// Blocks and Cab info
+        /// </summary>
+        public readonly BlocksAndDirectoryInfo? DataInfo;
+
+        /// <summary>
+        /// SerializedFiles and BinaryData
+        /// </summary>
+        public readonly List<FileWrapper> Files;
+
+        /// <summary>
+        /// Optional UnityCN encryption data
+        /// </summary>
+        public readonly UnityCN? UnityCnInfo;
+
+        /// <summary>
+        /// Optional key for UnityCN encryption
+        /// </summary>
+        public readonly string? UnityCnKey;
+
+        public IVirtualFileInfo? SourceVirtualFile { get; private set; }
+
+        public static UnityCN? ParseUnityCnInfo(IReader reader, Header header, string? key)
+        {
+            var unityCnMask = UnityCNVersionJudge(header.UnityRevision)
+                ? ArchiveFlags.BlockInfoNeedPaddingAtStart
+                : ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew;
+
+            if ((header.Flags & unityCnMask) != 0)
+            {
+                key ??= Setting.DefaultUnityCNKey;
+                if (key == null)
+                    throw new Exception($"UnityCN key is required for decryption. UnityCN Flag Mask: {unityCnMask}");
+                return new UnityCN(reader, key);
+            }
+
+            return null;
+        }
+
+        public static void AlignAfterHeader(IReader reader, Header header)
+        {
+            if (header.NeedAlign())
+            {
+                reader.Align(16);
+            }
+        }
+
+        public static BlocksAndDirectoryInfo ParseDataInfo(IReader reader, Header header)
+        {
+            byte[] blocksInfoBytes;
+            if ((header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) != 0)
+            {
+                var pos = reader.Position;
+                reader.Seek((int)(header.Size - header.CompressedBlocksInfoSize));
+                blocksInfoBytes = reader.ReadBytes((int)header.CompressedBlocksInfoSize);
+                reader.Seek(pos);
+            }
+            else
+            {
+                blocksInfoBytes = reader.ReadBytes((int)header.CompressedBlocksInfoSize);
+            }
+
+            var compressionType = (CompressionType)(header.Flags & ArchiveFlags.CompressionTypeMask);
+            MemoryReader blocksInfoUncompressedData = new MemoryReader((int)header.UncompressedBlocksInfoSize);
+            Compression.DecompressToBytes(blocksInfoBytes, blocksInfoUncompressedData.AsWritableSpan, compressionType);
+            var dataInfo = BlocksAndDirectoryInfo.Parse(blocksInfoUncompressedData);
+            if (dataInfo.BlocksInfo.Any(blockInfo => blockInfo.UncompressedSize > int.MaxValue))
+            {
+                throw new Exception("Block size too large.");
+            }
+
+            if (!UnityCNVersionJudge(header.UnityRevision) &&
+                (header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
+                reader.Align(16);
+            return dataInfo;
+        }
+
+        public BundleFile(Header header, BlocksAndDirectoryInfo dataInfo, List<FileWrapper> files, string? key = null)
+        {
+            UnityCnKey = key;
+            Header = header;
+            DataInfo = dataInfo;
+            Files = files;
+        }
+
+        public BundleFile(IVirtualFileInfo fileInfo, string? key = null)
+        {
+            var cfrProvider = new CustomFileReaderProvider(fileInfo);
+            var reader = cfrProvider.CreateReader();
+            UnityCnKey = key;
+            Header = Header.Parse(reader);
+            if (Header.UnityRevision == "0.0.0")
+            {
+                Header.UnityRevision = Setting.DefaultUnityVerion;
+            }
+
+            UnityCnInfo = ParseUnityCnInfo(reader, Header, UnityCnKey);
+            UnityCnKey = UnityCnInfo?.Key;
+            AlignAfterHeader(reader, Header);
+            DataInfo = ParseDataInfo(reader, Header);
+
+            var blockReaderProvider = new BlockReaderProvider(DataInfo.BlocksInfo, new SliceFile(fileInfo.GetFile(),
+                (ulong)reader.Position,
+                (ulong)(reader.Length - reader.Position)), UnityCnInfo);
+            Files = new List<FileWrapper>();
+            foreach (var dir in DataInfo.DirectoryInfo)
+            {
+                Files.Add(new FileWrapper(new SlicedReaderProvider(blockReaderProvider, dir.Offset, dir.Size), dir));
+            }
+
+            SourceVirtualFile = fileInfo;
+        }
+
+        public void Serialize(string path, CompressionType infoPacker = CompressionType.Lz4HC,
+            CompressionType dataPacker = CompressionType.Lz4HC, string? unityCnKey = null)
+        {
+            using var output = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+            var writer = new CustomStreamWriter(output, leaveOpen: false);
+            Serialize(writer, infoPacker, dataPacker, unityCnKey);
+        }
+
+        public void Serialize(IWriter writer, CompressionType infoPacker = CompressionType.Lz4HC,
+            CompressionType dataPacker = CompressionType.Lz4HC, string? unityCnKey = null)
+        {
+            if (Header == null || DataInfo == null || Files == null)
+                throw new NullReferenceException("BundleFile has not read completely.");
+
+            if (!(unityCnKey is null) &&
+                (!(dataPacker is CompressionType.Lz4) && !(dataPacker is CompressionType.Lz4HC)))
+                throw new Exception(
+                    $"UnityCN Encryption only support packing data with Lz4/Lz4HC, but {dataPacker} was set.");
+
+            using var blockWriter = BlockStreamWriter.GetBlockWriter(dataPacker);
+
+            var directoryInfo = new List<FileEntry>();
+            ulong offset = 0;
+            foreach (var file in Files)
+            {
+                blockWriter.SetAlignBegin();
+                ulong cabSize = file.File.WriteBytes(blockWriter);
+                directoryInfo.Add(new FileEntry(offset, cabSize, file.Info.Flags, file.Info.Path));
+                offset += cabSize;
+            }
+
+            blockWriter.Finish();
+            using var blockStream = blockWriter.GetDataStream();
+
+            var dataInfo = new BlocksAndDirectoryInfo(DataInfo.UncompressedDataHash, blockWriter.BlockInfos.ToArray(),
+                directoryInfo.ToArray());
+            using var dataInfoStream = new MemoryStream();
+            var dataInfoWriter = new CustomStreamWriter(dataInfoStream);
+            dataInfo.Serialize(dataInfoWriter);
+            dataInfoWriter.Finish();
+            var uncompressedBlocksInfoSize = dataInfoStream.Length;
+            var compressedDataInfoStream = Compression.CompressToStream(dataInfoStream.ToArray(), infoPacker);
+            var header = new Header(Header.Signature, Header.Version, Header.UnityVersion,
+                Header.UnityRevision.ToString(),
+                0, (uint)compressedDataInfoStream.Length, (uint)uncompressedBlocksInfoSize,
+                (Header.Flags & ~ArchiveFlags.CompressionTypeMask) | (ArchiveFlags)infoPacker);
+            if (unityCnKey == null && UnityCnKey != null)
+            {
+                var unityCnMask = UnityCNVersionJudge(header.UnityRevision)
+                    ? ArchiveFlags.BlockInfoNeedPaddingAtStart
+                    : ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew;
+                if (unityCnMask == (ArchiveFlags.UnityCNEncryption | ArchiveFlags.UnityCNEncryptionNew))
+                    unityCnMask = (Header.Flags & ArchiveFlags.UnityCNEncryptionNew) != 0
+                        ? ArchiveFlags.UnityCNEncryptionNew
+                        : ArchiveFlags.UnityCNEncryption;
+                header.Flags &= ~unityCnMask;
+            }
+
+            bool needAlignAfterHeader = false;
+            bool needAlignAfterInfo = false;
+            bool infoAtEnd = (header.Flags & ArchiveFlags.BlocksInfoAtTheEnd) != 0;
+            if (!UnityCNVersionJudge(header.UnityRevision) &&
+                (header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
+                needAlignAfterInfo = true;
+            if (Header.NeedAlign()
+                || !UnityCNVersionJudge(Header.UnityRevision) &&
+                (Header.Flags & ArchiveFlags.BlockInfoNeedPaddingAtStart) != 0)
+                needAlignAfterHeader = true;
+
+            header.Size = header.SerializeSize;
+            if (unityCnKey != null && UnityCnInfo != null)
+                header.Size += UnityCnInfo.SerializeSize;
+            if (needAlignAfterHeader)
+                header.Size = Align(header.Size, 16);
+            if (!infoAtEnd)
+            {
+                header.Size += compressedDataInfoStream.Length;
+                if (needAlignAfterInfo) header.Size = Align(header.Size, 16);
+            }
+
+            header.Size += blockStream.Length;
+            if (infoAtEnd)
+            {
+                header.Size += compressedDataInfoStream.Length;
+                if (needAlignAfterInfo) header.Size = Align(header.Size, 16);
+            }
+
+            header.Serialize(writer);
+            if (unityCnKey != null && UnityCnInfo != null)
+                UnityCnInfo.Serialize(writer);
+            if (needAlignAfterHeader)
+                writer.Align(16);
+            if (!infoAtEnd)
+            {
+                writer.WriteStream(compressedDataInfoStream);
+                if (needAlignAfterInfo) writer.Align(16);
+            }
+
+            writer.WriteStream(blockStream);
+            if (infoAtEnd)
+            {
+                writer.WriteStream(compressedDataInfoStream);
+                if (needAlignAfterInfo) writer.Align(16);
+            }
+        }
+
+        public ulong WriteBytes(IWriter writer)
+        {
+            var pos = writer.Position;
+            Serialize(writer);
+            return (ulong)(writer.Position - pos);
+        }
+
+        private static long Align(long size, int alignment)
+        {
+            var offset = size % alignment;
+            if (offset == 0)
+                return size;
+            return size + alignment - offset;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"Header: {Header}");
+            sb.AppendLine($"DataInfo: {DataInfo}");
+            for (int i = 0; i < Files.Count; ++i)
+                sb.AppendLine($"File {i}: {Files[i]}");
+            return sb.ToString();
+        }
+
+        public static bool UnityCNVersionJudge(UnityRevision version)
+        {
+            return version < "2020" || //2020 and earlier
+                   (version >= "2020.3" && version <= "2020.3.34") || //2020.3.34 and earlier
+                   (version >= "2021.3" && version <= "2021.3.2") || //2021.3.2 and earlier
+                   (version >= "2022.3" && version <= "2022.3.1"); //2022.3.1 and earlier
+        }
+    }
+}

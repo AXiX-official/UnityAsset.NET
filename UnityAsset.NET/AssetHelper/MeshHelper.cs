@@ -4,8 +4,9 @@ using System.Collections;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files;
-using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
-using UnityAsset.NET.TypeTree.PreDefined.Types;
+using UnityAsset.NET.IO;
+using UnityAsset.NET.Types.PreDefined.Interfaces;
+using UnityAsset.NET.Types.PreDefined.Types;
 using Half = UnityAsset.NET.Extensions.Half;
 
 namespace UnityAsset.NET.AssetHelper;
@@ -322,7 +323,7 @@ public static class MeshHelper
                 {
                     var buff = new byte[componentByteSize];
                     Buffer.BlockCopy(componentBytes, i * componentByteSize, buff, 0, componentByteSize);
-                    buff = buff.Reverse().ToArray();
+                    Array.Reverse(buff);
                     Buffer.BlockCopy(buff, 0, componentBytes, i * componentByteSize, componentByteSize);
                 }
             }

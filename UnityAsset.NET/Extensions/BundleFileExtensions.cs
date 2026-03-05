@@ -1,5 +1,4 @@
-﻿using UnityAsset.NET.Files;
-using UnityAsset.NET.Files.BundleFiles;
+﻿using UnityAsset.NET.BundleFiles;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
@@ -8,6 +7,26 @@ namespace UnityAsset.NET.Extensions;
 
 public static class BundleFileExtensions
 {
+    public static void ParseFilesWithTypeConversion(this BundleFile bf, AssetManager mgr)
+    {
+        for (int i = 0; i < bf.Files.Count; i++)
+        {
+            var subFile = bf.Files[i];
+            if (subFile is { CanBeSerializedFile: true, File: IReaderProvider provider})
+            {
+                var sf = SerializedFile.Parse(bf, provider);
+                if (provider is SlicedReaderProvider srp)
+                {
+                    if (srp.BaseReaderProvider is BlockReaderProvider brp)
+                    {
+                        mgr.RegisterAssetToBlockMap(srp, brp, sf);
+                    }
+                }
+                bf.Files[i] = new FileWrapper(sf, subFile.Info);
+            }
+        }
+    }
+    
     public static List<Asset> Assets(this BundleFile bf) =>
         bf.Files
             .Where(file => file.File is SerializedFile)

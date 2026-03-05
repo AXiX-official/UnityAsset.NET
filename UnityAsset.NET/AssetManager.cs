@@ -3,6 +3,7 @@ using System.Collections.Frozen;
 using System.Diagnostics;
 using AssetRipper.Tpk;
 using AssetRipper.Tpk.TypeTrees;
+using UnityAsset.NET.BundleFiles;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files;
@@ -10,8 +11,8 @@ using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
-using UnityAsset.NET.TypeTree;
-using UnityAsset.NET.TypeTree.PreDefined.Types;
+using UnityAsset.NET.Types;
+using UnityAsset.NET.Types.PreDefined.Types;
 using UnityAsset.NET.TypeTreeHelper;
 
 namespace UnityAsset.NET;
@@ -30,6 +31,19 @@ public class AssetManager
     public List<Asset> LoadedAssets { get; private set; } = new();
     
     public static Dictionary<Hash128, TypeTreeRepr> LoadedTypes = new();
+    
+    public static ConcurrentDictionary<BlockCacheKey, (int parsed, int total, long size)> AssetToBlockCache = new();
+    
+    public static long TotalBlockSize => AssetToBlockCache.Values.Select(v => v.size).Sum();
+
+    public static void RemoveSingleReferenceBlocks()
+    {
+        var keysToRemove = AssetToBlockCache
+            .Where(kvp => kvp.Value.total <= 2)
+            .Select(kvp => kvp.Key);
+        foreach (var key in keysToRemove)
+            AssetToBlockCache.TryRemove(key, out _);
+    }
     
     public AssetManager(IFileSystem? fileSystem = null, IFileSystem.ErrorHandler? onError = null)
     {
@@ -58,7 +72,8 @@ public class AssetManager
                 {
                     case FileType.BundleFile:
                     {
-                        var bundleFile = new BundleFile(file, lazyLoad: false);
+                        var bundleFile = new BundleFile(file);
+                        bundleFile.ParseFilesWithTypeConversion(this);
                         foreach (var fw in bundleFile.Files)
                         {
                             fileWrappers.Add((fw.Info.Path, fw.File));
@@ -89,8 +104,9 @@ public class AssetManager
                 progress?.Report(new LoadProgress($"AssetManager: Loading {file.Name}", total, currentProgress));
             });
             
-            BlockReader.RemoveSingleReferenceBlocks();
-            BlockReader.Cache = new(maxSize: BlockReader.TotalBlockSize * 3 / 4); // it works good for BuildSceneHierarchy
+            RemoveSingleReferenceBlocks();
+            BlockReader.Cache = new(maxSize: TotalBlockSize * 3 / 4); // it works good for BuildSceneHierarchy
+            BlockReader.AssetToBlockCache = AssetToBlockCache;
             
             var tmpLoadedFilesDict = new Dictionary<string, IFile>();
             
@@ -217,6 +233,63 @@ public class AssetManager
         }
 
         return null;
+    }
+    
+    public static void OnAssetParsed(Asset asset)
+    {
+        var sf = asset.SourceFile;
+        if (sf.ReaderProvider is SlicedReaderProvider srp)
+        {
+            if (srp.BaseReaderProvider is BlockReaderProvider brp)
+            {
+                var offset = srp.Offset;
+                var blocks = brp.Blocks;
+                var pos = offset + sf.Header.DataOffset + asset.Info.ByteOffset;
+                var index = BlockReader.FindBlockIndex(blocks, pos);
+                while (index < blocks.Length && pos + asset.Info.ByteSize > blocks[index].UncompressedOffset)
+                {
+                    var key = new BlockCacheKey(brp.File, index);
+                    var size = blocks[index].UncompressedSize;
+                    var newStats = AssetToBlockCache.AddOrUpdate(key,
+                        addValue: (-1, 1, 0),
+                        updateValueFactory: (_, existing) =>
+                            (existing.parsed + 1, existing.total, size));
+                    // this over counted because currently asset uses WeakReference
+                    // but it somehow makes it fast and low memory cost
+                    // need more test
+                    if (newStats.parsed == newStats.total)
+                    {
+                        BlockReader.Cache.Remove(key);
+                    }
+
+                    index++;
+                }
+            }
+        }
+    }
+    
+    public void RegisterAssetToBlockMap(SlicedReaderProvider srp, BlockReaderProvider brp, SerializedFile sf)
+    {
+        var offset = srp.Offset;
+        var blocks = brp.Blocks;
+        foreach (var info in sf.Metadata.AssetInfos)
+        {
+            var pos = offset + sf.Header.DataOffset + info.ByteOffset;
+            var index = BlockReader.FindBlockIndex(blocks, pos);
+            while (index < blocks.Length && pos + info.ByteSize > blocks[index].UncompressedOffset)
+            {
+                var block = blocks[index];
+                index++;
+                if (block.CompressionType == CompressionType.None)
+                    continue;
+                var key = new BlockCacheKey(brp.File, index);
+                var size = block.UncompressedSize;
+                AssetToBlockCache.AddOrUpdate(key,
+                    addValue: (0, 1, size),
+                    updateValueFactory: (k, existing) =>
+                        (existing.parsed, existing.total + 1, size));
+            }
+        }
     }
 
     public void Clear()

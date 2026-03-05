@@ -8,8 +8,8 @@ using UnityAsset.NET.Enums;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
-using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
-using UnityAsset.NET.TypeTree.PreDefined.Types;
+using UnityAsset.NET.Types.PreDefined.Interfaces;
+using UnityAsset.NET.Types.PreDefined.Types;
 
 namespace UnityAsset.NET.AssetHelper;
 

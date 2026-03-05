@@ -1,5 +1,5 @@
 using UnityAsset.NET.Files.SerializedFiles;
-using UnityAsset.NET.TypeTree.PreDefined.Interfaces;
+using UnityAsset.NET.Types.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.Extensions;
 

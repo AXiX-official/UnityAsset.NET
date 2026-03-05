@@ -1,0 +1,28 @@
+<Project>
+    <PropertyGroup>
+        <Authors>AXiX</Authors>
+        <Copyright>AXiX</Copyright>
+        <PackageProjectUrl>https://github.com/AXiX-official/UnityAsset.NET</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/AXiX-official/UnityAsset.NET</RepositoryUrl>
+        <PackageTags>Unity</PackageTags>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <WarningsAsErrors>nullable</WarningsAsErrors>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <PackageOutputPath>$(SolutionDir)artifacts\</PackageOutputPath>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="$(SolutionDir)LICENSE" Pack="true" PackagePath="\" />
+        <None Include="$(SolutionDir)README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+</Project>

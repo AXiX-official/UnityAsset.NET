@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using UnityAsset.NET.BundleFiles;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
@@ -65,14 +66,6 @@ public sealed class SerializedFile : IFile
             assets.Add(new Asset(sf, assetInfo));
         }
         sf.Process();
-
-        if (readerProvider is SlicedReaderProvider srp)
-        {
-            if (srp.BaseReaderProvider is BlockReaderProvider brp)
-            {
-                BlockReader.RegisterAssetToBlockMap(srp, brp, sf);
-            }
-        }
         
         return sf;
     }
@@ -112,6 +105,13 @@ public sealed class SerializedFile : IFile
     {
         using var output = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
         Serialize(output, false);
+    }
+
+    public ulong WriteBytes(IWriter writer)
+    {
+        var pos = writer.Position;
+        Serialize(writer);
+        return (ulong)(writer.Position - pos);
     }
 
     public override string ToString()

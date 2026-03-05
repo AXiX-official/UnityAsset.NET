@@ -20,10 +20,10 @@ public class UnityTypeCompiler
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Text")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.IO")),
-            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree")),
-            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree.PreDefined")),
-            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree.PreDefined.Types")),
-            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.TypeTree.PreDefined.Interfaces"))
+            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.Types")),
+            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.Types.PreDefined")),
+            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.Types.PreDefined.Types")),
+            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.Types.PreDefined.Interfaces"))
         ]);
 
         var namespaceDeclaration = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName("UnityAsset.NET.RuntimeTypes"));

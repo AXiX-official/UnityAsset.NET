@@ -1,9 +1,8 @@
-﻿using UnityAsset.NET.Enums;
-
-namespace UnityAsset.NET.FileSystem.DirectFileSystem;
+﻿namespace UnityAsset.NET.FileSystem.DirectFileSystem;
 
 public class DirectFileSystem : IFileSystem
 {
+    public bool RecordUnknownFiles { get; set; }
     public IFileSystem.ErrorHandler? OnError { get; set; }
     public List<IVirtualFileInfo> LoadedFiles { get; private set; } = new();
 
@@ -25,7 +24,7 @@ public class DirectFileSystem : IFileSystem
                 {
                     var file = new DirectFileInfo(path);
                     progress?.Report(new LoadProgress($"DirectFileSystem: Loading {file.Name}", totalFiles, i));
-                    if (file.FileType != FileType.Unknown)
+                    if (file.FileType != FileType.Unknown || RecordUnknownFiles)
                         files.Add(file);
                 }
                 catch (Exception ex)

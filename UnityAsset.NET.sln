@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityAsset.NET.TypeTreeHelp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityAsset.NET.Variant.SourceGenerator", "UnityAsset.NET.Variant.SourceGenerator\UnityAsset.NET.Variant.SourceGenerator.csproj", "{4F854345-6543-4466-8B30-FAAE60681DA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityAsset.NET.Core", "UnityAsset.NET.Core\UnityAsset.NET.Core.csproj", "{B2EDD9B6-4981-49A9-BCCC-E82E3505B7B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityAsset.NET.BundleFiles", "UnityAsset.NET.BundleFiles\UnityAsset.NET.BundleFiles.csproj", "{27E57ADD-F310-4D51-98C8-9D27C12A2E72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{4F854345-6543-4466-8B30-FAAE60681DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F854345-6543-4466-8B30-FAAE60681DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F854345-6543-4466-8B30-FAAE60681DA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2EDD9B6-4981-49A9-BCCC-E82E3505B7B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2EDD9B6-4981-49A9-BCCC-E82E3505B7B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2EDD9B6-4981-49A9-BCCC-E82E3505B7B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2EDD9B6-4981-49A9-BCCC-E82E3505B7B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27E57ADD-F310-4D51-98C8-9D27C12A2E72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27E57ADD-F310-4D51-98C8-9D27C12A2E72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27E57ADD-F310-4D51-98C8-9D27C12A2E72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27E57ADD-F310-4D51-98C8-9D27C12A2E72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

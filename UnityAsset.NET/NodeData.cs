@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using UnityAsset.NET.IO;
-using UnityAsset.NET.TypeTree.PreDefined.Types;
+using UnityAsset.NET.Types.PreDefined.Types;
 using UnityAsset.NET.TypeTreeHelper;
 
 namespace UnityAsset.NET;
