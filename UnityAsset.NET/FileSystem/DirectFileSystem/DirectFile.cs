@@ -13,11 +13,11 @@ public class DirectFile : IVirtualFile, IEquatable<DirectFile>
         _start = start;
         Length = length;
     }
-    
+
     public SafeFileHandle Handle { get; }
-    
+
     public long Length { get; }
-    
+
     public long Position
     {
         get => _position;
@@ -28,14 +28,21 @@ public class DirectFile : IVirtualFile, IEquatable<DirectFile>
             _position = value;
         }
     }
-    
+
     public virtual uint Read(Span<byte> buffer, uint offset, uint count)
     {
-        var toRead = Math.Min(count, Length - _position);
+        if (offset > (uint)buffer.Length || count > (uint)buffer.Length - offset)
+            throw new ArgumentOutOfRangeException(
+                nameof(count),
+                $"Reading {count} bytes at offset {offset} does not fit in a {buffer.Length}-byte buffer.");
+
+        var toRead = (int)Math.Min(count, (uint)Math.Max(0, Length - _position));
+        if (toRead == 0)
+            return 0;
 
         int read = RandomAccess.Read(
             Handle,
-            buffer.Slice((int)offset, (int)toRead),
+            buffer.Slice((int)offset, toRead),
             _start + _position);
 
         _position += read;
@@ -48,7 +55,7 @@ public class DirectFile : IVirtualFile, IEquatable<DirectFile>
         ret.Position = Position;
         return ret;
     }
-    
+
     public bool Equals(DirectFile? other)
     {
         if (ReferenceEquals(this, other))

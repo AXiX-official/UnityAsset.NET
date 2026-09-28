@@ -1,0 +1,51 @@
+name: tests
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  test:
+    name: build and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The test project targets net10.0 and the libraries multi-target down to netstandard2.1, so the newest SDK in the
+      # matrix is the one that has to be present.
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # Restore and build separately so a compile error is reported before any test host is started.
+      - name: Restore
+        run: dotnet restore UnityAsset.NET.sln
+
+      - name: Build
+        run: dotnet build UnityAsset.NET.sln --no-restore --configuration Release
+
+      - name: Test
+        run: >
+          dotnet test tests/UnityAsset.NET.Tests/UnityAsset.NET.Tests.csproj
+          --no-build
+          --configuration Release
+          --logger "trx;LogFileName=results.trx"
+          --results-directory TestResults
+
+      - name: Upload test results
+        # Always: a failed run is exactly when the report is worth having.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+          if-no-files-found: ignore

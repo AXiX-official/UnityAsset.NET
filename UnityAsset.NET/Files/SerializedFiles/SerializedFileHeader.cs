@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.IO;
@@ -14,7 +14,7 @@ public sealed class SerializedFileHeader
     public Endianness Endianness;
     public byte[] Reserved;
     public Int64 Unknown;
-    
+
     public SerializedFileHeader(UInt32 metadataSize, UInt64 fileSize, SerializedFileFormatVersion version,
         UInt64 dataOffset, Endianness endianness, byte[] reserved, Int64 unknown = 0)
     {
@@ -26,7 +26,7 @@ public sealed class SerializedFileHeader
         Reserved = reserved;
         Unknown = unknown;
     }
-    
+
     public static SerializedFileHeader Parse(IReader reader)
     {
         var metadataSize = reader.ReadUInt32();
@@ -36,11 +36,11 @@ public sealed class SerializedFileHeader
 
         if (version < SerializedFileFormatVersion.RefactorTypeData)
             throw new Exception($"Unsupported version: {version}. Only support 2017.x or later.");
-        
+
         var endianness = (Endianness)reader.ReadByte();
         var reserved = reader.ReadBytes(3);
         Int64 unknown = 0;
-        
+
         if (version >= SerializedFileFormatVersion.LargeFilesSupport)
         {
             metadataSize = reader.ReadUInt32();
@@ -48,7 +48,7 @@ public sealed class SerializedFileHeader
             dataOffset = reader.ReadUInt64();
             unknown = reader.ReadInt64(); // unknown
         }
-        
+
         return new SerializedFileHeader(metadataSize, fileSize, version, dataOffset, endianness, reserved, unknown);
     }
 
@@ -68,7 +68,7 @@ public sealed class SerializedFileHeader
             writer.WriteUInt32((uint)Version);
             writer.WriteUInt32((uint)DataOffset);
         }
-        
+
         writer.WriteByte((byte)Endianness);
         writer.WriteBytes(Reserved);
 
@@ -80,7 +80,7 @@ public sealed class SerializedFileHeader
             writer.WriteInt64(Unknown); // unknown
         }
     }
-    
+
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();

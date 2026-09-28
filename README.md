@@ -1,4 +1,4 @@
-﻿# UnityAsset.NET
+# UnityAsset.NET
 
 ---
 
@@ -32,6 +32,15 @@ Only support Unity 2017.x or later.
 - [ ] ~~Serialization~~ (Temporarily removed)
 - [ ] ~~Patching~~ (Temporarily removed)
 
+## Testing
+
+The tests were written with an LLM rather than by hand. They are a regression net rather than a specification: they
+pin what the code does today, so treat a change in their expectations as something to review rather than to trust.
+
+```bash
+dotnet test tests/UnityAsset.NET.Tests/UnityAsset.NET.Tests.csproj
+```
+
 ## Examples
 
 ---
@@ -49,6 +58,10 @@ or
 // Plain string format (16 characters)
 BundleFile bf = new BundleFile( @"path to your bundlefile", "XxecodrPeGaka2e6");
 ```
+or, per session, so two games with different keys can be loaded at once:
+```csharp
+using var session = new AssetManager(options: new UnitySessionOptions { UnityCnKey = "XxecodrPeGaka2e6" });
+```
 
 ~~To remove Unity CN Encryption form File, you can simply save `BundleFile` without key~~
 ```csharp
@@ -61,6 +74,10 @@ bf.Serialize(@"path to save file", CompressionType.Lz4HC, CompressionType.Lz4HC)
 Some `BundleFile`'s version may be stripped, to load those file you can set a specific version
 ```csharp
 Setting.DefaultUnityVerion = "2020.3.48f1"
+```
+or per session, which also applies to the serialized files inside a bundle:
+```csharp
+using var session = new AssetManager(options: new UnitySessionOptions { DefaultUnityVersion = "2020.3.48f1" });
 ```
 
 ## Roadmap

@@ -1,25 +1,43 @@
-﻿using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
+using UnityAsset.NET.TypeTreeHelper;
 using UnityAsset.NET.Types.PreDefined;
 
 namespace UnityAsset.NET.Types;
 
-public static class UnityObjectFactory
+public sealed class UnityObjectFactory
 {
-    public static IUnityAsset Create(SerializedType sType, IReader reader)
+    private readonly IReadOnlyDictionary<Hash128, TypeTreeRepr> _catalog;
+    private readonly TypeRegistry _typeRegistry;
+
+    public UnityObjectFactory(IReadOnlyDictionary<Hash128, TypeTreeRepr> catalog, TypeRegistry typeRegistry)
     {
+        ArgumentNullException.ThrowIfNull(catalog);
+        ArgumentNullException.ThrowIfNull(typeRegistry);
+
+        _catalog = catalog;
+        _typeRegistry = typeRegistry;
+    }
+
+    public IUnityAsset Create(SerializedType sType, IReader reader)
+    {
+        ArgumentNullException.ThrowIfNull(sType);
+
+        // Script classes carry their own type tree, so they are parsed through the catalog instead of generated code.
         if (sType.ToTypeName() == "MonoBehaviour")
         {
-            return new PreDefined.Types.MonoBehaviour(reader, AssetManager.LoadedTypes[sType.TypeHash]);
-        }
-        
-        var generatedType = AssemblyManager.GetType(sType);
+            if (!_catalog.TryGetValue(sType.TypeHash, out var repr))
+                throw new NotSupportedException(
+                    $"MonoBehaviour is not part of this catalog ({sType.Describe()}). The file it belongs to was " +
+                    "not loaded through the session that owns this factory.");
 
-        if (generatedType == null)
-        {
-            throw new Exception($"Type {sType.TypeID} not found");
+            return new PreDefined.Types.MonoBehaviour(reader, repr);
         }
-        var instance = Activator.CreateInstance(generatedType, args: [ reader ]);
-        return (IUnityAsset)(instance ?? throw new InvalidOperationException("Activator.CreateInstance unexpectedly returned null for type: " + generatedType.FullName));
+
+        // TypeRegistry.GetType throws when the hash is not part of the compiled assembly.
+        var generatedType = _typeRegistry.GetType(sType);
+        var instance = Activator.CreateInstance(generatedType, args: [reader]);
+        return (IUnityAsset)(instance ?? throw new InvalidOperationException(
+            "Activator.CreateInstance unexpectedly returned null for type: " + generatedType.FullName));
     }
 }

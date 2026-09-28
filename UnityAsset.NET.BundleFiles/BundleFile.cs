@@ -34,6 +34,10 @@ namespace UnityAsset.NET.BundleFiles
         /// </summary>
         public readonly string? UnityCnKey;
 
+        public readonly string? DefaultUnityVersion;
+
+        public readonly BlockCacheContext BlockCache;
+
         public IVirtualFileInfo? SourceVirtualFile { get; private set; }
 
         public static UnityCN? ParseUnityCnInfo(IReader reader, Header header, string? key)
@@ -91,24 +95,30 @@ namespace UnityAsset.NET.BundleFiles
             return dataInfo;
         }
 
-        public BundleFile(Header header, BlocksAndDirectoryInfo dataInfo, List<FileWrapper> files, string? key = null)
+        public BundleFile(Header header, BlocksAndDirectoryInfo dataInfo, List<FileWrapper> files, string? key = null,
+            BlockCacheContext? blockCache = null)
         {
             UnityCnKey = key;
             Header = header;
             DataInfo = dataInfo;
             Files = files;
+            BlockCache = blockCache ?? BlockCacheContext.Shared;
         }
 
-        public BundleFile(IVirtualFileInfo fileInfo, string? key = null)
+        public BundleFile(IVirtualFileInfo fileInfo, string? key = null, string? defaultUnityVersion = null,
+            BlockCacheContext? blockCache = null)
         {
             var cfrProvider = new CustomFileReaderProvider(fileInfo);
             var reader = cfrProvider.CreateReader();
             UnityCnKey = key;
+            BlockCache = blockCache ?? BlockCacheContext.Shared;
             Header = Header.Parse(reader);
             if (Header.UnityRevision == "0.0.0")
             {
-                Header.UnityRevision = Setting.DefaultUnityVerion;
+                Header.UnityRevision = defaultUnityVersion ?? Setting.DefaultUnityVerion;
             }
+
+            DefaultUnityVersion = Header.UnityRevision.ToString();
 
             UnityCnInfo = ParseUnityCnInfo(reader, Header, UnityCnKey);
             UnityCnKey = UnityCnInfo?.Key;
@@ -117,7 +127,7 @@ namespace UnityAsset.NET.BundleFiles
 
             var blockReaderProvider = new BlockReaderProvider(DataInfo.BlocksInfo, new SliceFile(fileInfo.GetFile(),
                 (ulong)reader.Position,
-                (ulong)(reader.Length - reader.Position)), UnityCnInfo);
+                (ulong)(reader.Length - reader.Position)), UnityCnInfo, BlockCache);
             Files = new List<FileWrapper>();
             foreach (var dir in DataInfo.DirectoryInfo)
             {

@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityAsset.NET.Core", "Unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityAsset.NET.BundleFiles", "UnityAsset.NET.BundleFiles\UnityAsset.NET.BundleFiles.csproj", "{27E57ADD-F310-4D51-98C8-9D27C12A2E72}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityAsset.NET.Tests", "tests\UnityAsset.NET.Tests\UnityAsset.NET.Tests.csproj", "{05E80A46-B2D2-40D0-9FFF-94DA9A2D5D9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{27E57ADD-F310-4D51-98C8-9D27C12A2E72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27E57ADD-F310-4D51-98C8-9D27C12A2E72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27E57ADD-F310-4D51-98C8-9D27C12A2E72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05E80A46-B2D2-40D0-9FFF-94DA9A2D5D9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05E80A46-B2D2-40D0-9FFF-94DA9A2D5D9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05E80A46-B2D2-40D0-9FFF-94DA9A2D5D9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05E80A46-B2D2-40D0-9FFF-94DA9A2D5D9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

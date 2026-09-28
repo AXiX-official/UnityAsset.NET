@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
@@ -33,11 +33,11 @@ public class StreamingInfo  : IPreDefinedObject
         return root;
     }
 
-    public bool TryGetData(AssetManager mgr, [NotNullWhen(true)]out TypelessData? data)
+    public bool TryGetData(IUnitySession session, [NotNullWhen(true)]out TypelessData? data)
     {
         data = null;
         var filePath = path.Split("/")[^1];
-        if (mgr.LoadedFiles.TryGetValue(filePath, out var file))
+        if (session.TryGetLoadedFile(filePath, out var file))
         {
             if (file is IReaderProvider rp)
             {

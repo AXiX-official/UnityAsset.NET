@@ -2,9 +2,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces;
 
 public partial interface ISkinnedMeshRenderer : IComponent, Renderer
 {
-    public IMesh? TryGetMesh(AssetManager mgr)
+    public IMesh? TryGetMesh(IUnitySession session)
     {
-        if (m_Mesh.TryGet(mgr, out var mesh))
+        if (m_Mesh.TryGet(session, out var mesh))
         {
             return mesh;
         }

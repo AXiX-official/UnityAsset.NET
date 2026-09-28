@@ -7,3 +7,4 @@ riderModule.iml
 .vs
 UnityAsset.NET.sln.DotSettings.user
 artifacts/
+TestResults/

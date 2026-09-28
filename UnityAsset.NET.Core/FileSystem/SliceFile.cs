@@ -18,7 +18,7 @@ namespace UnityAsset.NET.FileSystem
             Length = (long)length;
             Position = 0;
         }
-    
+
         public SafeFileHandle Handle { get; }
         public long Length { get; }
         public long Position
@@ -35,18 +35,31 @@ namespace UnityAsset.NET.FileSystem
 
         public uint Read(Span<byte> buffer, uint offset, uint count)
         {
-            if (Position + count > Length)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            return _source.Read(buffer, offset, count);
+            if (offset > (uint)buffer.Length || count > (uint)buffer.Length - offset)
+                throw new ArgumentOutOfRangeException(
+                    nameof(count),
+                    $"Reading {count} bytes at offset {offset} does not fit in a {buffer.Length}-byte buffer.");
+
+            var remaining = Length - _position;
+            if (remaining <= 0)
+                return 0;
+
+            var sliceCount = Math.Min(count, (uint)remaining);
+
+            _source.Position = (long)_offset + _position;
+            var read = _source.Read(buffer, offset, sliceCount);
+
+            _position += read;
+            return read;
         }
-    
+
         public virtual IVirtualFile Clone()
         {
             var ret = new SliceFile(_source, _offset, (ulong)Length);
             ret.Position = Position;
             return ret;
         }
-    
+
         public bool Equals(SliceFile? other)
         {
             if (ReferenceEquals(this, other))

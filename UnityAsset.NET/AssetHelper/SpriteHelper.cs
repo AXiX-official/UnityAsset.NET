@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -58,30 +58,30 @@ public static class SpriteHelper
         }
     }
     
-    public static Image<Bgra32> GetImage(AssetManager assetManager, ISprite m_Sprite)
+    public static Image<Bgra32> GetImage(IUnitySession session, ISprite m_Sprite)
     {
-        if (m_Sprite.m_SpriteAtlas.TryGet(assetManager, out var m_SpriteAtlas))
+        if (m_Sprite.m_SpriteAtlas.TryGet(session, out var m_SpriteAtlas))
         {
             var spriteAtlasData = Array.Find(m_SpriteAtlas.m_RenderDataMap, rdm => rdm.Item1.Equals(m_Sprite.m_RenderDataKey)).Item2;
-            if (spriteAtlasData != null && spriteAtlasData.texture.TryGet(assetManager, out var m_Texture2D))
+            if (spriteAtlasData != null && spriteAtlasData.texture.TryGet(session, out var m_Texture2D))
             {
-                return CutImage(assetManager, m_Sprite, m_Texture2D, spriteAtlasData.textureRect, spriteAtlasData.textureRectOffset, spriteAtlasData.downscaleMultiplier, (SpriteSettings)spriteAtlasData.settingsRaw);
+                return CutImage(session, m_Sprite, m_Texture2D, spriteAtlasData.textureRect, spriteAtlasData.textureRectOffset, spriteAtlasData.downscaleMultiplier, (SpriteSettings)spriteAtlasData.settingsRaw);
             }
             throw new Exception("SpriteAtlas RenderDataMap not found");
         }
         else
         {
-            if (m_Sprite.m_RD.texture.TryGet(assetManager, out var m_Texture2D))
+            if (m_Sprite.m_RD.texture.TryGet(session, out var m_Texture2D))
             {
-                return CutImage(assetManager, m_Sprite, m_Texture2D, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.downscaleMultiplier, (SpriteSettings)m_Sprite.m_RD.settingsRaw);
+                return CutImage(session, m_Sprite, m_Texture2D, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.downscaleMultiplier, (SpriteSettings)m_Sprite.m_RD.settingsRaw);
             }
             throw new Exception("Sprite RenderData texture not found");
         }
     }
     
-    private static Image<Bgra32> CutImage(AssetManager assetManager, ISprite m_Sprite, ITexture2D m_Texture2D, Rectf textureRect, Vector2f textureRectOffset, float downscaleMultiplier, SpriteSettings settingsRaw)
+    private static Image<Bgra32> CutImage(IUnitySession session, ISprite m_Sprite, ITexture2D m_Texture2D, Rectf textureRect, Vector2f textureRectOffset, float downscaleMultiplier, SpriteSettings settingsRaw)
     {
-        using var originalImage = assetManager.DecodeTexture2DToImage(m_Texture2D, false);
+        using var originalImage = session.DecodeTexture2DToImage(m_Texture2D, false);
         
         if (downscaleMultiplier > 0f && downscaleMultiplier != 1f)
         {
@@ -122,7 +122,7 @@ public static class SpriteHelper
         {
             try
             {
-                var triangles = GetTriangles(m_Sprite.m_RD, assetManager.Version!);
+                var triangles = GetTriangles(m_Sprite.m_RD, session.Version!);
                 var polygons = triangles.Select(x => new Polygon(new LinearLineSegment(x.Select(y => new PointF(y.x, y.y)).ToArray()))).ToArray();
                 IPathCollection path = new PathCollection(polygons);
                 var matrix = Matrix3x2.CreateScale(m_Sprite.m_PixelsToUnits);

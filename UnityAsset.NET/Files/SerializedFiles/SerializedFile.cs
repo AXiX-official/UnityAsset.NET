@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using UnityAsset.NET.BundleFiles;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
@@ -17,13 +17,13 @@ public sealed class SerializedFile : IFile
     public IVirtualFileInfo? SourceVirtualFileInfo { get; private set; }
     public readonly Dictionary<Int64, Asset> PathToAsset = new();
     public IReaderProvider ReaderProvider { get; }
-    
-    public SerializedFile(SerializedFileHeader header, SerializedFileMetadata metadata, List<Asset> assets, IReaderProvider readerProvider, BundleFile? parentBundle)
+
+    public SerializedFile(SerializedFileHeader header, SerializedFileMetadata metadata, List<Asset> assets, IReaderProvider readerProvider, BundleFile? parentBundle, string? defaultUnityVersion = null)
     {
         Header = header;
         Metadata = metadata;
         if (string.IsNullOrEmpty(Metadata.UnityVersion))
-            Metadata.UnityVersion = Setting.DefaultUnityVerion;
+            Metadata.UnityVersion = defaultUnityVersion ?? parentBundle?.DefaultUnityVersion ?? Setting.DefaultUnityVerion;
         Assets = assets;
         ReaderProvider = readerProvider;
         ParentBundle = parentBundle;
@@ -31,7 +31,7 @@ public sealed class SerializedFile : IFile
         Process();
     }
 
-    public SerializedFile(IVirtualFileInfo fileInfo)
+    public SerializedFile(IVirtualFileInfo fileInfo, string? defaultUnityVersion = null)
     {
         ReaderProvider = new CustomFileReaderProvider(fileInfo);
         var reader = ReaderProvider.CreateReader();
@@ -39,17 +39,17 @@ public sealed class SerializedFile : IFile
         reader.Endian = Header.Endianness;
         Metadata = SerializedFileMetadata.Parse(reader, Header.Version);
         if (string.IsNullOrEmpty(Metadata.UnityVersion))
-            Metadata.UnityVersion = Setting.DefaultUnityVerion;
+            Metadata.UnityVersion = defaultUnityVersion ?? Setting.DefaultUnityVerion;
         foreach (var assetInfo in Metadata.AssetInfos.AsSpan())
         {
             Assets.Add(new Asset(this, assetInfo));
         }
-        
+
         SourceVirtualFileInfo = fileInfo;
         Process();
     }
-    
-    public static SerializedFile Parse(BundleFile bf, IReaderProvider readerProvider)
+
+    public static SerializedFile Parse(BundleFile bf, IReaderProvider readerProvider, string? defaultUnityVersion = null)
     {
         var reader = readerProvider.CreateReader();
         var header = SerializedFileHeader.Parse(reader);
@@ -57,7 +57,7 @@ public sealed class SerializedFile : IFile
         var metadata = SerializedFileMetadata.Parse(reader, header.Version);
         if (metadata.UnityVersion == "0.0.0")
         {
-            metadata.UnityVersion = Setting.DefaultUnityVerion;
+            metadata.UnityVersion = defaultUnityVersion ?? bf.DefaultUnityVersion ?? Setting.DefaultUnityVerion;
         }
         var assets = new List<Asset>();
         var sf = new SerializedFile(header, metadata, assets, readerProvider, bf);
@@ -66,7 +66,7 @@ public sealed class SerializedFile : IFile
             assets.Add(new Asset(sf, assetInfo));
         }
         sf.Process();
-        
+
         return sf;
     }
 
@@ -77,7 +77,7 @@ public sealed class SerializedFile : IFile
             PathToAsset.Add(asset.PathId, asset);
         }
     }
-    
+
     public void Serialize(IWriter writer)
     {
         var pos = writer.Position;
@@ -89,18 +89,26 @@ public sealed class SerializedFile : IFile
         foreach (var asset in assets)
         {
             var assetOffset = Header.DataOffset + asset.Info.ByteOffset;
-            var bytesToSkip = (ulong)pos + assetOffset - (ulong)writer.Position;
-            writer.WriteBytes(0, bytesToSkip);
+            var target = (ulong)pos + assetOffset;
+            // Unsigned distance, so an asset whose offset is already behind the cursor would underflow into an enormous
+            // padding request instead of an error: writing 2^64 zero bytes is not a diagnosable failure, so it is
+            // refused here.
+            if (target < (ulong)writer.Position)
+                throw new InvalidOperationException(
+                    $"Asset {asset.PathId} is placed at offset {assetOffset}, which overlaps what has already been " +
+                    $"written (position {writer.Position - pos}). The file's DataOffset is too small, or two assets overlap.");
+
+            writer.WriteBytes(0, target - (ulong)writer.Position);
             writer.WriteBytes(asset.DataReader);
         }
     }
-    
+
     public void Serialize(Stream output, bool leaveOpen = true)
     {
         using var writer = new CustomStreamWriter(output, leaveOpen: leaveOpen);
         Serialize(writer);
     }
-    
+
     public void Serialize(string path)
     {
         using var output = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);

@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
@@ -19,7 +19,7 @@ public sealed class SerializedType
     public int[]? TypeDependencies;
     public SerializedTypeReference? TypeReference;
     public bool IsNamed;
-    
+
     public SerializedType(Int32 typeId, bool isStrippedType, Int16 scriptTypeIndex, Hash128? scriptIdHash, Hash128 typeHash, bool isRefType, TypeTreeNode[] nodes, byte[]? stringBufferBytes, int[]? typeDependencies, SerializedTypeReference? typeReference)
     {
         TypeID = typeId;
@@ -28,22 +28,26 @@ public sealed class SerializedType
         ScriptIdHash = scriptIdHash;
         TypeHash = typeHash;
         IsRefType = isRefType;
-        (Nodes, IsNamed) = TypeTreeNode.GetOrAdd(typeHash, (nodes, typeId));
+
+        var entry = TypeTreeIntern.GetOrAdd(typeHash, nodes, typeId);
+        Nodes = entry.Nodes;
+        IsNamed = entry.Repr?.IsNamed ?? false;
+
         StringBufferBytes = stringBufferBytes;
         TypeDependencies = typeDependencies;
         TypeReference = typeReference;
     }
-    
+
     public static SerializedType Parse(IReader reader, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
     {
-        var typeID = reader.ReadInt32();
+        var typeId = reader.ReadInt32();
         var isStrippedType = reader.ReadBoolean();
         var scriptTypeIndex = reader.ReadInt16();
         Hash128? scriptIdHash = null;
-        if ((version >= RefactorTypeData && typeID == (int)AssetClassID.MonoBehaviour) ||
+        if ((version >= RefactorTypeData && typeId == (int)AssetClassID.MonoBehaviour) ||
             (isRefType && scriptTypeIndex >= 0))
         {
-            scriptIdHash = new Hash128(reader); 
+            scriptIdHash = new Hash128(reader);
         }
         var typeHash = new Hash128(reader);
         TypeTreeNode[] nodes = [];
@@ -69,7 +73,7 @@ public sealed class SerializedType
                 throw new Exception(
                     $"The first node of TypeTreeNodes should have a level of 0 but gets {nodes[0].Level}");
             }
-            
+
             if (version >= StoresTypeDependencies)
             {
                 if (isRefType)
@@ -78,7 +82,7 @@ public sealed class SerializedType
                     typeDependencies = reader.ReadArray(r => r.ReadInt32());
             }
         }
-        return new SerializedType(typeID, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);
+        return new SerializedType(typeId, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);
     }
 
     private static string ReadString(IReader reader, uint value)
@@ -143,11 +147,24 @@ public sealed class SerializedType
         sb.AppendLine();
         return sb.ToString();
     }
-    
+
     public string ToTypeName()
     {
         if (Nodes.Length == 0)
             return ((AssetClassID)TypeID).ToString();
         return Nodes[0].Type;
+    }
+
+    public string Describe()
+    {
+        ArgumentNullException.ThrowIfNull(this);
+
+        var name = ToTypeName();
+        var className = string.IsNullOrEmpty(name) ? "(unnamed)" : name;
+        var hash = TypeHash.data is { Length: > 0 } data
+            ? Convert.ToHexString(data)
+            : "(none)";
+
+        return $"{className} (class id {TypeID}, hash {hash})";
     }
 }

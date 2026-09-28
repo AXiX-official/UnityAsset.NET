@@ -1,4 +1,4 @@
-﻿using UnityAsset.NET.BundleFiles;
+using UnityAsset.NET.BundleFiles;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
@@ -7,7 +7,7 @@ namespace UnityAsset.NET.Extensions;
 
 public static class BundleFileExtensions
 {
-    public static void ParseFilesWithTypeConversion(this BundleFile bf, AssetManager mgr)
+    public static void ParseFilesWithTypeConversion(this BundleFile bf)
     {
         for (int i = 0; i < bf.Files.Count; i++)
         {
@@ -15,18 +15,11 @@ public static class BundleFileExtensions
             if (subFile is { CanBeSerializedFile: true, File: IReaderProvider provider})
             {
                 var sf = SerializedFile.Parse(bf, provider);
-                if (provider is SlicedReaderProvider srp)
-                {
-                    if (srp.BaseReaderProvider is BlockReaderProvider brp)
-                    {
-                        mgr.RegisterAssetToBlockMap(srp, brp, sf);
-                    }
-                }
                 bf.Files[i] = new FileWrapper(sf, subFile.Info);
             }
         }
     }
-    
+
     public static List<Asset> Assets(this BundleFile bf) =>
         bf.Files
             .Where(file => file.File is SerializedFile)
@@ -53,7 +46,7 @@ public static class BundleFileExtensions
 
         return crc;
     }
-    
+
     public static void PatchCrc32(this BundleFile bf, uint newCrc32)
     {
         var oldCrc = bf.CalculateCrc32();

@@ -46,12 +46,12 @@ public class PPtr<T> : IPPtr where T : IUnityObject
         return root;
     }
     
-    public bool TryGet(AssetManager assetManager, [NotNullWhen(true)] out T? result)
+    public bool TryGet(IUnitySession session, [NotNullWhen(true)] out T? result)
     {
         result = default;
         if (m_PathID == 0)
             return false;
-        if (TryGetAssetsFile(assetManager, out var sourceFile))
+        if (TryGetAssetsFile(session, out var sourceFile))
         {
             if (sourceFile.PathToAsset.TryGetValue(m_PathID, out var obj))
             {
@@ -66,7 +66,7 @@ public class PPtr<T> : IPPtr where T : IUnityObject
         return false;
     }
 
-    private bool TryGetAssetsFile(AssetManager assetManager, [NotNullWhen(true)] out SerializedFile? sf)
+    private bool TryGetAssetsFile(IUnitySession session, [NotNullWhen(true)] out SerializedFile? sf)
     {
         sf = null;
         if (m_FileID == 0)
@@ -79,7 +79,7 @@ public class PPtr<T> : IPPtr where T : IUnityObject
         if (m_FileID > 0 && m_FileID - 1 < externals.Length)
         {
             var m_External = externals[m_FileID - 1];
-            var fileFound = assetManager.LoadedFiles.TryGetValue(m_External.FileName, out var sfw);
+            var fileFound = session.TryGetLoadedFile(m_External.FileName, out var sfw);
             if (fileFound)
             {
                 if (sfw is SerializedFile serializedFile)

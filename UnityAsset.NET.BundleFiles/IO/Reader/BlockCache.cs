@@ -84,6 +84,9 @@ namespace UnityAsset.NET.IO.Reader
             _cache.Remove(key);
         }
 
+        /// <summary>Number of blocks currently held.</summary>
+        public int Count => _cache.Count;
+
         public void Reset(long maxSize)
         {
             _cache.Dispose();

@@ -18,11 +18,11 @@ namespace UnityAsset.NET.IO
         }
 
         # endregion
-        
+
         public Endianness Endian { get; set; }
         private bool IsLittleEndian => Endian == Endianness.LittleEndian;
         private bool NeedReverse => IsLittleEndian != BitConverter.IsLittleEndian;
-        
+
         public void WriteByte(byte value);
         public void WriteSByte(sbyte value) => WriteByte((byte)value);
         public void WriteBytes(ReadOnlySpan<byte> bytes);
@@ -99,8 +99,10 @@ namespace UnityAsset.NET.IO
         }
         public void WriteSizedString(string value)
         {
-            WriteInt32(value.Length);
-            WriteBytes(Encoding.UTF8.GetBytes(value));
+            var bytes = Encoding.UTF8.GetBytes(value);
+            WriteInt32(bytes.Length);
+            WriteBytes(bytes);
+            Align(4);
         }
         public void WriteList<T>(int count, List<T> list, Action<IWriter, T> writer)
         {
@@ -115,7 +117,7 @@ namespace UnityAsset.NET.IO
             foreach (var item in list)
             {
                 writer(this, item);
-                if (requiresAlign) 
+                if (requiresAlign)
                     Align(4);
             }
         }
@@ -139,7 +141,7 @@ namespace UnityAsset.NET.IO
             foreach (var item in array)
             {
                 writer(this, item);
-                if (requiresAlign) 
+                if (requiresAlign)
                     Align(4);
             }
         }
@@ -149,10 +151,10 @@ namespace UnityAsset.NET.IO
             Action<IWriter, TV> valueWriter, bool keyRequiresAlign, bool valueRequiresAlign) where TK : notnull
         {
             keyWriter(this, value.Item1);
-            if (keyRequiresAlign) 
+            if (keyRequiresAlign)
                 Align(4);
             valueWriter(this, value.Item2);
-            if (valueRequiresAlign) 
+            if (valueRequiresAlign)
                 Align(4);
         }
         public void WriteFixedArray<T>(T[] array, Action<IWriter, T> writer)
@@ -164,4 +166,3 @@ namespace UnityAsset.NET.IO
         public void WriteStream(Stream stream);
     }
 }
-

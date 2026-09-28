@@ -1,4 +1,4 @@
-﻿// based on https://github.com/RazTools/Studio/blob/main/AssetStudio/Classes/Mesh.cs#L478
+// based on https://github.com/RazTools/Studio/blob/main/AssetStudio/Classes/Mesh.cs#L478
 using System.Buffers.Binary;
 using System.Collections;
 using UnityAsset.NET.Enums;
@@ -268,9 +268,9 @@ public static class MeshHelper
         }
     }
     
-    public static ProcessedMesh GetProcessedMesh(AssetManager assetManager, IMesh mesh, Endianness endianness)
+    public static ProcessedMesh GetProcessedMesh(IUnitySession session, IMesh mesh, Endianness endianness)
     {
-        var version = assetManager.Version!;
+        var version = session.Version!;
         
         var processedMesh = new ProcessedMesh();
         
@@ -280,7 +280,7 @@ public static class MeshHelper
         var streamData = mesh.m_StreamData;
         if (streamData is not null && streamData.size > 0)
         {
-            if (streamData.TryGetData(assetManager, out var data))
+            if (streamData.TryGetData(session, out var data))
                 dataSize = data;
         }
         var streams = vertexData.GetStreams(version!);

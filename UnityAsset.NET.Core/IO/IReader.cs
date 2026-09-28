@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 namespace UnityAsset.NET.IO
 {
@@ -6,8 +6,16 @@ namespace UnityAsset.NET.IO
     {
         # region ISeek
 
+        /// <summary>
+        /// Aligns the current position to the specified alignment.
+        /// If the current position is already aligned, no action is taken.
+        /// If the alignment is greater than the remaining bytes, the position is set to the end of the stream.
+        /// </summary>
+        /// <param name="alignment"></param>
         public new void Align(uint alignment)
         {
+            if (alignment <= 0)
+                throw new ArgumentOutOfRangeException(nameof(alignment), "Alignment must be greater than 0.");
             var offset = Position % alignment;
             if (offset != 0)
             {
@@ -27,6 +35,15 @@ namespace UnityAsset.NET.IO
 
         public Endianness Endian { get; set; }
         public long Remaining => Length - Position;
+        /// <summary>
+        /// If remaining bytes is enough, read count bytes into buffer starting from offset, and return the number of bytes read.
+        /// Otherwise, read as many bytes as possible into buffer starting from offset, and return the number of bytes read.
+        /// If the buffer is not large enough to hold the requested number of bytes, throw an exception.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="offset"/> is outside <paramref name="buffer"/>, <paramref name="count"/> is negative, or
+        /// <paramref name="buffer"/> is too small to hold the requested bytes. Nothing is consumed in that case.
+        /// </exception>
         public int Read(Span<byte> buffer, int offset, int count);
         public byte ReadByte();
         public sbyte ReadSByte() => (sbyte)ReadByte();
@@ -53,19 +70,36 @@ namespace UnityAsset.NET.IO
         public double ReadDouble();
         public string ReadNullTerminatedString();
 
+        /// <summary>
+        /// Reads a UTF-8 string whose byte count is stored in a four-byte prefix, then aligns to four.
+        /// </summary>
+        /// <exception cref="EndOfStreamException">
+        /// The prefix is negative, or claims more bytes than the reader holds. Returning an empty string for those used to
+        /// make a corrupt length read as an empty field while the cursor still moved past the prefix, so every field after
+        /// it was read from the wrong place — a silent shift is worse than a failed read.
+        /// </exception>
         public string ReadSizedString()
         {
             var length = ReadInt32();
-            if (length > (int)Remaining || length < 0)
-                // TODO:
-                return String.Empty;
-            var ret = length > 0 ? Encoding.UTF8.GetString(ReadBytes(length)) : String.Empty;
+            if (length < 0 || length > Remaining)
+                throw new EndOfStreamException(
+                    $"A size prefix of {length} bytes cannot be read with {Remaining} bytes left.");
+
+            if (length == 0)
+            {
+                Align(4);
+                return string.Empty;
+            }
+
+            var ret = Encoding.UTF8.GetString(ReadBytes(length));
             Align(4);
             return ret;
         }
 
         public List<T> ReadList<T>(int count, Func<IReader, T> constructor)
         {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
             var list = new List<T>(count);
             for (int i = 0; i < count; i++)
                 list.Add(constructor(this));
@@ -76,6 +110,8 @@ namespace UnityAsset.NET.IO
 
         public List<T> ReadListWithAlign<T>(int count, Func<IReader, T> constructor, bool requiresAlign)
         {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
             var list = new List<T>(count);
             for (int i = 0; i < count; i++)
             {
@@ -92,6 +128,8 @@ namespace UnityAsset.NET.IO
 
         public T[] ReadArray<T>(int count, Func<IReader, T> constructor)
         {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
             var array = new T[count];
             for (int i = 0; i < count; i++)
                 array[i] = constructor(this);
@@ -102,6 +140,8 @@ namespace UnityAsset.NET.IO
 
         public T[] ReadArrayWithAlign<T>(int count, Func<IReader, T> constructor, bool requiresAlign)
         {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
             var array = new T[count];
             for (int i = 0; i < count; i++)
             {
@@ -132,6 +172,14 @@ namespace UnityAsset.NET.IO
         {
             for (int i = 0; i < array.Length; i++)
                 array[i] = constructor(this);
+        }
+
+        public static void ValidCount(int length, int offset, int count, string offsetName, string countName)
+        {
+            if (offset < 0 || offset > length)
+                throw new ArgumentOutOfRangeException(offsetName);
+            if (count < 0 || offset + count > length)
+                throw new ArgumentOutOfRangeException(countName);
         }
     }
 }

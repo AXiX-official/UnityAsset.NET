@@ -42,7 +42,20 @@ namespace UnityAsset.NET.IO.Writer
                     return;
                 }
 
-                if (value >= streamPos && value <= streamPos + _buffer.Length)
+                // Moving behind the cursor has to go through the stream: the cursor is the logical end of the data, so
+                // there is nothing buffered there to walk back into. Rewinding `_bufferPos` instead would leave the track
+                // between the new position and the cursor with no data, and Finish writes only up to `_bufferPos`, so the
+                // bytes that were already written would be dropped.
+                if (value < currentPos)
+                {
+                    FlushBuffer();
+                    _stream.Seek(value, SeekOrigin.Begin);
+                    return;
+                }
+
+                // Moving forward inside the window can stay buffered, which keeps a gap written by padding zeros. The
+                // position inside the buffer is taken from the stream so the two cannot drift apart.
+                if (value <= streamPos + _buffer.Length)
                 {
                     var newCount = (int)(value - streamPos);
                     if (newCount > _bufferPos)
@@ -136,6 +149,11 @@ namespace UnityAsset.NET.IO.Writer
 
         public void Dispose()
         {
+            // Disposing has to hand over everything that was written, not just what happened to fill a buffer: a caller
+            // that wraps the writer in `using` never calls Finish, and losing the tail silently is worse than any
+            // double flush. The stream is only closed when we own it, so flushing first is safe either way.
+            FlushBuffer();
+
             if (!_leaveOpen)
                 _stream.Dispose();
         }

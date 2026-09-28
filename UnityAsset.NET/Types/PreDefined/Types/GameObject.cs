@@ -59,11 +59,11 @@ public class GameObject : INamedObject
     public IAnimator? m_Animator { get; set; }
     public IAnimation? m_Animation { get; set; }
 
-    public void Proccess(AssetManager mgr)
+    public void Proccess(IUnitySession session)
     {
         foreach (var componentPair in m_Component)
         {
-            if (componentPair.component.TryGet(mgr, out var component))
+            if (componentPair.component.TryGet(session, out var component))
             {
                 switch (component)
                 {

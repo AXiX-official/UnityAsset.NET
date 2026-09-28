@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using AssetRipper.Tpk;
 using AssetRipper.Tpk.TypeTrees;
 using UnityAsset.NET.TypeTreeHelper;
@@ -30,8 +30,6 @@ class Program
             TpkUnityTreeNodeFactory.Init(tpkTypeTreeBlob);
             var rootTypeNodesMap = TpkUnityTreeNodeFactory.GetRootTypeNodesAfterVersion(minimalVersionStr);
 
-            TpkUnityTreeNodeFactory.CompactInPlace();
-        
             var interfaceGenerator = new InterfaceGenerator();
             
             interfaceGenerator.GenerateInterfaces(outputPath , rootTypeNodesMap);

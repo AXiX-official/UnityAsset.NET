@@ -1,4 +1,4 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using System.Text;
 using UnityAsset.NET.FileSystem;
 
@@ -22,13 +22,28 @@ namespace UnityAsset.NET.IO.Reader
             _buffer = new byte[bufferSize];
         }
 
-        private void FillBuffer()
+        private bool TryFillBuffer()
         {
+            _data.Position = Position;
+
             _bufferPos = 0;
             _bufferSize = _data.Read(_buffer, 0, (uint)_buffer.Length);
             if (_bufferSize == 0)
+            {
+                _data.Position = Length;
+                return false;
+            }
+
+            return true;
+        }
+
+        private void EnsureFilled()
+        {
+            if (_bufferPos >= _bufferSize && !TryFillBuffer())
                 throw new EndOfStreamException();
         }
+
+        private void FillBuffer() => EnsureFilled();
 
         # region ISeek
 
@@ -37,13 +52,32 @@ namespace UnityAsset.NET.IO.Reader
             get => _data.Position - _bufferSize + _bufferPos;
             set
             {
+                // Validated before the window is touched, so a refused position leaves the reader exactly as it was.
+                // `Length` is accepted: it is where a completed read leaves the cursor.
+                if (value < 0 || value > Length)
+                    throw new ArgumentOutOfRangeException(
+                        nameof(value),
+                        $"Position {value} is outside a {Length}-byte reader.");
+
                 var currentPos = Position;
                 if (currentPos == value)
                 {
                     return;
                 }
 
-                if (value > currentPos && value < currentPos + (long)BufferRemaining)
+                // Moving behind the cursor has to go through the stream: the cursor is the logical end of the data, so
+                // there is nothing buffered there to walk back into. Rewinding `_bufferPos` instead would leave the track
+                // between the new position and the cursor with no data, and Finish writes only up to `_bufferPos`, so the
+                // bytes that were already written would be dropped.
+                if (value < currentPos)
+                {
+                    _bufferPos = 0;
+                    _bufferSize = 0;
+                    _data.Position = value;
+                    return;
+                }
+
+                if (value < currentPos + (long)BufferRemaining)
                 {
                     _bufferPos += (uint)(value - currentPos);
                     return;
@@ -65,25 +99,32 @@ namespace UnityAsset.NET.IO.Reader
 
         public int Read(Span<byte> buffer, int offset, int count)
         {
-            int written = 0;
-            while (written < buffer.Length - offset && ((IReader)this).Remaining > 0)
+            IReader.ValidCount(buffer.Length, offset, count, nameof(offset), nameof(count));
+            if (count == 0)
+                return 0;
+
+            var end = offset + count;
+            var written = 0;
+            while (offset + written < end && EnsureWindow())
             {
-                if (_bufferPos >= _bufferSize)
-                {
-                    FillBuffer();
-                }
-
-                var toCopy = Math.Min(count - written, (int)BufferRemaining);
-
-                _buffer.AsSpan((int)_bufferPos, toCopy)
-                    .CopyTo(buffer.Slice(offset + written, toCopy));
-
+                var toCopy = Math.Min(end - (offset + written), (int)BufferRemaining);
+                _buffer.AsSpan((int)_bufferPos, toCopy).CopyTo(buffer.Slice(offset + written, toCopy));
                 Position += (uint)toCopy;
                 written += toCopy;
             }
 
             return written;
         }
+
+        /// <summary>
+        /// True while the window holds an unread byte; refills when it is empty, and gives up at end of file.
+        /// <para>
+        /// The loop in <see cref="Read"/> relies on the returned window being non-empty, which is what keeps
+        /// <c>toCopy</c> at one byte or more and therefore keeps the loop making progress. A "true but empty" answer
+        /// here would spin forever.
+        /// </para>
+        /// </summary>
+        private bool EnsureWindow() => _bufferPos < _bufferSize || TryFillBuffer();
 
         public byte ReadByte()
         {
@@ -97,6 +138,8 @@ namespace UnityAsset.NET.IO.Reader
 
         public byte[] ReadBytes(int count)
         {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count must be non-negative.");
             if ((uint)count > ((IReader)this).Remaining)
                 throw new EndOfStreamException();
             byte[] bytes = new byte[count];

@@ -16,7 +16,7 @@ namespace UnityAsset.NET.IO.Reader
         public readonly ulong CompressedOffset;
         public readonly ulong UncompressedOffset;
         public readonly CompressionType CompressionType;
-        
+
         public BlockInfo(uint uncompressedSize, uint compressedSize, ulong compressedOffset, ulong uncompressedOffset, CompressionType compressionType)
         {
             UncompressedSize = uncompressedSize;
@@ -40,9 +40,10 @@ namespace UnityAsset.NET.IO.Reader
         public readonly BlockInfo[] Blocks;
         public readonly IVirtualFile File;
         private readonly UnityCN? _unityCnInfo;
+        private readonly BlockCacheContext _context;
 
         public BlockReaderProvider(StorageBlockInfo[] blocks, IVirtualFile file,
-            UnityCN? unityCnInfo = null)
+            UnityCN? unityCnInfo = null, BlockCacheContext? context = null)
         {
             Blocks = new BlockInfo[blocks.Length];
             ulong currentOffset = 0;
@@ -64,10 +65,11 @@ namespace UnityAsset.NET.IO.Reader
 
             File = file;
             _unityCnInfo = unityCnInfo;
+            _context = context ?? BlockCacheContext.Shared;
         }
 
         public IReader CreateReader(Endianness endian = Endianness.BigEndian) =>
-            new BlockReader(Blocks, File.Clone(), endian, _unityCnInfo);
+            new BlockReader(Blocks, File.Clone(), endian, _unityCnInfo, _context);
     }
 
     public class BlockReader : IReader
@@ -83,29 +85,44 @@ namespace UnityAsset.NET.IO.Reader
         private ulong BufferPos => (ulong)Position - _posOffset;
         private ulong BufferRemaining => _bufferSize - BufferPos;
 
-        #region Cache
-
-        public static BlockCache Cache = new BlockCache(maxSize: Setting.DefaultBlockCacheSize);
-
-        public static ConcurrentDictionary<BlockCacheKey, (int parsed, int total, long size)> AssetToBlockCache = new ConcurrentDictionary<BlockCacheKey, (int parsed, int total, long size)>();
-
-        #endregion
-
-
+        private readonly BlockCacheContext _context;
 
         public BlockReader(BlockInfo[] blocks, IVirtualFile file, Endianness endian = Endianness.BigEndian,
-            UnityCN? unityCnInfo = null)
+            UnityCN? unityCnInfo = null, BlockCacheContext? context = null)
         {
+            if (blocks.Length == 0)
+                throw new ArgumentException("A block reader needs at least one block.", nameof(blocks));
+
             Blocks = blocks;
             File = file;
             Length = (long)(blocks[^1].UncompressedOffset + blocks[^1].UncompressedSize);
             _unityCnInfo = unityCnInfo;
+            _context = context ?? BlockCacheContext.Shared;
             Endian = endian;
         }
 
         #region ISeek
 
-        public long Position { get; set; }
+        private long _position;
+
+        /// <summary>
+        /// The cursor in the decompressed stream, kept inside <c>[0, Length]</c>. Without the check a position past the
+        /// last block reached <see cref="EnsureBlockLoaded"/> and came back as an <c>ArgumentOutOfRangeException</c>
+        /// naming a parameter the caller never passed.
+        /// </summary>
+        public long Position
+        {
+            get => _position;
+            set
+            {
+                if (value < 0 || value > Length)
+                    throw new ArgumentOutOfRangeException(
+                        nameof(value),
+                        $"Position {value} is outside a {Length}-byte block reader.");
+
+                _position = value;
+            }
+        }
 
         public long Length { get; }
 
@@ -187,7 +204,12 @@ namespace UnityAsset.NET.IO.Reader
                 blockIndex = FindBlockIndex(Blocks, (ulong)position);
                 if (blockIndex == -1)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(position));
+                    // The position is inside the layout (the setter guarantees it) but the blocks do not cover it, which
+                    // means the layout itself is short. Reported as "no data here" with the numbers, not as a bad
+                    // argument: `position` is not a parameter the caller passed.
+                    throw new EndOfStreamException(
+                        $"Position {position} is not covered by the {Blocks.Length} blocks of this reader " +
+                        $"(total uncompressed length {Length}).");
                 }
             }
 
@@ -196,8 +218,8 @@ namespace UnityAsset.NET.IO.Reader
                 var block = Blocks[blockIndex];
                 var key = new BlockCacheKey(File, blockIndex);
 
-                _buffer = AssetToBlockCache.ContainsKey(key)
-                    ? Cache.GetOrCreate(
+                _buffer = _context.AssetToBlockCache.ContainsKey(key)
+                    ? _context.Cache.GetOrCreate(
                         key: new BlockCacheKey(File, blockIndex),
                         factory: () => DecompressBlock(blockIndex),
                         size: block.UncompressedSize
@@ -215,17 +237,26 @@ namespace UnityAsset.NET.IO.Reader
 
         public int Read(Span<byte> buffer, int offset, int count)
         {
-            int written = 0;
-            var bytesLimit = Math.Min(count, buffer.Length - offset);
-            while (written < bytesLimit && ((IReader)this).Remaining > 0)
+            IReader.ValidCount(buffer.Length, offset, count, nameof(offset), nameof(count));
+            if (count == 0)
+                return 0;
+
+            var end = offset + count;
+            var written = 0;
+            while (offset + written < end)
             {
+                if (Position < 0 || (ulong)Position >= (ulong)Length)
+                    break;
+                if (FindBlockIndex(Blocks, (ulong)Position) < 0)
+                    break;
+
                 EnsureBlockLoaded(Position);
 
-                var toCopy = Math.Min(count - written, (int)BufferRemaining);
+                var toCopy = Math.Min(end - (offset + written), (int)BufferRemaining);
+                if (toCopy <= 0)
+                    break;
 
-                _buffer.AsSpan((int)BufferPos, toCopy)
-                    .CopyTo(buffer.Slice(offset + written, toCopy));
-
+                _buffer.AsSpan((int)BufferPos, toCopy).CopyTo(buffer.Slice(offset + written, toCopy));
                 Position += (uint)toCopy;
                 written += toCopy;
             }
@@ -235,6 +266,12 @@ namespace UnityAsset.NET.IO.Reader
 
         public byte ReadByte()
         {
+            // "No more data" is the truthful answer at the end of the last block, not a bad argument: the cursor is
+            // always inside the block layout now, so reaching the end is the only way to get here. Without this guard the
+            // lookup below fails and reports ArgumentOutOfRangeException("position"), a parameter the caller never passed.
+            if (Position >= Length)
+                throw new EndOfStreamException();
+
             EnsureBlockLoaded(Position);
             var ret = _buffer[BufferPos];
             Position++;
@@ -243,6 +280,8 @@ namespace UnityAsset.NET.IO.Reader
 
         public byte[] ReadBytes(int count)
         {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count must be non-negative.");
             if ((uint)count > ((IReader)this).Remaining)
                 throw new EndOfStreamException();
             byte[] bytes = new byte[count];

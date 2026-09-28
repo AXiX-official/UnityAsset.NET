@@ -1,6 +1,5 @@
-﻿using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO.Reader;
-using UnityAsset.NET.Types;
 using UnityAsset.NET.Types.PreDefined;
 
 namespace UnityAsset.NET;
@@ -11,7 +10,13 @@ public class Asset : IEquatable<Asset>
     private WeakReference<IUnityAsset>? _value;
     private string? _name;
     private readonly Lock _lock = new();
+    private AssetContext? _context;
+
     public bool IsNamedAsset;
+
+    internal void AttachContext(AssetContext context) => Volatile.Write(ref _context, context);
+
+    internal void DetachContext() => Volatile.Write(ref _context, null);
 
     public AssetReader DataReader
     {
@@ -25,17 +30,24 @@ public class Asset : IEquatable<Asset>
             return new AssetReader(readerProvider, start, length, sf, endian);
         }
     }
-    
+
     public SerializedFile SourceFile { get; }
 
     private IUnityAsset GetValue()
     {
-        var value = UnityObjectFactory.Create(Info.Type, DataReader);
-        AssetManager.OnAssetParsed(this);
+        var context = Volatile.Read(ref _context) ?? throw new InvalidOperationException(
+            $"Asset {Type}/{PathId} has no session attached: its SerializedFile was not loaded through a session " +
+            "(AssetManager), or that session has been cleared or disposed.");
+
+        var value = context.Factory.Invoke(Info.Type, DataReader);
+
+        // Only after a successful materialisation: the session uses this to account for the blocks it just read.
+        context.OnParsed?.Invoke(this);
+
         return value;
     }
 
-    
+
     public IUnityAsset Value
     {
         get
@@ -82,7 +94,7 @@ public class Asset : IEquatable<Asset>
             }
         }
     }
-    
+
     public long Size => Info.ByteSize;
 
     public long PathId => Info.PathId;
@@ -104,11 +116,10 @@ public class Asset : IEquatable<Asset>
     {
         Info = info;
         IsNamedAsset = info.Type.IsNamed;
-
         SourceFile = sf;
     }
-    
-    
+
+
     public bool Equals(Asset? other)
     {
         if (ReferenceEquals(this, other))

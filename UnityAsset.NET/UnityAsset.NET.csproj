@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
@@ -22,14 +22,14 @@
         <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
         <NoWarn>CS8981</NoWarn>
     </PropertyGroup>
-    
+
     <ItemGroup>
       <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
       <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
     </ItemGroup>
-    
+
     <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
         <PackageReference Include="AssetRipper.TextureDecoder" Version="2.4.0" />
     </ItemGroup>
@@ -40,6 +40,10 @@
       <ProjectReference Include="..\UnityAsset.NET.BundleFiles\UnityAsset.NET.BundleFiles.csproj" />
       <ProjectReference Include="..\UnityAsset.NET.Core\UnityAsset.NET.Core.csproj" />
       <ProjectReference Include="..\UnityAsset.NET.TypeTreeHelper\UnityAsset.NET.TypeTreeHelper.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="UnityAsset.NET.Tests" />
     </ItemGroup>
 
     <ItemGroup>
