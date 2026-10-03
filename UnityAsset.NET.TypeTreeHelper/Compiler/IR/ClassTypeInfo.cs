@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace UnityAsset.NET.TypeTreeHelper.Compiler.IR;
@@ -8,6 +8,7 @@ public class ClassTypeInfo : IUnityTypeInfo
     public required string Name { get; init; }
     public required string GeneratedClassName { get; init; }
     public required string InterfaceName { get; init; }
+    public required bool DeclaresNamedObject { get; init; }
     public required List<UnityFieldInfo> Fields { get; init; }
     public required TypeTreeRepr TypeTreeRepr { get; init; }
 

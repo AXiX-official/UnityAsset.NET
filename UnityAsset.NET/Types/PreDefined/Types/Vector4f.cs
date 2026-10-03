@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
 
@@ -27,6 +27,14 @@ public struct Vector4f : IPreDefinedInterface
         this.z = z;
         this.w = w;
     }
+    
+    public void Write(IWriter writer)
+    {
+        writer.WriteSingle(x);
+        writer.WriteSingle(y);
+        writer.WriteSingle(z);
+        writer.WriteSingle(w);
+    }
 
     public AssetNode? ToAssetNode(string name = "Base")
     {
@@ -35,10 +43,10 @@ public struct Vector4f : IPreDefinedInterface
             Name = name,
             TypeName = "Vector4f"
         };
-        root.Children.Add(new AssetNode { Name = "x", TypeName = "float", Value = this.x });
-        root.Children.Add(new AssetNode { Name = "y", TypeName = "float", Value = this.y });
-        root.Children.Add(new AssetNode { Name = "z", TypeName = "float", Value = this.z });
-        root.Children.Add(new AssetNode { Name = "w", TypeName = "float", Value = this.w });
+        root.Children.Add(new AssetNode { Name = "x", TypeName = "float", Value = x });
+        root.Children.Add(new AssetNode { Name = "y", TypeName = "float", Value = y });
+        root.Children.Add(new AssetNode { Name = "z", TypeName = "float", Value = z });
+        root.Children.Add(new AssetNode { Name = "w", TypeName = "float", Value = w });
         return root;
     }
     

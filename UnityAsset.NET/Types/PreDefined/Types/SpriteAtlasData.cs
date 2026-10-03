@@ -1,7 +1,8 @@
-﻿using System.Text;
+using System.Text;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
+using UnityAsset.NET.IO.Writer;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.Types.PreDefined.Types;
@@ -21,7 +22,11 @@ public class SpriteAtlasData : IPreDefinedInterface
 
     public SpriteAtlasData(IReader reader)
     {
-        UnityRevision version = ((AssetReader)reader).AssetsFile.Metadata.UnityVersion;
+        if (reader is not AssetReader assetReader)
+            throw new InvalidOperationException(
+                "Reading SpriteAtlasData needs an AssetReader: two members depend on the asset's Unity version.");
+        
+        UnityRevision version = assetReader.AssetsFile.Metadata.UnityVersion;
         texture = new PPtr<ITexture2D>(reader);
         alphaTexture = new PPtr<ITexture2D>(reader);
         textureRect = new Rectf(reader);
@@ -40,6 +45,26 @@ public class SpriteAtlasData : IPreDefinedInterface
         }
     }
     
+    public void Write(IWriter writer)
+    {
+        if (writer is not AssetWriter assetWriter)
+            throw new InvalidOperationException(
+                "Writing SpriteAtlasData needs an AssetWriter: two members depend on the asset's Unity version.");
+
+        UnityRevision version = assetWriter.AssetsFile.Metadata.UnityVersion;
+        texture.Write(writer);
+        alphaTexture.Write(writer);
+        textureRect.Write(writer);
+        textureRectOffset.Write(writer);
+        if (version >= "2017.2")
+            atlasRectOffset!.Value.Write(writer);
+        uvTransform.Write(writer);
+        writer.WriteSingle(downscaleMultiplier);
+        writer.WriteUInt32(settingsRaw);
+        if (version >= "2020.2")
+            writer.WriteArrayWithAlign(secondaryTextures!, (w, item) => item.Write(w), true);
+    }
+
     public AssetNode? ToAssetNode(string name = "Base")
     {
         var root = new AssetNode

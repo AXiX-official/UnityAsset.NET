@@ -9,8 +9,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
     public partial interface IPlatformShaderDefines : IPreDefinedInterface
     {
         public int shaderPlatform { get; }
-        public Ifixed_bitset defines_Tier1 { get; }
-        public Ifixed_bitset defines_Tier2 { get; }
-        public Ifixed_bitset defines_Tier3 { get; }
+        public uint[] defines_Tier1 { get; }
+        public uint[] defines_Tier2 { get; }
+        public uint[] defines_Tier3 { get; }
     }
 }

@@ -6,9 +6,9 @@ using UnityAsset.NET.Types.PreDefined.Types;
 
 namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
-    public partial interface ITransform : IUnityAsset
+    public partial interface ITransform : IUnityAsset, IComponent
     {
-        public PPtr<GameObject> m_GameObject { get; }
+        public new PPtr<GameObject> m_GameObject { get; }
         public Quaternionf m_LocalRotation { get; }
         public Vector3f m_LocalPosition { get; }
         public Vector3f m_LocalScale { get; }

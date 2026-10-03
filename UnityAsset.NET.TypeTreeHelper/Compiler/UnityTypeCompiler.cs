@@ -1,5 +1,7 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using UnityAsset.NET.TypeTreeHelper.Model;
 
 namespace UnityAsset.NET.TypeTreeHelper.Compiler;
 
@@ -8,12 +10,12 @@ public class UnityTypeCompiler
     private readonly SemanticModelBuilder _semanticModelBuilder;
     private readonly RoslynTypeBuilder _builder = new();
     
-    public UnityTypeCompiler(Dictionary<string, Type> preDefinedInterfaceMap)
+    public UnityTypeCompiler()
     {
-        _semanticModelBuilder = new SemanticModelBuilder(preDefinedInterfaceMap);
+        _semanticModelBuilder = new SemanticModelBuilder();
     }
 
-    public CompilationUnitSyntax Generate(IEnumerable<TypeTreeRepr> rootNodes)
+    public CompilationUnitSyntax Generate(IEnumerable<UnityTypeSchema> schemas)
     {
         var usingDirectives = SyntaxFactory.List([
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")),
@@ -30,11 +32,11 @@ public class UnityTypeCompiler
 
         _builder.NamespaceDeclaration = namespaceDeclaration;
     
-        foreach (var rootNode in rootNodes)
+        foreach (var schema in schemas)
         {
-            if (rootNode.TypeName == "MonoBehaviour")
+            if (schema.Name == "MonoBehaviour")
                 continue;
-            _semanticModelBuilder.Build(rootNode, true);
+            _semanticModelBuilder.Build(schema, true);
         }
 
         _builder.Build(_semanticModelBuilder.DiscoveredTypes.Values);
@@ -44,7 +46,15 @@ public class UnityTypeCompiler
         var compilationUnit = SyntaxFactory.CompilationUnit()
             .WithUsings(usingDirectives)
             .AddMembers(_builder.NamespaceDeclaration);
-        
-        return compilationUnit;
+
+        // The interfaces declare optional members with "?", so the classes that implement them are read in the same
+        // nullable context.
+        var nullableContext = SyntaxFactory.TriviaList(
+            SyntaxFactory.Trivia(SyntaxFactory.NullableDirectiveTrivia(SyntaxFactory.Token(SyntaxKind.EnableKeyword), true)),
+            SyntaxFactory.CarriageReturnLineFeed,
+            SyntaxFactory.CarriageReturnLineFeed);
+
+        var firstToken = compilationUnit.GetFirstToken(includeZeroWidth: true);
+        return compilationUnit.ReplaceToken(firstToken, firstToken.WithLeadingTrivia(nullableContext));
     }
 }

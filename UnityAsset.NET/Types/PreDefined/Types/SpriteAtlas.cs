@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
 
@@ -24,10 +24,10 @@ public class SpriteAtlas : ISpriteAtlas
         
         m_RenderDataMap = reader.ReadArrayWithAlign(
 	        reader.ReadInt32(), 
-	        r => r.ReadPairWithAlign(
-		        r => r.ReadPairWithAlign<GUID, Int64>(r => new GUID(r), 
-			        r => r.ReadInt64(), false, false), 
-		        r => new SpriteAtlasData(r), 
+	        r0 => r0.ReadPairWithAlign(
+		        r1 => r1.ReadPairWithAlign<GUID, Int64>(r => new GUID(r1), 
+			        r2 => r2.ReadInt64(), false, false), 
+		        r1 => new SpriteAtlasData(r1), 
 		        false, 
 		        false)
 	        , false);
@@ -36,7 +36,27 @@ public class SpriteAtlas : ISpriteAtlas
         m_IsVariant = reader.ReadBoolean();
         reader.Align(4);
     }
-
+	
+    public void Write(IWriter writer)
+    {
+        writer.WriteSizedString(m_Name);
+        writer.Align(4);
+        writer.WriteArrayWithAlign(m_PackedSprites, (w0, sprite) => sprite.Write(w0), false);
+        writer.WriteArrayWithAlign(m_PackedSpriteNamesToIndex, (w0, index) => w0.WriteSizedString(index), true);
+        writer.WriteArrayWithAlign(m_RenderDataMap,
+            (w0, entry) => w0.WritePairWithAlign(entry,
+                (w1, key) => w1.WritePairWithAlign<GUID, Int64>(key,
+                    (w2, guid) => guid.Write(w2),
+                    (w2, pathId) => w2.WriteInt64(pathId),
+                    false, false),
+                (w1, data) => data.Write(w1),
+                false, false),
+            false);
+        writer.WriteSizedString(m_Tag);
+        writer.Align(4);
+        writer.WriteBoolean(m_IsVariant);
+        writer.Align(4);
+    }
     public AssetNode? ToAssetNode(string name = "Base")
     {
 	    var root = new AssetNode
@@ -112,3 +132,4 @@ public class SpriteAtlas : ISpriteAtlas
 	    return root;
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
@@ -32,6 +32,12 @@ public class PPtr<T> : IPPtr where T : IUnityObject
         m_FileID = fileID;
         m_PathID = pathID;
         m_SerializedFile = ((AssetReader)reader).AssetsFile;
+    }
+    
+    public void Write(IWriter writer)
+    {
+        writer.WriteInt32(m_FileID);
+        writer.WriteInt64(m_PathID);
     }
 
     public AssetNode? ToAssetNode(string name = "Base")

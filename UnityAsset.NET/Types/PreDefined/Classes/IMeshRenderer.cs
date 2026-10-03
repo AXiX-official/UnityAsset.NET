@@ -1,6 +1,6 @@
 namespace UnityAsset.NET.Types.PreDefined.Interfaces;
 
-public partial interface IMeshRenderer : IComponent, Renderer
+public partial interface IMeshRenderer
 {
     /*public IMesh? TryGetMesh(AssetManager mgr)
     {

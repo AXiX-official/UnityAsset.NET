@@ -6,9 +6,9 @@ using UnityAsset.NET.Types.PreDefined.Types;
 
 namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
-    public partial interface IMeshRenderer : IUnityAsset
+    public partial interface IMeshRenderer : IUnityAsset, IComponent, Renderer
     {
-        public PPtr<GameObject> m_GameObject { get; }
+        public new PPtr<GameObject> m_GameObject { get; }
         public bool m_Enabled { get; }
         public byte m_CastShadows { get; }
         public byte m_ReceiveShadows { get; }
@@ -19,8 +19,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
         public ushort m_LightmapIndexDynamic { get; }
         public Vector4f m_LightmapTilingOffset { get; }
         public Vector4f m_LightmapTilingOffsetDynamic { get; }
-        public PPtr<IMaterial>[] m_Materials { get; }
-        public IStaticBatchInfo m_StaticBatchInfo { get; }
+        public new PPtr<IMaterial>[] m_Materials { get; }
+        public new IStaticBatchInfo m_StaticBatchInfo { get; }
         public PPtr<ITransform> m_StaticBatchRoot { get; }
         public PPtr<ITransform> m_ProbeAnchor { get; }
         public PPtr<GameObject> m_LightProbeVolumeOverride { get; }

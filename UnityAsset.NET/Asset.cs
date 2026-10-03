@@ -60,7 +60,7 @@ public class Asset : IEquatable<Asset>
                     _value = new WeakReference<IUnityAsset>(value);
                     if (IsNamedAsset)
                     {
-                        _name = ((INamedObject)value).m_Name;
+                        _name = ReadName(value);
                     }
 
                     return value;
@@ -88,7 +88,7 @@ public class Asset : IEquatable<Asset>
                 if (!IsNamedAsset)
                     return string.Empty;
 
-                _name ??= ((INamedObject)Value).m_Name;
+                _name ??= ReadName(Value);
 
                 return _name;
             }
@@ -141,4 +141,11 @@ public class Asset : IEquatable<Asset>
             SourceFile,
             PathId);
     }
+    
+    private string ReadName(IUnityAsset value)
+        => value is INamedObject named
+            ? named.m_Name
+            : throw new InvalidOperationException(
+                $"Asset {Type}/{PathId} is named but its generated type " +
+                $"{value.GetType().Name} does not implement INamedObject.");
 }

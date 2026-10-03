@@ -7,10 +7,10 @@ namespace UnityAsset.NET.Types;
 
 public sealed class UnityObjectFactory
 {
-    private readonly IReadOnlyDictionary<Hash128, TypeTreeRepr> _catalog;
+    private readonly IReadOnlyDictionary<Hash128, UnityTypeSource> _catalog;
     private readonly TypeRegistry _typeRegistry;
 
-    public UnityObjectFactory(IReadOnlyDictionary<Hash128, TypeTreeRepr> catalog, TypeRegistry typeRegistry)
+    public UnityObjectFactory(IReadOnlyDictionary<Hash128, UnityTypeSource> catalog, TypeRegistry typeRegistry)
     {
         ArgumentNullException.ThrowIfNull(catalog);
         ArgumentNullException.ThrowIfNull(typeRegistry);
@@ -26,18 +26,15 @@ public sealed class UnityObjectFactory
         // Script classes carry their own type tree, so they are parsed through the catalog instead of generated code.
         if (sType.ToTypeName() == "MonoBehaviour")
         {
-            if (!_catalog.TryGetValue(sType.TypeHash, out var repr))
+            if (!_catalog.TryGetValue(sType.TypeHash, out var source))
                 throw new NotSupportedException(
                     $"MonoBehaviour is not part of this catalog ({sType.Describe()}). The file it belongs to was " +
                     "not loaded through the session that owns this factory.");
 
-            return new PreDefined.Types.MonoBehaviour(reader, repr);
+            return new PreDefined.Types.MonoBehaviour(reader, source.TypeTree);
         }
-
-        // TypeRegistry.GetType throws when the hash is not part of the compiled assembly.
-        var generatedType = _typeRegistry.GetType(sType);
-        var instance = Activator.CreateInstance(generatedType, args: [reader]);
-        return (IUnityAsset)(instance ?? throw new InvalidOperationException(
-            "Activator.CreateInstance unexpectedly returned null for type: " + generatedType.FullName));
+        
+        var create = _typeRegistry.GetFactory(sType);
+        return (IUnityAsset)create(reader);
     }
 }

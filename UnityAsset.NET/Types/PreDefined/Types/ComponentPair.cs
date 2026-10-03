@@ -12,7 +12,12 @@ public class ComponentPair : IPreDefinedInterface
     {
         component = new PPtr<IComponent>(reader);
     }
-
+    
+    public void Write(IWriter writer)
+    {
+        component.Write(writer);
+    }
+    
     public AssetNode? ToAssetNode(string name = "Base")
     {
         var rootAssetNode = new AssetNode

@@ -1,4 +1,4 @@
-﻿using UnityAsset.NET.IO;
+using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.Types.PreDefined.Types;
 
@@ -16,6 +16,14 @@ public struct ChannelInfo : IPreDefinedInterface
         offset = reader.ReadByte();
         format = reader.ReadByte();
         dimension = (Byte)(reader.ReadByte() & 0xF);
+    }
+    
+    public void Write(IWriter writer)
+    {
+        writer.WriteByte(stream);
+        writer.WriteByte(offset);
+        writer.WriteByte(format);
+        writer.WriteByte(dimension);
     }
 
     public AssetNode? ToAssetNode(string name = "Base")

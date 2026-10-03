@@ -6,9 +6,9 @@ using UnityAsset.NET.Types.PreDefined.Types;
 
 namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
-    public partial interface IMeshFilter : IUnityAsset
+    public partial interface IMeshFilter : IUnityAsset, IComponent
     {
-        public PPtr<GameObject> m_GameObject { get; }
+        public new PPtr<GameObject> m_GameObject { get; }
         public PPtr<IMesh> m_Mesh { get; }
     }
 }

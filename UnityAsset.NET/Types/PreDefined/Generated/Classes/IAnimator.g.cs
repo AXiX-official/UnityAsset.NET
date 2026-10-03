@@ -6,9 +6,9 @@ using UnityAsset.NET.Types.PreDefined.Types;
 
 namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
-    public partial interface IAnimator : IUnityAsset
+    public partial interface IAnimator : IUnityAsset, IComponent
     {
-        public PPtr<GameObject> m_GameObject { get; }
+        public new PPtr<GameObject> m_GameObject { get; }
         public byte m_Enabled { get; }
         public PPtr<IAvatar> m_Avatar { get; }
         public PPtr<IRuntimeAnimatorController> m_Controller { get; }

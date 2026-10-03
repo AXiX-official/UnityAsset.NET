@@ -7,6 +7,7 @@ namespace UnityAsset.NET.TypeTreeHelper.Compiler;
 
 public static class Helper
 {
+    // Container pseudo-types
     public static HashSet<string> ExcludedBasicTypes =
     [
         "vector",
@@ -15,9 +16,11 @@ public static class Helper
         "map",
         "Array",
         "pair",
+        "fixed_bitset",
         ""
     ];
     
+    // Classes generation handles specially instead of as an ordinary interface.
     public static HashSet<string> ExcludedTypes =
     [
         // workaround for generic type issues
@@ -28,6 +31,7 @@ public static class Helper
         ""
     ];
 
+    // Classes that get a root interface of their own; the application's needs, not the format's.
     public static HashSet<string> IncludedTypes =
     [
         "Animation",
@@ -40,7 +44,24 @@ public static class Helper
         "MeshFilter",
         "SkinnedMeshRenderer"
     ];
+
+    // Classes that must not claim an I<ClassName> of their own, because a nested structure already owns that name.
+    //
+    // Avatar's human description carries a nested "Collider" structure whose nine members have nothing to do with the
+    // Collider class, whose own tree is the single member m_GameObject. A session meets the structure far more often
+    // than the class: the structure is what an avatar's collider array holds, and it needs a generated type for that
+    // array element. So the structure keeps ICollider and the class gives the name up, falling back to the generic
+    // object interface - it is still generated and read, it just does not claim that contract.
+    //
+    // This is a workaround for one name, not a rule: the classes and the structures live in different namespaces, and
+    // giving the structure a scoped name of its own so that both can exist is the proper fix.
+    public static HashSet<string> ClassInterfacesTakenByNestedTypes =
+    [
+        "Collider",
+        ""
+    ];
     
+    // Unity classes a hand-written C# type stands in for.
     public static HashSet<string> PreDefinedTypes =
     [
         "Object",
@@ -61,6 +82,22 @@ public static class Helper
         "ChannelInfo",
     ];
 
+    // Predefined stand-ins that are value types. The distinction matters when a member is declared "T?": on a value type
+    // that is a Nullable<T> whose payload has to be reached through .Value, while the same "?" on a reference type is
+    // only an annotation and the member is read and written directly. TypeTreeHelper cannot ask the type itself - the
+    // stand-ins live in the assembly that references this one - so the answer is kept here, where it can be read.
+    public static HashSet<string> PreDefinedStructs =
+    [
+        "ChannelInfo",
+        "GUID",
+        "Quaternionf",
+        "Rectf",
+        "Vector2f",
+        "Vector3f",
+        "Vector4f",
+        ""
+    ];
+    // A nested position uses the hand-written C# type for these instead of a generated interface.
     public static HashSet<string> NoInterfaceTypes =
     [
         "Object",
@@ -80,6 +117,7 @@ public static class Helper
         "ChannelInfo",
     ];
 
+    // PPtr targets that get an interface of their own rather than collapsing to IUnityObject.
     public static HashSet<string> IncludedPPTrGenricTypes =
     [
         "GameObject",
@@ -181,33 +219,17 @@ public static class Helper
         return "IUnityObject";
     }
     
-    public static string GetInterfaceName(TypeTreeRepr node)
-    {
-        if (IsPrimitive(node.TypeName))
-            return node.TypeName;
-        
-        if (NoInterfaceTypes.Contains(node.TypeName))
-            return "IUnityObject";
-    
-        if (node.TypeName.StartsWith("PPtr<"))
-            return $"PPtr<{GetGenericPPtrInterfaceName(node.TypeName.Substring(5, node.TypeName.Length - 6))}>";
-    
-        if (node.TypeName == "pair")
-            return $"ValueTuple<{GetInterfaceName(node.SubNodes[0])}, {GetInterfaceName(node.SubNodes[1])}>";
-
-        if (node.TypeName == "vector" || node.TypeName == "staticvector" || node.TypeName == "set" || node.TypeName == "map")
-            return GetInterfaceName(node.SubNodes[0]);
-    
-        if (node.TypeName == "Array")
-            return $"{GetInterfaceName(node.SubNodes[1])}[]";
-    
-        return $"I{node.TypeName}";
-    }
-    
     public static bool IsNamedAsset(TypeTreeRepr current)
     {
         return current.SubNodes.Any(sb => sb is {TypeName: "string", Name: "m_Name"});
     }
+
+    private const string NamedObjectInterfaceName = "INamedObject";
+    
+    public static bool DerivesFromNamedObject(Type? interfaceType)
+        => interfaceType is not null
+           && (interfaceType.Name == NamedObjectInterfaceName
+               || interfaceType.GetInterfaces().Any(i => i.Name == NamedObjectInterfaceName));
     
     # region IdentifierSanitizer Logic
     
@@ -308,6 +330,32 @@ public static class Helper
             "bool" => "ReadBoolean",
             "string" => "ReadSizedString",
             _ => throw new NotSupportedException($"No IReader method for Unity type: {unityType}")
+        };
+    }
+
+    /// <summary>
+    /// The writer method that is strictly inverse to <see cref="GetReaderMethodName"/> for the same Unity type: every
+    /// leaf rule the reader has has exactly one writer, and the two names differ only in their prefix. Encoding uses
+    /// this mapping for the fields it writes.
+    /// </summary>
+    public static string GetWriterMethodName(string unityType)
+    {
+        return unityType switch
+        {
+            "SInt8" => "WriteSByte",
+            "UInt8" => "WriteByte",
+            "char" => "WriteChar",
+            "short" or "SInt16" => "WriteInt16",
+            "UInt16" or "unsigned short" => "WriteUInt16",
+            "int" or "SInt32" => "WriteInt32",
+            "UInt32" or "unsigned int" or "Type*" => "WriteUInt32",
+            "long long" or "SInt64" => "WriteInt64",
+            "UInt64" or "unsigned long long" or "FileSize" => "WriteUInt64",
+            "float" => "WriteSingle",
+            "double" => "WriteDouble",
+            "bool" => "WriteBoolean",
+            "string" => "WriteSizedString",
+            _ => throw new NotSupportedException($"No IWriter method for Unity type: {unityType}")
         };
     }
 

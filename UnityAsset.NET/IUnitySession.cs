@@ -17,6 +17,5 @@ public interface IUnitySession
 
     byte[]? LoadStreamingData(StreamingInfo streamingInfo);
 
-    /// <summary>The type catalog of this session, keyed by type hash.</summary>
-    IReadOnlyDictionary<Hash128, TypeTreeRepr> LoadedTypes { get; }
+    IReadOnlyDictionary<Hash128, UnityTypeSource> LoadedTypes { get; }
 }

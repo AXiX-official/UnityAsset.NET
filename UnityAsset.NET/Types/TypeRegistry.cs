@@ -7,8 +7,11 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.IO;
 using UnityAsset.NET.TypeTreeHelper;
 using UnityAsset.NET.TypeTreeHelper.Compiler;
+using UnityAsset.NET.TypeTreeHelper.Model;
+using UnityAsset.NET.Types.PreDefined;
 
 namespace UnityAsset.NET.Types;
 
@@ -26,8 +29,6 @@ public sealed class TypeRegistry : IDisposable
     private sealed class CompilationContext
     {
         public required List<MetadataReference> References { get; init; }
-        public required Dictionary<string, Type> PreDefinedTypeMap { get; init; }
-        public required Dictionary<string, Type> PreDefinedInterfaceMap { get; init; }
     }
 
     private static readonly Lazy<CompilationContext> SharedContext =
@@ -54,24 +55,9 @@ public sealed class TypeRegistry : IDisposable
                 references.Add(MetadataReference.CreateFromFile(location));
         }
 
-        var allTypes = assemblies.SelectMany(GetLoadableTypes).ToList();
-
-        var preDefinedTypeMap = allTypes
-            .Where(t => t is { IsClass: true, Namespace: "UnityAsset.NET.Types.PreDefined.Types" })
-            .Where(t => Helper.PreDefinedTypes.Contains(t.Name))
-            .GroupBy(t => t.Name, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
-
-        var preDefinedInterfaceMap = allTypes
-            .Where(t => t is { IsInterface: true, Namespace: "UnityAsset.NET.Types.PreDefined.Interfaces" })
-            .GroupBy(t => t.Name, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
-
         return new CompilationContext
         {
             References = references,
-            PreDefinedTypeMap = preDefinedTypeMap,
-            PreDefinedInterfaceMap = preDefinedInterfaceMap,
         };
     }
 
@@ -94,25 +80,10 @@ public sealed class TypeRegistry : IDisposable
         }
     }
 
-    private static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
-    {
-        try
-        {
-            return assembly.GetTypes();
-        }
-        catch (ReflectionTypeLoadException ex)
-        {
-            return ex.Types.Where(t => t is not null).Select(t => t!);
-        }
-    }
-
     #region Session-level state
 
     private readonly TypeRegistryOptions _options;
     private readonly Lock _compilationLock = new();
-
-    /// <summary>Generation scheme version: bump when code generation or the compilation pipeline changes.</summary>
-    private const string GenerationSchemeVersion = "1";
 
     private const string GeneratedSourceFileName = $"{AssemblyNameSpace}.g.cs";
 
@@ -145,7 +116,7 @@ public sealed class TypeRegistry : IDisposable
 
     #endregion
 
-    public void LoadTypes(IReadOnlyDictionary<Hash128, TypeTreeRepr> typesToGenerate)
+    public void LoadTypes(IReadOnlyDictionary<Hash128, UnityTypeSource> typesToGenerate)
     {
         ArgumentNullException.ThrowIfNull(typesToGenerate);
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -153,8 +124,9 @@ public sealed class TypeRegistry : IDisposable
         var context = SharedContext.Value;
         var catalogHash = ComputeCatalogHash(typesToGenerate);
 
-        var compiler = new UnityTypeCompiler(context.PreDefinedInterfaceMap);
-        var syntax = compiler.Generate(typesToGenerate.Values);
+        var compiler = new UnityTypeCompiler();
+        var syntax = compiler.Generate(typesToGenerate.Values
+            .Select(source => UnitySchemaBuilder.Build(source.ClassName, source.UnityVersion, source.TypeTree)));
         var formattedSource = syntax.NormalizeWhitespace(elasticTrivia: true).ToFullString();
 
         var syntaxTree = CSharpSyntaxTree.ParseText(formattedSource);
@@ -175,6 +147,10 @@ public sealed class TypeRegistry : IDisposable
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
 
+            var artifactDirectory = CreateArtifactDirectory(catalogHash);
+            if (artifactDirectory is not null)
+                PersistSource(artifactDirectory, formattedSource);
+
             using var ms = new MemoryStream();
             var result = compilation.Emit(ms);
             if (!result.Success)
@@ -182,22 +158,20 @@ public sealed class TypeRegistry : IDisposable
                 throw new InvalidOperationException(BuildCompileErrorMessage(result));
             }
 
-            var artifactDirectory = CreateArtifactDirectory(catalogHash);
-            if (artifactDirectory is not null)
-                PersistSource(artifactDirectory, formattedSource);
-
             ms.Seek(0, SeekOrigin.Begin);
 
             var newContext = new CollectibleAssemblyContext();
             var assembly = newContext.LoadFromStream(ms);
 
             var typeCache = new ConcurrentDictionary<Hash128, Type>();
-            foreach (var (hash128, type) in typesToGenerate)
+            foreach (var (hash128, source) in typesToGenerate)
             {
+                var type = source.TypeTree;
+
                 if (type.SubNodes.Length == 0)
                     continue;
 
-                var concreteTypeName = Helper.SanitizeName($"{type.TypeName}_{type.Hash}");
+                var concreteTypeName = Helper.SanitizeName($"{source.ClassName}_{type.Hash}");
                 var generatedType = assembly.GetType($"{AssemblyNameSpace}.{concreteTypeName}");
                 if (generatedType != null)
                 {
@@ -205,14 +179,22 @@ public sealed class TypeRegistry : IDisposable
                     continue;
                 }
 
-                if (type.TypeName == "MonoBehaviour" || Helper.IsPreDefinedType(type))
+                if (source.ClassName == "MonoBehaviour" || Helper.IsPreDefinedType(type))
                     continue;
 
                 throw new InvalidOperationException(
-                    $"The generated assembly has no type for {concreteTypeName} (type '{type.TypeName}', catalog " +
+                    $"The generated assembly has no type for {concreteTypeName} (class '{source.ClassName}', catalog " +
                     $"hash {hash128}). The code generator and the registry agree on the generated name only as long " +
                     "as both derive it the same way, so this means the generator skipped a type it was supposed to " +
                     "emit, or that the two name derivations have drifted apart.");
+            }
+
+            var unnamedNamedTypes = FindNamedTypesWithoutContract(typesToGenerate, typeCache);
+            if (unnamedNamedTypes.Count > 0)
+            {
+                throw new InvalidOperationException(
+                    "These classes carry m_Name but the types generated for them do not implement INamedObject: " +
+                    string.Join(", ", unnamedNamedTypes));
             }
 
             UnloadContext();
@@ -221,30 +203,30 @@ public sealed class TypeRegistry : IDisposable
             _artifactDirectory = artifactDirectory;
         }
     }
-
-    public Type GetType(SerializedType type)
+    
+    public Func<IReader, object> GetFactory(SerializedType type)
     {
         ArgumentNullException.ThrowIfNull(type);
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        var typeName = type.ToTypeName();
-        if (Helper.PreDefinedTypes.Contains(typeName)
-            && SharedContext.Value.PreDefinedTypeMap.TryGetValue(typeName, out var preDefinedType))
-        {
-            return preDefinedType;
-        }
+        if (PreDefinedTypeTable.ByUnityTypeName.TryGetValue(type.ToTypeName(), out var preDefinedType))
+            return preDefinedType.Create;
 
         if (_typeCache.TryGetValue(type.TypeHash, out var cachedType))
         {
-            return cachedType;
+            return reader => Activator.CreateInstance(cachedType, args: [reader])
+                ?? throw new InvalidOperationException(
+                    $"Activator.CreateInstance unexpectedly returned null for type: {cachedType.FullName}");
         }
 
-        throw new NotSupportedException(
-            $"The type {type.Describe()} is not part of this registry: it is neither one of the pre-defined types " +
-            "nor a type this session compiled. Load the asset's file through the session that owns this registry " +
-            "(AssetManager.Adopt for a file parsed by hand), or check that the type tree is present in the tpk " +
-            "database if the file is stripped.");
+        throw NotInRegistry(type);
     }
+
+    private static NotSupportedException NotInRegistry(SerializedType type)
+        => new($"The type {type.Describe()} is not part of this registry: it is neither one of the pre-defined types " +
+               "nor a type this session compiled. Load the asset's file through the session that owns this registry " +
+               "(AssetManager.Adopt for a file parsed by hand), or check that the type tree is present in the tpk " +
+               "database if the file is stripped.");
 
     public void Dispose()
     {
@@ -289,10 +271,10 @@ public sealed class TypeRegistry : IDisposable
         return errorBuilder.ToString();
     }
 
-    private static string ComputeCatalogHash(IReadOnlyDictionary<Hash128, TypeTreeRepr> typesToGenerate)
+    private static string ComputeCatalogHash(IReadOnlyDictionary<Hash128, UnityTypeSource> typesToGenerate)
     {
         var builder = new StringBuilder();
-        builder.Append(GenerationSchemeVersion).Append('|').Append(AssemblyNameSpace).Append('|');
+        builder.Append('|').Append(AssemblyNameSpace).Append('|');
 
         foreach (var hex in typesToGenerate.Keys
                      .Select(static key => ToHex(key))
@@ -303,6 +285,29 @@ public sealed class TypeRegistry : IDisposable
 
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(builder.ToString()));
         return Convert.ToHexString(hash.AsSpan(0, 8)).ToLowerInvariant(); // 16 hex chars
+    }
+    
+    internal static List<string> FindNamedTypesWithoutContract(
+        IReadOnlyDictionary<Hash128, UnityTypeSource> types,
+        IReadOnlyDictionary<Hash128, Type> typeCache)
+    {
+        var gaps = new List<string>();
+        foreach (var (hash, source) in types)
+        {
+            if (!source.TypeTree.IsNamed)
+                continue;
+
+            var resolved = PreDefinedTypeTable.ByUnityTypeName.TryGetValue(source.ClassName, out var preDefinedType)
+                ? preDefinedType.Type
+                : typeCache.GetValueOrDefault(hash);
+            if (resolved is null || typeof(INamedObject).IsAssignableFrom(resolved))
+                continue;
+
+            if (!gaps.Contains(source.ClassName))
+                gaps.Add(source.ClassName);
+        }
+
+        return gaps;
     }
 
     private static string ToHex(Hash128 hash)

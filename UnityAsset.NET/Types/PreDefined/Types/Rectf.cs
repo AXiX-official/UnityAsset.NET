@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
 
@@ -18,6 +18,14 @@ public struct Rectf : IPreDefinedInterface
         y = reader.ReadSingle();
         width = reader.ReadSingle();
         height = reader.ReadSingle();
+    }
+    
+    public void Write(IWriter writer)
+    {
+        writer.WriteSingle(x);
+        writer.WriteSingle(y);
+        writer.WriteSingle(width);
+        writer.WriteSingle(height);
     }
 
     public AssetNode? ToAssetNode(string name = "Base")

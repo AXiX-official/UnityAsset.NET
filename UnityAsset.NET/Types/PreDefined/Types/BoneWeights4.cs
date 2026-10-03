@@ -8,7 +8,7 @@ public class BoneWeights4 : IPreDefinedInterface
     public string ClassName => "BoneWeights4";
     public float[] weight = new float[4];
     public int[] boneIndex = new int[4];
-    
+
     public float weight_0_ => weight[0];
     public float weight_1_ => weight[1];
     public float weight_2_ => weight[2];
@@ -22,11 +22,17 @@ public class BoneWeights4 : IPreDefinedInterface
     {
         
     }
-    
+
     public BoneWeights4(IReader reader)
     {
         reader.ReadFixedArray(weight, r => r.ReadSingle());
         reader.ReadFixedArray(boneIndex, r => r.ReadInt32());
+    }
+
+    public void Write(IWriter writer)
+    {
+        writer.WriteFixedArray(weight, (w, value) => w.WriteSingle(value));
+        writer.WriteFixedArray(boneIndex, (w, value) => w.WriteInt32(value));
     }
 
     public AssetNode? ToAssetNode(string name = "Base")
@@ -47,3 +53,4 @@ public class BoneWeights4 : IPreDefinedInterface
         return root;
     }
 }
+

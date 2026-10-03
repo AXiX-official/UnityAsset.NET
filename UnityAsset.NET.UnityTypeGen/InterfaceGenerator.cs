@@ -1,9 +1,14 @@
+using System.Text;
+using System.Text.RegularExpressions;
 using AssetRipper.Primitives;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using UnityAsset.NET.TypeTreeHelper;
 using UnityAsset.NET.TypeTreeHelper.Compiler;
+using UnityAsset.NET.TypeTreeHelper.Diagnostics;
+using UnityAsset.NET.TypeTreeHelper.Model;
+using UnityAsset.NET.TypeTreeHelper.Schema;
 
 namespace UnityAsset.NET.UnityTypeGen;
 
@@ -13,35 +18,57 @@ public class InterfaceGenerator
 
     public static string RootClassFolderName { get; set; } = "Classes";
     public static string SubClassFolderName { get; set; } = "Interfaces";
+
+    /// <summary>
+    /// Where to write the interface schema table for the runtime generator; null generates no table.
+    /// </summary>
+    public static string? SchemaTablePath { get; set; }
     
-    private Dictionary<int, string> _cachedGenericTypes = new();
+    private readonly Dictionary<string, HashSet<string>> _referencedInterfaces = new();
+    private readonly HashSet<string> _generatedInterfaces = new();
+
+    // Hand-written interfaces that have no generated counterpart. A hand-written partial sharing a name with a
+    // generated interface extends it instead, and is already in _generatedInterfaces.
+    private static readonly HashSet<string> HandWrittenInterfaces =
+    [
+        "INamedObject", "IUnityAsset", "IUnityObject", "IPreDefinedInterface", "IPreDefinedObject",
+        "IAnimationCurve", "IKeyframe", "IMonoBehaviour", "IAnimatorController", "IAnimatorOverrideController",
+        "IRuntimeAnimatorController", "Renderer",
+    ];
+
+    /// <summary>
+    /// The base interfaces of generated ones that the type trees do not state, because a hand-written partial used to
+    /// declare them. Generation emits them now, so the hierarchy is stated once, in the generated output.
+    /// </summary>
+    private static readonly Dictionary<string, string[]> DeclaredBaseInterfaces = new(StringComparer.Ordinal)
+    {
+        ["IAnimation"] = ["IComponent"],
+        ["IAnimator"] = ["IComponent"],
+        ["IMeshFilter"] = ["IComponent"],
+        ["IMeshRenderer"] = ["IComponent", "Renderer"],
+        ["ISkinnedMeshRenderer"] = ["IComponent", "Renderer"],
+        ["ITransform"] = ["IComponent"],
+    };
     
     public void GenerateInterfaces(string outputDirectory, Dictionary<string, List<(UnityVersion, TypeTreeRepr)>> rootTypeNodesMap)
     {
+        ValidateNamedFields(rootTypeNodesMap);
+        _referencedInterfaces.Clear();
+        _generatedInterfaces.Clear();
+
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
-        else //clean up
-        {
-            DirectoryInfo di = new DirectoryInfo(outputDirectory);
-            foreach (FileInfo file in di.GetFiles())
-            {
-                file.Delete();
-            }
-            foreach (DirectoryInfo dir in di.GetDirectories())
-            {
-                dir.Delete(true);
-            }
-        }
-        
         var rootClassDir = Path.Combine(outputDirectory, RootClassFolderName);
-        if (!Directory.Exists(rootClassDir))
-            Directory.CreateDirectory(rootClassDir);
         var subClassDir = Path.Combine(outputDirectory, SubClassFolderName);
-        if (!Directory.Exists(subClassDir))
-            Directory.CreateDirectory(subClassDir);
+
+        // Nothing on disk is touched until every interface has been generated and checked - see the end of this method.
+        // Cleaning up first and validating last is what left the checked-in interfaces half rewritten when a run
+        // reported a problem: the old files were gone and the new ones were already in place.
         
+        // A class whose name a nested structure already owns gets no interface of its own; the structure keeps it.
         var includedRootTypes = rootTypeNodesMap.Where(kvp =>
-            !Helper.ExcludedTypes.Contains(kvp.Key) && (Helper.IncludedTypes.Contains(kvp.Key) || Helper.IncludedPPTrGenricTypes.Contains(kvp.Key))
+            !Helper.ExcludedTypes.Contains(kvp.Key) && !Helper.ClassInterfacesTakenByNestedTypes.Contains(kvp.Key)
+            && (Helper.IncludedTypes.Contains(kvp.Key) || Helper.IncludedPPTrGenricTypes.Contains(kvp.Key))
         ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         
         var excludedRootTypes = rootTypeNodesMap.Where(kvp =>
@@ -56,23 +83,217 @@ public class InterfaceGenerator
             kvp => kvp.Value.Select(v => (v.Value, v.Key)).ToList()
         );
         
+        var schemas = new Dictionary<string, UnityTypeSchema>(StringComparer.Ordinal);
         foreach (var (className, rootNodes) in includedRootTypes)
+            schemas[$"I{className}"] = UnitySchemaBuilder.Build(className, rootNodes);
+        foreach (var (className, subNodeList) in _subNodes)
+            schemas[$"I{className}"] = UnitySchemaBuilder.Build(className, subNodeList);
+
+        var schemaEntries = new Dictionary<string, (string BaseInterface, UnityTypeSchema Schema)>(StringComparer.Ordinal);
+
+        // Everything is generated and checked before anything on disk is touched, so a run that reports a problem
+        // leaves the working tree exactly as it found it.
+        var pending = new List<(string InterfaceName, string Source, bool IsRoot)>();
+
+        foreach (var (className, _) in includedRootTypes)
         {
-            var compilationUnit = GenerateClassInterface(className, rootNodes, true);
-                    
-            var formattedSource = compilationUnit.NormalizeWhitespace(elasticTrivia: true).ToFullString();
-                    
-            var filePath = Path.Combine(rootClassDir, $"I{className}.g.cs");
-            File.WriteAllText(filePath, formattedSource);
+            var interfaceName = $"I{className}";
+            var schema = schemas[interfaceName];
+            var compilationUnit = GenerateClassInterface(schema, true, InheritedMembers(interfaceName, schemas), out var baseInterface);
+            schemaEntries[interfaceName] = (baseInterface, schema);
+
+            pending.Add((interfaceName, compilationUnit.NormalizeWhitespace(elasticTrivia: true).ToFullString(), true));
+            _generatedInterfaces.Add(interfaceName);
         }
 
-        foreach (var (className, subNodeList) in _subNodes)
+        foreach (var (className, _) in _subNodes)
         {
-            var subCompilationUnit = GenerateClassInterface(className, subNodeList, false);
+            var interfaceName = $"I{className}";
+            var schema = schemas[interfaceName];
+            var subCompilationUnit = GenerateClassInterface(schema, false, InheritedMembers(interfaceName, schemas), out var baseInterface);
+            schemaEntries[interfaceName] = (baseInterface, schema);
 
-            var subFormattedSource = subCompilationUnit.NormalizeWhitespace(elasticTrivia: true).ToFullString();
-            var subFilePath = Path.Combine(subClassDir, $"I{className}.g.cs");
-            File.WriteAllText(subFilePath, subFormattedSource);
+            pending.Add((interfaceName, subCompilationUnit.NormalizeWhitespace(elasticTrivia: true).ToFullString(), false));
+            _generatedInterfaces.Add(interfaceName);
+        }
+
+        ValidateReferencedInterfaces();
+        _diagnostics.ThrowIfAny();
+
+        // Only now are the old interfaces removed and the new ones written.
+        if (Directory.Exists(outputDirectory))
+        {
+            foreach (var file in new DirectoryInfo(outputDirectory).GetFiles())
+                file.Delete();
+            foreach (var dir in new DirectoryInfo(outputDirectory).GetDirectories())
+                dir.Delete(true);
+        }
+
+        Directory.CreateDirectory(rootClassDir);
+        Directory.CreateDirectory(subClassDir);
+
+        foreach (var (interfaceName, source, isRoot) in pending)
+            File.WriteAllText(Path.Combine(isRoot ? rootClassDir : subClassDir, $"{interfaceName}.g.cs"), source);
+
+        if (SchemaTablePath is { } schemaTablePath)
+        {
+            WriteSchemaTable(schemaEntries, schemaTablePath);
+            WriteVersionTable(schemas, Path.Combine(Path.GetDirectoryName(schemaTablePath)!, "InterfaceVersionTable.g.cs"));
+        }
+    }
+
+    /// <summary>
+    /// Writes the per-version member sets of the interfaces that have more than one known version. An interface with a
+    /// single version needs no entry: its declared members are that version's members. Nothing reads this yet - it is
+    /// the hook that version-specific behaviour (ADR-0002) defers to.
+    /// </summary>
+    private static void WriteVersionTable(Dictionary<string, UnityTypeSchema> schemas, string path)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine("// <auto-generated>");
+        builder.AppendLine("// Warning: This file is auto-generated. Do not edit manually.");
+        builder.AppendLine("// </auto-generated>");
+        builder.AppendLine();
+        builder.AppendLine("using System;");
+        builder.AppendLine("using System.Collections.Generic;");
+        builder.AppendLine();
+        builder.AppendLine("namespace UnityAsset.NET.TypeTreeHelper.Schema;");
+        builder.AppendLine();
+        builder.AppendLine("public static class InterfaceVersionTable");
+        builder.AppendLine("{");
+        builder.AppendLine("    public static readonly IReadOnlyDictionary<string, IReadOnlyList<InterfaceVersionSchema>> ByInterfaceName =");
+        builder.AppendLine("        new Dictionary<string, IReadOnlyList<InterfaceVersionSchema>>(StringComparer.Ordinal)");
+        builder.AppendLine("    {");
+
+        foreach (var (interfaceName, schema) in schemas.OrderBy(pair => pair.Key, StringComparer.Ordinal))
+        {
+            if (schema.Versions.Count < 2)
+                continue;
+
+            builder.AppendLine($"        [\"{interfaceName}\"] = new InterfaceVersionSchema[]");
+            builder.AppendLine("        {");
+
+            foreach (var version in schema.Versions)
+            {
+                builder.AppendLine($"            new(\"{version.UnityVersion}\", new InterfaceVersionMember[]");
+                builder.AppendLine("            {");
+
+                foreach (var member in version.Members
+                             .Where(member => !(schema.IsNamedAsset && member.Name == "m_Name"))
+                             .OrderBy(member => Helper.SanitizeName(member.Name), StringComparer.Ordinal))
+                    builder.AppendLine($"                new(\"{Helper.SanitizeName(member.Name)}\", \"{member.ResolvedType}\"),");
+
+                builder.AppendLine("            }),");
+            }
+
+            builder.AppendLine("        },");
+        }
+
+        builder.AppendLine("    };");
+        builder.AppendLine("}");
+        File.WriteAllText(path, builder.ToString());
+    }
+
+    /// <summary>
+    /// Writes what the emitted interfaces say, for the runtime generator to read instead of reflecting over them. The
+    /// declared types are copied verbatim, so a version-optional member keeps the "?" the interface declares it with.
+    /// </summary>
+    private static void WriteSchemaTable(
+        Dictionary<string, (string BaseInterface, UnityTypeSchema Schema)> entries,
+        string path)
+    {
+        var derivesFromNamedObject = new Dictionary<string, bool>(StringComparer.Ordinal);
+
+        bool DerivesFromNamedObject(string interfaceName)
+        {
+            if (derivesFromNamedObject.TryGetValue(interfaceName, out var known))
+                return known;
+
+            var result = false;
+            if (entries.TryGetValue(interfaceName, out var entry))
+            {
+                var baseInterface = entry.BaseInterface;
+                result = baseInterface == "INamedObject"
+                         || (entries.ContainsKey(baseInterface) && DerivesFromNamedObject(baseInterface))
+                         || (HandWrittenInterfaceSchema.Entries.TryGetValue(baseInterface, out var handWritten)
+                             && handWritten.DerivesFromNamedObject);
+            }
+
+            derivesFromNamedObject[interfaceName] = result;
+            return result;
+        }
+
+        var builder = new StringBuilder();
+        builder.AppendLine("// <auto-generated>");
+        builder.AppendLine("// Warning: This file is auto-generated. Do not edit manually.");
+        builder.AppendLine("// </auto-generated>");
+        builder.AppendLine();
+        builder.AppendLine("using System;");
+        builder.AppendLine("using System.Collections.Generic;");
+        builder.AppendLine();
+        builder.AppendLine("namespace UnityAsset.NET.TypeTreeHelper.Schema;");
+        builder.AppendLine();
+        builder.AppendLine("/// <summary>");
+        builder.AppendLine("/// What the interfaces generation emitted say, keyed by interface name. The generator writes this file; run the");
+        builder.AppendLine("/// UnityTypeGen project to regenerate it.");
+        builder.AppendLine("/// </summary>");
+        builder.AppendLine("internal static class GeneratedInterfaceSchemaTable");
+        builder.AppendLine("{");
+        builder.AppendLine("    public static readonly IReadOnlyDictionary<string, InterfaceSchema> Entries =");
+        builder.AppendLine("        new Dictionary<string, InterfaceSchema>(StringComparer.Ordinal)");
+        builder.AppendLine("    {");
+
+        foreach (var (interfaceName, entry) in entries.OrderBy(pair => pair.Key, StringComparer.Ordinal))
+        {
+            builder.AppendLine($"        [\"{interfaceName}\"] = new InterfaceSchema(\"{interfaceName}\", "
+                + $"{(DerivesFromNamedObject(interfaceName) ? "true" : "false")}, new InterfaceMemberSchema[]");
+            builder.AppendLine("        {");
+
+            // The runtime looks a member up by the name the interface spells it with, so the table records that name,
+            // and it keeps the declared type verbatim: a version-optional member keeps its "?".
+            foreach (var member in entry.Schema.Members()
+                         .OrderBy(member => Helper.SanitizeName(member.Name), StringComparer.Ordinal))
+            {
+                var name = Helper.SanitizeName(member.Name);
+                var declaredType = member.IsVersionOptional ? $"{member.ResolvedType}?" : member.ResolvedType;
+                builder.AppendLine($"            new(\"{name}\", \"{declaredType}\", "
+                    + $"{(member.IsVersionOptional ? "true" : "false")}),");
+            }
+
+            builder.AppendLine("        }),");
+        }
+
+        builder.AppendLine("    };");
+        builder.AppendLine("}");
+
+        File.WriteAllText(path, builder.ToString());
+    }
+
+    private static readonly DiagnosticBag _diagnostics = new();
+
+    private void RecordReferences(string interfaceName, string typeName)
+    {
+        foreach (Match match in Regex.Matches(typeName, @"\bI[A-Za-z_][A-Za-z0-9_]*\b"))
+        {
+            if (!_referencedInterfaces.TryGetValue(match.Value, out var owners))
+                _referencedInterfaces[match.Value] = owners = new HashSet<string>();
+            owners.Add(interfaceName);
+        }
+    }
+
+    private void ValidateReferencedInterfaces()
+    {
+        foreach (var (referenced, owners) in _referencedInterfaces)
+        {
+            if (_generatedInterfaces.Contains(referenced) || HandWrittenInterfaces.Contains(referenced))
+                continue;
+
+            _diagnostics.Report(
+                DiagnosticCodes.InterfaceNotGenerated,
+                $"{referenced} is referenced but generation did not emit it and it is not hand-written.",
+                new DiagnosticLocation(
+                    string.Join(", ", owners.OrderBy(owner => owner, StringComparer.Ordinal)),
+                    MemberPath: referenced));
         }
     }
     
@@ -176,36 +397,59 @@ public class InterfaceGenerator
         }
     }
 
-    // workaround for Keyframe and other generic types
-    private string GetGenricType(TypeTreeRepr node)
+    private static void ValidateNamedFields(Dictionary<string, List<(UnityVersion, TypeTreeRepr)>> rootTypeNodesMap)
     {
-        if (_cachedGenericTypes.TryGetValue(node.Hash, out var type))
-        {
-            return type;
-        }
-
-        if (node.TypeName == "Keyframe")
-        {
-            type = node.SubNodes[1].TypeName;
-            _cachedGenericTypes[node.Hash] = type;
-            return type;
-        }
-        
-        if (node.TypeName == "AnimationCurve")
-        {
-            type = GetGenricType(node.SubNodes[0].SubNodes[0].SubNodes[1]); // keyframe<T> m_Curve
-            _cachedGenericTypes[node.Hash] = type;
-            return type;
-        }
-        
-        // assert we can cut generic type spreading here
-        type = string.Empty;
-        _cachedGenericTypes[node.Hash] = type;
-        return type;
+        foreach (var (className, nodes) in rootTypeNodesMap)
+        foreach (var (version, node) in nodes)
+            ValidateNamedFields(className, version, node);
     }
-    
-    private CompilationUnitSyntax GenerateClassInterface(string className, List<(UnityVersion version, TypeTreeRepr node)> rootNodes, bool isRootClass)
+
+    private static void ValidateNamedFields(string className, UnityVersion version, TypeTreeRepr node)
     {
+        foreach (var child in node.SubNodes)
+        {
+            if (child.Name == "m_Name" && child.TypeName != "string")
+                _diagnostics.Report(
+                    DiagnosticCodes.NamedMemberIsNotString,
+                    $"{node.TypeName}.{child.Name} is {child.TypeName}, not a string, so the class cannot carry a name.",
+                    new DiagnosticLocation(className, version.ToString(), $"{node.TypeName}.{child.Name}"));
+
+            ValidateNamedFields(className, version, child);
+        }
+    }
+
+    /// <summary>The member names an interface inherits, so a declaration that hides one can say so.</summary>
+    private static HashSet<string> InheritedMembers(string interfaceName, Dictionary<string, UnityTypeSchema> schemas)
+    {
+        var names = new HashSet<string>(StringComparer.Ordinal);
+
+        if (!DeclaredBaseInterfaces.TryGetValue(interfaceName, out var declaredBaseInterfaces))
+            return names;
+
+        foreach (var baseInterface in declaredBaseInterfaces)
+            Add(baseInterface, names);
+
+        return names;
+
+        void Add(string name, HashSet<string> into)
+        {
+            if (schemas.TryGetValue(name, out var baseSchema))
+                foreach (var member in baseSchema.Members())
+                    into.Add(Helper.SanitizeName(member.Name));
+            else if (HandWrittenInterfaceSchema.Entries.TryGetValue(name, out var handWritten))
+                foreach (var member in handWritten.Members)
+                    into.Add(member.Name);
+
+            if (DeclaredBaseInterfaces.TryGetValue(name, out var deeper))
+                foreach (var baseInterface in deeper)
+                    Add(baseInterface, into);
+        }
+    }
+
+    private CompilationUnitSyntax GenerateClassInterface(UnityTypeSchema schema, bool isRootClass, HashSet<string> inheritedMembers, out string baseInterface)
+    {
+        var className = schema.Name;
+
         var usingDirectives = SyntaxFactory.List([
             SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("UnityAsset.NET.Types.PreDefined.Types"))
         ]);
@@ -214,55 +458,42 @@ public class InterfaceGenerator
             SyntaxFactory.ParseName("UnityAsset.NET.Types.PreDefined.Interfaces")
             );
         
-        bool isNamedAsset = rootNodes.All(rootNode =>
-            rootNode.node.SubNodes.Any(sb => sb.Name == "m_Name")
-        );
-        
+        baseInterface = isRootClass ? (schema.IsNamedAsset ? "INamedObject" : "IUnityAsset") : "IPreDefinedInterface";
+
+        var baseInterfaces = new List<string> { baseInterface };
+        if (DeclaredBaseInterfaces.TryGetValue($"I{className}", out var declaredBaseInterfaces))
+            baseInterfaces.AddRange(declaredBaseInterfaces);
+
+        foreach (var name in baseInterfaces)
+            RecordReferences($"I{className}", name);
+
         var interfaceDeclaration = SyntaxFactory.InterfaceDeclaration($"I{className}")
             .AddModifiers(
                 SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                 SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-            .AddBaseListTypes(SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(
-                isRootClass ? (isNamedAsset ? "INamedObject" : "IUnityAsset") : "IPreDefinedInterface")));
+            .AddBaseListTypes(baseInterfaces
+                .Select(name => (BaseTypeSyntax)SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(name)))
+                .ToArray());
         
         var members = new List<MemberDeclarationSyntax>();
 
-        var properties = new Dictionary<string , List<string>>();
-
-        foreach (var rootNode in rootNodes)
+        // The members and their types come from the model: the rules that resolve a type tree to a C# type live there
+        // and nowhere else.
+        foreach (var member in schema.Members())
         {
-            foreach (var subNode in rootNode.node.SubNodes)
-            {
-                
-                var name = subNode.Name;
-                if (isNamedAsset && name == "m_Name")
-                    continue;
-                var interfaceName = Helper.IsPrimitive(subNode.TypeName) 
-                    ? Helper.GetCSharpPrimitiveType(subNode.TypeName) 
-                    : GetInterfaceName(subNode, out var genericTypeName);
+            var memberName = Helper.SanitizeName(member.Name);
+            var typeName = member.IsVersionOptional ? $"{member.ResolvedType}?" : member.ResolvedType;
+            RecordReferences($"I{className}", member.ResolvedType);
 
-                if (properties.TryGetValue(name, out var prop))
-                {
-                    prop.Add(interfaceName);
-                }
-                else
-                {
-                    properties[name] = [interfaceName];
-                }
-            }
-        }
+            var modifiers = new List<SyntaxToken> { SyntaxFactory.Token(SyntaxKind.PublicKeyword) };
+            if (inheritedMembers.Contains(memberName))
+                modifiers.Add(SyntaxFactory.Token(SyntaxKind.NewKeyword));
 
-        foreach (var (propertyName, proptypes) in properties)
-        {
-            bool isNullable = proptypes.Count != rootNodes.Count;
-            var baseTypeName = GetOptionalType(proptypes);
-            var typeName = isNullable ? $"{baseTypeName}?" : baseTypeName;
-            var declaredType = SyntaxFactory.ParseTypeName(typeName);
+            var propertyDeclaration = SyntaxFactory.PropertyDeclaration(
+                    SyntaxFactory.ParseTypeName(typeName), memberName)
+                .AddModifiers(modifiers.ToArray());
             
-            var propertyDeclaration = SyntaxFactory.PropertyDeclaration(declaredType, Helper.SanitizeName(propertyName))
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
-            
-            if (isNullable)
+            if (member.IsVersionOptional)
             {
                 var getterWithBody = SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
                     .WithBody(SyntaxFactory.Block(
@@ -300,75 +531,5 @@ public class InterfaceGenerator
             .WithUsings(usingDirectives)
             .AddMembers(namespaceDeclaration.AddMembers(interfaceDeclaration))
             .WithLeadingTrivia(leadingTrivia);
-    }
-    
-    static readonly Dictionary<(string, string), string> NumericUnifyMap = new()
-    {
-        { ("sbyte", "byte"), "byte" },
-        { ("byte", "sbyte"), "byte" },
-        { ("short", "ushort"), "ushort" },
-        { ("ushort", "short"), "ushort" },
-        { ("int", "uint"), "uint" },
-        { ("uint", "int"), "uint" },
-        { ("long", "ulong"), "ulong" },
-        { ("ulong", "long"), "ulong" },
-    };
-
-    private static string GetOptionalType(List<string> types)
-    {
-        var uniqueTypes = types.Distinct().ToList();
-        
-        if (uniqueTypes.Count == 1)
-            return types.First();
-
-        if (uniqueTypes.Count == 2)
-        {
-            var a = uniqueTypes[0];
-            var b = uniqueTypes[1];
-            if (NumericUnifyMap.TryGetValue((a, b), out var unified))
-                return unified;
-        }
-        
-        return $"RefSum<{string.Join(", ", uniqueTypes)}>";
-    }
-
-    private string GetInterfaceName(TypeTreeRepr node, out string genericTypeName)
-    {
-        genericTypeName = string.Empty;
-        
-        if (Helper.IsPrimitive(node.TypeName))
-            return Helper.GetCSharpPrimitiveType(node.TypeName);
-
-        if (node.TypeName.StartsWith("PPtr<"))
-        {
-            var genericType = node.TypeName.Substring(5, node.TypeName.Length - 6);
-            return genericType == "Object"
-                ? "PPtr<IUnityObject>"
-                : Helper.IncludedPPTrGenricTypes.Contains(genericType)
-                    ? Helper.NoInterfaceTypes.Contains(genericType)
-                        ? $"PPtr<{genericType}>"
-                        : $"PPtr<I{genericType}>"
-                            : "PPtr<IUnityObject>";
-        }
-        
-        if (node.TypeName == "pair")
-            return $"ValueTuple<{GetInterfaceName(node.SubNodes[0], out _)}, {GetInterfaceName(node.SubNodes[1], out _)}>";
-
-        if (node.TypeName == "vector" || node.TypeName == "staticvector" || node.TypeName == "set" || node.TypeName == "map")
-            return GetInterfaceName(node.SubNodes[0], out _);
-        
-        if (node.TypeName == "Array")
-            return $"{GetInterfaceName(node.SubNodes[1], out _)}[]";
-        
-        if (Helper.PreDefinedTypes.Contains(node.TypeName))
-            return node.TypeName;
-        
-        genericTypeName = GetGenricType(node);
-
-        return genericTypeName == string.Empty
-            ? $"I{node.TypeName}"
-            : $"I{node.TypeName}<{genericTypeName}>";
-        
-        //return $"I{node.TypeName}";
     }
 }

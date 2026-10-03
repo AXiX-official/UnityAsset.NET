@@ -1,6 +1,6 @@
 namespace UnityAsset.NET.Types.PreDefined.Interfaces;
 
-public partial interface ISkinnedMeshRenderer : IComponent, Renderer
+public partial interface ISkinnedMeshRenderer
 {
     public IMesh? TryGetMesh(IUnitySession session)
     {

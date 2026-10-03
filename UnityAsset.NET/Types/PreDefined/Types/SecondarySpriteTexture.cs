@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
 
@@ -15,6 +15,13 @@ public class SecondarySpriteTexture : ISecondarySpriteTexture
         texture = new PPtr<ITexture2D>(reader);
         name = reader.ReadSizedString();
         reader.Align(4);
+    }
+    
+    public void Write(IWriter writer)
+    {
+        texture.Write(writer);
+        writer.WriteSizedString(name);
+        writer.Align(4);
     }
 
     public AssetNode? ToAssetNode(string name = "Base")

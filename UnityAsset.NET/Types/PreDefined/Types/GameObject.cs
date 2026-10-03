@@ -22,7 +22,17 @@ public class GameObject : INamedObject
         m_Tag = reader.ReadUInt16();
         m_IsActive = reader.ReadBoolean();
     }
-
+    
+    public void Write(IWriter writer)
+    {
+        writer.WriteListWithAlign<ComponentPair>(m_Component, (w, item) => item.Write(w), false);
+        writer.Align(4);
+        writer.WriteUInt32(m_Layer);
+        writer.WriteSizedString(m_Name);
+        writer.Align(4);
+        writer.WriteUInt16(m_Tag);
+        writer.WriteBoolean(m_IsActive);
+    }
     public AssetNode ToAssetNode(string name = "Base")
     {
         var rootAssetNode = new AssetNode

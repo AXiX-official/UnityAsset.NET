@@ -28,7 +28,7 @@ public class AssetManager : IUnitySession, IDisposable
 
     public List<Asset> LoadedAssets { get; private set; } = new();
 
-    private FrozenDictionary<Hash128, TypeTreeRepr> _loadedTypes = FrozenDictionary<Hash128, TypeTreeRepr>.Empty;
+    private FrozenDictionary<Hash128, UnityTypeSource> _loadedTypes = FrozenDictionary<Hash128, UnityTypeSource>.Empty;
     private TypeRegistry _typeRegistry;
     private UnityObjectFactory? _factory;
     private TpkTypeTreeCatalog? _tpk;
@@ -44,7 +44,7 @@ public class AssetManager : IUnitySession, IDisposable
 
     private bool IsDisposed => Interlocked.CompareExchange(ref _disposed, 0, 0) != 0;
 
-    public IReadOnlyDictionary<Hash128, TypeTreeRepr> LoadedTypes => _loadedTypes;
+    public IReadOnlyDictionary<Hash128, UnityTypeSource> LoadedTypes => _loadedTypes;
 
     /// <summary>
     /// The object factory for this session's catalog; null until types have been loaded (<see cref="LoadAsync"/>).
@@ -192,7 +192,7 @@ public class AssetManager : IUnitySession, IDisposable
             {
                 asset.AttachContext(context);
 
-                asset.IsNamedAsset = catalog.TryGetValue(asset.Info.Type.TypeHash, out var repr) && repr.IsNamed;
+                asset.IsNamedAsset = catalog.TryGetValue(asset.Info.Type.TypeHash, out var source) && source.TypeTree.IsNamed;
             }
         }
 
@@ -210,11 +210,11 @@ public class AssetManager : IUnitySession, IDisposable
             .OrderBy(pair => pair.Key, StringComparer.Ordinal)
             .Select(pair => (SerializedFile)pair.Value);
 
-    internal static Dictionary<Hash128, TypeTreeRepr> CollectTypeCatalog(
+    internal static Dictionary<Hash128, UnityTypeSource> CollectTypeCatalog(
         IEnumerable<SerializedFile> files,
         Func<string, IReadOnlyDictionary<string, TypeTreeRepr>> openTpkRoots)
     {
-        var catalog = new Dictionary<Hash128, TypeTreeRepr>();
+        var catalog = new Dictionary<Hash128, UnityTypeSource>();
         var tpkRootsByVersion = new Dictionary<string, IReadOnlyDictionary<string, TypeTreeRepr>>();
         var missingTypes = new List<string>();
 
@@ -228,12 +228,14 @@ public class AssetManager : IUnitySession, IDisposable
                 if (catalog.ContainsKey(type.TypeHash))
                     continue;
 
+                var typeName = ((AssetClassID)type.TypeID).ToString();
+
                 if (typeTreeEnabled && type.Nodes.Length > 0)
                 {
-                    catalog[type.TypeHash] =
-                        TypeTreeIntern.TryGet(type.TypeHash, out var entry) && entry.Repr is { } internedRepr
-                            ? internedRepr
-                            : type.Nodes[0].ToTypeTreeRepr(type.Nodes);
+                    var repr = TypeTreeIntern.TryGet(type.TypeHash, out var entry) && entry.Repr is { } internedRepr
+                        ? internedRepr
+                        : type.Nodes[0].ToTypeTreeRepr(type.Nodes);
+                    catalog[type.TypeHash] = new UnityTypeSource(typeName, unityVersion, repr);
                     continue;
                 }
 
@@ -243,9 +245,8 @@ public class AssetManager : IUnitySession, IDisposable
                     tpkRootsByVersion[unityVersion] = tpkRoots;
                 }
 
-                var typeName = ((AssetClassID)type.TypeID).ToString();
                 if (tpkRoots.TryGetValue(typeName, out var tpkRepr))
-                    catalog[type.TypeHash] = tpkRepr;
+                    catalog[type.TypeHash] = new UnityTypeSource(typeName, unityVersion, tpkRepr);
                 else if (!missingTypes.Contains(typeName))
                     missingTypes.Add(typeName);
             }
@@ -489,7 +490,7 @@ public class AssetManager : IUnitySession, IDisposable
         }
 
         LoadedAssets = new();
-        _loadedTypes = FrozenDictionary<Hash128, TypeTreeRepr>.Empty;
+        _loadedTypes = FrozenDictionary<Hash128, UnityTypeSource>.Empty;
         _factory = null;
         VirtualFileToFileMap = new();
         LoadedFiles = new Dictionary<string, IFile>().ToFrozenDictionary();

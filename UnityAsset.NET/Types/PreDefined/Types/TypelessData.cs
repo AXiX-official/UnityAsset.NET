@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.Types.PreDefined.Types;
@@ -20,6 +20,12 @@ public class TypelessData : IPreDefinedObject
         this.data = data;
     }
     
+    public void Write(IWriter writer)
+    {
+        writer.WriteInt32(size);
+        writer.WriteBytes(data);
+    }
+
     public AssetNode? ToAssetNode(string name = "Base")
     {
         var root = new AssetNode

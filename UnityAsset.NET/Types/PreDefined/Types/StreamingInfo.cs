@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
+using UnityAsset.NET.IO.Writer;
 
 namespace UnityAsset.NET.Types.PreDefined.Types;
 
@@ -14,10 +15,30 @@ public class StreamingInfo  : IPreDefinedObject
     
     public StreamingInfo(IReader reader)
     {
-        offset = (UnityRevision)((AssetReader)reader).AssetsFile.Metadata.UnityVersion >= "2020" ? reader.ReadUInt64() : reader.ReadUInt32();
+        if (reader is not AssetReader assetReader)
+            throw new InvalidOperationException(
+                "Reading StreamingInfo needs an AssetReader: the offset width depends on the asset's Unity version.");
+        
+        offset = (UnityRevision)assetReader.AssetsFile.Metadata.UnityVersion >= "2020" ? reader.ReadUInt64() : reader.ReadUInt32();
         size = reader.ReadUInt32();
         path = reader.ReadSizedString();
         reader.Align(4);
+    }
+    
+    public void Write(IWriter writer)
+    {
+        if (writer is not AssetWriter assetWriter)
+            throw new InvalidOperationException(
+                "Writing StreamingInfo needs an AssetWriter: the offset width depends on the asset's Unity version.");
+
+        if ((UnityRevision)assetWriter.AssetsFile.Metadata.UnityVersion >= "2020")
+            writer.WriteUInt64(offset);
+        else
+            writer.WriteUInt32((uint)offset);
+
+        writer.WriteUInt32(size);
+        writer.WriteSizedString(path);
+        writer.Align(4);
     }
 
     public AssetNode? ToAssetNode(string name = "Base")

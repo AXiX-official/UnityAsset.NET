@@ -1,4 +1,4 @@
-﻿using UnityAsset.NET.IO;
+using UnityAsset.NET.IO;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.Types.PreDefined.Types;
@@ -18,6 +18,14 @@ public struct GUID : IPreDefinedInterface, IEquatable<GUID>
         data_2_ = reader.ReadUInt32();
         data_3_ = reader.ReadUInt32();
     }
+    
+    public void Write(IWriter writer)
+    {
+        writer.WriteUInt32(data_0_);
+        writer.WriteUInt32(data_1_);
+        writer.WriteUInt32(data_2_);
+        writer.WriteUInt32(data_3_);
+    }
 
     public AssetNode? ToAssetNode(string name = "Base")
     {
@@ -26,10 +34,10 @@ public struct GUID : IPreDefinedInterface, IEquatable<GUID>
             Name = name,
             TypeName = "GUID"
         };
-        root.Children.Add(new AssetNode { Name = "data[0]", TypeName = "unsigned int", Value = this.data_0_ });
-        root.Children.Add(new AssetNode { Name = "data[1]", TypeName = "unsigned int", Value = this.data_1_ });
-        root.Children.Add(new AssetNode { Name = "data[2]", TypeName = "unsigned int", Value = this.data_2_ });
-        root.Children.Add(new AssetNode { Name = "data[3]", TypeName = "unsigned int", Value = this.data_3_ });
+        root.Children.Add(new AssetNode { Name = "data[0]", TypeName = "unsigned int", Value = data_0_ });
+        root.Children.Add(new AssetNode { Name = "data[1]", TypeName = "unsigned int", Value = data_1_ });
+        root.Children.Add(new AssetNode { Name = "data[2]", TypeName = "unsigned int", Value = data_2_ });
+        root.Children.Add(new AssetNode { Name = "data[3]", TypeName = "unsigned int", Value = data_3_ });
         return root;
     }
     

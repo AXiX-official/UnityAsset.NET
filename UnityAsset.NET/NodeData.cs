@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.Types.PreDefined.Types;
 using UnityAsset.NET.TypeTreeHelper;
@@ -136,7 +136,107 @@ public class NodeData
             reader.Align(4);
         return value;
     }
-
+    
+    public static void WriteValue(IWriter writer, TypeTreeRepr current, object value)
+    {
+        var align = current.RequiresAlign;
+        switch (current.TypeName)
+        {
+            case "SInt8":
+                writer.WriteInt8((sbyte)value);
+                break;
+            case "UInt8":
+                writer.WriteUInt8((byte)value);
+                break;
+            case "char":
+                writer.WriteChar((char)value);
+                break;
+            case "short":
+            case "SInt16":
+                writer.WriteInt16((short)value);
+                break;
+            case "UInt16":
+            case "unsigned short":
+                writer.WriteUInt16((ushort)value);
+                break;
+            case "int":
+            case "SInt32":
+                writer.WriteInt32((int)value);
+                break;
+            case "UInt32":
+            case "unsigned int":
+            case "Type*":
+                writer.WriteUInt32((uint)value);
+                break;
+            case "long long":
+            case "SInt64":
+                writer.WriteInt64((long)value);
+                break;
+            case "UInt64":
+            case "unsigned long long":
+            case "FileSize":
+                writer.WriteUInt64((ulong)value);
+                break;
+            case "float":
+                writer.WriteSingle((float)value);
+                break;
+            case "double":
+                writer.WriteDouble((double)value);
+                break;
+            case "bool":
+                writer.WriteBoolean((bool)value);
+                break;
+            case "string":
+                writer.WriteSizedString((string)value);
+                break;
+            case "map":
+                {
+                    var pair = current.SubNodes[0].SubNodes[1];
+                    align |= pair.RequiresAlign;
+                    var first = pair.SubNodes[0];
+                    var second = pair.SubNodes[1];
+                    var pairs = (List<KeyValuePair<object, object>>)value;
+                    writer.WriteInt32(pairs.Count);
+                    foreach (var entry in pairs)
+                    {
+                        WriteValue(writer, first, entry.Key);
+                        WriteValue(writer, second, entry.Value);
+                    }
+                    break;
+                }
+            case "TypelessData":
+                ((TypelessData)value).Write(writer);
+                break;
+            default:
+                {
+                    if (current.SubNodes.Length == 1 && current.SubNodes[0].TypeName == "Array") //Array
+                    {
+                        var vector = current.SubNodes[0];
+                        align |= vector.RequiresAlign;
+                        var array = (NodeData[])value;
+                        writer.WriteInt32(array.Length);
+                        var arrayNode = vector.SubNodes[1];
+                        foreach (var item in array)
+                        {
+                            WriteValue(writer, arrayNode, item.Value);
+                        }
+                        break;
+                    }
+                    else //Class
+                    {
+                        var members = (Dictionary<string, NodeData>)value;
+                        foreach (var member in current.SubNodes)
+                        {
+                            WriteValue(writer, member, members[member.Name].Value);
+                        }
+                        break;
+                    }
+                }
+        }
+        if (align)
+            writer.Align(4);
+    }
+    
     public override string ToString() => ToString(0);
 
     public static string ObjectToString(object obj, int i = 0)

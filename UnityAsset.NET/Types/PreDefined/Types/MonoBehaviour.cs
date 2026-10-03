@@ -12,9 +12,11 @@ public class MonoBehaviour : IMonoBehaviour
     public PPtr<IMonoScript> m_Script { get; }
     public string m_Name { get; }
     public NodeData NodeData { get; }
+    public TypeTreeRepr TypeTree { get; }
 
     public MonoBehaviour(IReader reader, TypeTreeRepr typeTree)
     {
+        TypeTree = typeTree;
         NodeData = new NodeData(reader, typeTree);
         var @class = NodeData.As<Dictionary<string, NodeData>>();
         var m_GameObjectClass = @class["m_GameObject"].As<Dictionary<string, NodeData>>();
@@ -31,6 +33,11 @@ public class MonoBehaviour : IMonoBehaviour
             reader
         );
         m_Name = @class["m_Name"].As<string>();
+    }
+    
+    public void Write(IWriter writer)
+    {
+        NodeData.WriteValue(writer, TypeTree, NodeData.Value);
     }
     
     public string ToPlainText()
