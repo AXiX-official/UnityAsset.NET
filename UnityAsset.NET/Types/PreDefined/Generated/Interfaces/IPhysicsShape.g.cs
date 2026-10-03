@@ -8,13 +8,108 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPhysicsShape : IPreDefinedInterface
     {
-        public int m_ShapeType { get; }
-        public float m_Radius { get; }
-        public int m_VertexStartIndex { get; }
-        public int m_VertexCount { get; }
-        public int m_UseAdjacentStart { get; }
-        public int m_UseAdjacentEnd { get; }
-        public Vector2f m_AdjacentStart { get; }
-        public Vector2f m_AdjacentEnd { get; }
+        public int m_ShapeType
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float m_Radius
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_VertexStartIndex
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_VertexCount
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_UseAdjacentStart
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_UseAdjacentEnd
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector2f m_AdjacentStart
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector2f m_AdjacentEnd
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

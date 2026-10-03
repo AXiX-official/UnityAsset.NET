@@ -8,11 +8,82 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAutoOffMeshLinkData : IPreDefinedInterface
     {
-        public Vector3f m_Start { get; }
-        public Vector3f m_End { get; }
-        public float m_Radius { get; }
-        public ushort m_LinkType { get; }
-        public byte m_Area { get; }
-        public byte m_LinkDirection { get; }
+        public Vector3f m_Start
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector3f m_End
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float m_Radius
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ushort m_LinkType
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public byte m_Area
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public byte m_LinkDirection
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

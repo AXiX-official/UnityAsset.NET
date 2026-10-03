@@ -8,16 +8,68 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IStateMachineConstant : IPreDefinedInterface
     {
-        public IOffsetPtr[] m_StateConstantArray { get; }
-        public IOffsetPtr[] m_AnyStateTransitionConstantArray { get; }
-        public IOffsetPtr[] m_SelectorStateConstantArray { get; }
-        public uint m_DefaultState { get; }
+        public IOffsetPtr[] m_StateConstantArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IOffsetPtr[] m_AnyStateTransitionConstantArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IOffsetPtr[] m_SelectorStateConstantArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public uint m_DefaultState
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public uint? m_MotionSetCount
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -27,6 +79,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
         public bool? m_EvaluateTransitionsOnStart
@@ -34,6 +91,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

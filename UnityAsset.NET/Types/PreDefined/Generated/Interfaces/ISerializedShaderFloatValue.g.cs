@@ -8,7 +8,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedShaderFloatValue : IPreDefinedInterface
     {
-        public float val { get; }
-        public string name { get; }
+        public float val
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public string name
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

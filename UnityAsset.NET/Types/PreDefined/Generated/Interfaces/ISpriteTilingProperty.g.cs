@@ -8,12 +8,95 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteTilingProperty : IPreDefinedInterface
     {
-        public Vector4f border { get; }
-        public Vector2f pivot { get; }
-        public Vector2f oldSize { get; }
-        public Vector2f newSize { get; }
-        public float adaptiveTilingThreshold { get; }
-        public int drawMode { get; }
-        public bool adaptiveTiling { get; }
+        public Vector4f border
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector2f pivot
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector2f oldSize
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector2f newSize
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float adaptiveTilingThreshold
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int drawMode
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public bool adaptiveTiling
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

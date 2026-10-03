@@ -8,10 +8,69 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteAtlas : INamedObject
     {
-        public PPtr<ISprite>[] m_PackedSprites { get; }
-        public string[] m_PackedSpriteNamesToIndex { get; }
-        public ValueTuple<ValueTuple<GUID, long>, SpriteAtlasData>[] m_RenderDataMap { get; }
-        public string m_Tag { get; }
-        public bool m_IsVariant { get; }
+        public PPtr<ISprite>[] m_PackedSprites
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public string[] m_PackedSpriteNamesToIndex
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ValueTuple<ValueTuple<GUID, long>, SpriteAtlasData>[] m_RenderDataMap
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public string m_Tag
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public bool m_IsVariant
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

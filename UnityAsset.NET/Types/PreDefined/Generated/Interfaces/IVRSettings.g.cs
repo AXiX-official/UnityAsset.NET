@@ -14,6 +14,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
         public IGoogle? cardboard
@@ -21,6 +26,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -30,6 +40,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
         public IHoloLens? hololens
@@ -37,6 +52,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -46,6 +66,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
         public bool? enable360StereoCapture
@@ -54,6 +79,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
         public ILumin? lumin
@@ -61,6 +91,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

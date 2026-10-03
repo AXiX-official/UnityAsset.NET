@@ -8,21 +8,133 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVisualEffectInfo : IPreDefinedInterface
     {
-        public IVFXExpressionContainer m_Expressions { get; }
-        public IVFXPropertySheetSerializedBase m_PropertySheet { get; }
-        public RefSum<IVFXMapping[], IVFXExposedMapping[]> m_ExposedExpressions { get; }
-        public IVFXGPUBufferDesc[] m_Buffers { get; }
-        public IVFXCPUBufferDesc[] m_CPUBuffers { get; }
-        public IVFXEventDesc[] m_Events { get; }
-        public IVFXRendererSettings m_RendererSettings { get; }
-        public int m_CullingFlags { get; }
-        public int m_UpdateMode { get; }
+        public IVFXExpressionContainer m_Expressions
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IVFXPropertySheetSerializedBase m_PropertySheet
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public RefSum<IVFXMapping[], IVFXExposedMapping[]> m_ExposedExpressions
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IVFXGPUBufferDesc[] m_Buffers
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IVFXCPUBufferDesc[] m_CPUBuffers
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IVFXEventDesc[] m_Events
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IVFXRendererSettings m_RendererSettings
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_CullingFlags
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_UpdateMode
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public uint? m_RuntimeVersion
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -32,6 +144,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
         public uint? m_PreWarmStepCount
@@ -39,6 +156,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -48,6 +170,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
         public string? m_InitialEventName
@@ -55,6 +182,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -64,6 +196,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
         public int? m_InstancingMode
@@ -71,6 +208,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -80,6 +222,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
         public int? m_InstancingDisabledReason
@@ -87,6 +234,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

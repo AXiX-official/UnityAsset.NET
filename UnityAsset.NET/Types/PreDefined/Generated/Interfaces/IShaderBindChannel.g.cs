@@ -8,7 +8,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IShaderBindChannel : IPreDefinedInterface
     {
-        public sbyte source { get; }
-        public sbyte target { get; }
+        public sbyte source
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public sbyte target
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

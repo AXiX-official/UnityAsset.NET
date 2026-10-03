@@ -8,7 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILayerConstant : IPreDefinedInterface
     {
-        public uint m_StateMachineIndex { get; }
+        public uint m_StateMachineIndex
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public uint? m_StateMachineMotionSetIndex
         {
@@ -16,21 +27,114 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
-        public IHumanPoseMask m_BodyMask { get; }
-        public IOffsetPtr m_SkeletonMask { get; }
-        public uint m_Binding { get; }
-        public int _int__m_LayerBlendingMode { get; }
-        public float m_DefaultWeight { get; }
-        public bool m_IKPass { get; }
-        public bool m_SyncedLayerAffectsTiming { get; }
+        public IHumanPoseMask m_BodyMask
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IOffsetPtr m_SkeletonMask
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public uint m_Binding
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int _int__m_LayerBlendingMode
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float m_DefaultWeight
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public bool m_IKPass
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public bool m_SyncedLayerAffectsTiming
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public uint? m_StateMachineSynchronizedLayerIndex
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

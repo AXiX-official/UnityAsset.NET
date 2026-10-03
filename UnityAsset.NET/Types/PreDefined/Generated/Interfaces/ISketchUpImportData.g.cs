@@ -8,7 +8,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISketchUpImportData : IPreDefinedInterface
     {
-        public ISketchUpImportCamera defaultCamera { get; }
-        public ISketchUpImportScene[] scenes { get; }
+        public ISketchUpImportCamera defaultCamera
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ISketchUpImportScene[] scenes
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

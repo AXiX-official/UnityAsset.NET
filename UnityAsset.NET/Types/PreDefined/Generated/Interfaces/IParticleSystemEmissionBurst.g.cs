@@ -8,13 +8,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IParticleSystemEmissionBurst : IPreDefinedInterface
     {
-        public float time { get; }
+        public float time
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public uint? minCount
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -24,16 +40,49 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
-        public uint cycleCount { get; }
-        public float repeatInterval { get; }
+        public uint cycleCount
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float repeatInterval
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public IMinMaxCurve? countCurve
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -42,6 +91,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

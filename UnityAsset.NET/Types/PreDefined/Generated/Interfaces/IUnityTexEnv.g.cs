@@ -8,8 +8,43 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IUnityTexEnv : IPreDefinedInterface
     {
-        public PPtr<IUnityObject> m_Texture { get; }
-        public Vector2f m_Scale { get; }
-        public Vector2f m_Offset { get; }
+        public PPtr<IUnityObject> m_Texture
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector2f m_Scale
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector2f m_Offset
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

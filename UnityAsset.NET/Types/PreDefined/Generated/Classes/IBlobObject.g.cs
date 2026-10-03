@@ -8,9 +8,56 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBlobObject : INamedObject
     {
-        public ulong m_BlobTypeHash { get; }
-        public char[] m_BlobData { get; }
-        public uint[] m_NestedBlobObjectReferenceOffsets { get; }
-        public PPtr<IBlobObject>[] m_NestedBlobObjectReferences { get; }
+        public ulong m_BlobTypeHash
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public char[] m_BlobData
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public uint[] m_NestedBlobObjectReferenceOffsets
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<IBlobObject>[] m_NestedBlobObjectReferences
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

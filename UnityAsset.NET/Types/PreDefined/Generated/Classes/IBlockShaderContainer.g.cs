@@ -8,10 +8,69 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBlockShaderContainer : INamedObject
     {
-        public GUID guid { get; }
-        public PPtr<IBlockShaderContainer>[] dependencies { get; }
-        public string[] generatedPaths { get; }
-        public uint[] blob { get; }
-        public int state { get; }
+        public GUID guid
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<IBlockShaderContainer>[] dependencies
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public string[] generatedPaths
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public uint[] blob
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int state
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

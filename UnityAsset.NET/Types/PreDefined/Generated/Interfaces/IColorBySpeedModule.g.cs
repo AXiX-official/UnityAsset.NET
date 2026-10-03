@@ -8,8 +8,43 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IColorBySpeedModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxGradient gradient { get; }
-        public Vector2f range { get; }
+        public bool enabled
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxGradient gradient
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector2f range
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

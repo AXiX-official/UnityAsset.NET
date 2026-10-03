@@ -8,8 +8,43 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IComputeShaderCB : IPreDefinedInterface
     {
-        public string name { get; }
-        public int byteSize { get; }
-        public IComputeShaderParam[] @params { get; }
+        public string name
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int byteSize
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IComputeShaderParam[] @params
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

@@ -8,11 +8,82 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISplatPrototype : IPreDefinedInterface
     {
-        public PPtr<ITexture2D> texture { get; }
-        public PPtr<ITexture2D> normalMap { get; }
-        public Vector2f tileSize { get; }
-        public Vector2f tileOffset { get; }
-        public Vector4f specularMetallic { get; }
-        public float smoothness { get; }
+        public PPtr<ITexture2D> texture
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<ITexture2D> normalMap
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector2f tileSize
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector2f tileOffset
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector4f specularMetallic
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float smoothness
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

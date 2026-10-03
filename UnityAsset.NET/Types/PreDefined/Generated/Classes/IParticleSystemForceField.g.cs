@@ -8,8 +8,43 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IParticleSystemForceField : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public byte m_Enabled { get; }
-        public IParticleSystemForceFieldParameters m_Parameters { get; }
+        public PPtr<GameObject> m_GameObject
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public byte m_Enabled
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IParticleSystemForceFieldParameters m_Parameters
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

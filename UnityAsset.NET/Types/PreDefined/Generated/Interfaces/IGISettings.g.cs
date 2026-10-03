@@ -8,9 +8,44 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IGISettings : IPreDefinedInterface
     {
-        public float m_BounceScale { get; }
-        public float m_IndirectOutputScale { get; }
-        public float m_AlbedoBoost { get; }
+        public float m_BounceScale
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float m_IndirectOutputScale
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float m_AlbedoBoost
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public float? m_TemporalCoherenceThreshold
         {
@@ -18,10 +53,50 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
-        public uint m_EnvironmentLightingMode { get; }
-        public bool m_EnableBakedLightmaps { get; }
-        public bool m_EnableRealtimeLightmaps { get; }
+        public uint m_EnvironmentLightingMode
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public bool m_EnableBakedLightmaps
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public bool m_EnableRealtimeLightmaps
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

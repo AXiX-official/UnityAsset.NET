@@ -8,7 +8,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVulkanGraphicsJobsDeviceFilterData : IPreDefinedInterface
     {
-        public uint preferredMode { get; }
-        public IAndroidDeviceFilterData filter { get; }
+        public uint preferredMode
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IAndroidDeviceFilterData filter
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

@@ -8,8 +8,43 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IProbeSetIndex : IPreDefinedInterface
     {
-        public IHash128 m_Hash { get; }
-        public int m_Offset { get; }
-        public int m_Size { get; }
+        public IHash128 m_Hash
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_Offset
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_Size
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

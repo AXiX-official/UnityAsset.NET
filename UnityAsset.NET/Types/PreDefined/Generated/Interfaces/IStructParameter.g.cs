@@ -8,11 +8,82 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IStructParameter : IPreDefinedInterface
     {
-        public int m_NameIndex { get; }
-        public int m_Index { get; }
-        public int m_ArraySize { get; }
-        public int m_StructSize { get; }
-        public IVectorParameter[] m_VectorMembers { get; }
-        public IMatrixParameter[] m_MatrixMembers { get; }
+        public int m_NameIndex
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_Index
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_ArraySize
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_StructSize
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IVectorParameter[] m_VectorMembers
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMatrixParameter[] m_MatrixMembers
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

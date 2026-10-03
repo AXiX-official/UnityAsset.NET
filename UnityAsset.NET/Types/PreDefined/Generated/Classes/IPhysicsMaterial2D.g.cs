@@ -8,14 +8,42 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPhysicsMaterial2D : INamedObject
     {
-        public float friction { get; }
-        public float bounciness { get; }
+        public float friction
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float bounciness
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public int? m_FrictionCombine
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -24,6 +52,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

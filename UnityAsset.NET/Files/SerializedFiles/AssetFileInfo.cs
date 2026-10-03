@@ -11,6 +11,7 @@ public class AssetFileInfo
     public UInt32 ByteSize;
     public Int32 TypeIdOrIndex;
     public SerializedType Type;
+    internal long TableOffset;
     
     public AssetFileInfo(Int64 pathId, UInt64 byteOffset, UInt32 byteSize,
         int typeIdOrIndex, SerializedType type)
@@ -25,6 +26,7 @@ public class AssetFileInfo
     public static AssetFileInfo Parse(IReader reader, SerializedFileFormatVersion version, SerializedType[] types)
     {
         reader.Align(4);
+        var tableOffset = reader.Position;
         var pathId = reader.ReadInt64();
         var byteOffset = version >= SerializedFileFormatVersion.LargeFilesSupport ?
             reader.ReadUInt64() : reader.ReadUInt32();
@@ -33,7 +35,7 @@ public class AssetFileInfo
         if (typeIdOrIndex >= types.Length)
             throw new IndexOutOfRangeException("TypeIndex is larger than type tree count!");
         var type = types[typeIdOrIndex];
-        return new AssetFileInfo(pathId, byteOffset, byteSize, typeIdOrIndex, type);
+        return new AssetFileInfo(pathId, byteOffset, byteSize, typeIdOrIndex, type) { TableOffset = tableOffset };
     }
     
     public void Serialize(IWriter writer, SerializedFileFormatVersion version)

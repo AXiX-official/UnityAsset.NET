@@ -8,6 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMeshLodSubMesh : IPreDefinedInterface
     {
-        public IMeshLodRange[] m_Levels { get; }
+        public IMeshLodRange[] m_Levels
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

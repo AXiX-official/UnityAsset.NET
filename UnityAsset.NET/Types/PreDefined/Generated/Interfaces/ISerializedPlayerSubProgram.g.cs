@@ -8,9 +8,56 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedPlayerSubProgram : IPreDefinedInterface
     {
-        public uint m_BlobIndex { get; }
-        public ushort[] m_KeywordIndices { get; }
-        public long m_ShaderRequirements { get; }
-        public sbyte m_GpuProgramType { get; }
+        public uint m_BlobIndex
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ushort[] m_KeywordIndices
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public long m_ShaderRequirements
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public sbyte m_GpuProgramType
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

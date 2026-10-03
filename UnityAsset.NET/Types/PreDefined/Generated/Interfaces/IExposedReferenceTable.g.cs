@@ -8,6 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IExposedReferenceTable : IPreDefinedInterface
     {
-        public ValueTuple<string, PPtr<IUnityObject>>[] m_References { get; }
+        public ValueTuple<string, PPtr<IUnityObject>>[] m_References
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

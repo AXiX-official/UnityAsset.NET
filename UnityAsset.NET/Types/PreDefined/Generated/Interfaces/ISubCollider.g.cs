@@ -8,7 +8,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISubCollider : IPreDefinedInterface
     {
-        public PPtr<ICollider2D> m_Collider { get; }
-        public IIntPoint[][] m_ColliderPaths { get; }
+        public PPtr<ICollider2D> m_Collider
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IIntPoint[][] m_ColliderPaths
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

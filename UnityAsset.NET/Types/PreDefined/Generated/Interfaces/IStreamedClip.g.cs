@@ -8,14 +8,42 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IStreamedClip : IPreDefinedInterface
     {
-        public uint[] data { get; }
-        public RefSum<uint, ushort> curveCount { get; }
+        public uint[] data
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public RefSum<uint, ushort> curveCount
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public ushort? discreteCurveCount
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

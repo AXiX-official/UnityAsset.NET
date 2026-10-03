@@ -8,7 +8,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITilemapRefCountedData : IPreDefinedInterface
     {
-        public uint m_RefCount { get; }
-        public RefSum<PPtr<IUnityObject>, PPtr<ISprite>, IMatrix4x4f, IColorRGBA, PPtr<GameObject>> m_Data { get; }
+        public uint m_RefCount
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public RefSum<PPtr<IUnityObject>, PPtr<ISprite>, IMatrix4x4f, IColorRGBA, PPtr<GameObject>> m_Data
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

@@ -7,8 +7,8 @@ public class AssetWriter : CustomStreamWriter
 {
     public readonly SerializedFile AssetsFile;
 
-    public AssetWriter(Stream stream, SerializedFile assetsFile, Endianness endian = Endianness.BigEndian,
-        bool leaveOpen = false, int bufferSize = 8192) : base(stream, endian, leaveOpen, bufferSize)
+    public AssetWriter(Stream stream, SerializedFile assetsFile, Endianness? endian = null,
+        bool leaveOpen = false, int bufferSize = 8192) : base(stream, endian ?? assetsFile.Header.Endianness, leaveOpen, bufferSize)
     {
         AssetsFile = assetsFile;
     }

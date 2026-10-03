@@ -8,13 +8,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IDefaultPreset : IPreDefinedInterface
     {
-        public PPtr<IPreset> m_Preset { get; }
+        public PPtr<IPreset> m_Preset
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public string? m_Filter
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -23,6 +39,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

@@ -8,9 +8,56 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPlatformShaderDefines : IPreDefinedInterface
     {
-        public int shaderPlatform { get; }
-        public uint[] defines_Tier1 { get; }
-        public uint[] defines_Tier2 { get; }
-        public uint[] defines_Tier3 { get; }
+        public int shaderPlatform
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public uint[] defines_Tier1
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public uint[] defines_Tier2
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public uint[] defines_Tier3
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

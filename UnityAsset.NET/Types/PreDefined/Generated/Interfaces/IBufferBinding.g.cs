@@ -8,14 +8,42 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBufferBinding : IPreDefinedInterface
     {
-        public int m_NameIndex { get; }
-        public int m_Index { get; }
+        public int m_NameIndex
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_Index
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public int? m_ArraySize
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

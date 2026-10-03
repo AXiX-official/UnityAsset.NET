@@ -8,23 +8,238 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IParticleSystemForceFieldParameters : IPreDefinedInterface
     {
-        public int m_Shape { get; }
-        public float m_StartRange { get; }
-        public float m_EndRange { get; }
-        public float m_Length { get; }
-        public float m_GravityFocus { get; }
-        public Vector2f m_RotationRandomness { get; }
-        public IMinMaxCurve m_DirectionCurveX { get; }
-        public IMinMaxCurve m_DirectionCurveY { get; }
-        public IMinMaxCurve m_DirectionCurveZ { get; }
-        public IMinMaxCurve m_GravityCurve { get; }
-        public IMinMaxCurve m_RotationSpeedCurve { get; }
-        public IMinMaxCurve m_RotationAttractionCurve { get; }
-        public IMinMaxCurve m_DragCurve { get; }
-        public PPtr<ITexture3D> m_VectorField { get; }
-        public IMinMaxCurve m_VectorFieldSpeedCurve { get; }
-        public IMinMaxCurve m_VectorFieldAttractionCurve { get; }
-        public bool m_MultiplyDragByParticleSize { get; }
-        public bool m_MultiplyDragByParticleVelocity { get; }
+        public int m_Shape
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float m_StartRange
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float m_EndRange
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float m_Length
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float m_GravityFocus
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector2f m_RotationRandomness
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxCurve m_DirectionCurveX
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxCurve m_DirectionCurveY
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxCurve m_DirectionCurveZ
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxCurve m_GravityCurve
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxCurve m_RotationSpeedCurve
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxCurve m_RotationAttractionCurve
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxCurve m_DragCurve
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<ITexture3D> m_VectorField
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxCurve m_VectorFieldSpeedCurve
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxCurve m_VectorFieldAttractionCurve
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public bool m_MultiplyDragByParticleSize
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public bool m_MultiplyDragByParticleVelocity
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

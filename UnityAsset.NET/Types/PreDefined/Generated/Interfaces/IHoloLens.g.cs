@@ -8,13 +8,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHoloLens : IPreDefinedInterface
     {
-        public int depthFormat { get; }
+        public int depthFormat
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public bool? depthBufferSharingEnabled
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

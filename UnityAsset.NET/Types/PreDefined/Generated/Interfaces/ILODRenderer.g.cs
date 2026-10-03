@@ -8,6 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILODRenderer : IPreDefinedInterface
     {
-        public PPtr<IRenderer> renderer { get; }
+        public PPtr<IRenderer> renderer
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

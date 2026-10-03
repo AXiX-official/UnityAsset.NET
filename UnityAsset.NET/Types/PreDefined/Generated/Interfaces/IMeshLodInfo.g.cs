@@ -8,8 +8,43 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMeshLodInfo : IPreDefinedInterface
     {
-        public ILodSelectionCurve m_LodSelectionCurve { get; }
-        public int m_NumLevels { get; }
-        public IMeshLodSubMesh[] m_SubMeshes { get; }
+        public ILodSelectionCurve m_LodSelectionCurve
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_NumLevels
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMeshLodSubMesh[] m_SubMeshes
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

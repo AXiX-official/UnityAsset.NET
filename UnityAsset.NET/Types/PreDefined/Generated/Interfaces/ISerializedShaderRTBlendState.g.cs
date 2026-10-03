@@ -8,12 +8,95 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedShaderRTBlendState : IPreDefinedInterface
     {
-        public ISerializedShaderFloatValue srcBlend { get; }
-        public ISerializedShaderFloatValue destBlend { get; }
-        public ISerializedShaderFloatValue srcBlendAlpha { get; }
-        public ISerializedShaderFloatValue destBlendAlpha { get; }
-        public ISerializedShaderFloatValue blendOp { get; }
-        public ISerializedShaderFloatValue blendOpAlpha { get; }
-        public ISerializedShaderFloatValue colMask { get; }
+        public ISerializedShaderFloatValue srcBlend
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ISerializedShaderFloatValue destBlend
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ISerializedShaderFloatValue srcBlendAlpha
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ISerializedShaderFloatValue destBlendAlpha
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ISerializedShaderFloatValue blendOp
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ISerializedShaderFloatValue blendOpAlpha
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ISerializedShaderFloatValue colMask
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

@@ -8,16 +8,147 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ICompressedMesh : IPreDefinedInterface
     {
-        public IPackedBitVector m_Vertices { get; }
-        public IPackedBitVector m_UV { get; }
-        public IPackedBitVector m_Normals { get; }
-        public IPackedBitVector m_Tangents { get; }
-        public IPackedBitVector m_Weights { get; }
-        public IPackedBitVector m_NormalSigns { get; }
-        public IPackedBitVector m_TangentSigns { get; }
-        public IPackedBitVector m_FloatColors { get; }
-        public IPackedBitVector m_BoneIndices { get; }
-        public IPackedBitVector m_Triangles { get; }
-        public uint m_UVInfo { get; }
+        public IPackedBitVector m_Vertices
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IPackedBitVector m_UV
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IPackedBitVector m_Normals
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IPackedBitVector m_Tangents
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IPackedBitVector m_Weights
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IPackedBitVector m_NormalSigns
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IPackedBitVector m_TangentSigns
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IPackedBitVector m_FloatColors
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IPackedBitVector m_BoneIndices
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IPackedBitVector m_Triangles
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public uint m_UVInfo
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

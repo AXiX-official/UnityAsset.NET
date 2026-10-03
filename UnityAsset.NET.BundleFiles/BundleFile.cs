@@ -96,9 +96,10 @@ namespace UnityAsset.NET.BundleFiles
         }
 
         public BundleFile(Header header, BlocksAndDirectoryInfo dataInfo, List<FileWrapper> files, string? key = null,
-            BlockCacheContext? blockCache = null)
+            BlockCacheContext? blockCache = null, UnityCN? unityCnInfo = null)
         {
             UnityCnKey = key;
+            UnityCnInfo = unityCnInfo;
             Header = header;
             DataInfo = dataInfo;
             Files = files;
@@ -170,6 +171,33 @@ namespace UnityAsset.NET.BundleFiles
 
             blockWriter.Finish();
             using var blockStream = blockWriter.GetDataStream();
+            if (unityCnKey != null)
+            {
+                if (UnityCnInfo == null || UnityCnInfo.Key != unityCnKey)
+                    throw new InvalidOperationException("UnityCN writing requires matching encryption metadata and key.");
+                for (var index = 0; index < blockWriter.BlockInfos.Count; index++)
+                {
+                    var block = blockWriter.BlockInfos[index];
+                    if ((block.Flags & StorageBlockFlags.CompressionTypeMask) == (StorageBlockFlags)CompressionType.None)
+                    {
+                        blockStream.Position += block.CompressedSize;
+                        continue;
+                    }
+                    var position = blockStream.Position;
+                    var bytes = new byte[checked((int)block.CompressedSize)];
+                    var read = 0;
+                    while (read < bytes.Length)
+                    {
+                        var count = blockStream.Read(bytes, read, bytes.Length - read);
+                        if (count == 0) throw new EndOfStreamException();
+                        read += count;
+                    }
+                    UnityCnInfo.EncryptBlock(bytes, bytes.Length, index);
+                    blockStream.Position = position;
+                    blockStream.Write(bytes, 0, bytes.Length);
+                }
+                blockStream.Position = 0;
+            }
 
             var dataInfo = new BlocksAndDirectoryInfo(DataInfo.UncompressedDataHash, blockWriter.BlockInfos.ToArray(),
                 directoryInfo.ToArray());
@@ -221,7 +249,6 @@ namespace UnityAsset.NET.BundleFiles
             if (infoAtEnd)
             {
                 header.Size += compressedDataInfoStream.Length;
-                if (needAlignAfterInfo) header.Size = Align(header.Size, 16);
             }
 
             header.Serialize(writer);
@@ -239,7 +266,6 @@ namespace UnityAsset.NET.BundleFiles
             if (infoAtEnd)
             {
                 writer.WriteStream(compressedDataInfoStream);
-                if (needAlignAfterInfo) writer.Align(16);
             }
         }
 

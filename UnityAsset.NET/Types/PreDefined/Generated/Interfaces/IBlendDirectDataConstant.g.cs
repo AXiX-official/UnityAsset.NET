@@ -8,7 +8,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBlendDirectDataConstant : IPreDefinedInterface
     {
-        public uint[] m_ChildBlendEventIDArray { get; }
-        public bool m_NormalizedBlendValues { get; }
+        public uint[] m_ChildBlendEventIDArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public bool m_NormalizedBlendValues
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

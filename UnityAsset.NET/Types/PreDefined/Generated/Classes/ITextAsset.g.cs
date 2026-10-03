@@ -8,13 +8,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITextAsset : INamedObject
     {
-        public string m_Script { get; }
+        public string m_Script
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public string? m_PathName
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

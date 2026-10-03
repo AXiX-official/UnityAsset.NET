@@ -49,7 +49,7 @@ public sealed class SerializedFile : IFile
         Process();
     }
 
-    public static SerializedFile Parse(BundleFile bf, IReaderProvider readerProvider, string? defaultUnityVersion = null)
+    public static SerializedFile Parse(BundleFile? bf, IReaderProvider readerProvider, string? defaultUnityVersion = null)
     {
         var reader = readerProvider.CreateReader();
         var header = SerializedFileHeader.Parse(reader);
@@ -57,7 +57,7 @@ public sealed class SerializedFile : IFile
         var metadata = SerializedFileMetadata.Parse(reader, header.Version);
         if (metadata.UnityVersion == "0.0.0")
         {
-            metadata.UnityVersion = defaultUnityVersion ?? bf.DefaultUnityVersion ?? Setting.DefaultUnityVerion;
+            metadata.UnityVersion = defaultUnityVersion ?? bf?.DefaultUnityVersion ?? Setting.DefaultUnityVerion;
         }
         var assets = new List<Asset>();
         var sf = new SerializedFile(header, metadata, assets, readerProvider, bf);

@@ -8,7 +8,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimationClipOverride : IPreDefinedInterface
     {
-        public PPtr<IAnimationClip> m_OriginalClip { get; }
-        public PPtr<IAnimationClip> m_OverrideClip { get; }
+        public PPtr<IAnimationClip> m_OriginalClip
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<IAnimationClip> m_OverrideClip
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

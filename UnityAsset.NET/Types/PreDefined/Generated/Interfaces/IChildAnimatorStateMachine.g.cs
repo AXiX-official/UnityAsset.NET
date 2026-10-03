@@ -8,7 +8,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IChildAnimatorStateMachine : IPreDefinedInterface
     {
-        public PPtr<IAnimatorStateMachine> m_StateMachine { get; }
-        public Vector3f m_Position { get; }
+        public PPtr<IAnimatorStateMachine> m_StateMachine
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector3f m_Position
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

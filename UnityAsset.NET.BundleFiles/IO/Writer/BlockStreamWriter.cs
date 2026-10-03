@@ -259,15 +259,15 @@ namespace UnityAsset.NET.IO.Writer
         {
             var compressed = Compression.CompressToStream(_buffer.AsSpan(0, _bufferPos), CompressionType);
 
-            if (compressed.Length < ChunkSize)
+            if (compressed.Length < _bufferPos)
             {
                 compressed.CopyTo(Stream);
                 BlockInfos.Add(new StorageBlockInfo((uint)_bufferPos, (uint)compressed.Length, (StorageBlockFlags)CompressionType));
             }
             else
             {
-                Stream.Write(_buffer, 0, ChunkSize);
-                BlockInfos.Add(new StorageBlockInfo((uint)ChunkSize, (uint)ChunkSize, (StorageBlockFlags)CompressionType.None));
+                Stream.Write(_buffer, 0, _bufferPos);
+                BlockInfos.Add(new StorageBlockInfo((uint)_bufferPos, (uint)_bufferPos, (StorageBlockFlags)CompressionType.None));
             }
 
             CheckMemoryLimit();

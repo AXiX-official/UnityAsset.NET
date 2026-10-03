@@ -8,9 +8,56 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHeightMeshData : IPreDefinedInterface
     {
-        public Vector3f[] m_Vertices { get; }
-        public int[] m_Indices { get; }
-        public IAABB m_Bounds { get; }
-        public IHeightMeshBVNode[] m_Nodes { get; }
+        public Vector3f[] m_Vertices
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int[] m_Indices
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IAABB m_Bounds
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IHeightMeshBVNode[] m_Nodes
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

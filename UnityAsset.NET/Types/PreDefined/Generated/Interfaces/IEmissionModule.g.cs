@@ -8,10 +8,69 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IEmissionModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxCurve rateOverTime { get; }
-        public IMinMaxCurve rateOverDistance { get; }
-        public int m_BurstCount { get; }
-        public IParticleSystemEmissionBurst[] m_Bursts { get; }
+        public bool enabled
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxCurve rateOverTime
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMinMaxCurve rateOverDistance
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_BurstCount
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IParticleSystemEmissionBurst[] m_Bursts
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

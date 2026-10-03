@@ -39,16 +39,28 @@ public class RoslynTypeBuilder
 
         classDeclaration = classDeclaration.AddMembers(classNameProperty);
         
-        var members = new List<MemberDeclarationSyntax>();
+        var members = new List<MemberDeclarationSyntax>
+        {
+            SyntaxFactory.ParseMemberDeclaration("private bool __assetEditable = false;")!,
+            SyntaxFactory.ParseMemberDeclaration($"public {typeInfo.GeneratedClassName} Clone() => UnityAsset.NET.Types.AssetCloner.Clone(this);")!
+        };
 
         foreach (var fieldInfo in typeInfo.Fields)
         {
+            members.Add(SyntaxFactory.ParseMemberDeclaration(
+                $"private {fieldInfo.DeclaredTypeSyntax} __asset_{fieldInfo.Name.TrimStart('@')} = default!;")!);
             var propertyDeclaration = SyntaxFactory.PropertyDeclaration(
                     fieldInfo.DeclaredTypeSyntax,
                     fieldInfo.Name)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                 .AddAccessorListAccessors(
-                    SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                    SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                        .WithBody(SyntaxFactory.Block(SyntaxFactory.ParseStatement(
+                            $"return __assetEditable ? __asset_{fieldInfo.Name.TrimStart('@')} : UnityAsset.NET.Types.AssetCloner.CopyField(__asset_{fieldInfo.Name.TrimStart('@')});"))),
+                    SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                        .WithBody(SyntaxFactory.Block(
+                            SyntaxFactory.ParseStatement("if (!__assetEditable) throw new InvalidOperationException(\"Clone the asset before editing it.\");"),
+                            SyntaxFactory.ParseStatement($"__asset_{fieldInfo.Name.TrimStart('@')} = value;")))
                 );
             members.Add(propertyDeclaration);
         }
@@ -863,7 +875,7 @@ public class RoslynTypeBuilder
             assignments.Add(SyntaxFactory.ExpressionStatement(
                 SyntaxFactory.AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.IdentifierName(fieldInfo.Name),
+                    SyntaxFactory.IdentifierName($"__asset_{fieldInfo.Name.TrimStart('@')}"),
                         CreateReaderExpression(fieldInfo.TypeInfo, expectedType: fieldInfo.DeclaredTypeSyntax)
                 )
             ));

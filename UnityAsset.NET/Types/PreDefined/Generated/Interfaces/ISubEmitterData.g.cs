@@ -8,15 +8,55 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISubEmitterData : IPreDefinedInterface
     {
-        public PPtr<IParticleSystem> emitter { get; }
-        public int type { get; }
-        public int properties { get; }
+        public PPtr<IParticleSystem> emitter
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int type
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int properties
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public float? emitProbability
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

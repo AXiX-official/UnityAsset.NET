@@ -8,6 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IValueArrayConstant : IPreDefinedInterface
     {
-        public IValueConstant[] m_ValueArray { get; }
+        public IValueConstant[] m_ValueArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

@@ -8,7 +8,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimationClipBindingConstant : IPreDefinedInterface
     {
-        public IGenericBinding[] genericBindings { get; }
-        public PPtr<IUnityObject>[] pptrCurveMapping { get; }
+        public IGenericBinding[] genericBindings
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<IUnityObject>[] pptrCurveMapping
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

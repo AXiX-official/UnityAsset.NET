@@ -8,6 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXField : IPreDefinedInterface
     {
-        public RefSum<IVFXEntryExpressionValue[], IVFXEntryExposed[]> m_Array { get; }
+        public RefSum<IVFXEntryExpressionValue[], IVFXEntryExposed[]> m_Array
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

@@ -8,18 +8,94 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IValueArray : IPreDefinedInterface
     {
-        public Ifloat3[] m_PositionValues { get; }
-        public Ifloat4[] m_QuaternionValues { get; }
-        public Ifloat3[] m_ScaleValues { get; }
-        public float[] m_FloatValues { get; }
-        public int[] m_IntValues { get; }
-        public bool[] m_BoolValues { get; }
+        public Ifloat3[] m_PositionValues
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Ifloat4[] m_QuaternionValues
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Ifloat3[] m_ScaleValues
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float[] m_FloatValues
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int[] m_IntValues
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public bool[] m_BoolValues
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public IEntityId[]? m_EntityIdValues
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

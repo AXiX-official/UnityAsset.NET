@@ -8,13 +8,108 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHumanPose : IPreDefinedInterface
     {
-        public Ixform m_RootX { get; }
-        public Ifloat3 m_LookAtPosition { get; }
-        public Ifloat4 m_LookAtWeight { get; }
-        public IHumanGoal[] m_GoalArray { get; }
-        public IHandPose m_LeftHandPose { get; }
-        public IHandPose m_RightHandPose { get; }
-        public float[] m_DoFArray { get; }
-        public Ifloat3[] m_TDoFArray { get; }
+        public Ixform m_RootX
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Ifloat3 m_LookAtPosition
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Ifloat4 m_LookAtWeight
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IHumanGoal[] m_GoalArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IHandPose m_LeftHandPose
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IHandPose m_RightHandPose
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float[] m_DoFArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Ifloat3[] m_TDoFArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }
