@@ -8,13 +8,108 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAudioMixer : INamedObject
     {
-        public PPtr<IAudioMixerGroup> m_OutputGroup { get; }
-        public PPtr<IAudioMixerGroup> m_MasterGroup { get; }
-        public PPtr<IAudioMixerSnapshot>[] m_Snapshots { get; }
-        public PPtr<IAudioMixerSnapshot> m_StartSnapshot { get; }
-        public float m_SuspendThreshold { get; }
-        public bool m_EnableSuspend { get; }
-        public int m_UpdateMode { get; }
-        public IAudioMixerConstant m_MixerConstant { get; }
+        public PPtr<IAudioMixerGroup> m_OutputGroup
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<IAudioMixerGroup> m_MasterGroup
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<IAudioMixerSnapshot>[] m_Snapshots
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<IAudioMixerSnapshot> m_StartSnapshot
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public float m_SuspendThreshold
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public bool m_EnableSuspend
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_UpdateMode
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IAudioMixerConstant m_MixerConstant
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

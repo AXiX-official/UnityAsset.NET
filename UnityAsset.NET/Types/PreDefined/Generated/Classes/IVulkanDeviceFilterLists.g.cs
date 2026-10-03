@@ -8,8 +8,43 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVulkanDeviceFilterLists : INamedObject
     {
-        public IAndroidDeviceFilterData[] m_VulkanAllowFilterList { get; }
-        public IAndroidDeviceFilterData[] m_VulkanDenyFilterList { get; }
-        public IVulkanGraphicsJobsDeviceFilterData[] m_GfxJobFilterList { get; }
+        public IAndroidDeviceFilterData[] m_VulkanAllowFilterList
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IAndroidDeviceFilterData[] m_VulkanDenyFilterList
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IVulkanGraphicsJobsDeviceFilterData[] m_GfxJobFilterList
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

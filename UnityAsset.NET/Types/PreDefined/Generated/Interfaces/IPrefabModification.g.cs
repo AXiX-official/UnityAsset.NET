@@ -8,15 +8,55 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPrefabModification : IPreDefinedInterface
     {
-        public PPtr<ITransform> m_TransformParent { get; }
-        public IPropertyModification[] m_Modifications { get; }
-        public RefSum<PPtr<IUnityObject>[], PPtr<IComponent>[]> m_RemovedComponents { get; }
+        public PPtr<ITransform> m_TransformParent
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IPropertyModification[] m_Modifications
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public RefSum<PPtr<IUnityObject>[], PPtr<IComponent>[]> m_RemovedComponents
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public IAddedGameObject[]? m_AddedGameObjects
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
 
@@ -26,6 +66,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
         }
 
         public IAddedComponent[]? m_AddedComponents
@@ -33,6 +78,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

@@ -8,16 +8,147 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimatorStateMachine : INamedObject
     {
-        public IChildAnimatorState[] m_ChildStates { get; }
-        public IChildAnimatorStateMachine[] m_ChildStateMachines { get; }
-        public PPtr<IAnimatorStateTransition>[] m_AnyStateTransitions { get; }
-        public PPtr<IAnimatorTransition>[] m_EntryTransitions { get; }
-        public ValueTuple<PPtr<IAnimatorStateMachine>, PPtr<IAnimatorTransition>[]>[] m_StateMachineTransitions { get; }
-        public PPtr<IMonoBehaviour>[] m_StateMachineBehaviours { get; }
-        public Vector3f m_AnyStatePosition { get; }
-        public Vector3f m_EntryPosition { get; }
-        public Vector3f m_ExitPosition { get; }
-        public Vector3f m_ParentStateMachinePosition { get; }
-        public PPtr<IAnimatorState> m_DefaultState { get; }
+        public IChildAnimatorState[] m_ChildStates
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IChildAnimatorStateMachine[] m_ChildStateMachines
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<IAnimatorStateTransition>[] m_AnyStateTransitions
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<IAnimatorTransition>[] m_EntryTransitions
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ValueTuple<PPtr<IAnimatorStateMachine>, PPtr<IAnimatorTransition>[]>[] m_StateMachineTransitions
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<IMonoBehaviour>[] m_StateMachineBehaviours
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector3f m_AnyStatePosition
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector3f m_EntryPosition
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector3f m_ExitPosition
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector3f m_ParentStateMachinePosition
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public PPtr<IAnimatorState> m_DefaultState
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

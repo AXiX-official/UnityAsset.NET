@@ -8,15 +8,55 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IUnityPropertySheet : IPreDefinedInterface
     {
-        public ValueTuple<string, IUnityTexEnv>[] m_TexEnvs { get; }
-        public ValueTuple<string, float>[] m_Floats { get; }
-        public ValueTuple<string, IColorRGBA>[] m_Colors { get; }
+        public ValueTuple<string, IUnityTexEnv>[] m_TexEnvs
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ValueTuple<string, float>[] m_Floats
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ValueTuple<string, IColorRGBA>[] m_Colors
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
 
         public ValueTuple<string, int>[]? m_Ints
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
             }
         }
     }

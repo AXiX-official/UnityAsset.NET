@@ -8,8 +8,43 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ID3D12DeviceFilterLists : INamedObject
     {
-        public ID3D12DeviceFilterData[] m_AllowFilterList { get; }
-        public ID3D12DeviceFilterData[] m_DenyFilterList { get; }
-        public ID3D12GraphicsJobsDeviceFilterData[] m_GraphicsJobsFilterList { get; }
+        public ID3D12DeviceFilterData[] m_AllowFilterList
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ID3D12DeviceFilterData[] m_DenyFilterList
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ID3D12GraphicsJobsDeviceFilterData[] m_GraphicsJobsFilterList
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

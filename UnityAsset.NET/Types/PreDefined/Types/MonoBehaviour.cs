@@ -10,14 +10,25 @@ public class MonoBehaviour : IMonoBehaviour
     public PPtr<GameObject> m_GameObject { get; }
     public byte m_Enabled { get; }
     public PPtr<IMonoScript> m_Script { get; }
-    public string m_Name { get; }
-    public NodeData NodeData { get; }
+    private bool __assetEditable = false;
+    public MonoBehaviour Clone() => UnityAsset.NET.Types.AssetCloner.Clone(this);
+    public string m_Name
+    {
+        get => NodeData.As<Dictionary<string, NodeData>>()["m_Name"].As<string>();
+        set
+        {
+            if (!__assetEditable) throw new InvalidOperationException("Clone the asset before editing it.");
+            NodeData.As<Dictionary<string, NodeData>>()["m_Name"].Value = value;
+        }
+    }
+    private readonly NodeData _nodeData;
+    public NodeData NodeData => __assetEditable ? _nodeData : UnityAsset.NET.Types.AssetCloner.CopyField(_nodeData);
     public TypeTreeRepr TypeTree { get; }
 
     public MonoBehaviour(IReader reader, TypeTreeRepr typeTree)
     {
         TypeTree = typeTree;
-        NodeData = new NodeData(reader, typeTree);
+        _nodeData = new NodeData(reader, typeTree);
         var @class = NodeData.As<Dictionary<string, NodeData>>();
         var m_GameObjectClass = @class["m_GameObject"].As<Dictionary<string, NodeData>>();
         m_GameObject = new PPtr<GameObject>(
@@ -32,7 +43,6 @@ public class MonoBehaviour : IMonoBehaviour
             m_ScriptClass["m_PathID"].As<long>(),
             reader
         );
-        m_Name = @class["m_Name"].As<string>();
     }
     
     public void Write(IWriter writer)

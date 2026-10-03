@@ -8,13 +8,108 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedProgramParameters : IPreDefinedInterface
     {
-        public IVectorParameter[] m_VectorParams { get; }
-        public IMatrixParameter[] m_MatrixParams { get; }
-        public ITextureParameter[] m_TextureParams { get; }
-        public IBufferBinding[] m_BufferParams { get; }
-        public IConstantBuffer[] m_ConstantBuffers { get; }
-        public IBufferBinding[] m_ConstantBufferBindings { get; }
-        public IUAVParameter[] m_UAVParams { get; }
-        public ISamplerParameter[] m_Samplers { get; }
+        public IVectorParameter[] m_VectorParams
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IMatrixParameter[] m_MatrixParams
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ITextureParameter[] m_TextureParams
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IBufferBinding[] m_BufferParams
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IConstantBuffer[] m_ConstantBuffers
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IBufferBinding[] m_ConstantBufferBindings
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IUAVParameter[] m_UAVParams
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ISamplerParameter[] m_Samplers
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

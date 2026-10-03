@@ -8,10 +8,69 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IEnlightenSceneMapping : IPreDefinedInterface
     {
-        public IEnlightenRendererInformation[] m_Renderers { get; }
-        public IEnlightenSystemInformation[] m_Systems { get; }
-        public IHash128[] m_Probesets { get; }
-        public IEnlightenSystemAtlasInformation[] m_SystemAtlases { get; }
-        public IEnlightenTerrainChunksInformation[] m_TerrainChunks { get; }
+        public IEnlightenRendererInformation[] m_Renderers
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IEnlightenSystemInformation[] m_Systems
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IHash128[] m_Probesets
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IEnlightenSystemAtlasInformation[] m_SystemAtlases
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IEnlightenTerrainChunksInformation[] m_TerrainChunks
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

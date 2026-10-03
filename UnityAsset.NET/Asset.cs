@@ -15,6 +15,7 @@ public class Asset : IEquatable<Asset>
     public bool IsNamedAsset;
 
     internal void AttachContext(AssetContext context) => Volatile.Write(ref _context, context);
+    internal AssetContext? Context => Volatile.Read(ref _context);
 
     internal void DetachContext() => Volatile.Write(ref _context, null);
 
@@ -40,6 +41,7 @@ public class Asset : IEquatable<Asset>
             "(AssetManager), or that session has been cleared or disposed.");
 
         var value = context.Factory.Invoke(Info.Type, DataReader);
+        UnityAsset.NET.Types.AssetCloner.RecordOrigin(value, Info.Type);
 
         // Only after a successful materialisation: the session uses this to account for the blocks it just read.
         context.OnParsed?.Invoke(this);

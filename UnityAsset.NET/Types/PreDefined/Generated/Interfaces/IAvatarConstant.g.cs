@@ -8,17 +8,160 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAvatarConstant : IPreDefinedInterface
     {
-        public IOffsetPtr m_AvatarSkeleton { get; }
-        public IOffsetPtr m_AvatarSkeletonPose { get; }
-        public IOffsetPtr m_DefaultPose { get; }
-        public uint[] m_SkeletonNameIDArray { get; }
-        public IOffsetPtr m_Human { get; }
-        public int[] m_HumanSkeletonIndexArray { get; }
-        public int[] m_HumanSkeletonReverseIndexArray { get; }
-        public int m_RootMotionBoneIndex { get; }
-        public Ixform m_RootMotionBoneX { get; }
-        public IOffsetPtr m_RootMotionSkeleton { get; }
-        public IOffsetPtr m_RootMotionSkeletonPose { get; }
-        public int[] m_RootMotionSkeletonIndexArray { get; }
+        public IOffsetPtr m_AvatarSkeleton
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IOffsetPtr m_AvatarSkeletonPose
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IOffsetPtr m_DefaultPose
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public uint[] m_SkeletonNameIDArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IOffsetPtr m_Human
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int[] m_HumanSkeletonIndexArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int[] m_HumanSkeletonReverseIndexArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_RootMotionBoneIndex
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Ixform m_RootMotionBoneX
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IOffsetPtr m_RootMotionSkeleton
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IOffsetPtr m_RootMotionSkeletonPose
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int[] m_RootMotionSkeletonIndexArray
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

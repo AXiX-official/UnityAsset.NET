@@ -8,6 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IComputeShader : INamedObject
     {
-        public RefSum<IComputeShaderVariant[], IComputeShaderPlatformVariant[]> variants { get; }
+        public RefSum<IComputeShaderVariant[], IComputeShaderPlatformVariant[]> variants
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

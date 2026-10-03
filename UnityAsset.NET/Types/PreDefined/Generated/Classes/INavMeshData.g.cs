@@ -8,14 +8,121 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface INavMeshData : INamedObject
     {
-        public INavMeshTileData[] m_NavMeshTiles { get; }
-        public INavMeshBuildSettings m_NavMeshBuildSettings { get; }
-        public IHeightmapData[] m_Heightmaps { get; }
-        public IHeightMeshData[] m_HeightMeshes { get; }
-        public IAutoOffMeshLinkData[] m_OffMeshLinks { get; }
-        public IAABB m_SourceBounds { get; }
-        public Quaternionf m_Rotation { get; }
-        public Vector3f m_Position { get; }
-        public int m_AgentTypeID { get; }
+        public INavMeshTileData[] m_NavMeshTiles
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public INavMeshBuildSettings m_NavMeshBuildSettings
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IHeightmapData[] m_Heightmaps
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IHeightMeshData[] m_HeightMeshes
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IAutoOffMeshLinkData[] m_OffMeshLinks
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IAABB m_SourceBounds
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Quaternionf m_Rotation
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector3f m_Position
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public int m_AgentTypeID
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

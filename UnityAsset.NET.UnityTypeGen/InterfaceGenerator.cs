@@ -504,10 +504,16 @@ public class InterfaceGenerator
             else
             {
                 var abstractGetter = SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                    .WithBody(SyntaxFactory.Block(SyntaxFactory.ParseStatement(
+                        "throw new System.NotSupportedException(\"This member has no implementation.\");")));
                 propertyDeclaration = propertyDeclaration.AddAccessorListAccessors(abstractGetter);
             }
             
+            // Versions lacking the member keep a rejecting setter; generated concrete members implement it normally.
+            propertyDeclaration = propertyDeclaration.AddAccessorListAccessors(
+                SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                    .WithBody(SyntaxFactory.Block(SyntaxFactory.ParseStatement(
+                        "throw new System.NotSupportedException(\"This member is not editable in this version.\");"))));
             members.Add(propertyDeclaration);
         }
         

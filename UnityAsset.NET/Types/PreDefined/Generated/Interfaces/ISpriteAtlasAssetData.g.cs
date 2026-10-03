@@ -8,6 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteAtlasAssetData : IPreDefinedInterface
     {
-        public PPtr<IUnityObject>[] packables { get; }
+        public PPtr<IUnityObject>[] packables
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }

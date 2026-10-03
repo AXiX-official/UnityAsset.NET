@@ -8,9 +8,56 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILightProbeData : IPreDefinedInterface
     {
-        public IProbeSetTetrahedralization m_Tetrahedralization { get; }
-        public IProbeSetIndex[] m_ProbeSets { get; }
-        public Vector3f[] m_Positions { get; }
-        public ValueTuple<IHash128, int>[] m_NonTetrahedralizedProbeSetIndexMap { get; }
+        public IProbeSetTetrahedralization m_Tetrahedralization
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public IProbeSetIndex[] m_ProbeSets
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public Vector3f[] m_Positions
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
+
+        public ValueTuple<IHash128, int>[] m_NonTetrahedralizedProbeSetIndexMap
+        {
+            get
+            {
+                throw new System.NotSupportedException("This member has no implementation.");
+            }
+
+            set
+            {
+                throw new System.NotSupportedException("This member is not editable in this version.");
+            }
+        }
     }
 }
