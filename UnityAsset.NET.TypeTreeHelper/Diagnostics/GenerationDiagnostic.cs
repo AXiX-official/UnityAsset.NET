@@ -31,6 +31,21 @@ public static class DiagnosticCodes
 
     /// <summary>An interface is referenced but generation did not emit it and it is not hand-written.</summary>
     public const string InterfaceNotGenerated = "CG0002";
+
+    /// <summary>An interface has no version to project its members from.</summary>
+    public const string EmptySchema = "CG0003";
+
+    /// <summary>Two member names collapse to one C# identifier.</summary>
+    public const string MemberNameCollision = "CG0004";
+
+    /// <summary>An interface's declared members are not the union of the members its versions carry.</summary>
+    public const string MemberUnionMismatch = "CG0005";
+
+    /// <summary>A member is declared optional but every version carries it, or the other way round.</summary>
+    public const string OptionalityMismatch = "CG0006";
+
+    /// <summary>One version's tree carries the same member name more than once.</summary>
+    public const string MemberRepeatedInVersion = "CG0007";
 }
 
 /// <summary>Collects diagnostics so a run reports everything it found instead of stopping at the first failure.</summary>

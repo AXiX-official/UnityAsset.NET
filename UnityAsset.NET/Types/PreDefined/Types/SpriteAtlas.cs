@@ -1,10 +1,11 @@
 using System.Text;
 using UnityAsset.NET.IO;
+using UnityAsset.NET.Types.PreDefined;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.Types.PreDefined.Types;
 
-public class SpriteAtlas : ISpriteAtlas
+public class SpriteAtlas : INamedObject
 {
     public string ClassName => "SpriteAtlas";
     public string m_Name { get; set; }

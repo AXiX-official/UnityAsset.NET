@@ -3816,15 +3816,6 @@ internal static class GeneratedInterfaceSchemaTable
             new("m_ScriptableObjects", "PPtr<IMonoBehaviour>[]?", true),
             new("m_SpriteAtlas", "PPtr<SpriteAtlas>", false),
         }),
-        ["ISpriteAtlas"] = new InterfaceSchema("ISpriteAtlas", true, new InterfaceMemberSchema[]
-        {
-            new("m_Guid", "GUID?", true),
-            new("m_IsVariant", "bool", false),
-            new("m_PackedSpriteNamesToIndex", "string[]?", true),
-            new("m_PackedSprites", "PPtr<ISprite>[]?", true),
-            new("m_RenderDataMap", "ValueTuple<ValueTuple<GUID, long>, SpriteAtlasData>[]", false),
-            new("m_Tag", "string", false),
-        }),
         ["ISpriteAtlasAssetData"] = new InterfaceSchema("ISpriteAtlasAssetData", false, new InterfaceMemberSchema[]
         {
             new("packables", "PPtr<IUnityObject>[]", false),

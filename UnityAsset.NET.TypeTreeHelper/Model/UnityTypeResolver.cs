@@ -30,13 +30,17 @@ public static class UnityTypeResolver
         if (node.TypeName.StartsWith("PPtr<"))
         {
             var genericType = node.TypeName.Substring(5, node.TypeName.Length - 6);
+
+            // Same order as Helper.GetGenericPPtrInterfaceName, which the runtime build uses: a hand-written stand-in
+            // is spelled as itself, and only a type that has no stand-in can borrow an interface name. Asking the
+            // included list first would turn a stand-in the list does not carry into PPtr<IUnityObject>.
             return genericType == "Object"
                 ? "PPtr<IUnityObject>"
-                : Helper.IncludedPPTrGenricTypes.Contains(genericType)
-                    ? Helper.NoInterfaceTypes.Contains(genericType)
-                        ? $"PPtr<{genericType}>"
-                        : $"PPtr<I{genericType}>"
-                    : "PPtr<IUnityObject>";
+                : Helper.NoInterfaceTypes.Contains(genericType)
+                    ? $"PPtr<{genericType}>"
+                    : Helper.IncludedPPTrGenricTypes.Contains(genericType)
+                        ? $"PPtr<I{genericType}>"
+                        : "PPtr<IUnityObject>";
         }
 
         if (node.TypeName == "pair")

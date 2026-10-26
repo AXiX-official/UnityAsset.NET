@@ -172,7 +172,6 @@ public static class Helper
         //"Motion",
         "AnimatorTransition",
         "PhysicsMaterial2D",
-        "SpriteAtlas",
         "Rigidbody2D",
         "Camera",
         "BillboardAsset",
