@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedStencilOp : IPreDefinedInterface
     {
-        public ISerializedShaderFloatValue pass { get; }
-        public ISerializedShaderFloatValue fail { get; }
-        public ISerializedShaderFloatValue zFail { get; }
-        public ISerializedShaderFloatValue comp { get; }
+        public ISerializedShaderFloatValue pass { get; set; }
+        public ISerializedShaderFloatValue fail { get; set; }
+        public ISerializedShaderFloatValue zFail { get; set; }
+        public ISerializedShaderFloatValue comp { get; set; }
     }
 }

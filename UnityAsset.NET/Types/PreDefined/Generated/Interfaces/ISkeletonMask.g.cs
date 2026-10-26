@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISkeletonMask : IPreDefinedInterface
     {
-        public ISkeletonMaskElement[] m_Data { get; }
+        public ISkeletonMaskElement[] m_Data { get; set; }
     }
 }

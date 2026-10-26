@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXField : IPreDefinedInterface
     {
-        public RefSum<IVFXEntryExpressionValue[], IVFXEntryExposed[]> m_Array { get; }
+        public RefSum<IVFXEntryExpressionValue[], IVFXEntryExposed[]> m_Array { get; set; }
     }
 }

@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISkeletonBoneLimit : IPreDefinedInterface
     {
-        public Vector3f m_Min { get; }
-        public Vector3f m_Max { get; }
-        public Vector3f m_Value { get; }
-        public float m_Length { get; }
-        public bool m_Modified { get; }
+        public Vector3f m_Min { get; set; }
+        public Vector3f m_Max { get; set; }
+        public Vector3f m_Value { get; set; }
+        public float m_Length { get; set; }
+        public bool m_Modified { get; set; }
     }
 }

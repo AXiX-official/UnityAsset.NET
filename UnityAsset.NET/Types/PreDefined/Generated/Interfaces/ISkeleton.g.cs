@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISkeleton : IPreDefinedInterface
     {
-        public INode[] m_Node { get; }
-        public uint[] m_ID { get; }
-        public IAxes[] m_AxesArray { get; }
+        public INode[] m_Node { get; set; }
+        public uint[] m_ID { get; set; }
+        public IAxes[] m_AxesArray { get; set; }
     }
 }

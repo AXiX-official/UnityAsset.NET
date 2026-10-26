@@ -8,34 +8,38 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ICamera : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public byte m_Enabled { get; }
-        public uint m_ClearFlags { get; }
-        public IColorRGBA m_BackGroundColor { get; }
-        public Rectf m_NormalizedViewPortRect { get; }
-        public float near_clip_plane { get; }
-        public float far_clip_plane { get; }
-        public float field_of_view { get; }
-        public bool orthographic { get; }
-        public float orthographic_size { get; }
-        public float m_Depth { get; }
-        public IBitField m_CullingMask { get; }
-        public int m_RenderingPath { get; }
-        public PPtr<IRenderTexture> m_TargetTexture { get; }
-        public int m_TargetDisplay { get; }
-        public int m_TargetEye { get; }
-        public bool m_HDR { get; }
-        public bool m_AllowMSAA { get; }
-        public bool m_ForceIntoRT { get; }
-        public bool m_OcclusionCulling { get; }
-        public float m_StereoConvergence { get; }
-        public float m_StereoSeparation { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
+        public byte m_Enabled { get; set; }
+        public uint m_ClearFlags { get; set; }
+        public IColorRGBA m_BackGroundColor { get; set; }
+        public Rectf m_NormalizedViewPortRect { get; set; }
+        public float near_clip_plane { get; set; }
+        public float far_clip_plane { get; set; }
+        public float field_of_view { get; set; }
+        public bool orthographic { get; set; }
+        public float orthographic_size { get; set; }
+        public float m_Depth { get; set; }
+        public IBitField m_CullingMask { get; set; }
+        public int m_RenderingPath { get; set; }
+        public PPtr<IRenderTexture> m_TargetTexture { get; set; }
+        public int m_TargetDisplay { get; set; }
+        public int m_TargetEye { get; set; }
+        public bool m_HDR { get; set; }
+        public bool m_AllowMSAA { get; set; }
+        public bool m_ForceIntoRT { get; set; }
+        public bool m_OcclusionCulling { get; set; }
+        public float m_StereoConvergence { get; set; }
+        public float m_StereoSeparation { get; set; }
 
         public bool? m_StereoMirrorMode
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -45,6 +49,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_projectionMatrixMode
@@ -52,6 +60,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -61,6 +73,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Vector2f? m_LensShift
@@ -68,6 +84,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -77,6 +97,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_GateFitMode
@@ -84,6 +108,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -93,6 +121,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? m_ShutterSpeed
@@ -100,6 +132,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -109,6 +145,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? m_FocusDistance
@@ -116,6 +156,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -125,6 +169,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Vector2f? m_Curvature
@@ -132,6 +180,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -141,6 +193,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? m_Anamorphism
@@ -148,6 +204,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

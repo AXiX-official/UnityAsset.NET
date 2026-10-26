@@ -8,14 +8,14 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITextureSettings : IPreDefinedInterface
     {
-        public int anisoLevel { get; }
-        public int compressionQuality { get; }
-        public int maxTextureSize { get; }
-        public int textureCompression { get; }
-        public int filterMode { get; }
-        public bool generateMipMaps { get; }
-        public bool readable { get; }
-        public bool crunchedCompression { get; }
-        public bool sRGB { get; }
+        public int anisoLevel { get; set; }
+        public int compressionQuality { get; set; }
+        public int maxTextureSize { get; set; }
+        public int textureCompression { get; set; }
+        public int filterMode { get; set; }
+        public bool generateMipMaps { get; set; }
+        public bool readable { get; set; }
+        public bool crunchedCompression { get; set; }
+        public bool sRGB { get; set; }
     }
 }

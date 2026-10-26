@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITextureImportOutput : IPreDefinedInterface
     {
-        public ITextureImportInstructions textureImportInstructions { get; }
-        public ISourceTextureInformation sourceTextureInformation { get; }
-        public string importInspectorWarnings { get; }
+        public ITextureImportInstructions textureImportInstructions { get; set; }
+        public ISourceTextureInformation sourceTextureInformation { get; set; }
+        public string importInspectorWarnings { get; set; }
     }
 }

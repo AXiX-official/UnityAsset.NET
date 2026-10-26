@@ -8,16 +8,20 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IConstantBuffer : IPreDefinedInterface
     {
-        public int m_NameIndex { get; }
-        public IMatrixParameter[] m_MatrixParams { get; }
-        public IVectorParameter[] m_VectorParams { get; }
-        public int m_Size { get; }
+        public int m_NameIndex { get; set; }
+        public IMatrixParameter[] m_MatrixParams { get; set; }
+        public IVectorParameter[] m_VectorParams { get; set; }
+        public int m_Size { get; set; }
 
         public IStructParameter[]? m_StructParams
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -26,6 +30,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

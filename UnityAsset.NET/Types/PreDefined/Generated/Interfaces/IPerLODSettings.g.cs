@@ -8,20 +8,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPerLODSettings : IPreDefinedInterface
     {
-        public float height { get; }
-        public bool castShadows { get; }
-        public bool receiveShadows { get; }
-        public bool useLightProbes { get; }
-        public int reflectionProbeUsage { get; }
-        public bool enableBump { get; }
-        public bool enableHue { get; }
-        public int windQuality { get; }
+        public float height { get; set; }
+        public bool castShadows { get; set; }
+        public bool receiveShadows { get; set; }
+        public bool useLightProbes { get; set; }
+        public int reflectionProbeUsage { get; set; }
+        public bool enableBump { get; set; }
+        public bool enableHue { get; set; }
+        public int windQuality { get; set; }
 
         public bool? enableSubsurface
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -30,6 +34,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

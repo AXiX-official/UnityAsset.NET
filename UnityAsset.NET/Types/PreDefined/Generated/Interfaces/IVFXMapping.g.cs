@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXMapping : IPreDefinedInterface
     {
-        public string nameId { get; }
-        public int index { get; }
+        public string nameId { get; set; }
+        public int index { get; set; }
     }
 }

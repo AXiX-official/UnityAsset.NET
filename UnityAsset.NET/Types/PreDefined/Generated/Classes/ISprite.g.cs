@@ -8,24 +8,40 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISprite : INamedObject
     {
-        public Rectf m_Rect { get; }
-        public Vector2f m_Offset { get; }
-        public Vector4f m_Border { get; }
-        public float m_PixelsToUnits { get; }
-        public Vector2f m_Pivot { get; }
-        public uint m_Extrude { get; }
-        public bool m_IsPolygon { get; }
-        public ValueTuple<GUID, long> m_RenderDataKey { get; }
-        public string[] m_AtlasTags { get; }
-        public PPtr<SpriteAtlas> m_SpriteAtlas { get; }
-        public ISpriteRenderData m_RD { get; }
-        public Vector2f[][] m_PhysicsShape { get; }
+        public Rectf m_Rect { get; set; }
+        public Vector2f m_Offset { get; set; }
+        public Vector4f m_Border { get; set; }
+        public float m_PixelsToUnits { get; set; }
+        public Vector2f m_Pivot { get; set; }
+        public uint m_Extrude { get; set; }
+
+        public bool? m_IsPolygon
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public ValueTuple<GUID, long> m_RenderDataKey { get; set; }
+        public string[] m_AtlasTags { get; set; }
+        public PPtr<SpriteAtlas> m_SpriteAtlas { get; set; }
+        public ISpriteRenderData m_RD { get; set; }
+        public Vector2f[][] m_PhysicsShape { get; set; }
 
         public ISpriteBone[]? m_Bones
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -34,6 +50,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

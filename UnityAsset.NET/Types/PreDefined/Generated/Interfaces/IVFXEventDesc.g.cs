@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXEventDesc : IPreDefinedInterface
     {
-        public string name { get; }
-        public uint[] playSystems { get; }
-        public uint[] stopSystems { get; }
+        public string name { get; set; }
+        public uint[] playSystems { get; set; }
+        public uint[] stopSystems { get; set; }
 
         public uint[]? initSystems
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

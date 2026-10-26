@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILOD : IPreDefinedInterface
     {
-        public float screenRelativeHeight { get; }
-        public float fadeTransitionWidth { get; }
-        public ILODRenderer[] renderers { get; }
+        public float screenRelativeHeight { get; set; }
+        public float fadeTransitionWidth { get; set; }
+        public ILODRenderer[] renderers { get; set; }
     }
 }

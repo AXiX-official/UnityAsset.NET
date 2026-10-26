@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILayerConstant : IPreDefinedInterface
     {
-        public uint m_StateMachineIndex { get; }
+        public uint m_StateMachineIndex { get; set; }
 
         public uint? m_StateMachineMotionSetIndex
         {
@@ -16,21 +16,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public IHumanPoseMask m_BodyMask { get; }
-        public IOffsetPtr m_SkeletonMask { get; }
-        public uint m_Binding { get; }
-        public int _int__m_LayerBlendingMode { get; }
-        public float m_DefaultWeight { get; }
-        public bool m_IKPass { get; }
-        public bool m_SyncedLayerAffectsTiming { get; }
+        public IHumanPoseMask m_BodyMask { get; set; }
+        public IOffsetPtr m_SkeletonMask { get; set; }
+        public uint m_Binding { get; set; }
+        public int _int__m_LayerBlendingMode { get; set; }
+        public float m_DefaultWeight { get; set; }
+        public bool m_IKPass { get; set; }
+        public bool m_SyncedLayerAffectsTiming { get; set; }
 
         public uint? m_StateMachineSynchronizedLayerIndex
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

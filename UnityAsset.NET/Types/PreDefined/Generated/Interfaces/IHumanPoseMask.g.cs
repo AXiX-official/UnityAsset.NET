@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHumanPoseMask : IPreDefinedInterface
     {
-        public uint word0 { get; }
-        public uint word1 { get; }
-        public uint word2 { get; }
+        public uint word0 { get; set; }
+        public uint word1 { get; set; }
+        public uint word2 { get; set; }
     }
 }

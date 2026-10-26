@@ -8,17 +8,21 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISortingGroup : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public byte m_Enabled { get; }
-        public int m_SortingLayerID { get; }
-        public short m_SortingLayer { get; }
-        public short m_SortingOrder { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
+        public byte m_Enabled { get; set; }
+        public int m_SortingLayerID { get; set; }
+        public short m_SortingLayer { get; set; }
+        public short m_SortingOrder { get; set; }
 
         public bool? m_SortAtRoot
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -27,6 +31,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

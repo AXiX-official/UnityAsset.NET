@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IQuaternionCurve : IPreDefinedInterface
     {
-        public IAnimationCurve<Quaternionf> curve { get; }
-        public string path { get; }
+        public IAnimationCurve<Quaternionf> curve { get; set; }
+        public string path { get; set; }
     }
 }

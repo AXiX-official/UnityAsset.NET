@@ -8,32 +8,32 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISphericalHarmonicsL2 : IPreDefinedInterface
     {
-        public float sh__0_ { get; }
-        public float sh__1_ { get; }
-        public float sh__2_ { get; }
-        public float sh__3_ { get; }
-        public float sh__4_ { get; }
-        public float sh__5_ { get; }
-        public float sh__6_ { get; }
-        public float sh__7_ { get; }
-        public float sh__8_ { get; }
-        public float sh__9_ { get; }
-        public float sh_10_ { get; }
-        public float sh_11_ { get; }
-        public float sh_12_ { get; }
-        public float sh_13_ { get; }
-        public float sh_14_ { get; }
-        public float sh_15_ { get; }
-        public float sh_16_ { get; }
-        public float sh_17_ { get; }
-        public float sh_18_ { get; }
-        public float sh_19_ { get; }
-        public float sh_20_ { get; }
-        public float sh_21_ { get; }
-        public float sh_22_ { get; }
-        public float sh_23_ { get; }
-        public float sh_24_ { get; }
-        public float sh_25_ { get; }
-        public float sh_26_ { get; }
+        public float sh__0_ { get; set; }
+        public float sh__1_ { get; set; }
+        public float sh__2_ { get; set; }
+        public float sh__3_ { get; set; }
+        public float sh__4_ { get; set; }
+        public float sh__5_ { get; set; }
+        public float sh__6_ { get; set; }
+        public float sh__7_ { get; set; }
+        public float sh__8_ { get; set; }
+        public float sh__9_ { get; set; }
+        public float sh_10_ { get; set; }
+        public float sh_11_ { get; set; }
+        public float sh_12_ { get; set; }
+        public float sh_13_ { get; set; }
+        public float sh_14_ { get; set; }
+        public float sh_15_ { get; set; }
+        public float sh_16_ { get; set; }
+        public float sh_17_ { get; set; }
+        public float sh_18_ { get; set; }
+        public float sh_19_ { get; set; }
+        public float sh_20_ { get; set; }
+        public float sh_21_ { get; set; }
+        public float sh_22_ { get; set; }
+        public float sh_23_ { get; set; }
+        public float sh_24_ { get; set; }
+        public float sh_25_ { get; set; }
+        public float sh_26_ { get; set; }
     }
 }

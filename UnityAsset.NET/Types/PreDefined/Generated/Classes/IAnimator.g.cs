@@ -8,22 +8,26 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimator : IUnityAsset, IComponent
     {
-        public new PPtr<GameObject> m_GameObject { get; }
-        public byte m_Enabled { get; }
-        public PPtr<IAvatar> m_Avatar { get; }
-        public PPtr<IRuntimeAnimatorController> m_Controller { get; }
-        public int m_CullingMode { get; }
-        public int m_UpdateMode { get; }
-        public bool m_ApplyRootMotion { get; }
-        public bool m_LinearVelocityBlending { get; }
-        public bool m_HasTransformHierarchy { get; }
-        public bool m_AllowConstantClipSamplingOptimization { get; }
+        public new PPtr<GameObject> m_GameObject { get; set; }
+        public byte m_Enabled { get; set; }
+        public PPtr<IAvatar> m_Avatar { get; set; }
+        public PPtr<IRuntimeAnimatorController> m_Controller { get; set; }
+        public int m_CullingMode { get; set; }
+        public int m_UpdateMode { get; set; }
+        public bool m_ApplyRootMotion { get; set; }
+        public bool m_LinearVelocityBlending { get; set; }
+        public bool m_HasTransformHierarchy { get; set; }
+        public bool m_AllowConstantClipSamplingOptimization { get; set; }
 
         public bool? m_KeepAnimatorControllerStateOnDisable
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -33,6 +37,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_KeepAnimatorStateOnDisable
@@ -40,6 +48,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -49,6 +61,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_AnimatePhysics
@@ -56,6 +72,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

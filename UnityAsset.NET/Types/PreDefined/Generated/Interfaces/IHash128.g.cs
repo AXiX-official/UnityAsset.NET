@@ -8,21 +8,21 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHash128 : IPreDefinedInterface
     {
-        public byte bytes_0_ { get; }
-        public byte bytes_1_ { get; }
-        public byte bytes_2_ { get; }
-        public byte bytes_3_ { get; }
-        public byte bytes_4_ { get; }
-        public byte bytes_5_ { get; }
-        public byte bytes_6_ { get; }
-        public byte bytes_7_ { get; }
-        public byte bytes_8_ { get; }
-        public byte bytes_9_ { get; }
-        public byte bytes_10_ { get; }
-        public byte bytes_11_ { get; }
-        public byte bytes_12_ { get; }
-        public byte bytes_13_ { get; }
-        public byte bytes_14_ { get; }
-        public byte bytes_15_ { get; }
+        public byte bytes_0_ { get; set; }
+        public byte bytes_1_ { get; set; }
+        public byte bytes_2_ { get; set; }
+        public byte bytes_3_ { get; set; }
+        public byte bytes_4_ { get; set; }
+        public byte bytes_5_ { get; set; }
+        public byte bytes_6_ { get; set; }
+        public byte bytes_7_ { get; set; }
+        public byte bytes_8_ { get; set; }
+        public byte bytes_9_ { get; set; }
+        public byte bytes_10_ { get; set; }
+        public byte bytes_11_ { get; set; }
+        public byte bytes_12_ { get; set; }
+        public byte bytes_13_ { get; set; }
+        public byte bytes_14_ { get; set; }
+        public byte bytes_15_ { get; set; }
     }
 }

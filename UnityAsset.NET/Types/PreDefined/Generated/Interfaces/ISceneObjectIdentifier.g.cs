@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISceneObjectIdentifier : IPreDefinedInterface
     {
-        public long targetObject { get; }
-        public long targetPrefab { get; }
+        public long targetObject { get; set; }
+        public long targetPrefab { get; set; }
     }
 }

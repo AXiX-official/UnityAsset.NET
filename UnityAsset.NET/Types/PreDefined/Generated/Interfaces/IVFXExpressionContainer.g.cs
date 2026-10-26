@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXExpressionContainer : IPreDefinedInterface
     {
-        public IExpression[] m_Expressions { get; }
-        public bool m_NeedsLocalToWorld { get; }
-        public bool m_NeedsWorldToLocal { get; }
+        public IExpression[] m_Expressions { get; set; }
+        public bool m_NeedsLocalToWorld { get; set; }
+        public bool m_NeedsWorldToLocal { get; set; }
 
         public int? m_NeededMainCameraBuffers
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -26,6 +30,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_NeedsMainCamera
@@ -33,6 +41,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -42,6 +54,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public uint? m_ConstantBakeGradientCount
@@ -49,6 +65,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -58,6 +78,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public uint? m_DynamicBakeGradientCount
@@ -65,6 +89,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ICollider2D : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
     }
 }

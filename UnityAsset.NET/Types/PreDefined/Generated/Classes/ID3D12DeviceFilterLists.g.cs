@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ID3D12DeviceFilterLists : INamedObject
     {
-        public ID3D12DeviceFilterData[] m_AllowFilterList { get; }
-        public ID3D12DeviceFilterData[] m_DenyFilterList { get; }
-        public ID3D12GraphicsJobsDeviceFilterData[] m_GraphicsJobsFilterList { get; }
+        public ID3D12DeviceFilterData[] m_AllowFilterList { get; set; }
+        public ID3D12DeviceFilterData[] m_DenyFilterList { get; set; }
+        public ID3D12GraphicsJobsDeviceFilterData[] m_GraphicsJobsFilterList { get; set; }
     }
 }

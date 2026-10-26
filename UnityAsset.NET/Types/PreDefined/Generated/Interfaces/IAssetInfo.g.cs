@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAssetInfo : IPreDefinedInterface
     {
-        public int preloadIndex { get; }
-        public int preloadSize { get; }
-        public PPtr<IUnityObject> asset { get; }
+        public int preloadIndex { get; set; }
+        public int preloadSize { get; set; }
+        public PPtr<IUnityObject> asset { get; set; }
     }
 }

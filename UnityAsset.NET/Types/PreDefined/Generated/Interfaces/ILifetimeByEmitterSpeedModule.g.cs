@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILifetimeByEmitterSpeedModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxCurve m_Curve { get; }
-        public Vector2f m_Range { get; }
+        public bool enabled { get; set; }
+        public IMinMaxCurve m_Curve { get; set; }
+        public Vector2f m_Range { get; set; }
     }
 }

@@ -8,14 +8,14 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface INavMeshData : INamedObject
     {
-        public INavMeshTileData[] m_NavMeshTiles { get; }
-        public INavMeshBuildSettings m_NavMeshBuildSettings { get; }
-        public IHeightmapData[] m_Heightmaps { get; }
-        public IHeightMeshData[] m_HeightMeshes { get; }
-        public IAutoOffMeshLinkData[] m_OffMeshLinks { get; }
-        public IAABB m_SourceBounds { get; }
-        public Quaternionf m_Rotation { get; }
-        public Vector3f m_Position { get; }
-        public int m_AgentTypeID { get; }
+        public INavMeshTileData[] m_NavMeshTiles { get; set; }
+        public INavMeshBuildSettings m_NavMeshBuildSettings { get; set; }
+        public IHeightmapData[] m_Heightmaps { get; set; }
+        public IHeightMeshData[] m_HeightMeshes { get; set; }
+        public IAutoOffMeshLinkData[] m_OffMeshLinks { get; set; }
+        public IAABB m_SourceBounds { get; set; }
+        public Quaternionf m_Rotation { get; set; }
+        public Vector3f m_Position { get; set; }
+        public int m_AgentTypeID { get; set; }
     }
 }

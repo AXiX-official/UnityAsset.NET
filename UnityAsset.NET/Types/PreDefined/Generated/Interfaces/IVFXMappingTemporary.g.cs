@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXMappingTemporary : IPreDefinedInterface
     {
-        public IVFXMapping mapping { get; }
-        public uint pastFrameIndex { get; }
-        public bool perCameraBuffer { get; }
+        public IVFXMapping mapping { get; set; }
+        public uint pastFrameIndex { get; set; }
+        public bool perCameraBuffer { get; set; }
     }
 }

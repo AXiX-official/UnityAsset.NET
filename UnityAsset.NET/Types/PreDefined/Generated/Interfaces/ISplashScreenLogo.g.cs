@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISplashScreenLogo : IPreDefinedInterface
     {
-        public PPtr<ISprite> logo { get; }
-        public float duration { get; }
+        public PPtr<ISprite> logo { get; set; }
+        public float duration { get; set; }
     }
 }

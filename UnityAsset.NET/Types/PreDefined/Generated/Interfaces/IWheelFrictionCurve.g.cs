@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IWheelFrictionCurve : IPreDefinedInterface
     {
-        public float m_ExtremumSlip { get; }
-        public float m_ExtremumValue { get; }
-        public float m_AsymptoteSlip { get; }
-        public float m_AsymptoteValue { get; }
-        public float m_Stiffness { get; }
+        public float m_ExtremumSlip { get; set; }
+        public float m_ExtremumValue { get; set; }
+        public float m_AsymptoteSlip { get; set; }
+        public float m_AsymptoteValue { get; set; }
+        public float m_Stiffness { get; set; }
     }
 }

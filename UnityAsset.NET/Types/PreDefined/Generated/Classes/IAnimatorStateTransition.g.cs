@@ -8,19 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimatorStateTransition : INamedObject
     {
-        public IAnimatorCondition[] m_Conditions { get; }
-        public PPtr<IAnimatorStateMachine> m_DstStateMachine { get; }
-        public PPtr<IAnimatorState> m_DstState { get; }
-        public bool m_Solo { get; }
-        public bool m_Mute { get; }
-        public bool m_IsExit { get; }
-        public float m_TransitionDuration { get; }
-        public float m_TransitionOffset { get; }
-        public float m_ExitTime { get; }
-        public bool m_HasExitTime { get; }
-        public bool m_HasFixedDuration { get; }
-        public int m_InterruptionSource { get; }
-        public bool m_OrderedInterruption { get; }
-        public bool m_CanTransitionToSelf { get; }
+        public IAnimatorCondition[] m_Conditions { get; set; }
+        public PPtr<IAnimatorStateMachine> m_DstStateMachine { get; set; }
+        public PPtr<IAnimatorState> m_DstState { get; set; }
+        public bool m_Solo { get; set; }
+        public bool m_Mute { get; set; }
+        public bool m_IsExit { get; set; }
+        public float m_TransitionDuration { get; set; }
+        public float m_TransitionOffset { get; set; }
+        public float m_ExitTime { get; set; }
+        public bool m_HasExitTime { get; set; }
+        public bool m_HasFixedDuration { get; set; }
+        public int m_InterruptionSource { get; set; }
+        public bool m_OrderedInterruption { get; set; }
+        public bool m_CanTransitionToSelf { get; set; }
     }
 }

@@ -8,13 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITextAsset : INamedObject
     {
-        public string m_Script { get; }
+        public string m_Script { get; set; }
 
         public string? m_PathName
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

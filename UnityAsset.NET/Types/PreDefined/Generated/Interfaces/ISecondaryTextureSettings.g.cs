@@ -8,13 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISecondaryTextureSettings : IPreDefinedInterface
     {
-        public ITextureImporterPlatformSettings[] platformSettings { get; }
+        public ITextureImporterPlatformSettings[] platformSettings { get; set; }
 
         public bool? sRGB
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

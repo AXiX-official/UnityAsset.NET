@@ -8,20 +8,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITextureImportInstructions : IPreDefinedInterface
     {
-        public int compressedFormat { get; }
-        public int uncompressedFormat { get; }
-        public int desiredFormat { get; }
-        public int usageMode { get; }
-        public int colorSpace { get; }
-        public int width { get; }
-        public int height { get; }
-        public int compressionQuality { get; }
+        public int compressedFormat { get; set; }
+        public int uncompressedFormat { get; set; }
+        public int desiredFormat { get; set; }
+        public int usageMode { get; set; }
+        public int colorSpace { get; set; }
+        public int width { get; set; }
+        public int height { get; set; }
+        public int compressionQuality { get; set; }
 
         public int? androidETC2FallbackFormat
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -31,6 +35,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? vtOnly
@@ -38,6 +46,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -47,6 +59,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? cubeIntermediateSize
@@ -54,6 +70,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -63,6 +83,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? cubeLayout
@@ -70,6 +94,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

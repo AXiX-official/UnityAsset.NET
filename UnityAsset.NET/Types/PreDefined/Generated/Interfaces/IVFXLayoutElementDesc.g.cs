@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXLayoutElementDesc : IPreDefinedInterface
     {
-        public string name { get; }
-        public int type { get; }
-        public IVFXLayoutOffset offset { get; }
+        public string name { get; set; }
+        public int type { get; set; }
+        public IVFXLayoutOffset offset { get; set; }
     }
 }

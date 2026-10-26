@@ -8,18 +8,22 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IRigidbody2D : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public int m_BodyType { get; }
-        public bool m_Simulated { get; }
-        public bool m_UseFullKinematicContacts { get; }
-        public bool m_UseAutoMass { get; }
-        public float m_Mass { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
+        public int m_BodyType { get; set; }
+        public bool m_Simulated { get; set; }
+        public bool m_UseFullKinematicContacts { get; set; }
+        public bool m_UseAutoMass { get; set; }
+        public float m_Mass { get; set; }
 
         public float? m_LinearDrag
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -29,20 +33,28 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public float m_GravityScale { get; }
-        public PPtr<IPhysicsMaterial2D> m_Material { get; }
-        public int m_Interpolate { get; }
-        public int m_SleepingMode { get; }
-        public int m_CollisionDetection { get; }
-        public int m_Constraints { get; }
+        public float m_GravityScale { get; set; }
+        public PPtr<IPhysicsMaterial2D> m_Material { get; set; }
+        public int m_Interpolate { get; set; }
+        public int m_SleepingMode { get; set; }
+        public int m_CollisionDetection { get; set; }
+        public int m_Constraints { get; set; }
 
         public IBitField? m_IncludeLayers
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -52,6 +64,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? m_LinearDamping
@@ -60,6 +76,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? m_AngularDamping
@@ -67,6 +87,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IRotationBySpeedModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxCurve x { get; }
-        public IMinMaxCurve y { get; }
-        public IMinMaxCurve curve { get; }
-        public bool separateAxes { get; }
-        public Vector2f range { get; }
+        public bool enabled { get; set; }
+        public IMinMaxCurve x { get; set; }
+        public IMinMaxCurve y { get; set; }
+        public IMinMaxCurve curve { get; set; }
+        public bool separateAxes { get; set; }
+        public Vector2f range { get; set; }
     }
 }

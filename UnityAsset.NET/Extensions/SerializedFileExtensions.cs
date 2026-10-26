@@ -9,7 +9,7 @@ public static class SerializedFileExtensions
     {
         foreach (var asset in sf.Assets)
         {
-            if (asset.Type == "AssetBundle")
+            if (asset.TypeName == "AssetBundle")
             { 
                 var assetBundle = (IAssetBundle)asset.Value;
                 

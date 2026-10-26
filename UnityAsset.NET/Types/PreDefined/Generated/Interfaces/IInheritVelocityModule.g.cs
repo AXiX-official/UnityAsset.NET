@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IInheritVelocityModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public int m_Mode { get; }
-        public IMinMaxCurve m_Curve { get; }
+        public bool enabled { get; set; }
+        public int m_Mode { get; set; }
+        public IMinMaxCurve m_Curve { get; set; }
     }
 }

@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAxes : IPreDefinedInterface
     {
-        public Ifloat4 m_PreQ { get; }
-        public Ifloat4 m_PostQ { get; }
-        public Ifloat3 m_Sgn { get; }
-        public ILimit m_Limit { get; }
-        public float m_Length { get; }
-        public uint m_Type { get; }
+        public Ifloat4 m_PreQ { get; set; }
+        public Ifloat4 m_PostQ { get; set; }
+        public Ifloat3 m_Sgn { get; set; }
+        public ILimit m_Limit { get; set; }
+        public float m_Length { get; set; }
+        public uint m_Type { get; set; }
     }
 }

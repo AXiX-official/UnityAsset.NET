@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISubstanceEnumItem : IPreDefinedInterface
     {
-        public int value { get; }
-        public string text { get; }
+        public int value { get; set; }
+        public string text { get; set; }
     }
 }

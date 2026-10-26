@@ -8,18 +8,22 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXEditorTaskDesc : IPreDefinedInterface
     {
-        public int type { get; }
-        public IVFXMapping[] buffers { get; }
-        public IVFXMapping[] values { get; }
-        public IVFXMapping[] @params { get; }
-        public PPtr<INamedObject> processor { get; }
-        public int shaderSourceIndex { get; }
+        public int type { get; set; }
+        public IVFXMapping[] buffers { get; set; }
+        public IVFXMapping[] values { get; set; }
+        public IVFXMapping[] @params { get; set; }
+        public PPtr<INamedObject> processor { get; set; }
+        public int shaderSourceIndex { get; set; }
 
         public IVFXMappingTemporary[]? temporaryBuffers
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

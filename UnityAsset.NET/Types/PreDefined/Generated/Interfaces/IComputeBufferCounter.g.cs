@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IComputeBufferCounter : IPreDefinedInterface
     {
-        public int bindpoint { get; }
-        public int offset { get; }
+        public int bindpoint { get; set; }
+        public int offset { get; set; }
     }
 }

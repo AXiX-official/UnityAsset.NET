@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface Ifloat3 : IPreDefinedInterface
     {
-        public float x { get; }
-        public float y { get; }
-        public float z { get; }
+        public float x { get; set; }
+        public float y { get; set; }
+        public float z { get; set; }
     }
 }

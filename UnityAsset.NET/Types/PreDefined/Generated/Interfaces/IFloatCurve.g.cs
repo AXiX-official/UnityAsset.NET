@@ -8,17 +8,21 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IFloatCurve : IPreDefinedInterface
     {
-        public IAnimationCurve<float> curve { get; }
-        public string attribute { get; }
-        public string path { get; }
-        public uint classID { get; }
-        public PPtr<IMonoScript> script { get; }
+        public IAnimationCurve<float> curve { get; set; }
+        public string attribute { get; set; }
+        public string path { get; set; }
+        public uint classID { get; set; }
+        public PPtr<IMonoScript> script { get; set; }
 
         public int? flags
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -14,10 +14,14 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public uint m_VertexCount { get; }
-        public ChannelInfo[] m_Channels { get; }
-        public TypelessData m_DataSize { get; }
+        public uint m_VertexCount { get; set; }
+        public ChannelInfo[] m_Channels { get; set; }
+        public TypelessData m_DataSize { get; set; }
     }
 }

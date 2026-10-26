@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IComputeShaderPlatformVariant : IPreDefinedInterface
     {
-        public int targetRenderer { get; }
-        public int targetLevel { get; }
-        public IComputeShaderKernelParent[] kernels { get; }
-        public IComputeShaderCB[] constantBuffers { get; }
-        public bool resourcesResolved { get; }
+        public int targetRenderer { get; set; }
+        public int targetLevel { get; set; }
+        public IComputeShaderKernelParent[] kernels { get; set; }
+        public IComputeShaderCB[] constantBuffers { get; set; }
+        public bool resourcesResolved { get; set; }
     }
 }

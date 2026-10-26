@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface INetworkViewID : IPreDefinedInterface
     {
-        public uint m_ID { get; }
-        public uint m_Type { get; }
+        public uint m_ID { get; set; }
+        public uint m_Type { get; set; }
     }
 }

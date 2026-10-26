@@ -8,21 +8,21 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISubstanceInput : IPreDefinedInterface
     {
-        public string name { get; }
-        public string label { get; }
-        public string group { get; }
-        public string visibleIf { get; }
-        public int type { get; }
-        public ISubstanceValue value { get; }
-        public int internalType { get; }
-        public uint internalIndex { get; }
-        public uint internalIdentifier { get; }
-        public string[] componentLabels { get; }
-        public float minimum { get; }
-        public float maximum { get; }
-        public float step { get; }
-        public uint flags { get; }
-        public uint[] alteredTexturesUID { get; }
-        public ISubstanceEnumItem[] enumValues { get; }
+        public string name { get; set; }
+        public string label { get; set; }
+        public string group { get; set; }
+        public string visibleIf { get; set; }
+        public int type { get; set; }
+        public ISubstanceValue value { get; set; }
+        public int internalType { get; set; }
+        public uint internalIndex { get; set; }
+        public uint internalIdentifier { get; set; }
+        public string[] componentLabels { get; set; }
+        public float minimum { get; set; }
+        public float maximum { get; set; }
+        public float step { get; set; }
+        public uint flags { get; set; }
+        public uint[] alteredTexturesUID { get; set; }
+        public ISubstanceEnumItem[] enumValues { get; set; }
     }
 }

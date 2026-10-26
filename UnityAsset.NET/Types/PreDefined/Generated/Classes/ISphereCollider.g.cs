@@ -8,18 +8,22 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISphereCollider : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public RefSum<PPtr<IPhysicMaterial>, PPtr<IPhysicsMaterial>> m_Material { get; }
-        public bool m_IsTrigger { get; }
-        public bool m_Enabled { get; }
-        public float m_Radius { get; }
-        public Vector3f m_Center { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
+        public RefSum<PPtr<IPhysicMaterial>, PPtr<IPhysicsMaterial>> m_Material { get; set; }
+        public bool m_IsTrigger { get; set; }
+        public bool m_Enabled { get; set; }
+        public float m_Radius { get; set; }
+        public Vector3f m_Center { get; set; }
 
         public IBitField? m_IncludeLayers
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -29,6 +33,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_LayerOverridePriority
@@ -37,6 +45,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_ProvidesContacts
@@ -44,6 +56,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

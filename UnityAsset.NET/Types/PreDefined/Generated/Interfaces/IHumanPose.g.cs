@@ -8,13 +8,13 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHumanPose : IPreDefinedInterface
     {
-        public Ixform m_RootX { get; }
-        public Ifloat3 m_LookAtPosition { get; }
-        public Ifloat4 m_LookAtWeight { get; }
-        public IHumanGoal[] m_GoalArray { get; }
-        public IHandPose m_LeftHandPose { get; }
-        public IHandPose m_RightHandPose { get; }
-        public float[] m_DoFArray { get; }
-        public Ifloat3[] m_TDoFArray { get; }
+        public Ixform m_RootX { get; set; }
+        public Ifloat3 m_LookAtPosition { get; set; }
+        public Ifloat4 m_LookAtWeight { get; set; }
+        public IHumanGoal[] m_GoalArray { get; set; }
+        public IHandPose m_LeftHandPose { get; set; }
+        public IHandPose m_RightHandPose { get; set; }
+        public float[] m_DoFArray { get; set; }
+        public Ifloat3[] m_TDoFArray { get; set; }
     }
 }

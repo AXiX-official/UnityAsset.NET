@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBlockShaderContainer : INamedObject
     {
-        public GUID guid { get; }
-        public PPtr<IBlockShaderContainer>[] dependencies { get; }
-        public string[] generatedPaths { get; }
-        public uint[] blob { get; }
-        public int state { get; }
+        public GUID guid { get; set; }
+        public PPtr<IBlockShaderContainer>[] dependencies { get; set; }
+        public string[] generatedPaths { get; set; }
+        public uint[] blob { get; set; }
+        public int state { get; set; }
     }
 }

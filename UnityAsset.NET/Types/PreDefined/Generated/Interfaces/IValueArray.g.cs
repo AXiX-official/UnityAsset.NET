@@ -8,18 +8,22 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IValueArray : IPreDefinedInterface
     {
-        public Ifloat3[] m_PositionValues { get; }
-        public Ifloat4[] m_QuaternionValues { get; }
-        public Ifloat3[] m_ScaleValues { get; }
-        public float[] m_FloatValues { get; }
-        public int[] m_IntValues { get; }
-        public bool[] m_BoolValues { get; }
+        public Ifloat3[] m_PositionValues { get; set; }
+        public Ifloat4[] m_QuaternionValues { get; set; }
+        public Ifloat3[] m_ScaleValues { get; set; }
+        public float[] m_FloatValues { get; set; }
+        public int[] m_IntValues { get; set; }
+        public bool[] m_BoolValues { get; set; }
 
         public IEntityId[]? m_EntityIdValues
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

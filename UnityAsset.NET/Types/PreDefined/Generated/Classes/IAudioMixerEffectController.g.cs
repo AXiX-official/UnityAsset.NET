@@ -8,12 +8,12 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAudioMixerEffectController : INamedObject
     {
-        public GUID m_EffectID { get; }
-        public string m_EffectName { get; }
-        public GUID m_MixLevel { get; }
-        public IParameter[] m_Parameters { get; }
-        public PPtr<IAudioMixerEffectController> m_SendTarget { get; }
-        public bool m_EnableWetMix { get; }
-        public bool m_Bypass { get; }
+        public GUID m_EffectID { get; set; }
+        public string m_EffectName { get; set; }
+        public GUID m_MixLevel { get; set; }
+        public IParameter[] m_Parameters { get; set; }
+        public PPtr<IAudioMixerEffectController> m_SendTarget { get; set; }
+        public bool m_EnableWetMix { get; set; }
+        public bool m_Bypass { get; set; }
     }
 }

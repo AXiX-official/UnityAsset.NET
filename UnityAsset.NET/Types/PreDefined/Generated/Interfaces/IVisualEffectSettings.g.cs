@@ -8,18 +8,22 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVisualEffectSettings : IPreDefinedInterface
     {
-        public IVFXRendererSettings m_RendererSettings { get; }
-        public int m_CullingFlags { get; }
-        public int m_UpdateMode { get; }
-        public float m_PreWarmDeltaTime { get; }
-        public uint m_PreWarmStepCount { get; }
-        public string m_InitialEventName { get; }
+        public IVFXRendererSettings m_RendererSettings { get; set; }
+        public int m_CullingFlags { get; set; }
+        public int m_UpdateMode { get; set; }
+        public float m_PreWarmDeltaTime { get; set; }
+        public uint m_PreWarmStepCount { get; set; }
+        public string m_InitialEventName { get; set; }
 
         public int? m_InstancingMode
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -29,6 +33,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_InstancingDisabledReason
@@ -36,6 +44,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

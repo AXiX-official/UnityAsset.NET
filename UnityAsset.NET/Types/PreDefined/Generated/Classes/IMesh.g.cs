@@ -8,16 +8,16 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMesh : INamedObject
     {
-        public ISubMesh[] m_SubMeshes { get; }
-        public IBlendShapeData m_Shapes { get; }
-        public IMatrix4x4f[] m_BindPose { get; }
-        public uint[] m_BoneNameHashes { get; }
-        public uint m_RootBoneNameHash { get; }
-        public byte m_MeshCompression { get; }
-        public bool m_IsReadable { get; }
-        public bool m_KeepVertices { get; }
-        public bool m_KeepIndices { get; }
-        public byte[] m_IndexBuffer { get; }
+        public ISubMesh[] m_SubMeshes { get; set; }
+        public IBlendShapeData m_Shapes { get; set; }
+        public IMatrix4x4f[] m_BindPose { get; set; }
+        public uint[] m_BoneNameHashes { get; set; }
+        public uint m_RootBoneNameHash { get; set; }
+        public byte m_MeshCompression { get; set; }
+        public bool m_IsReadable { get; set; }
+        public bool m_KeepVertices { get; set; }
+        public bool m_KeepIndices { get; set; }
+        public byte[] m_IndexBuffer { get; set; }
 
         public BoneWeights4[]? m_Skin
         {
@@ -25,20 +25,28 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public IVertexData m_VertexData { get; }
-        public ICompressedMesh m_CompressedMesh { get; }
-        public IAABB m_LocalAABB { get; }
-        public int m_MeshUsageFlags { get; }
-        public byte[] m_BakedConvexCollisionMesh { get; }
-        public byte[] m_BakedTriangleCollisionMesh { get; }
+        public IVertexData m_VertexData { get; set; }
+        public ICompressedMesh m_CompressedMesh { get; set; }
+        public IAABB m_LocalAABB { get; set; }
+        public int m_MeshUsageFlags { get; set; }
+        public byte[] m_BakedConvexCollisionMesh { get; set; }
+        public byte[] m_BakedTriangleCollisionMesh { get; set; }
 
         public int? m_IndexFormat
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -48,6 +56,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? m_MeshMetrics_1_
@@ -55,6 +67,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -64,6 +80,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IMinMaxAABB[]? m_BonesAABB
@@ -71,6 +91,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -80,6 +104,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_CookingOptions
@@ -88,6 +116,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IMeshLodInfo? m_MeshLodInfo
@@ -95,6 +127,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ICollabEditorSettings : IPreDefinedInterface
     {
-        public bool inProgressEnabled { get; }
+        public bool inProgressEnabled { get; set; }
     }
 }

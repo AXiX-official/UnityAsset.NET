@@ -8,14 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISceneAsset : INamedObject
     {
-        public string m_Message { get; }
-        public bool m_IsWarning { get; }
+        public string m_Message { get; set; }
+        public bool m_IsWarning { get; set; }
 
         public int? m_ErrorCode
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

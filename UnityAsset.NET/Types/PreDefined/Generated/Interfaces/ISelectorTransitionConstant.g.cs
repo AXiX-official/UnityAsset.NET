@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISelectorTransitionConstant : IPreDefinedInterface
     {
-        public uint m_Destination { get; }
-        public IOffsetPtr[] m_ConditionConstantArray { get; }
+        public uint m_Destination { get; set; }
+        public IOffsetPtr[] m_ConditionConstantArray { get; set; }
     }
 }

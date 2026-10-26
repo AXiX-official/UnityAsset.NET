@@ -7,10 +7,10 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 public struct Rectf : IPreDefinedInterface
 {
     public string ClassName => "Rectf";
-    public float x { get; }
-    public float y { get; }
-    public float width { get; }
-    public float height { get; }
+    public float x { get; set; }
+    public float y { get; set; }
+    public float width { get; set; }
+    public float height { get; set; }
 
     public Rectf(IReader reader)
     {

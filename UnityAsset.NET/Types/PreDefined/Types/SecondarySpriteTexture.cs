@@ -7,8 +7,8 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 public class SecondarySpriteTexture : ISecondarySpriteTexture
 {
     public string ClassName => "SecondarySpriteTexture";
-    public PPtr<ITexture2D> texture { get; }
-    public string name { get; }
+    public PPtr<ITexture2D> texture { get; set; }
+    public string name { get; set; }
 
     public SecondarySpriteTexture(IReader reader)
     {

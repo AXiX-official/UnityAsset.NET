@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXCPUBufferData : IPreDefinedInterface
     {
-        public uint[] data { get; }
+        public uint[] data { get; set; }
     }
 }

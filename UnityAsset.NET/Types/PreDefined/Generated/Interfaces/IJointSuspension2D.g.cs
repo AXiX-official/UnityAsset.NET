@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IJointSuspension2D : IPreDefinedInterface
     {
-        public float m_DampingRatio { get; }
-        public float m_Frequency { get; }
-        public float m_Angle { get; }
+        public float m_DampingRatio { get; set; }
+        public float m_Frequency { get; set; }
+        public float m_Angle { get; set; }
     }
 }

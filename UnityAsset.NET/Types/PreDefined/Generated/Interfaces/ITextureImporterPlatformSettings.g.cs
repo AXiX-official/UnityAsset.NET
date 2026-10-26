@@ -8,22 +8,26 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITextureImporterPlatformSettings : IPreDefinedInterface
     {
-        public string m_BuildTarget { get; }
-        public int m_MaxTextureSize { get; }
-        public int m_ResizeAlgorithm { get; }
-        public int m_TextureFormat { get; }
-        public int m_TextureCompression { get; }
-        public int m_CompressionQuality { get; }
-        public bool m_CrunchedCompression { get; }
-        public bool m_AllowsAlphaSplitting { get; }
-        public bool m_Overridden { get; }
-        public int m_AndroidETC2FallbackOverride { get; }
+        public string m_BuildTarget { get; set; }
+        public int m_MaxTextureSize { get; set; }
+        public int m_ResizeAlgorithm { get; set; }
+        public int m_TextureFormat { get; set; }
+        public int m_TextureCompression { get; set; }
+        public int m_CompressionQuality { get; set; }
+        public bool m_CrunchedCompression { get; set; }
+        public bool m_AllowsAlphaSplitting { get; set; }
+        public bool m_Overridden { get; set; }
+        public int m_AndroidETC2FallbackOverride { get; set; }
 
         public bool? m_ForceMaximumCompressionQuality_BC6H_BC7
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -32,6 +36,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

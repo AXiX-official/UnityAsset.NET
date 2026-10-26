@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHumanBone : IPreDefinedInterface
     {
-        public string m_BoneName { get; }
-        public string m_HumanName { get; }
-        public ISkeletonBoneLimit m_Limit { get; }
+        public string m_BoneName { get; set; }
+        public string m_HumanName { get; set; }
+        public ISkeletonBoneLimit m_Limit { get; set; }
     }
 }

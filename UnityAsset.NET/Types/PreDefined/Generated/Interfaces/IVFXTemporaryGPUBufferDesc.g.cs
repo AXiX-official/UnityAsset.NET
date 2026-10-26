@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXTemporaryGPUBufferDesc : IPreDefinedInterface
     {
-        public IVFXGPUBufferDesc desc { get; }
-        public uint frameCount { get; }
+        public IVFXGPUBufferDesc desc { get; set; }
+        public uint frameCount { get; set; }
     }
 }

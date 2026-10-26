@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVectorParameter : IPreDefinedInterface
     {
-        public int m_NameIndex { get; }
-        public int m_Index { get; }
-        public int m_ArraySize { get; }
-        public sbyte m_Type { get; }
-        public sbyte m_Dim { get; }
+        public int m_NameIndex { get; set; }
+        public int m_Index { get; set; }
+        public int m_ArraySize { get; set; }
+        public sbyte m_Type { get; set; }
+        public sbyte m_Dim { get; set; }
     }
 }

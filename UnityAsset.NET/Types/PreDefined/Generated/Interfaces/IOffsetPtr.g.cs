@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IOffsetPtr : IPreDefinedInterface
     {
-        public RefSum<IClip, IValueArrayConstant, ISkeleton, ISkeletonPose, IHuman, IHand, ILayerConstant, ISkeletonMask, IStateMachineConstant, IStateConstant, ITransitionConstant, IConditionConstant, IBlendTreeConstant, IBlendTreeNodeConstant, IBlend1dDataConstant, IBlend2dDataConstant, IBlendDirectDataConstant, ISelectorStateConstant, ISelectorTransitionConstant, IValueArray> data { get; }
+        public RefSum<IClip, IValueArrayConstant, ISkeleton, ISkeletonPose, IHuman, IHand, ILayerConstant, ISkeletonMask, IStateMachineConstant, IStateConstant, ITransitionConstant, IConditionConstant, IBlendTreeConstant, IBlendTreeNodeConstant, IBlend1dDataConstant, IBlend2dDataConstant, IBlendDirectDataConstant, ISelectorStateConstant, ISelectorTransitionConstant, IValueArray> data { get; set; }
     }
 }

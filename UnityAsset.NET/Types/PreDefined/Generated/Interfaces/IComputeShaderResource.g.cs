@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IComputeShaderResource : IPreDefinedInterface
     {
-        public string name { get; }
-        public string generatedName { get; }
-        public int bindPoint { get; }
+        public string name { get; set; }
+        public string generatedName { get; set; }
+        public int bindPoint { get; set; }
 
         public IComputeBufferCounter? counter
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -26,6 +30,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? texDimension
@@ -34,6 +42,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? resType
@@ -41,6 +53,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

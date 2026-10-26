@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IStreamedResource : IPreDefinedInterface
     {
-        public string m_Source { get; }
-        public ulong m_Offset { get; }
-        public ulong m_Size { get; }
+        public string m_Source { get; set; }
+        public ulong m_Offset { get; set; }
+        public ulong m_Size { get; set; }
     }
 }

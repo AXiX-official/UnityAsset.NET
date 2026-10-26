@@ -7,8 +7,8 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 public struct Vector2f : IPreDefinedInterface
 {
     public string ClassName => "Vector2f";
-    public float x { get; }
-    public float y { get; }
+    public float x { get; set; }
+    public float y { get; set; }
 
     public Vector2f(IReader reader)
     {

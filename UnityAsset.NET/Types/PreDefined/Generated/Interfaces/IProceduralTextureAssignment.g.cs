@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IProceduralTextureAssignment : IPreDefinedInterface
     {
-        public string shaderProp { get; }
-        public PPtr<IProceduralMaterial> material { get; }
-        public uint baseUID { get; }
+        public string shaderProp { get; set; }
+        public PPtr<IProceduralMaterial> material { get; set; }
+        public uint baseUID { get; set; }
     }
 }

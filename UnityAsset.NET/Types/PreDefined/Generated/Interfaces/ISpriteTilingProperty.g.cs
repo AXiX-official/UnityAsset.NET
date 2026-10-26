@@ -8,12 +8,12 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteTilingProperty : IPreDefinedInterface
     {
-        public Vector4f border { get; }
-        public Vector2f pivot { get; }
-        public Vector2f oldSize { get; }
-        public Vector2f newSize { get; }
-        public float adaptiveTilingThreshold { get; }
-        public int drawMode { get; }
-        public bool adaptiveTiling { get; }
+        public Vector4f border { get; set; }
+        public Vector2f pivot { get; set; }
+        public Vector2f oldSize { get; set; }
+        public Vector2f newSize { get; set; }
+        public float adaptiveTilingThreshold { get; set; }
+        public int drawMode { get; set; }
+        public bool adaptiveTiling { get; set; }
     }
 }

@@ -8,16 +8,16 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimatorStateMachine : INamedObject
     {
-        public IChildAnimatorState[] m_ChildStates { get; }
-        public IChildAnimatorStateMachine[] m_ChildStateMachines { get; }
-        public PPtr<IAnimatorStateTransition>[] m_AnyStateTransitions { get; }
-        public PPtr<IAnimatorTransition>[] m_EntryTransitions { get; }
-        public ValueTuple<PPtr<IAnimatorStateMachine>, PPtr<IAnimatorTransition>[]>[] m_StateMachineTransitions { get; }
-        public PPtr<IMonoBehaviour>[] m_StateMachineBehaviours { get; }
-        public Vector3f m_AnyStatePosition { get; }
-        public Vector3f m_EntryPosition { get; }
-        public Vector3f m_ExitPosition { get; }
-        public Vector3f m_ParentStateMachinePosition { get; }
-        public PPtr<IAnimatorState> m_DefaultState { get; }
+        public IChildAnimatorState[] m_ChildStates { get; set; }
+        public IChildAnimatorStateMachine[] m_ChildStateMachines { get; set; }
+        public PPtr<IAnimatorStateTransition>[] m_AnyStateTransitions { get; set; }
+        public PPtr<IAnimatorTransition>[] m_EntryTransitions { get; set; }
+        public ValueTuple<PPtr<IAnimatorStateMachine>, PPtr<IAnimatorTransition>[]>[] m_StateMachineTransitions { get; set; }
+        public PPtr<IMonoBehaviour>[] m_StateMachineBehaviours { get; set; }
+        public Vector3f m_AnyStatePosition { get; set; }
+        public Vector3f m_EntryPosition { get; set; }
+        public Vector3f m_ExitPosition { get; set; }
+        public Vector3f m_ParentStateMachinePosition { get; set; }
+        public PPtr<IAnimatorState> m_DefaultState { get; set; }
     }
 }

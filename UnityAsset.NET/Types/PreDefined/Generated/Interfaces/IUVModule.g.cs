@@ -8,18 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IUVModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public int mode { get; }
-        public IMinMaxCurve frameOverTime { get; }
-        public IMinMaxCurve startFrame { get; }
-        public int tilesX { get; }
-        public int tilesY { get; }
-        public int animationType { get; }
-        public int rowIndex { get; }
-        public float cycles { get; }
-        public int uvChannelMask { get; }
-        public float flipU { get; }
-        public float flipV { get; }
+        public bool enabled { get; set; }
+        public int mode { get; set; }
+        public IMinMaxCurve frameOverTime { get; set; }
+        public IMinMaxCurve startFrame { get; set; }
+        public int tilesX { get; set; }
+        public int tilesY { get; set; }
+        public int animationType { get; set; }
+        public int rowIndex { get; set; }
+        public float cycles { get; set; }
+        public int uvChannelMask { get; set; }
+        public float flipU { get; set; }
+        public float flipV { get; set; }
 
         public bool? randomRow
         {
@@ -27,15 +27,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public ISpriteData[] sprites { get; }
+        public ISpriteData[] sprites { get; set; }
 
         public int? timeMode
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -45,6 +53,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Vector2f? speedRange
@@ -53,6 +65,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? rowMode
@@ -60,6 +76,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHeightmap : IPreDefinedInterface
     {
-        public short[] m_Heights { get; }
-        public float[] m_PrecomputedError { get; }
-        public float[] m_MinMaxPatchHeights { get; }
+        public short[] m_Heights { get; set; }
+        public float[] m_PrecomputedError { get; set; }
+        public float[] m_MinMaxPatchHeights { get; set; }
 
         public int? m_Width
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -26,6 +30,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? m_Thickness
@@ -34,16 +42,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public int m_Levels { get; }
-        public Vector3f m_Scale { get; }
+        public int m_Levels { get; set; }
+        public Vector3f m_Scale { get; set; }
 
         public byte[]? m_SurfaceMask
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -53,6 +69,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_EnableSurfaceMaskTextureCompression
@@ -60,6 +80,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -69,6 +93,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public byte[]? m_Holes
@@ -76,6 +104,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -85,6 +117,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_EnableHolesTextureCompression
@@ -92,6 +128,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

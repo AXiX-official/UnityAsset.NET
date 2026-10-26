@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISoftJointLimitSpring : IPreDefinedInterface
     {
-        public float spring { get; }
-        public float damper { get; }
+        public float spring { get; set; }
+        public float damper { get; set; }
     }
 }

@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IOcclusionScene : IPreDefinedInterface
     {
-        public int indexRenderers { get; }
-        public int sizeRenderers { get; }
-        public int indexPortals { get; }
-        public int sizePortals { get; }
-        public GUID scene { get; }
+        public int indexRenderers { get; set; }
+        public int sizeRenderers { get; set; }
+        public int indexPortals { get; set; }
+        public int sizePortals { get; set; }
+        public GUID scene { get; set; }
     }
 }

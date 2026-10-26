@@ -8,40 +8,44 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteRenderer : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public bool m_Enabled { get; }
-        public byte m_CastShadows { get; }
-        public byte m_ReceiveShadows { get; }
-        public byte m_MotionVectors { get; }
-        public byte m_LightProbeUsage { get; }
-        public byte m_ReflectionProbeUsage { get; }
-        public ushort m_LightmapIndex { get; }
-        public ushort m_LightmapIndexDynamic { get; }
-        public Vector4f m_LightmapTilingOffset { get; }
-        public Vector4f m_LightmapTilingOffsetDynamic { get; }
-        public PPtr<IMaterial>[] m_Materials { get; }
-        public IStaticBatchInfo m_StaticBatchInfo { get; }
-        public PPtr<ITransform> m_StaticBatchRoot { get; }
-        public PPtr<ITransform> m_ProbeAnchor { get; }
-        public PPtr<GameObject> m_LightProbeVolumeOverride { get; }
-        public int m_SortingLayerID { get; }
-        public short m_SortingLayer { get; }
-        public short m_SortingOrder { get; }
-        public PPtr<ISprite> m_Sprite { get; }
-        public IColorRGBA m_Color { get; }
-        public bool m_FlipX { get; }
-        public bool m_FlipY { get; }
-        public int m_DrawMode { get; }
-        public Vector2f m_Size { get; }
-        public float m_AdaptiveModeThreshold { get; }
-        public int m_SpriteTileMode { get; }
-        public int m_MaskInteraction { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
+        public bool m_Enabled { get; set; }
+        public byte m_CastShadows { get; set; }
+        public byte m_ReceiveShadows { get; set; }
+        public byte m_MotionVectors { get; set; }
+        public byte m_LightProbeUsage { get; set; }
+        public byte m_ReflectionProbeUsage { get; set; }
+        public ushort m_LightmapIndex { get; set; }
+        public ushort m_LightmapIndexDynamic { get; set; }
+        public Vector4f m_LightmapTilingOffset { get; set; }
+        public Vector4f m_LightmapTilingOffsetDynamic { get; set; }
+        public PPtr<IMaterial>[] m_Materials { get; set; }
+        public IStaticBatchInfo m_StaticBatchInfo { get; set; }
+        public PPtr<ITransform> m_StaticBatchRoot { get; set; }
+        public PPtr<ITransform> m_ProbeAnchor { get; set; }
+        public PPtr<GameObject> m_LightProbeVolumeOverride { get; set; }
+        public int m_SortingLayerID { get; set; }
+        public short m_SortingLayer { get; set; }
+        public short m_SortingOrder { get; set; }
+        public PPtr<ISprite> m_Sprite { get; set; }
+        public IColorRGBA m_Color { get; set; }
+        public bool m_FlipX { get; set; }
+        public bool m_FlipY { get; set; }
+        public int m_DrawMode { get; set; }
+        public Vector2f m_Size { get; set; }
+        public float m_AdaptiveModeThreshold { get; set; }
+        public int m_SpriteTileMode { get; set; }
+        public int m_MaskInteraction { get; set; }
 
         public bool? m_WasSpriteAssigned
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -51,6 +55,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public uint? m_RenderingLayerMask
@@ -58,6 +66,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -67,6 +79,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_RendererPriority
@@ -74,6 +90,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -83,6 +103,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public byte? m_RayTraceProcedural
@@ -90,6 +114,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -99,6 +127,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public byte? m_RayTracingAccelStructBuildFlagsOverride
@@ -106,6 +138,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -115,6 +151,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public byte? m_SmallMeshCulling
@@ -122,6 +162,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -131,6 +175,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? m_MeshLodSelectionBias
@@ -138,6 +186,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

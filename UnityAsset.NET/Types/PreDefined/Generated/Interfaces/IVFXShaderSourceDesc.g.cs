@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXShaderSourceDesc : IPreDefinedInterface
     {
-        public bool compute { get; }
-        public string name { get; }
-        public string source { get; }
+        public bool compute { get; set; }
+        public string name { get; set; }
+        public string source { get; set; }
     }
 }

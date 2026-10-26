@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPropertyModification : IPreDefinedInterface
     {
-        public PPtr<IUnityObject> target { get; }
-        public string propertyPath { get; }
-        public string value { get; }
-        public PPtr<IUnityObject> objectReference { get; }
+        public PPtr<IUnityObject> target { get; set; }
+        public string propertyPath { get; set; }
+        public string value { get; set; }
+        public PPtr<IUnityObject> objectReference { get; set; }
     }
 }

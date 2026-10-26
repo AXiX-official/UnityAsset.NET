@@ -1,6 +1,6 @@
-﻿namespace UnityAsset.NET.Types.PreDefined;
+namespace UnityAsset.NET.Types.PreDefined;
 
 public interface INamedObject : IUnityAsset
 {
-    public string m_Name { get; }
+    public string m_Name { get; set; }
 }

@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IStaticBatchInfo : IPreDefinedInterface
     {
-        public ushort firstSubMesh { get; }
-        public ushort subMeshCount { get; }
+        public ushort firstSubMesh { get; set; }
+        public ushort subMeshCount { get; set; }
     }
 }

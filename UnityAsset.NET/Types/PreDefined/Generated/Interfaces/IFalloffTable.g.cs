@@ -8,18 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IFalloffTable : IPreDefinedInterface
     {
-        public float m_Table_0_ { get; }
-        public float m_Table_1_ { get; }
-        public float m_Table_2_ { get; }
-        public float m_Table_3_ { get; }
-        public float m_Table_4_ { get; }
-        public float m_Table_5_ { get; }
-        public float m_Table_6_ { get; }
-        public float m_Table_7_ { get; }
-        public float m_Table_8_ { get; }
-        public float m_Table_9_ { get; }
-        public float m_Table_10_ { get; }
-        public float m_Table_11_ { get; }
-        public float m_Table_12_ { get; }
+        public float m_Table_0_ { get; set; }
+        public float m_Table_1_ { get; set; }
+        public float m_Table_2_ { get; set; }
+        public float m_Table_3_ { get; set; }
+        public float m_Table_4_ { get; set; }
+        public float m_Table_5_ { get; set; }
+        public float m_Table_6_ { get; set; }
+        public float m_Table_7_ { get; set; }
+        public float m_Table_8_ { get; set; }
+        public float m_Table_9_ { get; set; }
+        public float m_Table_10_ { get; set; }
+        public float m_Table_11_ { get; set; }
+        public float m_Table_12_ { get; set; }
     }
 }

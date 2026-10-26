@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPPtr : IPreDefinedInterface
     {
-        public int m_FileID { get; }
-        public long m_PathID { get; }
+        public int m_FileID { get; set; }
+        public long m_PathID { get; set; }
     }
 }

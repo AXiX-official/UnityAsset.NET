@@ -8,12 +8,12 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAndroidDeviceFilterData : IPreDefinedInterface
     {
-        public string vendorName { get; }
-        public string deviceName { get; }
-        public string brandName { get; }
-        public string productName { get; }
-        public string androidOsVersionString { get; }
-        public string vulkanApiVersionString { get; }
-        public string driverVersionString { get; }
+        public string vendorName { get; set; }
+        public string deviceName { get; set; }
+        public string brandName { get; set; }
+        public string productName { get; set; }
+        public string androidOsVersionString { get; set; }
+        public string vulkanApiVersionString { get; set; }
+        public string driverVersionString { get; set; }
     }
 }

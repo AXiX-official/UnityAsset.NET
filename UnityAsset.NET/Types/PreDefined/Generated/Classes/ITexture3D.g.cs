@@ -8,22 +8,26 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITexture3D : INamedObject
     {
-        public int m_Width { get; }
-        public int m_Height { get; }
-        public int m_Depth { get; }
-        public int m_Format { get; }
-        public int m_MipCount { get; }
-        public uint m_DataSize { get; }
-        public IGLTextureSettings m_TextureSettings { get; }
-        public bool m_IsReadable { get; }
-        public TypelessData image_data { get; }
-        public StreamingInfo m_StreamData { get; }
+        public int m_Width { get; set; }
+        public int m_Height { get; set; }
+        public int m_Depth { get; set; }
+        public int m_Format { get; set; }
+        public int m_MipCount { get; set; }
+        public uint m_DataSize { get; set; }
+        public IGLTextureSettings m_TextureSettings { get; set; }
+        public bool m_IsReadable { get; set; }
+        public TypelessData image_data { get; set; }
+        public StreamingInfo m_StreamData { get; set; }
 
         public int? m_ForcedFallbackFormat
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -33,6 +37,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_ColorSpace
@@ -40,6 +48,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -49,6 +61,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_UsageMode
@@ -56,6 +72,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

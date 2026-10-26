@@ -8,18 +8,22 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISubMesh : IPreDefinedInterface
     {
-        public uint firstByte { get; }
-        public uint indexCount { get; }
-        public int topology { get; }
-        public uint firstVertex { get; }
-        public uint vertexCount { get; }
-        public IAABB localAABB { get; }
+        public uint firstByte { get; set; }
+        public uint indexCount { get; set; }
+        public int topology { get; set; }
+        public uint firstVertex { get; set; }
+        public uint vertexCount { get; set; }
+        public IAABB localAABB { get; set; }
 
         public uint? baseVertex
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

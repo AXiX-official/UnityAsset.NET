@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IExtensionPropertyValue : IPreDefinedInterface
     {
-        public string pluginName { get; }
-        public string extensionName { get; }
-        public string propertyName { get; }
-        public float propertyValue { get; }
+        public string pluginName { get; set; }
+        public string extensionName { get; set; }
+        public string propertyName { get; set; }
+        public float propertyValue { get; set; }
     }
 }

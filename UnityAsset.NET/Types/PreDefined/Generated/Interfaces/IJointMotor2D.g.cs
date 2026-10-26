@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IJointMotor2D : IPreDefinedInterface
     {
-        public float m_MotorSpeed { get; }
-        public float m_MaximumMotorForce { get; }
+        public float m_MotorSpeed { get; set; }
+        public float m_MaximumMotorForce { get; set; }
     }
 }

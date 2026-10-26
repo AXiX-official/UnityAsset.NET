@@ -48,7 +48,8 @@ public class RoslynTypeBuilder
                     fieldInfo.Name)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                 .AddAccessorListAccessors(
-                    SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                    SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
+                    SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
                 );
             members.Add(propertyDeclaration);
         }
@@ -58,8 +59,7 @@ public class RoslynTypeBuilder
 
         var toAssetNodeMethod = BuildToAssetNodeMethod(typeInfo);
 
-        if (BuildWriteMethod(typeInfo) is { } writeMethod)
-            members.Add(writeMethod);
+        members.Add(BuildWriteMethod(typeInfo));
         members.Add(toAssetNodeMethod);
 
         classDeclaration = classDeclaration.AddMembers(members.ToArray());
@@ -69,86 +69,6 @@ public class RoslynTypeBuilder
         return classDeclaration;
     }
     
-    private static bool CanWrite(UnityFieldInfo field)
-    {
-        if (!CanWriteDeclaration(field.DeclaredTypeSyntax))
-            return false;
-        
-        var declaredIsArray = field.DeclaredTypeSyntax switch
-        {
-            ArrayTypeSyntax => true,
-            NullableTypeSyntax { ElementType: ArrayTypeSyntax } => true,
-            _ => false,
-        };
-        var shapeIsArray = field.TypeInfo is VectorTypeInfo or MapTypeInfo;
-
-        return declaredIsArray == shapeIsArray && CanWrite(field.TypeInfo);
-    }
-
-    /// <summary>
-    /// Whether a declaration can be written. A plain "T?" can. A RefSum&lt;...&gt; can when every alternative is a PPtr,
-    /// because a PPtr always knows how to write itself; other unions wait, since their alternatives would have to be
-    /// checked the same way and none of them may be written yet.
-    /// </summary>
-    private static bool CanWriteDeclaration(TypeSyntax declaration)
-    {
-        if (declaration is NullableTypeSyntax nullable)
-            return CanWriteDeclaration(nullable.ElementType);
-
-        if (declaration is not GenericNameSyntax { Identifier.Text: "RefSum" } union)
-            return true;
-
-        return union.TypeArgumentList.Arguments.All(alternative =>
-            UnionAlternativeMethod(alternative.ToString()) is not null);
-    }
-
-    /// <summary>
-    /// The method that writes one alternative of a union, or null when that alternative has no encoder yet. Both the
-    /// guard that admits a union and the code that writes it ask this, so what is admitted is exactly what can be
-    /// written: a stand-in or a reference writes itself, and a leaf is written by the writer method for its type.
-    /// </summary>
-    private static string? UnionAlternativeMethod(string alternativeType)
-    {
-        if (alternativeType.Contains("PPtr<", StringComparison.Ordinal))
-            return "Write";
-
-        return PrimitiveWriterMethods.TryGetValue(alternativeType, out var method) ? method : null;
-    }
-
-    // The C# names a union can name an alternative by, and the writer method that writes one.
-    private static readonly Dictionary<string, string> PrimitiveWriterMethods = new()
-    {
-        ["bool"] = "WriteBoolean",
-        ["byte"] = "WriteByte",
-        ["sbyte"] = "WriteSByte",
-        ["char"] = "WriteChar",
-        ["short"] = "WriteInt16",
-        ["ushort"] = "WriteUInt16",
-        ["int"] = "WriteInt32",
-        ["uint"] = "WriteUInt32",
-        ["long"] = "WriteInt64",
-        ["ulong"] = "WriteUInt64",
-        ["float"] = "WriteSingle",
-        ["double"] = "WriteDouble",
-        ["string"] = "WriteSizedString",
-    };
-
-    /// <summary>
-    /// Whether a shape can be written back: the leaf kinds, the hand-written stand-ins, an array whose elements can, and
-    /// a nested class that can be written itself. That last case asks the nested class's own fields the same
-    /// field-level question its own guard asks, so "has an encoder" and "can be delegated to" are one thing.
-    /// </summary>
-    private static bool CanWrite(IUnityTypeInfo typeInfo)
-        => typeInfo switch
-        {
-            PrimitiveTypeInfo or PredefinedTypeInfo or GenericPPtrTypeInfo => true,
-            VectorTypeInfo vector => CanWrite(vector.ElementType),
-            MapTypeInfo map => CanWrite(map.PairType),
-            PairTypeInfo pair => CanWrite(pair.Item1Type) && CanWrite(pair.Item2Type),
-            ClassTypeInfo nested => nested.Fields.All(CanWrite),
-            _ => false,
-        };
-
     /// <summary>
     /// The expression that writes one value back, mirroring the reader's: a leaf writes itself, a stand-in writes itself
     /// through its own encoder, and an array writes its elements with the writer counterpart of the call the reader
@@ -280,11 +200,8 @@ public class RoslynTypeBuilder
         };
     }
 
-    private MethodDeclarationSyntax? BuildWriteMethod(ClassTypeInfo typeInfo)
+    private static MethodDeclarationSyntax BuildWriteMethod(ClassTypeInfo typeInfo)
     {
-        if (typeInfo.Fields.Any(field => !CanWrite(field)))
-            return null;
-
         var statements = new List<StatementSyntax>();
 
         foreach (var field in typeInfo.Fields)
@@ -310,58 +227,47 @@ public class RoslynTypeBuilder
             var leafType = field.TypeInfo.ToTypeSyntax();
             var needsCast = declaredUnderlying.ToString() != leafType.ToString();
 
-            // A RefSum<...> declaration means the versions disagree about this member's type. Which alternative this
-            // class has is not inferred from the payload's runtime type - a PPtr<IUnityObject> fallback would match many
-            // of them - but taken from the index the reader stored when it chose, through the union's own Switch, whose
-            // branches therefore line up with the reader's by construction and whose default throws rather than guesses.
-            // A RefSum is a struct, so RefSum<...>? is a Nullable and the union is reached through .Value.
+            // A RefSum<...> declaration means the versions disagree about this member's type, but this class is
+            // generated for one version: the tree's shape is the alternative it carries. The union is a read-side
+            // container (it keeps the index the reader chose), not a description of the bytes, so writing goes through
+            // the shape, with the value taken out of the union. A RefSum is a struct, so RefSum<...>? is a Nullable and
+            // the union is reached through .Value.
             var unionSyntax = field.DeclaredTypeSyntax is NullableTypeSyntax { ElementType: GenericNameSyntax u } ? u
                 : field.DeclaredTypeSyntax as GenericNameSyntax;
+            ExpressionSyntax? writerExpression;
             if (unionSyntax is { Identifier.Text: "RefSum" })
             {
-                var unionAccess = field.DeclaredTypeSyntax is NullableTypeSyntax ? $"{field.Name}.Value" : field.Name;
-                statements.Add(SyntaxFactory.ExpressionStatement(
-                    SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.IdentifierName(unionAccess),
-                            SyntaxFactory.IdentifierName("Switch")))
-                    .AddArgumentListArguments(unionSyntax.TypeArgumentList.Arguments
-                        .Select((alternative, index) =>
-                        {
-                            var parameter = $"v{index}";
-                            var method = UnionAlternativeMethod(alternative.ToString())!;
+                // The class is generated for one version, so the shape in the tree is the alternative this version
+                // actually carries; the union only exists to satisfy the interface. Take the value the reader stored
+                // and write it with the shape's own writer - the union's index is a read-side device, not a decision
+                // about how the bytes look.
+                var unionAccess = field.DeclaredTypeSyntax is NullableTypeSyntax
+                    ? $"{field.Name}.Value.Value"
+                    : $"{field.Name}.Value";
+                var local = $"__value{statements.Count}";
+                statements.Add(SyntaxFactory.LocalDeclarationStatement(
+                    SyntaxFactory.VariableDeclaration(leafType)
+                        .AddVariables(SyntaxFactory.VariableDeclarator(local)
+                            .WithInitializer(SyntaxFactory.EqualsValueClause(
+                                SyntaxFactory.CastExpression(leafType, SyntaxFactory.ParseExpression(unionAccess)))))));
 
-                            // "Write" means the alternative writes itself; anything else is a writer method that takes
-                            // the value, which is how a leaf is written.
-                            ExpressionSyntax body = method == "Write"
-                                ? SyntaxFactory.InvocationExpression(
-                                    SyntaxFactory.MemberAccessExpression(
-                                        SyntaxKind.SimpleMemberAccessExpression,
-                                        SyntaxFactory.IdentifierName(parameter),
-                                        SyntaxFactory.IdentifierName("Write")))
-                                    .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("writer")))
-                                : SyntaxFactory.InvocationExpression(
-                                    SyntaxFactory.MemberAccessExpression(
-                                        SyntaxKind.SimpleMemberAccessExpression,
-                                        SyntaxFactory.IdentifierName("writer"),
-                                        SyntaxFactory.IdentifierName(method)))
-                                    .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(parameter)));
-
-                            return SyntaxFactory.Argument(SyntaxFactory.SimpleLambdaExpression(
-                                SyntaxFactory.Parameter(SyntaxFactory.Identifier(parameter)), body));
-                        })
-                        .ToArray())));
-                continue;
+                writerExpression = CreateWriterExpression(field.TypeInfo, local, "writer");
             }
-
-            // The same helper answers "can this be written" and produces the expression, so the guard above and the
-            // encoder below cannot drift apart.
-            statements.Add(SyntaxFactory.ExpressionStatement(
-                CreateWriterExpression(field.TypeInfo,
+            else
+            {
+                writerExpression = CreateWriterExpression(field.TypeInfo,
                     isNullableValueType ? $"{field.Name}.Value" : field.Name,
                     "writer",
-                    needsCast ? leafType : null)!));
+                    needsCast ? leafType : null);
+            }
+
+            if (writerExpression is null)
+            {
+                throw new NotSupportedException(
+                    $"{typeInfo.GeneratedClassName}.{field.Name}: no writer for {field.TypeInfo}.");
+            }
+
+            statements.Add(SyntaxFactory.ExpressionStatement(writerExpression));
 
             // The reader aligns after the field it read, so the writer pads after writing it.
             if (field.RequireAlign)

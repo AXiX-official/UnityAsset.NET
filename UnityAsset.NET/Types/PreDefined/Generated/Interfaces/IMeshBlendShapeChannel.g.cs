@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMeshBlendShapeChannel : IPreDefinedInterface
     {
-        public string name { get; }
-        public uint nameHash { get; }
-        public int frameIndex { get; }
-        public int frameCount { get; }
+        public string name { get; set; }
+        public uint nameHash { get; set; }
+        public int frameIndex { get; set; }
+        public int frameCount { get; set; }
     }
 }

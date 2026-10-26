@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPhysicMaterial : INamedObject
     {
-        public float dynamicFriction { get; }
-        public float staticFriction { get; }
-        public float bounciness { get; }
-        public int frictionCombine { get; }
-        public int bounceCombine { get; }
+        public float dynamicFriction { get; set; }
+        public float staticFriction { get; set; }
+        public float bounciness { get; set; }
+        public int frictionCombine { get; set; }
+        public int bounceCombine { get; set; }
     }
 }

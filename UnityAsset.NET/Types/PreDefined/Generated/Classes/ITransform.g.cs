@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITransform : IUnityAsset, IComponent
     {
-        public new PPtr<GameObject> m_GameObject { get; }
-        public Quaternionf m_LocalRotation { get; }
-        public Vector3f m_LocalPosition { get; }
-        public Vector3f m_LocalScale { get; }
-        public PPtr<ITransform>[] m_Children { get; }
-        public PPtr<ITransform> m_Father { get; }
+        public new PPtr<GameObject> m_GameObject { get; set; }
+        public Quaternionf m_LocalRotation { get; set; }
+        public Vector3f m_LocalPosition { get; set; }
+        public Vector3f m_LocalScale { get; set; }
+        public PPtr<ITransform>[] m_Children { get; set; }
+        public PPtr<ITransform> m_Father { get; set; }
     }
 }

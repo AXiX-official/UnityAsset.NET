@@ -8,13 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedProgram : IPreDefinedInterface
     {
-        public ISerializedSubProgram[] m_SubPrograms { get; }
+        public ISerializedSubProgram[] m_SubPrograms { get; set; }
 
         public ISerializedProgramParameters? m_CommonParameters
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -24,6 +28,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public uint[][]? m_ParameterBlobIndices
@@ -32,6 +40,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ushort[]? m_SerializedKeywordStateMask
@@ -39,6 +51,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

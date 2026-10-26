@@ -8,14 +8,14 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedProperty : IPreDefinedInterface
     {
-        public string m_Description { get; }
-        public string[] m_Attributes { get; }
-        public int m_Type { get; }
-        public uint m_Flags { get; }
-        public float m_DefValue_0_ { get; }
-        public float m_DefValue_1_ { get; }
-        public float m_DefValue_2_ { get; }
-        public float m_DefValue_3_ { get; }
-        public ISerializedTextureProperty m_DefTexture { get; }
+        public string m_Description { get; set; }
+        public string[] m_Attributes { get; set; }
+        public int m_Type { get; set; }
+        public uint m_Flags { get; set; }
+        public float m_DefValue_0_ { get; set; }
+        public float m_DefValue_1_ { get; set; }
+        public float m_DefValue_2_ { get; set; }
+        public float m_DefValue_3_ { get; set; }
+        public ISerializedTextureProperty m_DefTexture { get; set; }
     }
 }

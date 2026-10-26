@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedSubProgram : IPreDefinedInterface
     {
-        public uint m_BlobIndex { get; }
-        public IParserBindChannels m_Channels { get; }
+        public uint m_BlobIndex { get; set; }
+        public IParserBindChannels m_Channels { get; set; }
 
         public ushort[]? m_KeywordIndices
         {
@@ -17,16 +17,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public sbyte m_ShaderHardwareTier { get; }
-        public sbyte m_GpuProgramType { get; }
+        public sbyte m_ShaderHardwareTier { get; set; }
+        public sbyte m_GpuProgramType { get; set; }
 
         public IVectorParameter[]? m_VectorParams
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -36,6 +44,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ITextureParameter[]? m_TextureParams
@@ -43,6 +55,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -52,6 +68,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IConstantBuffer[]? m_ConstantBuffers
@@ -59,6 +79,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -68,6 +92,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IUAVParameter[]? m_UAVParams
@@ -75,6 +103,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -84,6 +116,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public RefSum<int, long>? m_ShaderRequirements
@@ -91,6 +127,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -100,6 +140,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ushort[]? m_LocalKeywordIndices
@@ -108,6 +152,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ISerializedProgramParameters? m_Parameters
@@ -115,6 +163,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

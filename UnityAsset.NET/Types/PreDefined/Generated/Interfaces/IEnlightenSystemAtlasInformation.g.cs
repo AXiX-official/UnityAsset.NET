@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IEnlightenSystemAtlasInformation : IPreDefinedInterface
     {
-        public int atlasSize { get; }
-        public IHash128 atlasHash { get; }
-        public int firstSystemId { get; }
+        public int atlasSize { get; set; }
+        public IHash128 atlasHash { get; set; }
+        public int firstSystemId { get; set; }
     }
 }

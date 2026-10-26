@@ -5,10 +5,10 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 public struct ChannelInfo : IPreDefinedInterface
 {
     public string ClassName => "ChannelInfo";
-    public byte stream { get; }
-    public byte offset { get; }
-    public byte format { get; }
-    public byte dimension { get; }
+    public byte stream { get; set; }
+    public byte offset { get; set; }
+    public byte format { get; set; }
+    public byte dimension { get; set; }
     
     public ChannelInfo(IReader reader)
     {

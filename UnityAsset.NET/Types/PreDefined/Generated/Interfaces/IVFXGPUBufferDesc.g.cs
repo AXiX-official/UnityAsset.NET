@@ -14,18 +14,26 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public uint size { get; }
-        public IVFXLayoutElementDesc[] layout { get; }
-        public uint capacity { get; }
-        public uint stride { get; }
+        public uint size { get; set; }
+        public IVFXLayoutElementDesc[] layout { get; set; }
+        public uint capacity { get; set; }
+        public uint stride { get; set; }
 
         public int? target
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -34,6 +42,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

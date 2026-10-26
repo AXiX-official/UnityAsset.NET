@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IColorModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxGradient gradient { get; }
+        public bool enabled { get; set; }
+        public IMinMaxGradient gradient { get; set; }
     }
 }

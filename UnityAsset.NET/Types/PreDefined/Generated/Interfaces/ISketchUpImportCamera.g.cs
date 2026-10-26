@@ -8,19 +8,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISketchUpImportCamera : IPreDefinedInterface
     {
-        public Vector3f position { get; }
-        public Vector3f lookAt { get; }
-        public Vector3f up { get; }
-        public float fov { get; }
-        public float aspectRatio { get; }
-        public float orthoSize { get; }
-        public int isPerspective { get; }
+        public Vector3f position { get; set; }
+        public Vector3f lookAt { get; set; }
+        public Vector3f up { get; set; }
+        public float fov { get; set; }
+        public float aspectRatio { get; set; }
+        public float orthoSize { get; set; }
+        public int isPerspective { get; set; }
 
         public float? nearPlane
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -29,6 +33,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

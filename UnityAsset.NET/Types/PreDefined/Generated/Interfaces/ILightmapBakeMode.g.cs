@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILightmapBakeMode : IPreDefinedInterface
     {
-        public int lightmapBakeType { get; }
-        public int mixedLightingMode { get; }
+        public int lightmapBakeType { get; set; }
+        public int mixedLightingMode { get; set; }
     }
 }

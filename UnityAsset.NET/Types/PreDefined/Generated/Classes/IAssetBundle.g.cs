@@ -8,19 +8,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAssetBundle : INamedObject
     {
-        public PPtr<IUnityObject>[] m_PreloadTable { get; }
-        public ValueTuple<string, IAssetInfo>[] m_Container { get; }
-        public IAssetInfo m_MainAsset { get; }
-        public uint m_RuntimeCompatibility { get; }
-        public string m_AssetBundleName { get; }
-        public string[] m_Dependencies { get; }
-        public bool m_IsStreamedSceneAssetBundle { get; }
+        public PPtr<IUnityObject>[] m_PreloadTable { get; set; }
+        public ValueTuple<string, IAssetInfo>[] m_Container { get; set; }
+        public IAssetInfo m_MainAsset { get; set; }
+        public uint m_RuntimeCompatibility { get; set; }
+        public string m_AssetBundleName { get; set; }
+        public string[] m_Dependencies { get; set; }
+        public bool m_IsStreamedSceneAssetBundle { get; set; }
 
         public int? m_PathFlags
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -30,6 +34,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ValueTuple<string, string>[]? m_SceneHashes
@@ -37,6 +45,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,39 +8,43 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IClipAnimationInfo : IPreDefinedInterface
     {
-        public string name { get; }
-        public string takeName { get; }
-        public float firstFrame { get; }
-        public float lastFrame { get; }
-        public int wrapMode { get; }
-        public float orientationOffsetY { get; }
-        public float level { get; }
-        public float cycleOffset { get; }
-        public bool loop { get; }
-        public bool hasAdditiveReferencePose { get; }
-        public bool loopTime { get; }
-        public bool loopBlend { get; }
-        public bool loopBlendOrientation { get; }
-        public bool loopBlendPositionY { get; }
-        public bool loopBlendPositionXZ { get; }
-        public bool keepOriginalOrientation { get; }
-        public bool keepOriginalPositionY { get; }
-        public bool keepOriginalPositionXZ { get; }
-        public bool heightFromFeet { get; }
-        public bool mirror { get; }
-        public uint[] bodyMask { get; }
-        public IClipAnimationInfoCurve[] curves { get; }
-        public IAnimationEvent[] events { get; }
-        public ITransformMaskElement[] transformMask { get; }
-        public int maskType { get; }
-        public PPtr<IAvatarMask> maskSource { get; }
-        public float additiveReferencePoseFrame { get; }
+        public string name { get; set; }
+        public string takeName { get; set; }
+        public float firstFrame { get; set; }
+        public float lastFrame { get; set; }
+        public int wrapMode { get; set; }
+        public float orientationOffsetY { get; set; }
+        public float level { get; set; }
+        public float cycleOffset { get; set; }
+        public bool loop { get; set; }
+        public bool hasAdditiveReferencePose { get; set; }
+        public bool loopTime { get; set; }
+        public bool loopBlend { get; set; }
+        public bool loopBlendOrientation { get; set; }
+        public bool loopBlendPositionY { get; set; }
+        public bool loopBlendPositionXZ { get; set; }
+        public bool keepOriginalOrientation { get; set; }
+        public bool keepOriginalPositionY { get; set; }
+        public bool keepOriginalPositionXZ { get; set; }
+        public bool heightFromFeet { get; set; }
+        public bool mirror { get; set; }
+        public uint[] bodyMask { get; set; }
+        public IClipAnimationInfoCurve[] curves { get; set; }
+        public IAnimationEvent[] events { get; set; }
+        public ITransformMaskElement[] transformMask { get; set; }
+        public int maskType { get; set; }
+        public PPtr<IAvatarMask> maskSource { get; set; }
+        public float additiveReferencePoseFrame { get; set; }
 
         public long? internalID
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

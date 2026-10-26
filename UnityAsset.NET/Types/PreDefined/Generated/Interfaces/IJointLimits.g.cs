@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IJointLimits : IPreDefinedInterface
     {
-        public float min { get; }
-        public float max { get; }
-        public float bounciness { get; }
-        public float bounceMinVelocity { get; }
-        public float contactDistance { get; }
+        public float min { get; set; }
+        public float max { get; set; }
+        public float bounciness { get; set; }
+        public float bounceMinVelocity { get; set; }
+        public float contactDistance { get; set; }
     }
 }

@@ -8,25 +8,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVideoClip : INamedObject
     {
-        public string m_OriginalPath { get; }
-        public uint m_ProxyWidth { get; }
-        public uint m_ProxyHeight { get; }
-        public uint Width { get; }
-        public uint Height { get; }
-        public double m_FrameRate { get; }
-        public ulong m_FrameCount { get; }
-        public int m_Format { get; }
-        public ushort[] m_AudioChannelCount { get; }
-        public uint[] m_AudioSampleRate { get; }
-        public string[] m_AudioLanguage { get; }
-        public IStreamedResource m_ExternalResources { get; }
-        public bool m_HasSplitAlpha { get; }
+        public string m_OriginalPath { get; set; }
+        public uint m_ProxyWidth { get; set; }
+        public uint m_ProxyHeight { get; set; }
+        public uint Width { get; set; }
+        public uint Height { get; set; }
+        public double m_FrameRate { get; set; }
+        public ulong m_FrameCount { get; set; }
+        public int m_Format { get; set; }
+        public ushort[] m_AudioChannelCount { get; set; }
+        public uint[] m_AudioSampleRate { get; set; }
+        public string[] m_AudioLanguage { get; set; }
+        public IStreamedResource m_ExternalResources { get; set; }
+        public bool m_HasSplitAlpha { get; set; }
 
         public uint? m_PixelAspecRatioNum
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -36,6 +40,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_sRGB
@@ -44,6 +52,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public PPtr<IShader>[]? m_VideoShaders
@@ -51,6 +63,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

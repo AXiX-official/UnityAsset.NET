@@ -8,16 +8,16 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXPropertySheetSerializedBase : IPreDefinedInterface
     {
-        public IVFXField m_Float { get; }
-        public IVFXField m_Vector2f { get; }
-        public IVFXField m_Vector3f { get; }
-        public IVFXField m_Vector4f { get; }
-        public IVFXField m_Uint { get; }
-        public IVFXField m_Int { get; }
-        public IVFXField m_Matrix4x4f { get; }
-        public IVFXField m_AnimationCurve { get; }
-        public IVFXField m_Gradient { get; }
-        public IVFXField m_NamedObject { get; }
-        public IVFXField m_Bool { get; }
+        public IVFXField m_Float { get; set; }
+        public IVFXField m_Vector2f { get; set; }
+        public IVFXField m_Vector3f { get; set; }
+        public IVFXField m_Vector4f { get; set; }
+        public IVFXField m_Uint { get; set; }
+        public IVFXField m_Int { get; set; }
+        public IVFXField m_Matrix4x4f { get; set; }
+        public IVFXField m_AnimationCurve { get; set; }
+        public IVFXField m_Gradient { get; set; }
+        public IVFXField m_NamedObject { get; set; }
+        public IVFXField m_Bool { get; set; }
     }
 }

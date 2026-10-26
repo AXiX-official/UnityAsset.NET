@@ -8,32 +8,32 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IClipMuscleConstant : IPreDefinedInterface
     {
-        public IHumanPose m_DeltaPose { get; }
-        public Ixform m_StartX { get; }
-        public Ixform m_StopX { get; }
-        public Ixform m_LeftFootStartX { get; }
-        public Ixform m_RightFootStartX { get; }
-        public Ifloat3 m_AverageSpeed { get; }
-        public IOffsetPtr m_Clip { get; }
-        public float m_StartTime { get; }
-        public float m_StopTime { get; }
-        public float m_OrientationOffsetY { get; }
-        public float m_Level { get; }
-        public float m_CycleOffset { get; }
-        public float m_AverageAngularSpeed { get; }
-        public int[] m_IndexArray { get; }
-        public IValueDelta[] m_ValueArrayDelta { get; }
-        public float[] m_ValueArrayReferencePose { get; }
-        public bool m_Mirror { get; }
-        public bool m_LoopTime { get; }
-        public bool m_LoopBlend { get; }
-        public bool m_LoopBlendOrientation { get; }
-        public bool m_LoopBlendPositionY { get; }
-        public bool m_LoopBlendPositionXZ { get; }
-        public bool m_StartAtOrigin { get; }
-        public bool m_KeepOriginalOrientation { get; }
-        public bool m_KeepOriginalPositionY { get; }
-        public bool m_KeepOriginalPositionXZ { get; }
-        public bool m_HeightFromFeet { get; }
+        public IHumanPose m_DeltaPose { get; set; }
+        public Ixform m_StartX { get; set; }
+        public Ixform m_StopX { get; set; }
+        public Ixform m_LeftFootStartX { get; set; }
+        public Ixform m_RightFootStartX { get; set; }
+        public Ifloat3 m_AverageSpeed { get; set; }
+        public IOffsetPtr m_Clip { get; set; }
+        public float m_StartTime { get; set; }
+        public float m_StopTime { get; set; }
+        public float m_OrientationOffsetY { get; set; }
+        public float m_Level { get; set; }
+        public float m_CycleOffset { get; set; }
+        public float m_AverageAngularSpeed { get; set; }
+        public int[] m_IndexArray { get; set; }
+        public IValueDelta[] m_ValueArrayDelta { get; set; }
+        public float[] m_ValueArrayReferencePose { get; set; }
+        public bool m_Mirror { get; set; }
+        public bool m_LoopTime { get; set; }
+        public bool m_LoopBlend { get; set; }
+        public bool m_LoopBlendOrientation { get; set; }
+        public bool m_LoopBlendPositionY { get; set; }
+        public bool m_LoopBlendPositionXZ { get; set; }
+        public bool m_StartAtOrigin { get; set; }
+        public bool m_KeepOriginalOrientation { get; set; }
+        public bool m_KeepOriginalPositionY { get; set; }
+        public bool m_KeepOriginalPositionXZ { get; set; }
+        public bool m_HeightFromFeet { get; set; }
     }
 }

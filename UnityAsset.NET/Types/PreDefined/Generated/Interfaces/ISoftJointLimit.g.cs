@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISoftJointLimit : IPreDefinedInterface
     {
-        public float limit { get; }
-        public float bounciness { get; }
-        public float contactDistance { get; }
+        public float limit { get; set; }
+        public float bounciness { get; set; }
+        public float contactDistance { get; set; }
     }
 }

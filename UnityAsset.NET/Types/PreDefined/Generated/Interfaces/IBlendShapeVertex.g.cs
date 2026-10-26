@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBlendShapeVertex : IPreDefinedInterface
     {
-        public Vector3f vertex { get; }
-        public Vector3f normal { get; }
-        public Vector3f tangent { get; }
-        public uint index { get; }
+        public Vector3f vertex { get; set; }
+        public Vector3f normal { get; set; }
+        public Vector3f tangent { get; set; }
+        public uint index { get; set; }
     }
 }

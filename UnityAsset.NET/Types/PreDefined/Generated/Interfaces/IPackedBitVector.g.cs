@@ -8,13 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPackedBitVector : IPreDefinedInterface
     {
-        public uint m_NumItems { get; }
+        public uint m_NumItems { get; set; }
 
         public float? m_Range
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -24,15 +28,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public byte[] m_Data { get; }
+        public byte[] m_Data { get; set; }
 
         public byte? m_BitSize
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

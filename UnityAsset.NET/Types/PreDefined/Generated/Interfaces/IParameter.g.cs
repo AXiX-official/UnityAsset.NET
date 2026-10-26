@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IParameter : IPreDefinedInterface
     {
-        public string m_ParameterName { get; }
-        public GUID m_GUID { get; }
+        public string m_ParameterName { get; set; }
+        public GUID m_GUID { get; set; }
     }
 }

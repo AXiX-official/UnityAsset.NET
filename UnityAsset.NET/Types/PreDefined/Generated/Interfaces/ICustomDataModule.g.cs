@@ -8,20 +8,20 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ICustomDataModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public int mode0 { get; }
-        public int vectorComponentCount0 { get; }
-        public IMinMaxGradient color0 { get; }
-        public IMinMaxCurve vector0_0 { get; }
-        public IMinMaxCurve vector0_1 { get; }
-        public IMinMaxCurve vector0_2 { get; }
-        public IMinMaxCurve vector0_3 { get; }
-        public int mode1 { get; }
-        public int vectorComponentCount1 { get; }
-        public IMinMaxGradient color1 { get; }
-        public IMinMaxCurve vector1_0 { get; }
-        public IMinMaxCurve vector1_1 { get; }
-        public IMinMaxCurve vector1_2 { get; }
-        public IMinMaxCurve vector1_3 { get; }
+        public bool enabled { get; set; }
+        public int mode0 { get; set; }
+        public int vectorComponentCount0 { get; set; }
+        public IMinMaxGradient color0 { get; set; }
+        public IMinMaxCurve vector0_0 { get; set; }
+        public IMinMaxCurve vector0_1 { get; set; }
+        public IMinMaxCurve vector0_2 { get; set; }
+        public IMinMaxCurve vector0_3 { get; set; }
+        public int mode1 { get; set; }
+        public int vectorComponentCount1 { get; set; }
+        public IMinMaxGradient color1 { get; set; }
+        public IMinMaxCurve vector1_0 { get; set; }
+        public IMinMaxCurve vector1_1 { get; set; }
+        public IMinMaxCurve vector1_2 { get; set; }
+        public IMinMaxCurve vector1_3 { get; set; }
     }
 }

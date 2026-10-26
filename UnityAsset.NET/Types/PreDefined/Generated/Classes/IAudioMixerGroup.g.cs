@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAudioMixerGroup : INamedObject
     {
-        public PPtr<IAudioMixer> m_AudioMixer { get; }
-        public GUID m_GroupID { get; }
-        public PPtr<IAudioMixerGroup>[] m_Children { get; }
+        public PPtr<IAudioMixer> m_AudioMixer { get; set; }
+        public GUID m_GroupID { get; set; }
+        public PPtr<IAudioMixerGroup>[] m_Children { get; set; }
     }
 }

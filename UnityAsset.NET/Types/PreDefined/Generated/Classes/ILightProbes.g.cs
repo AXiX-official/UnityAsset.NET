@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILightProbes : INamedObject
     {
-        public ILightProbeData m_Data { get; }
-        public ISphericalHarmonicsL2[] m_BakedCoefficients { get; }
-        public ILightProbeOcclusion[] m_BakedLightOcclusion { get; }
+        public ILightProbeData m_Data { get; set; }
+        public ISphericalHarmonicsL2[] m_BakedCoefficients { get; set; }
+        public ILightProbeOcclusion[] m_BakedLightOcclusion { get; set; }
 
         public bool? m_HasBeenEdited
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

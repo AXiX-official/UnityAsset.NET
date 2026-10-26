@@ -8,28 +8,32 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimatorState : INamedObject
     {
-        public float m_Speed { get; }
-        public float m_CycleOffset { get; }
-        public PPtr<IAnimatorStateTransition>[] m_Transitions { get; }
-        public PPtr<IMonoBehaviour>[] m_StateMachineBehaviours { get; }
-        public Vector3f m_Position { get; }
-        public bool m_IKOnFeet { get; }
-        public bool m_WriteDefaultValues { get; }
-        public bool m_Mirror { get; }
-        public bool m_SpeedParameterActive { get; }
-        public bool m_MirrorParameterActive { get; }
-        public bool m_CycleOffsetParameterActive { get; }
-        public PPtr<IUnityObject> m_Motion { get; }
-        public string m_Tag { get; }
-        public string m_SpeedParameter { get; }
-        public string m_MirrorParameter { get; }
-        public string m_CycleOffsetParameter { get; }
+        public float m_Speed { get; set; }
+        public float m_CycleOffset { get; set; }
+        public PPtr<IAnimatorStateTransition>[] m_Transitions { get; set; }
+        public PPtr<IMonoBehaviour>[] m_StateMachineBehaviours { get; set; }
+        public Vector3f m_Position { get; set; }
+        public bool m_IKOnFeet { get; set; }
+        public bool m_WriteDefaultValues { get; set; }
+        public bool m_Mirror { get; set; }
+        public bool m_SpeedParameterActive { get; set; }
+        public bool m_MirrorParameterActive { get; set; }
+        public bool m_CycleOffsetParameterActive { get; set; }
+        public PPtr<IUnityObject> m_Motion { get; set; }
+        public string m_Tag { get; set; }
+        public string m_SpeedParameter { get; set; }
+        public string m_MirrorParameter { get; set; }
+        public string m_CycleOffsetParameter { get; set; }
 
         public bool? m_TimeParameterActive
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -38,6 +42,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

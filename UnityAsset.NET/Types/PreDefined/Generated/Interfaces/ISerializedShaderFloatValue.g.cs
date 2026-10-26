@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedShaderFloatValue : IPreDefinedInterface
     {
-        public float val { get; }
-        public string name { get; }
+        public float val { get; set; }
+        public string name { get; set; }
     }
 }

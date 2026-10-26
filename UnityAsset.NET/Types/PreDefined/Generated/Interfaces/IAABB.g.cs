@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAABB : IPreDefinedInterface
     {
-        public Vector3f m_Center { get; }
-        public Vector3f m_Extent { get; }
+        public Vector3f m_Center { get; set; }
+        public Vector3f m_Extent { get; set; }
     }
 }

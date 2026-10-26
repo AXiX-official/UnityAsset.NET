@@ -8,16 +8,16 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ICompressedMesh : IPreDefinedInterface
     {
-        public IPackedBitVector m_Vertices { get; }
-        public IPackedBitVector m_UV { get; }
-        public IPackedBitVector m_Normals { get; }
-        public IPackedBitVector m_Tangents { get; }
-        public IPackedBitVector m_Weights { get; }
-        public IPackedBitVector m_NormalSigns { get; }
-        public IPackedBitVector m_TangentSigns { get; }
-        public IPackedBitVector m_FloatColors { get; }
-        public IPackedBitVector m_BoneIndices { get; }
-        public IPackedBitVector m_Triangles { get; }
-        public uint m_UVInfo { get; }
+        public IPackedBitVector m_Vertices { get; set; }
+        public IPackedBitVector m_UV { get; set; }
+        public IPackedBitVector m_Normals { get; set; }
+        public IPackedBitVector m_Tangents { get; set; }
+        public IPackedBitVector m_Weights { get; set; }
+        public IPackedBitVector m_NormalSigns { get; set; }
+        public IPackedBitVector m_TangentSigns { get; set; }
+        public IPackedBitVector m_FloatColors { get; set; }
+        public IPackedBitVector m_BoneIndices { get; set; }
+        public IPackedBitVector m_Triangles { get; set; }
+        public uint m_UVInfo { get; set; }
     }
 }

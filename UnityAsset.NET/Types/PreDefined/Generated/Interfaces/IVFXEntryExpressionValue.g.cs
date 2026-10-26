@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXEntryExpressionValue : IPreDefinedInterface
     {
-        public uint m_ExpressionIndex { get; }
-        public RefSum<float, Vector2f, Vector3f, Vector4f, uint, int, IMatrix4x4f, IAnimationCurve<float>, IGradient, PPtr<INamedObject>, bool, PPtr<IUnityObject>> m_Value { get; }
+        public uint m_ExpressionIndex { get; set; }
+        public RefSum<float, Vector2f, Vector3f, Vector4f, uint, int, IMatrix4x4f, IAnimationCurve<float>, IGradient, PPtr<INamedObject>, bool, PPtr<IUnityObject>> m_Value { get; set; }
     }
 }

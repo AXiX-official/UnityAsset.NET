@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAspectRatios : IPreDefinedInterface
     {
-        public bool _4_3 { get; }
-        public bool _5_4 { get; }
-        public bool _16_10 { get; }
-        public bool _16_9 { get; }
-        public bool Others { get; }
+        public bool _4_3 { get; set; }
+        public bool _5_4 { get; set; }
+        public bool _16_10 { get; set; }
+        public bool _16_9 { get; set; }
+        public bool Others { get; set; }
     }
 }

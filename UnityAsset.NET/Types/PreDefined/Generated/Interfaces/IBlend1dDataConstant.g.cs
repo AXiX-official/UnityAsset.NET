@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBlend1dDataConstant : IPreDefinedInterface
     {
-        public float[] m_ChildThresholdArray { get; }
+        public float[] m_ChildThresholdArray { get; set; }
     }
 }

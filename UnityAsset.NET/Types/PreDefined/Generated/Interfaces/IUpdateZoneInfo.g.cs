@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IUpdateZoneInfo : IPreDefinedInterface
     {
-        public Vector3f updateZoneCenter { get; }
-        public Vector3f updateZoneSize { get; }
-        public float rotation { get; }
-        public int passIndex { get; }
-        public bool needSwap { get; }
+        public Vector3f updateZoneCenter { get; set; }
+        public Vector3f updateZoneSize { get; set; }
+        public float rotation { get; set; }
+        public int passIndex { get; set; }
+        public bool needSwap { get; set; }
     }
 }

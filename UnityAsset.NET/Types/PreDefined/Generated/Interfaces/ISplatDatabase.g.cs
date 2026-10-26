@@ -14,17 +14,25 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public PPtr<ITexture2D>[] m_AlphaTextures { get; }
-        public int m_AlphamapResolution { get; }
-        public int m_BaseMapResolution { get; }
+        public PPtr<ITexture2D>[] m_AlphaTextures { get; set; }
+        public int m_AlphamapResolution { get; set; }
+        public int m_BaseMapResolution { get; set; }
 
         public int? m_ColorSpace
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -34,6 +42,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_MaterialRequiresSmoothness
@@ -42,6 +54,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public PPtr<ITerrainLayer>[]? m_TerrainLayers
@@ -49,6 +65,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

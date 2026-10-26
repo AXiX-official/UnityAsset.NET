@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IComputeShaderCB : IPreDefinedInterface
     {
-        public string name { get; }
-        public int byteSize { get; }
-        public IComputeShaderParam[] @params { get; }
+        public string name { get; set; }
+        public int byteSize { get; set; }
+        public IComputeShaderParam[] @params { get; set; }
     }
 }

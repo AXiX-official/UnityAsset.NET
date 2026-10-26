@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISketchUpImportData : IPreDefinedInterface
     {
-        public ISketchUpImportCamera defaultCamera { get; }
-        public ISketchUpImportScene[] scenes { get; }
+        public ISketchUpImportCamera defaultCamera { get; set; }
+        public ISketchUpImportScene[] scenes { get; set; }
     }
 }

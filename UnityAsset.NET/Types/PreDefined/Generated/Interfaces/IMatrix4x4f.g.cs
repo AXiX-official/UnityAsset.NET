@@ -8,21 +8,21 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMatrix4x4f : IPreDefinedInterface
     {
-        public float e00 { get; }
-        public float e01 { get; }
-        public float e02 { get; }
-        public float e03 { get; }
-        public float e10 { get; }
-        public float e11 { get; }
-        public float e12 { get; }
-        public float e13 { get; }
-        public float e20 { get; }
-        public float e21 { get; }
-        public float e22 { get; }
-        public float e23 { get; }
-        public float e30 { get; }
-        public float e31 { get; }
-        public float e32 { get; }
-        public float e33 { get; }
+        public float e00 { get; set; }
+        public float e01 { get; set; }
+        public float e02 { get; set; }
+        public float e03 { get; set; }
+        public float e10 { get; set; }
+        public float e11 { get; set; }
+        public float e12 { get; set; }
+        public float e13 { get; set; }
+        public float e20 { get; set; }
+        public float e21 { get; set; }
+        public float e22 { get; set; }
+        public float e23 { get; set; }
+        public float e30 { get; set; }
+        public float e31 { get; set; }
+        public float e32 { get; set; }
+        public float e33 { get; set; }
     }
 }

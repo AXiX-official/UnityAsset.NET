@@ -8,13 +8,13 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IFlareElement : IPreDefinedInterface
     {
-        public uint m_ImageIndex { get; }
-        public float m_Position { get; }
-        public float m_Size { get; }
-        public IColorRGBA m_Color { get; }
-        public bool m_UseLightColor { get; }
-        public bool m_Rotate { get; }
-        public bool m_Zoom { get; }
-        public bool m_Fade { get; }
+        public uint m_ImageIndex { get; set; }
+        public float m_Position { get; set; }
+        public float m_Size { get; set; }
+        public IColorRGBA m_Color { get; set; }
+        public bool m_UseLightColor { get; set; }
+        public bool m_Rotate { get; set; }
+        public bool m_Zoom { get; set; }
+        public bool m_Fade { get; set; }
     }
 }

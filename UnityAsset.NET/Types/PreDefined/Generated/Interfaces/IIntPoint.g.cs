@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IIntPoint : IPreDefinedInterface
     {
-        public long X { get; }
-        public long Y { get; }
+        public long X { get; set; }
+        public long Y { get; set; }
     }
 }

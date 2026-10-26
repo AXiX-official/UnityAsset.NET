@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IEnlightenTerrainChunksInformation : IPreDefinedInterface
     {
-        public int firstSystemId { get; }
-        public int numChunksInX { get; }
-        public int numChunksInY { get; }
+        public int firstSystemId { get; set; }
+        public int numChunksInX { get; set; }
+        public int numChunksInY { get; set; }
     }
 }

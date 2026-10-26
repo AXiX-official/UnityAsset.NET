@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IConstantClip : IPreDefinedInterface
     {
-        public float[] data { get; }
+        public float[] data { get; set; }
     }
 }

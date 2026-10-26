@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteAtlasEditorData : IPreDefinedInterface
     {
-        public ITextureSettings textureSettings { get; }
-        public ITextureImporterPlatformSettings[] platformSettings { get; }
-        public IPackingSettings packingSettings { get; }
-        public float variantMultiplier { get; }
-        public PPtr<IUnityObject>[] packables { get; }
+        public ITextureSettings textureSettings { get; set; }
+        public ITextureImporterPlatformSettings[] platformSettings { get; set; }
+        public IPackingSettings packingSettings { get; set; }
+        public float variantMultiplier { get; set; }
+        public PPtr<IUnityObject>[] packables { get; set; }
 
         public uint? totalSpriteSurfaceArea
         {
@@ -20,9 +20,13 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public bool bindAsDefault { get; }
+        public bool bindAsDefault { get; set; }
 
         public IHash128? storedHash
         {
@@ -30,16 +34,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public bool isAtlasV2 { get; }
-        public PPtr<IUnityObject> cachedData { get; }
+        public bool isAtlasV2 { get; set; }
+        public PPtr<IUnityObject> cachedData { get; set; }
 
         public ValueTuple<string, ISecondaryTextureSettings>[]? secondaryTextureSettings
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

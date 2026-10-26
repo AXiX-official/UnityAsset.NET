@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHeightMeshData : IPreDefinedInterface
     {
-        public Vector3f[] m_Vertices { get; }
-        public int[] m_Indices { get; }
-        public IAABB m_Bounds { get; }
-        public IHeightMeshBVNode[] m_Nodes { get; }
+        public Vector3f[] m_Vertices { get; set; }
+        public int[] m_Indices { get; set; }
+        public IAABB m_Bounds { get; set; }
+        public IHeightMeshBVNode[] m_Nodes { get; set; }
     }
 }

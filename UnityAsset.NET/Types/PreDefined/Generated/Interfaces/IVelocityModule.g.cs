@@ -8,17 +8,21 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVelocityModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxCurve x { get; }
-        public IMinMaxCurve y { get; }
-        public IMinMaxCurve z { get; }
-        public bool inWorldSpace { get; }
+        public bool enabled { get; set; }
+        public IMinMaxCurve x { get; set; }
+        public IMinMaxCurve y { get; set; }
+        public IMinMaxCurve z { get; set; }
+        public bool inWorldSpace { get; set; }
 
         public IMinMaxCurve? speedModifier
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -28,6 +32,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IMinMaxCurve? orbitalY
@@ -35,6 +43,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -44,6 +56,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IMinMaxCurve? orbitalOffsetX
@@ -51,6 +67,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -60,6 +80,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IMinMaxCurve? orbitalOffsetZ
@@ -68,6 +92,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IMinMaxCurve? radial
@@ -75,6 +103,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

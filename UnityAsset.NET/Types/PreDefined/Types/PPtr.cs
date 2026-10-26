@@ -16,8 +16,8 @@ public class PPtr<T> : IPPtr where T : IUnityObject
         return name;
     }
     public string ClassName => $"PPtr<{GetGenericClassName()}>";
-    public Int32 m_FileID { get; }
-    public Int64 m_PathID { get; }
+    public Int32 m_FileID { get; set; }
+    public Int64 m_PathID { get; set; }
     private SerializedFile m_SerializedFile;
 
     public PPtr(IReader reader)

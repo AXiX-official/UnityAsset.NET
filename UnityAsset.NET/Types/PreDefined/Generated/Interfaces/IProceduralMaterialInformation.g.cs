@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IProceduralMaterialInformation : IPreDefinedInterface
     {
-        public Vector2f m_Offset { get; }
-        public Vector2f m_Scale { get; }
-        public bool m_GenerateMipmaps { get; }
-        public int m_GenerateAllOutputs { get; }
-        public int m_AnimationUpdateRate { get; }
+        public Vector2f m_Offset { get; set; }
+        public Vector2f m_Scale { get; set; }
+        public bool m_GenerateMipmaps { get; set; }
+        public int m_GenerateAllOutputs { get; set; }
+        public int m_AnimationUpdateRate { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ID3D12GraphicsJobsDeviceFilterData : IPreDefinedInterface
     {
-        public uint preferredMode { get; }
-        public ID3D12DeviceFilterData filter { get; }
+        public uint preferredMode { get; set; }
+        public ID3D12DeviceFilterData filter { get; set; }
     }
 }

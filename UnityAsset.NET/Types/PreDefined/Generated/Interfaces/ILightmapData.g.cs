@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILightmapData : IPreDefinedInterface
     {
-        public PPtr<ITexture2D> m_Lightmap { get; }
-        public PPtr<ITexture2D> m_DirLightmap { get; }
-        public PPtr<ITexture2D> m_ShadowMask { get; }
+        public PPtr<ITexture2D> m_Lightmap { get; set; }
+        public PPtr<ITexture2D> m_DirLightmap { get; set; }
+        public PPtr<ITexture2D> m_ShadowMask { get; set; }
     }
 }

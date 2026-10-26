@@ -6,7 +6,7 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 public class ComponentPair : IPreDefinedInterface
 {
     public string ClassName => "ComponentPair";
-    public PPtr<IComponent> component { get; }
+    public PPtr<IComponent> component { get; set; }
     
     public ComponentPair(IReader reader)
     {

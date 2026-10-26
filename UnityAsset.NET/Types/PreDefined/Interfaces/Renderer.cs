@@ -4,6 +4,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces;
 
 public interface Renderer : IComponent
 {
-    public PPtr<IMaterial>[] m_Materials { get; }
-    public IStaticBatchInfo m_StaticBatchInfo { get; }
+    public PPtr<IMaterial>[] m_Materials { get; set; }
+    public IStaticBatchInfo m_StaticBatchInfo { get; set; }
 }

@@ -8,46 +8,50 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IParticleSystem : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public float lengthInSec { get; }
-        public float simulationSpeed { get; }
-        public bool looping { get; }
-        public bool prewarm { get; }
-        public bool playOnAwake { get; }
-        public bool autoRandomSeed { get; }
-        public IMinMaxCurve startDelay { get; }
-        public int moveWithTransform { get; }
-        public PPtr<ITransform> moveWithCustomTransform { get; }
-        public int scalingMode { get; }
-        public int randomSeed { get; }
-        public IInitialModule InitialModule { get; }
-        public IShapeModule ShapeModule { get; }
-        public IEmissionModule EmissionModule { get; }
-        public ISizeModule SizeModule { get; }
-        public IRotationModule RotationModule { get; }
-        public IColorModule ColorModule { get; }
-        public IUVModule UVModule { get; }
-        public IVelocityModule VelocityModule { get; }
-        public IInheritVelocityModule InheritVelocityModule { get; }
-        public IForceModule ForceModule { get; }
-        public IExternalForcesModule ExternalForcesModule { get; }
-        public IClampVelocityModule ClampVelocityModule { get; }
-        public INoiseModule NoiseModule { get; }
-        public ISizeBySpeedModule SizeBySpeedModule { get; }
-        public IRotationBySpeedModule RotationBySpeedModule { get; }
-        public IColorBySpeedModule ColorBySpeedModule { get; }
-        public ICollisionModule CollisionModule { get; }
-        public ITriggerModule TriggerModule { get; }
-        public ISubModule SubModule { get; }
-        public ILightsModule LightsModule { get; }
-        public ITrailModule TrailModule { get; }
-        public ICustomDataModule CustomDataModule { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
+        public float lengthInSec { get; set; }
+        public float simulationSpeed { get; set; }
+        public bool looping { get; set; }
+        public bool prewarm { get; set; }
+        public bool playOnAwake { get; set; }
+        public bool autoRandomSeed { get; set; }
+        public IMinMaxCurve startDelay { get; set; }
+        public int moveWithTransform { get; set; }
+        public PPtr<ITransform> moveWithCustomTransform { get; set; }
+        public int scalingMode { get; set; }
+        public int randomSeed { get; set; }
+        public IInitialModule InitialModule { get; set; }
+        public IShapeModule ShapeModule { get; set; }
+        public IEmissionModule EmissionModule { get; set; }
+        public ISizeModule SizeModule { get; set; }
+        public IRotationModule RotationModule { get; set; }
+        public IColorModule ColorModule { get; set; }
+        public IUVModule UVModule { get; set; }
+        public IVelocityModule VelocityModule { get; set; }
+        public IInheritVelocityModule InheritVelocityModule { get; set; }
+        public IForceModule ForceModule { get; set; }
+        public IExternalForcesModule ExternalForcesModule { get; set; }
+        public IClampVelocityModule ClampVelocityModule { get; set; }
+        public INoiseModule NoiseModule { get; set; }
+        public ISizeBySpeedModule SizeBySpeedModule { get; set; }
+        public IRotationBySpeedModule RotationBySpeedModule { get; set; }
+        public IColorBySpeedModule ColorBySpeedModule { get; set; }
+        public ICollisionModule CollisionModule { get; set; }
+        public ITriggerModule TriggerModule { get; set; }
+        public ISubModule SubModule { get; set; }
+        public ILightsModule LightsModule { get; set; }
+        public ITrailModule TrailModule { get; set; }
+        public ICustomDataModule CustomDataModule { get; set; }
 
         public bool? useUnscaledTime
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -57,6 +61,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? stopAction
@@ -64,6 +72,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -73,6 +85,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Vector2f? ringBufferLoopRange
@@ -80,6 +96,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -89,6 +109,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ILifetimeByEmitterSpeedModule? LifetimeByEmitterSpeedModule
@@ -97,6 +121,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? emitterVelocityMode
@@ -104,6 +132,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

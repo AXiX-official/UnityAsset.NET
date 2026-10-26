@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITextureParameters : IPreDefinedInterface
     {
-        public int width { get; }
-        public int height { get; }
-        public int mipLevels { get; }
-        public int textureFormat { get; }
+        public int width { get; set; }
+        public int height { get; set; }
+        public int mipLevels { get; set; }
+        public int textureFormat { get; set; }
     }
 }

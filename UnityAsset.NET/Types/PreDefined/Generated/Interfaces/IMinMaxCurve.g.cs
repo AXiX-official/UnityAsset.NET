@@ -8,16 +8,20 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMinMaxCurve : IPreDefinedInterface
     {
-        public ushort minMaxState { get; }
-        public float scalar { get; }
-        public IAnimationCurve<float> maxCurve { get; }
-        public IAnimationCurve<float> minCurve { get; }
+        public ushort minMaxState { get; set; }
+        public float scalar { get; set; }
+        public IAnimationCurve<float> maxCurve { get; set; }
+        public IAnimationCurve<float> minCurve { get; set; }
 
         public float? minScalar
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

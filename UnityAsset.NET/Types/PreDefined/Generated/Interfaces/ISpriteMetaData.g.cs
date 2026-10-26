@@ -8,19 +8,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteMetaData : IPreDefinedInterface
     {
-        public Rectf m_Rect { get; }
-        public int m_Alignment { get; }
-        public Vector2f m_Pivot { get; }
-        public Vector4f m_Border { get; }
-        public Vector2f[][] m_Outline { get; }
-        public Vector2f[][] m_PhysicsShape { get; }
-        public float m_TessellationDetail { get; }
+        public Rectf m_Rect { get; set; }
+        public int m_Alignment { get; set; }
+        public Vector2f m_Pivot { get; set; }
+        public Vector4f m_Border { get; set; }
+        public Vector2f[][] m_Outline { get; set; }
+        public Vector2f[][] m_PhysicsShape { get; set; }
+        public float m_TessellationDetail { get; set; }
 
         public ISpriteBone[]? m_Bones
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -30,6 +34,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Vector2f[]? m_Vertices
@@ -37,6 +45,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -46,6 +58,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Iint2_storage[]? m_Edges
@@ -53,6 +69,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -62,6 +82,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public long? m_InternalID
@@ -70,6 +94,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public string? m_CustomData
@@ -77,6 +105,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

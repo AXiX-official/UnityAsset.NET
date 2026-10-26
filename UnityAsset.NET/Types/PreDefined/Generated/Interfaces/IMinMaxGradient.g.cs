@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMinMaxGradient : IPreDefinedInterface
     {
-        public ushort minMaxState { get; }
-        public IGradient maxGradient { get; }
-        public IGradient minGradient { get; }
-        public IColorRGBA minColor { get; }
-        public IColorRGBA maxColor { get; }
+        public ushort minMaxState { get; set; }
+        public IGradient maxGradient { get; set; }
+        public IGradient minGradient { get; set; }
+        public IColorRGBA minColor { get; set; }
+        public IColorRGBA maxColor { get; set; }
     }
 }

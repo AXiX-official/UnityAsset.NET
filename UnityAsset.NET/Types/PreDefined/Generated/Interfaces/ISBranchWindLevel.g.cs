@@ -8,38 +8,38 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISBranchWindLevel : IPreDefinedInterface
     {
-        public float m_afDistance_0 { get; }
-        public float m_afDistance_1 { get; }
-        public float m_afDistance_2 { get; }
-        public float m_afDistance_3 { get; }
-        public float m_afDistance_4 { get; }
-        public float m_afDistance_5 { get; }
-        public float m_afDistance_6 { get; }
-        public float m_afDistance_7 { get; }
-        public float m_afDistance_8 { get; }
-        public float m_afDistance_9 { get; }
-        public float m_afDirectionAdherence_0 { get; }
-        public float m_afDirectionAdherence_1 { get; }
-        public float m_afDirectionAdherence_2 { get; }
-        public float m_afDirectionAdherence_3 { get; }
-        public float m_afDirectionAdherence_4 { get; }
-        public float m_afDirectionAdherence_5 { get; }
-        public float m_afDirectionAdherence_6 { get; }
-        public float m_afDirectionAdherence_7 { get; }
-        public float m_afDirectionAdherence_8 { get; }
-        public float m_afDirectionAdherence_9 { get; }
-        public float m_afWhip_0 { get; }
-        public float m_afWhip_1 { get; }
-        public float m_afWhip_2 { get; }
-        public float m_afWhip_3 { get; }
-        public float m_afWhip_4 { get; }
-        public float m_afWhip_5 { get; }
-        public float m_afWhip_6 { get; }
-        public float m_afWhip_7 { get; }
-        public float m_afWhip_8 { get; }
-        public float m_afWhip_9 { get; }
-        public float m_fTurbulence { get; }
-        public float m_fTwitch { get; }
-        public float m_fTwitchFreqScale { get; }
+        public float m_afDistance_0 { get; set; }
+        public float m_afDistance_1 { get; set; }
+        public float m_afDistance_2 { get; set; }
+        public float m_afDistance_3 { get; set; }
+        public float m_afDistance_4 { get; set; }
+        public float m_afDistance_5 { get; set; }
+        public float m_afDistance_6 { get; set; }
+        public float m_afDistance_7 { get; set; }
+        public float m_afDistance_8 { get; set; }
+        public float m_afDistance_9 { get; set; }
+        public float m_afDirectionAdherence_0 { get; set; }
+        public float m_afDirectionAdherence_1 { get; set; }
+        public float m_afDirectionAdherence_2 { get; set; }
+        public float m_afDirectionAdherence_3 { get; set; }
+        public float m_afDirectionAdherence_4 { get; set; }
+        public float m_afDirectionAdherence_5 { get; set; }
+        public float m_afDirectionAdherence_6 { get; set; }
+        public float m_afDirectionAdherence_7 { get; set; }
+        public float m_afDirectionAdherence_8 { get; set; }
+        public float m_afDirectionAdherence_9 { get; set; }
+        public float m_afWhip_0 { get; set; }
+        public float m_afWhip_1 { get; set; }
+        public float m_afWhip_2 { get; set; }
+        public float m_afWhip_3 { get; set; }
+        public float m_afWhip_4 { get; set; }
+        public float m_afWhip_5 { get; set; }
+        public float m_afWhip_6 { get; set; }
+        public float m_afWhip_7 { get; set; }
+        public float m_afWhip_8 { get; set; }
+        public float m_afWhip_9 { get; set; }
+        public float m_fTurbulence { get; set; }
+        public float m_fTwitch { get; set; }
+        public float m_fTwitchFreqScale { get; set; }
     }
 }

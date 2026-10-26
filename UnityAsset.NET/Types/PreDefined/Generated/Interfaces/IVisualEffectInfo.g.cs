@@ -8,21 +8,25 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVisualEffectInfo : IPreDefinedInterface
     {
-        public IVFXExpressionContainer m_Expressions { get; }
-        public IVFXPropertySheetSerializedBase m_PropertySheet { get; }
-        public RefSum<IVFXMapping[], IVFXExposedMapping[]> m_ExposedExpressions { get; }
-        public IVFXGPUBufferDesc[] m_Buffers { get; }
-        public IVFXCPUBufferDesc[] m_CPUBuffers { get; }
-        public IVFXEventDesc[] m_Events { get; }
-        public IVFXRendererSettings m_RendererSettings { get; }
-        public int m_CullingFlags { get; }
-        public int m_UpdateMode { get; }
+        public IVFXExpressionContainer m_Expressions { get; set; }
+        public IVFXPropertySheetSerializedBase m_PropertySheet { get; set; }
+        public RefSum<IVFXMapping[], IVFXExposedMapping[]> m_ExposedExpressions { get; set; }
+        public IVFXGPUBufferDesc[] m_Buffers { get; set; }
+        public IVFXCPUBufferDesc[] m_CPUBuffers { get; set; }
+        public IVFXEventDesc[] m_Events { get; set; }
+        public IVFXRendererSettings m_RendererSettings { get; set; }
+        public int m_CullingFlags { get; set; }
+        public int m_UpdateMode { get; set; }
 
         public uint? m_RuntimeVersion
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -32,6 +36,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public uint? m_PreWarmStepCount
@@ -39,6 +47,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -48,6 +60,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public string? m_InitialEventName
@@ -55,6 +71,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -64,6 +84,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_InstancingMode
@@ -71,6 +95,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -80,6 +108,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_InstancingDisabledReason
@@ -87,6 +119,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

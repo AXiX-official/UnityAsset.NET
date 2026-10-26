@@ -8,19 +8,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXEditorSystemDesc : IPreDefinedInterface
     {
-        public int type { get; }
-        public int flags { get; }
-        public uint capacity { get; }
-        public uint layer { get; }
-        public IVFXMapping[] buffers { get; }
-        public IVFXMapping[] values { get; }
-        public IVFXEditorTaskDesc[] tasks { get; }
+        public int type { get; set; }
+        public int flags { get; set; }
+        public uint capacity { get; set; }
+        public uint layer { get; set; }
+        public IVFXMapping[] buffers { get; set; }
+        public IVFXMapping[] values { get; set; }
+        public IVFXEditorTaskDesc[] tasks { get; set; }
 
         public string? name
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISecondarySpriteTexture : IPreDefinedInterface
     {
-        public PPtr<ITexture2D> texture { get; }
-        public string name { get; }
+        public PPtr<ITexture2D> texture { get; set; }
+        public string name { get; set; }
     }
 }

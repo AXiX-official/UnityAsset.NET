@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPresetType : IPreDefinedInterface
     {
-        public int m_NativeTypeID { get; }
-        public PPtr<IMonoScript> m_ManagedTypePPtr { get; }
-        public string m_ManagedTypeFallback { get; }
+        public int m_NativeTypeID { get; set; }
+        public PPtr<IMonoScript> m_ManagedTypePPtr { get; set; }
+        public string m_ManagedTypeFallback { get; set; }
     }
 }

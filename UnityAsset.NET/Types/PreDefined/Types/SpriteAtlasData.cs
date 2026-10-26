@@ -10,15 +10,15 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 public class SpriteAtlasData : IPreDefinedInterface
 {
     public string ClassName => "SpriteAtlasData";
-    public PPtr<ITexture2D> texture { get; }
-    public PPtr<ITexture2D> alphaTexture { get; }
-    public Rectf textureRect { get; }
-    public Vector2f textureRectOffset { get; }
-    public Vector2f? atlasRectOffset { get; }
-    public Vector4f uvTransform { get; }
-    public float downscaleMultiplier { get; }
-    public UInt32 settingsRaw { get; }
-    public SecondarySpriteTexture[]? secondaryTextures { get; }
+    public PPtr<ITexture2D> texture { get; set; }
+    public PPtr<ITexture2D> alphaTexture { get; set; }
+    public Rectf textureRect { get; set; }
+    public Vector2f textureRectOffset { get; set; }
+    public Vector2f? atlasRectOffset { get; set; }
+    public Vector4f uvTransform { get; set; }
+    public float downscaleMultiplier { get; set; }
+    public UInt32 settingsRaw { get; set; }
+    public SecondarySpriteTexture[]? secondaryTextures { get; set; }
 
     public SpriteAtlasData(IReader reader)
     {
@@ -47,7 +47,7 @@ public class SpriteAtlasData : IPreDefinedInterface
     
     public void Write(IWriter writer)
     {
-        if (writer is not AssetWriter assetWriter)
+        if (writer is not IAssetWriter assetWriter)
             throw new InvalidOperationException(
                 "Writing SpriteAtlasData needs an AssetWriter: two members depend on the asset's Unity version.");
 

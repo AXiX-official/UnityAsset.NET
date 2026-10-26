@@ -8,25 +8,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITrailModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public float ratio { get; }
-        public IMinMaxCurve lifetime { get; }
-        public float minVertexDistance { get; }
-        public int textureMode { get; }
-        public bool worldSpace { get; }
-        public bool dieWithParticles { get; }
-        public bool sizeAffectsWidth { get; }
-        public bool sizeAffectsLifetime { get; }
-        public bool inheritParticleColor { get; }
-        public IMinMaxGradient colorOverLifetime { get; }
-        public IMinMaxCurve widthOverTrail { get; }
-        public IMinMaxGradient colorOverTrail { get; }
+        public bool enabled { get; set; }
+        public float ratio { get; set; }
+        public IMinMaxCurve lifetime { get; set; }
+        public float minVertexDistance { get; set; }
+        public int textureMode { get; set; }
+        public bool worldSpace { get; set; }
+        public bool dieWithParticles { get; set; }
+        public bool sizeAffectsWidth { get; set; }
+        public bool sizeAffectsLifetime { get; set; }
+        public bool inheritParticleColor { get; set; }
+        public IMinMaxGradient colorOverLifetime { get; set; }
+        public IMinMaxCurve widthOverTrail { get; set; }
+        public IMinMaxGradient colorOverTrail { get; set; }
 
         public bool? generateLightingData
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -36,6 +40,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? ribbonCount
@@ -43,6 +51,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -52,6 +64,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? shadowBias
@@ -59,6 +75,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -68,6 +88,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Vector2f? textureScale
@@ -75,6 +99,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

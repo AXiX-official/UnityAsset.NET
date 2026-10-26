@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAudioContainerElement : INamedObject
     {
-        public PPtr<IAudioClip> m_AudioClip { get; }
-        public float m_Volume { get; }
-        public bool m_Enabled { get; }
+        public PPtr<IAudioClip> m_AudioClip { get; set; }
+        public float m_Volume { get; set; }
+        public bool m_Enabled { get; set; }
     }
 }

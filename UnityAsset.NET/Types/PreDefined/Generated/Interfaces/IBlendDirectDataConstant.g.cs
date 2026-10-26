@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBlendDirectDataConstant : IPreDefinedInterface
     {
-        public uint[] m_ChildBlendEventIDArray { get; }
-        public bool m_NormalizedBlendValues { get; }
+        public uint[] m_ChildBlendEventIDArray { get; set; }
+        public bool m_NormalizedBlendValues { get; set; }
     }
 }

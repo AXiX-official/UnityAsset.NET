@@ -8,14 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IOculus : IPreDefinedInterface
     {
-        public bool sharedDepthBuffer { get; }
-        public bool dashSupport { get; }
+        public bool sharedDepthBuffer { get; set; }
+        public bool dashSupport { get; set; }
 
         public bool? lowOverheadMode
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -25,6 +29,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? v2Signing
@@ -32,6 +40,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

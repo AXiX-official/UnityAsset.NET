@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IUAVParameter : IPreDefinedInterface
     {
-        public int m_NameIndex { get; }
-        public int m_Index { get; }
-        public int m_OriginalIndex { get; }
+        public int m_NameIndex { get; set; }
+        public int m_Index { get; set; }
+        public int m_OriginalIndex { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBuildTextureStackReference : IPreDefinedInterface
     {
-        public string groupName { get; }
-        public string itemName { get; }
+        public string groupName { get; set; }
+        public string itemName { get; set; }
     }
 }

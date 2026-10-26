@@ -8,12 +8,12 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedShaderRTBlendState : IPreDefinedInterface
     {
-        public ISerializedShaderFloatValue srcBlend { get; }
-        public ISerializedShaderFloatValue destBlend { get; }
-        public ISerializedShaderFloatValue srcBlendAlpha { get; }
-        public ISerializedShaderFloatValue destBlendAlpha { get; }
-        public ISerializedShaderFloatValue blendOp { get; }
-        public ISerializedShaderFloatValue blendOpAlpha { get; }
-        public ISerializedShaderFloatValue colMask { get; }
+        public ISerializedShaderFloatValue srcBlend { get; set; }
+        public ISerializedShaderFloatValue destBlend { get; set; }
+        public ISerializedShaderFloatValue srcBlendAlpha { get; set; }
+        public ISerializedShaderFloatValue destBlendAlpha { get; set; }
+        public ISerializedShaderFloatValue blendOp { get; set; }
+        public ISerializedShaderFloatValue blendOpAlpha { get; set; }
+        public ISerializedShaderFloatValue colMask { get; set; }
     }
 }

@@ -8,28 +8,32 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IStateConstant : IPreDefinedInterface
     {
-        public IOffsetPtr[] m_TransitionConstantArray { get; }
-        public int[] m_BlendTreeConstantIndexArray { get; }
-        public IOffsetPtr[] m_BlendTreeConstantArray { get; }
-        public uint m_NameID { get; }
-        public uint m_PathID { get; }
-        public uint m_FullPathID { get; }
-        public uint m_TagID { get; }
-        public uint m_SpeedParamID { get; }
-        public uint m_MirrorParamID { get; }
-        public uint m_CycleOffsetParamID { get; }
-        public float m_Speed { get; }
-        public float m_CycleOffset { get; }
-        public bool m_IKOnFeet { get; }
-        public bool m_WriteDefaultValues { get; }
-        public bool m_Loop { get; }
-        public bool m_Mirror { get; }
+        public IOffsetPtr[] m_TransitionConstantArray { get; set; }
+        public int[] m_BlendTreeConstantIndexArray { get; set; }
+        public IOffsetPtr[] m_BlendTreeConstantArray { get; set; }
+        public uint m_NameID { get; set; }
+        public uint m_PathID { get; set; }
+        public uint m_FullPathID { get; set; }
+        public uint m_TagID { get; set; }
+        public uint m_SpeedParamID { get; set; }
+        public uint m_MirrorParamID { get; set; }
+        public uint m_CycleOffsetParamID { get; set; }
+        public float m_Speed { get; set; }
+        public float m_CycleOffset { get; set; }
+        public bool m_IKOnFeet { get; set; }
+        public bool m_WriteDefaultValues { get; set; }
+        public bool m_Loop { get; set; }
+        public bool m_Mirror { get; set; }
 
         public uint? m_TimeParamID
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

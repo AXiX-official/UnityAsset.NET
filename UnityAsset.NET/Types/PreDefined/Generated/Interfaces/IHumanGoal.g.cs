@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHumanGoal : IPreDefinedInterface
     {
-        public Ixform m_X { get; }
-        public float m_WeightT { get; }
-        public float m_WeightR { get; }
-        public Ifloat3 m_HintT { get; }
-        public float m_HintWeightT { get; }
+        public Ixform m_X { get; set; }
+        public float m_WeightT { get; set; }
+        public float m_WeightR { get; set; }
+        public Ifloat3 m_HintT { get; set; }
+        public float m_HintWeightT { get; set; }
     }
 }

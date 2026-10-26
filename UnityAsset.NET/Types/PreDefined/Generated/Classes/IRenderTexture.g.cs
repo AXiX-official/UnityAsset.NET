@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IRenderTexture : INamedObject
     {
-        public int m_Width { get; }
-        public int m_Height { get; }
-        public int m_AntiAliasing { get; }
+        public int m_Width { get; set; }
+        public int m_Height { get; set; }
+        public int m_AntiAliasing { get; set; }
 
         public int? m_DepthFormat
         {
@@ -18,21 +18,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public int m_ColorFormat { get; }
-        public bool m_MipMap { get; }
-        public bool m_GenerateMips { get; }
-        public bool m_SRGB { get; }
-        public IGLTextureSettings m_TextureSettings { get; }
-        public int m_Dimension { get; }
-        public int m_VolumeDepth { get; }
+        public int m_ColorFormat { get; set; }
+        public bool m_MipMap { get; set; }
+        public bool m_GenerateMips { get; set; }
+        public bool m_SRGB { get; set; }
+        public IGLTextureSettings m_TextureSettings { get; set; }
+        public int m_Dimension { get; set; }
+        public int m_VolumeDepth { get; set; }
 
         public int? m_ForcedFallbackFormat
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -42,6 +50,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_UseDynamicScale
@@ -49,6 +61,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -58,6 +74,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_EnableCompatibleFormat
@@ -65,6 +85,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -74,6 +98,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_IsAlphaChannelOptional
@@ -81,6 +109,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -90,6 +122,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_ShadowSamplingMode
@@ -97,6 +133,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -106,6 +146,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_UseDynamicScaleExplicit
@@ -113,6 +157,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

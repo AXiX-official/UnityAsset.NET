@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILODRenderer : IPreDefinedInterface
     {
-        public PPtr<IRenderer> renderer { get; }
+        public PPtr<IRenderer> renderer { get; set; }
     }
 }

@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IUVAnimation : IPreDefinedInterface
     {
-        public int x_Tile { get; }
-        public int y_Tile { get; }
-        public float cycles { get; }
+        public int x_Tile { get; set; }
+        public int y_Tile { get; set; }
+        public float cycles { get; set; }
     }
 }

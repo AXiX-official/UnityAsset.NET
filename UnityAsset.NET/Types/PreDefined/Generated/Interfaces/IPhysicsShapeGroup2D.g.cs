@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPhysicsShapeGroup2D : IPreDefinedInterface
     {
-        public IPhysicsShape[] m_Shapes { get; }
-        public Vector2f[] m_Vertices { get; }
+        public IPhysicsShape[] m_Shapes { get; set; }
+        public Vector2f[] m_Vertices { get; set; }
     }
 }

@@ -8,18 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAudioClip : INamedObject
     {
-        public int m_LoadType { get; }
-        public int m_Channels { get; }
-        public int m_Frequency { get; }
-        public int m_BitsPerSample { get; }
-        public float m_Length { get; }
-        public bool m_IsTrackerFormat { get; }
-        public bool m_Ambisonic { get; }
-        public int m_SubsoundIndex { get; }
-        public bool m_PreloadAudioData { get; }
-        public bool m_LoadInBackground { get; }
-        public bool m_Legacy3D { get; }
-        public IStreamedResource m_Resource { get; }
-        public int m_CompressionFormat { get; }
+        public int m_LoadType { get; set; }
+        public int m_Channels { get; set; }
+        public int m_Frequency { get; set; }
+        public int m_BitsPerSample { get; set; }
+        public float m_Length { get; set; }
+        public bool m_IsTrackerFormat { get; set; }
+        public bool m_Ambisonic { get; set; }
+        public int m_SubsoundIndex { get; set; }
+        public bool m_PreloadAudioData { get; set; }
+        public bool m_LoadInBackground { get; set; }
+        public bool m_Legacy3D { get; set; }
+        public IStreamedResource m_Resource { get; set; }
+        public int m_CompressionFormat { get; set; }
     }
 }

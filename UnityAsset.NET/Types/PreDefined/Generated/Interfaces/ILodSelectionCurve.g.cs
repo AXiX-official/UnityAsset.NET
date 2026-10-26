@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILodSelectionCurve : IPreDefinedInterface
     {
-        public float m_LodSlope { get; }
-        public float m_LodBias { get; }
+        public float m_LodSlope { get; set; }
+        public float m_LodBias { get; set; }
     }
 }

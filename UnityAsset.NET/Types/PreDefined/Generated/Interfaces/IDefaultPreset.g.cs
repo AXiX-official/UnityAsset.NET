@@ -8,13 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IDefaultPreset : IPreDefinedInterface
     {
-        public PPtr<IPreset> m_Preset { get; }
+        public PPtr<IPreset> m_Preset { get; set; }
 
         public string? m_Filter
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -23,6 +27,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

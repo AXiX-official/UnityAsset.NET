@@ -1,10 +1,11 @@
 using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
 using UnityAsset.NET.Types.PreDefined;
 
 namespace UnityAsset.NET;
 
-public class Asset : IEquatable<Asset>
+public class Asset : IEquatable<Asset>, IAsset
 {
     public readonly AssetFileInfo Info;
     private WeakReference<IUnityAsset>? _value;
@@ -36,7 +37,7 @@ public class Asset : IEquatable<Asset>
     private IUnityAsset GetValue()
     {
         var context = Volatile.Read(ref _context) ?? throw new InvalidOperationException(
-            $"Asset {Type}/{PathId} has no session attached: its SerializedFile was not loaded through a session " +
+            $"Asset {TypeName}/{PathId} has no session attached: its SerializedFile was not loaded through a session " +
             "(AssetManager), or that session has been cleared or disposed.");
 
         var value = context.Factory.Invoke(Info.Type, DataReader);
@@ -77,7 +78,9 @@ public class Asset : IEquatable<Asset>
         }
     }
 
-    public string Type => Info.Type.ToTypeName();
+    public string TypeName => Info.Type.ToTypeName();
+    
+    public SerializedType Type => Info.Type;
 
     public string Name
     {
@@ -119,7 +122,16 @@ public class Asset : IEquatable<Asset>
         SourceFile = sf;
     }
 
+    public EditedAsset ToEditedAsset()
+    {
+        return new EditedAsset(null, TypeName, Name, Size, PathId, Container, _context, Info.Type, DataReader);
+    }
 
+    public void Write(IWriter writer)
+    {
+        writer.WriteBytes(DataReader);
+    }
+    
     public bool Equals(Asset? other)
     {
         if (ReferenceEquals(this, other))
@@ -146,6 +158,6 @@ public class Asset : IEquatable<Asset>
         => value is INamedObject named
             ? named.m_Name
             : throw new InvalidOperationException(
-                $"Asset {Type}/{PathId} is named but its generated type " +
+                $"Asset {TypeName}/{PathId} is named but its generated type " +
                 $"{value.GetType().Name} does not implement INamedObject.");
 }

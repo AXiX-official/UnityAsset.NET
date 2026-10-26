@@ -8,20 +8,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimation : IUnityAsset, IComponent
     {
-        public new PPtr<GameObject> m_GameObject { get; }
-        public byte m_Enabled { get; }
-        public PPtr<IAnimationClip> m_Animation { get; }
-        public PPtr<IAnimationClip>[] m_Animations { get; }
-        public int m_WrapMode { get; }
-        public bool m_PlayAutomatically { get; }
-        public bool m_AnimatePhysics { get; }
-        public int m_CullingType { get; }
+        public new PPtr<GameObject> m_GameObject { get; set; }
+        public byte m_Enabled { get; set; }
+        public PPtr<IAnimationClip> m_Animation { get; set; }
+        public PPtr<IAnimationClip>[] m_Animations { get; set; }
+        public int m_WrapMode { get; set; }
+        public bool m_PlayAutomatically { get; set; }
+        public bool m_AnimatePhysics { get; set; }
+        public int m_CullingType { get; set; }
 
         public int? m_UpdateMode
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,13 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHoloLens : IPreDefinedInterface
     {
-        public int depthFormat { get; }
+        public int depthFormat { get; set; }
 
         public bool? depthBufferSharingEnabled
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

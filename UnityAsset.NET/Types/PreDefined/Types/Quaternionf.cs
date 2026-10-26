@@ -6,10 +6,10 @@ public struct Quaternionf : IPreDefinedInterface
 {
     public string ClassName => "Quaternionf";
     
-    public float x { get; }
-    public float y { get; }
-    public float z { get; }
-    public float w { get; }
+    public float x { get; set; }
+    public float y { get; set; }
+    public float z { get; set; }
+    public float w { get; set; }
 
     public Quaternionf(float x = 0, float y = 0, float z = 0, float w = 0)
     {

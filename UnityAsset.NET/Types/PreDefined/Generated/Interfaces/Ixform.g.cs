@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface Ixform : IPreDefinedInterface
     {
-        public Ifloat3 t { get; }
-        public Ifloat4 q { get; }
-        public Ifloat3 s { get; }
+        public Ifloat3 t { get; set; }
+        public Ifloat4 q { get; set; }
+        public Ifloat3 s { get; set; }
     }
 }

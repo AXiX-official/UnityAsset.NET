@@ -8,18 +8,22 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IGroupConstant : IPreDefinedInterface
     {
-        public int parentConstantIndex { get; }
-        public uint volumeIndex { get; }
-        public uint pitchIndex { get; }
-        public bool mute { get; }
-        public bool solo { get; }
-        public bool bypassEffects { get; }
+        public int parentConstantIndex { get; set; }
+        public uint volumeIndex { get; set; }
+        public uint pitchIndex { get; set; }
+        public bool mute { get; set; }
+        public bool solo { get; set; }
+        public bool bypassEffects { get; set; }
 
         public uint? sendIndex
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

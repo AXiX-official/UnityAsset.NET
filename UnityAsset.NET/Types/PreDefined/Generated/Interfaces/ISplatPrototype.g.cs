@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISplatPrototype : IPreDefinedInterface
     {
-        public PPtr<ITexture2D> texture { get; }
-        public PPtr<ITexture2D> normalMap { get; }
-        public Vector2f tileSize { get; }
-        public Vector2f tileOffset { get; }
-        public Vector4f specularMetallic { get; }
-        public float smoothness { get; }
+        public PPtr<ITexture2D> texture { get; set; }
+        public PPtr<ITexture2D> normalMap { get; set; }
+        public Vector2f tileSize { get; set; }
+        public Vector2f tileOffset { get; set; }
+        public Vector4f specularMetallic { get; set; }
+        public float smoothness { get; set; }
     }
 }

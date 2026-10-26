@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimationClipOverride : IPreDefinedInterface
     {
-        public PPtr<IAnimationClip> m_OriginalClip { get; }
-        public PPtr<IAnimationClip> m_OverrideClip { get; }
+        public PPtr<IAnimationClip> m_OriginalClip { get; set; }
+        public PPtr<IAnimationClip> m_OverrideClip { get; set; }
     }
 }

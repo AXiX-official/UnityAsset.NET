@@ -8,28 +8,32 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface INoiseModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxCurve strength { get; }
-        public IMinMaxCurve strengthY { get; }
-        public IMinMaxCurve strengthZ { get; }
-        public bool separateAxes { get; }
-        public float frequency { get; }
-        public bool damping { get; }
-        public int octaves { get; }
-        public float octaveMultiplier { get; }
-        public float octaveScale { get; }
-        public int quality { get; }
-        public IMinMaxCurve scrollSpeed { get; }
-        public IMinMaxCurve remap { get; }
-        public IMinMaxCurve remapY { get; }
-        public IMinMaxCurve remapZ { get; }
-        public bool remapEnabled { get; }
+        public bool enabled { get; set; }
+        public IMinMaxCurve strength { get; set; }
+        public IMinMaxCurve strengthY { get; set; }
+        public IMinMaxCurve strengthZ { get; set; }
+        public bool separateAxes { get; set; }
+        public float frequency { get; set; }
+        public bool damping { get; set; }
+        public int octaves { get; set; }
+        public float octaveMultiplier { get; set; }
+        public float octaveScale { get; set; }
+        public int quality { get; set; }
+        public IMinMaxCurve scrollSpeed { get; set; }
+        public IMinMaxCurve remap { get; set; }
+        public IMinMaxCurve remapY { get; set; }
+        public IMinMaxCurve remapZ { get; set; }
+        public bool remapEnabled { get; set; }
 
         public IMinMaxCurve? positionAmount
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -39,6 +43,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IMinMaxCurve? sizeAmount
@@ -46,6 +54,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

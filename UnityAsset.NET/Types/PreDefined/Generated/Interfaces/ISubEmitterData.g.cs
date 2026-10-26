@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISubEmitterData : IPreDefinedInterface
     {
-        public PPtr<IParticleSystem> emitter { get; }
-        public int type { get; }
-        public int properties { get; }
+        public PPtr<IParticleSystem> emitter { get; set; }
+        public int type { get; set; }
+        public int properties { get; set; }
 
         public float? emitProbability
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedProperties : IPreDefinedInterface
     {
-        public ISerializedProperty[] m_Props { get; }
+        public ISerializedProperty[] m_Props { get; set; }
     }
 }

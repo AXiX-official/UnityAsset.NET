@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteCustomMetadata : IPreDefinedInterface
     {
-        public ISpriteCustomDataEntry[] m_Entries { get; }
+        public ISpriteCustomDataEntry[] m_Entries { get; set; }
     }
 }

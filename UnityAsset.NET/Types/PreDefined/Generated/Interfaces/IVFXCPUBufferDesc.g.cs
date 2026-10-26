@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXCPUBufferDesc : IPreDefinedInterface
     {
-        public uint capacity { get; }
-        public uint stride { get; }
-        public IVFXLayoutElementDesc[] layout { get; }
-        public IVFXCPUBufferData initialData { get; }
+        public uint capacity { get; set; }
+        public uint stride { get; set; }
+        public IVFXLayoutElementDesc[] layout { get; set; }
+        public IVFXCPUBufferData initialData { get; set; }
     }
 }

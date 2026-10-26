@@ -4,7 +4,7 @@ namespace UnityAsset.NET.BundleFiles
 {
     public class FileWrapper
     {
-        public IFile File { get; }
+        public IFile File { get; set; }
         public FileEntry Info { get; }
     
     

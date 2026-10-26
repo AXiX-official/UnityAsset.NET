@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHandPose : IPreDefinedInterface
     {
-        public Ixform m_GrabX { get; }
-        public float[] m_DoFArray { get; }
-        public float m_Override { get; }
-        public float m_CloseOpen { get; }
-        public float m_InOut { get; }
-        public float m_Grab { get; }
+        public Ixform m_GrabX { get; set; }
+        public float[] m_DoFArray { get; set; }
+        public float m_Override { get; set; }
+        public float m_CloseOpen { get; set; }
+        public float m_InOut { get; set; }
+        public float m_Grab { get; set; }
     }
 }

@@ -8,16 +8,20 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IShapeModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public int type { get; }
-        public float angle { get; }
-        public float length { get; }
+        public bool enabled { get; set; }
+        public int type { get; set; }
+        public float angle { get; set; }
+        public float length { get; set; }
 
         public float? boxX
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -27,6 +31,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? boxZ
@@ -35,16 +43,20 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public IMultiModeParameter radius { get; }
-        public IMultiModeParameter arc { get; }
-        public int placementMode { get; }
-        public PPtr<IMesh> m_Mesh { get; }
-        public PPtr<IMeshRenderer> m_MeshRenderer { get; }
-        public PPtr<ISkinnedMeshRenderer> m_SkinnedMeshRenderer { get; }
-        public int m_MeshMaterialIndex { get; }
-        public float m_MeshNormalOffset { get; }
+        public IMultiModeParameter radius { get; set; }
+        public IMultiModeParameter arc { get; set; }
+        public int placementMode { get; set; }
+        public PPtr<IMesh> m_Mesh { get; set; }
+        public PPtr<IMeshRenderer> m_MeshRenderer { get; set; }
+        public PPtr<ISkinnedMeshRenderer> m_SkinnedMeshRenderer { get; set; }
+        public int m_MeshMaterialIndex { get; set; }
+        public float m_MeshNormalOffset { get; set; }
 
         public float? m_MeshScale
         {
@@ -52,19 +64,27 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public bool m_UseMeshMaterialIndex { get; }
-        public bool m_UseMeshColors { get; }
-        public bool alignToDirection { get; }
-        public float randomDirectionAmount { get; }
-        public float sphericalDirectionAmount { get; }
+        public bool m_UseMeshMaterialIndex { get; set; }
+        public bool m_UseMeshColors { get; set; }
+        public bool alignToDirection { get; set; }
+        public float randomDirectionAmount { get; set; }
+        public float sphericalDirectionAmount { get; set; }
 
         public Vector3f? boxThickness
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -74,6 +94,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? donutRadius
@@ -81,6 +105,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -90,6 +118,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Vector3f? m_Rotation
@@ -97,6 +129,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -106,6 +142,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? randomPositionAmount
@@ -113,6 +153,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -122,6 +166,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_TextureClipChannel
@@ -129,6 +177,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -138,6 +190,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_TextureUVChannel
@@ -145,6 +201,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -154,6 +214,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_TextureAlphaAffectsParticles
@@ -161,6 +225,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -170,6 +238,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public PPtr<ISprite>? m_Sprite
@@ -177,6 +249,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -186,6 +262,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IMultiModeParameter? m_MeshSpawn
@@ -193,6 +273,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteCustomDataEntry : IPreDefinedInterface
     {
-        public string m_Key { get; }
-        public string m_Value { get; }
+        public string m_Key { get; set; }
+        public string m_Value { get; set; }
     }
 }

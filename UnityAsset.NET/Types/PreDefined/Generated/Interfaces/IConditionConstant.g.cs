@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IConditionConstant : IPreDefinedInterface
     {
-        public uint m_ConditionMode { get; }
-        public uint m_EventID { get; }
-        public float m_EventThreshold { get; }
-        public float m_ExitTime { get; }
+        public uint m_ConditionMode { get; set; }
+        public uint m_EventID { get; set; }
+        public float m_EventThreshold { get; set; }
+        public float m_ExitTime { get; set; }
     }
 }

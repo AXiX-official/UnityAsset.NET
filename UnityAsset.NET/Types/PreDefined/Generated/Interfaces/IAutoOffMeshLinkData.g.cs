@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAutoOffMeshLinkData : IPreDefinedInterface
     {
-        public Vector3f m_Start { get; }
-        public Vector3f m_End { get; }
-        public float m_Radius { get; }
-        public ushort m_LinkType { get; }
-        public byte m_Area { get; }
-        public byte m_LinkDirection { get; }
+        public Vector3f m_Start { get; set; }
+        public Vector3f m_End { get; set; }
+        public float m_Radius { get; set; }
+        public ushort m_LinkType { get; set; }
+        public byte m_Area { get; set; }
+        public byte m_LinkDirection { get; set; }
     }
 }

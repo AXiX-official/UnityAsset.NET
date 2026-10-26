@@ -5,8 +5,8 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 
 public class TypelessData : IPreDefinedObject
 {
-    public Int32 size { get; }
-    public byte[] data { get; }
+    public Int32 size { get; set; }
+    public byte[] data { get; set; }
     
     public TypelessData(IReader reader)
     {

@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface INavMeshTileData : IPreDefinedInterface
     {
-        public byte[] m_MeshData { get; }
-        public IHash128 m_Hash { get; }
+        public byte[] m_MeshData { get; set; }
+        public IHash128 m_Hash { get; set; }
     }
 }

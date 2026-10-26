@@ -8,14 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITreePrototype : IPreDefinedInterface
     {
-        public PPtr<GameObject> prefab { get; }
-        public float bendFactor { get; }
+        public PPtr<GameObject> prefab { get; set; }
+        public float bendFactor { get; set; }
 
         public int? navMeshLod
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

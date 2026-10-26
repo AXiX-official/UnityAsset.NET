@@ -8,14 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXRendererSettings : IPreDefinedInterface
     {
-        public int motionVectorGenerationMode { get; }
-        public int shadowCastingMode { get; }
+        public int motionVectorGenerationMode { get; set; }
+        public int shadowCastingMode { get; set; }
 
         public bool? receiveShadows
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -25,6 +29,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? lightProbeUsage
@@ -32,6 +40,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -41,6 +53,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? rayTracingMode
@@ -48,6 +64,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

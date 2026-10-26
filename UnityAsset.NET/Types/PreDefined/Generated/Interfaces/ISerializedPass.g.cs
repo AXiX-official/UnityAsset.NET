@@ -8,25 +8,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedPass : IPreDefinedInterface
     {
-        public ValueTuple<string, int>[] m_NameIndices { get; }
-        public int m_Type { get; }
-        public ISerializedShaderState m_State { get; }
-        public uint m_ProgramMask { get; }
-        public ISerializedProgram progVertex { get; }
-        public ISerializedProgram progFragment { get; }
-        public ISerializedProgram progGeometry { get; }
-        public ISerializedProgram progHull { get; }
-        public ISerializedProgram progDomain { get; }
-        public bool m_HasInstancingVariant { get; }
-        public string m_UseName { get; }
-        public string m_TextureName { get; }
-        public ISerializedTagMap m_Tags { get; }
+        public ValueTuple<string, int>[] m_NameIndices { get; set; }
+        public int m_Type { get; set; }
+        public ISerializedShaderState m_State { get; set; }
+        public uint m_ProgramMask { get; set; }
+        public ISerializedProgram progVertex { get; set; }
+        public ISerializedProgram progFragment { get; set; }
+        public ISerializedProgram progGeometry { get; set; }
+        public ISerializedProgram progHull { get; set; }
+        public ISerializedProgram progDomain { get; set; }
+        public bool m_HasInstancingVariant { get; set; }
+        public string m_UseName { get; set; }
+        public string m_TextureName { get; set; }
+        public ISerializedTagMap m_Tags { get; set; }
 
         public bool? m_HasProceduralInstancingVariant
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -36,6 +40,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IHash128[]? m_EditorDataHash
@@ -43,6 +51,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -52,6 +64,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ushort[]? m_LocalKeywordMask
@@ -59,6 +75,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -68,6 +88,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ushort[]? m_SerializedKeywordStateMask
@@ -75,6 +99,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

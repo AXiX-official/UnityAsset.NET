@@ -8,25 +8,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITerrainLayer : INamedObject
     {
-        public PPtr<ITexture2D> m_DiffuseTexture { get; }
-        public PPtr<ITexture2D> m_NormalMapTexture { get; }
-        public PPtr<ITexture2D> m_MaskMapTexture { get; }
-        public Vector2f m_TileSize { get; }
-        public Vector2f m_TileOffset { get; }
-        public IColorRGBA m_Specular { get; }
-        public float m_Metallic { get; }
-        public float m_Smoothness { get; }
-        public float m_NormalScale { get; }
-        public Vector4f m_DiffuseRemapMin { get; }
-        public Vector4f m_DiffuseRemapMax { get; }
-        public Vector4f m_MaskMapRemapMin { get; }
-        public Vector4f m_MaskMapRemapMax { get; }
+        public PPtr<ITexture2D> m_DiffuseTexture { get; set; }
+        public PPtr<ITexture2D> m_NormalMapTexture { get; set; }
+        public PPtr<ITexture2D> m_MaskMapTexture { get; set; }
+        public Vector2f m_TileSize { get; set; }
+        public Vector2f m_TileOffset { get; set; }
+        public IColorRGBA m_Specular { get; set; }
+        public float m_Metallic { get; set; }
+        public float m_Smoothness { get; set; }
+        public float m_NormalScale { get; set; }
+        public Vector4f m_DiffuseRemapMin { get; set; }
+        public Vector4f m_DiffuseRemapMax { get; set; }
+        public Vector4f m_MaskMapRemapMin { get; set; }
+        public Vector4f m_MaskMapRemapMax { get; set; }
 
         public int? m_SmoothnessSource
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

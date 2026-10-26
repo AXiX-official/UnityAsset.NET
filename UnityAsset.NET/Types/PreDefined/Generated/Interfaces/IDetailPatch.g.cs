@@ -14,15 +14,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public byte[] layerIndices { get; }
+        public byte[] layerIndices { get; set; }
 
         public byte[]? numberOfObjects
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -31,6 +39,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

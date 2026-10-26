@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IValueConstant : IPreDefinedInterface
     {
-        public uint m_ID { get; }
-        public uint m_Type { get; }
-        public uint m_Index { get; }
+        public uint m_ID { get; set; }
+        public uint m_Type { get; set; }
+        public uint m_Index { get; set; }
     }
 }

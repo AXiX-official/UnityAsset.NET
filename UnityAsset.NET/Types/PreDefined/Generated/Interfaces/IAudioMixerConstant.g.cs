@@ -8,24 +8,28 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAudioMixerConstant : IPreDefinedInterface
     {
-        public IGroupConstant[] groups { get; }
-        public GUID[] groupGUIDs { get; }
-        public IEffectConstant[] effects { get; }
-        public GUID[] effectGUIDs { get; }
-        public uint numSideChainBuffers { get; }
-        public ISnapshotConstant[] snapshots { get; }
-        public GUID[] snapshotGUIDs { get; }
-        public char[] groupNameBuffer { get; }
-        public char[] snapshotNameBuffer { get; }
-        public char[] pluginEffectNameBuffer { get; }
-        public uint[] exposedParameterNames { get; }
-        public uint[] exposedParameterIndices { get; }
+        public IGroupConstant[] groups { get; set; }
+        public GUID[] groupGUIDs { get; set; }
+        public IEffectConstant[] effects { get; set; }
+        public GUID[] effectGUIDs { get; set; }
+        public uint numSideChainBuffers { get; set; }
+        public ISnapshotConstant[] snapshots { get; set; }
+        public GUID[] snapshotGUIDs { get; set; }
+        public char[] groupNameBuffer { get; set; }
+        public char[] snapshotNameBuffer { get; set; }
+        public char[] pluginEffectNameBuffer { get; set; }
+        public uint[] exposedParameterNames { get; set; }
+        public uint[] exposedParameterIndices { get; set; }
 
         public IGroupConnection[]? groupConnections
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

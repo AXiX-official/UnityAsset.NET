@@ -8,16 +8,16 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBlendTreeNodeConstant : IPreDefinedInterface
     {
-        public uint m_BlendType { get; }
-        public uint m_BlendEventID { get; }
-        public uint m_BlendEventYID { get; }
-        public uint[] m_ChildIndices { get; }
-        public IOffsetPtr m_Blend1dData { get; }
-        public IOffsetPtr m_Blend2dData { get; }
-        public IOffsetPtr m_BlendDirectData { get; }
-        public uint m_ClipID { get; }
-        public float m_Duration { get; }
-        public float m_CycleOffset { get; }
-        public bool m_Mirror { get; }
+        public uint m_BlendType { get; set; }
+        public uint m_BlendEventID { get; set; }
+        public uint m_BlendEventYID { get; set; }
+        public uint[] m_ChildIndices { get; set; }
+        public IOffsetPtr m_Blend1dData { get; set; }
+        public IOffsetPtr m_Blend2dData { get; set; }
+        public IOffsetPtr m_BlendDirectData { get; set; }
+        public uint m_ClipID { get; set; }
+        public float m_Duration { get; set; }
+        public float m_CycleOffset { get; set; }
+        public bool m_Mirror { get; set; }
     }
 }

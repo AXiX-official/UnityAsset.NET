@@ -8,12 +8,12 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITreeInstance : IPreDefinedInterface
     {
-        public Vector3f position { get; }
-        public float widthScale { get; }
-        public float heightScale { get; }
-        public float rotation { get; }
-        public IColorRGBA color { get; }
-        public IColorRGBA lightmapColor { get; }
-        public int index { get; }
+        public Vector3f position { get; set; }
+        public float widthScale { get; set; }
+        public float heightScale { get; set; }
+        public float rotation { get; set; }
+        public IColorRGBA color { get; set; }
+        public IColorRGBA lightmapColor { get; set; }
+        public int index { get; set; }
     }
 }

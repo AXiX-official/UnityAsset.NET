@@ -8,14 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILightBakingOutput : IPreDefinedInterface
     {
-        public int probeOcclusionLightIndex { get; }
-        public int occlusionMaskChannel { get; }
+        public int probeOcclusionLightIndex { get; set; }
+        public int occlusionMaskChannel { get; set; }
 
         public int? lightmappingMask
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -25,6 +29,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? isBaked
@@ -32,6 +40,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

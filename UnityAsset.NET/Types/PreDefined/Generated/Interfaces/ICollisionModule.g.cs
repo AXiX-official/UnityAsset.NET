@@ -8,19 +8,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ICollisionModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public int type { get; }
-        public int collisionMode { get; }
-        public float colliderForce { get; }
-        public bool multiplyColliderForceByParticleSize { get; }
-        public bool multiplyColliderForceByParticleSpeed { get; }
-        public bool multiplyColliderForceByCollisionAngle { get; }
+        public bool enabled { get; set; }
+        public int type { get; set; }
+        public int collisionMode { get; set; }
+        public float colliderForce { get; set; }
+        public bool multiplyColliderForceByParticleSize { get; set; }
+        public bool multiplyColliderForceByParticleSpeed { get; set; }
+        public bool multiplyColliderForceByCollisionAngle { get; set; }
 
         public PPtr<ITransform>? plane0
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -30,6 +34,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public PPtr<ITransform>? plane2
@@ -37,6 +45,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -46,6 +58,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public PPtr<ITransform>? plane4
@@ -53,6 +69,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -62,27 +82,35 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public IMinMaxCurve m_Dampen { get; }
-        public IMinMaxCurve m_Bounce { get; }
-        public IMinMaxCurve m_EnergyLossOnCollision { get; }
-        public float minKillSpeed { get; }
-        public float maxKillSpeed { get; }
-        public float radiusScale { get; }
-        public IBitField collidesWith { get; }
-        public int maxCollisionShapes { get; }
-        public int quality { get; }
-        public float voxelSize { get; }
-        public bool collisionMessages { get; }
-        public bool collidesWithDynamic { get; }
-        public bool interiorCollisions { get; }
+        public IMinMaxCurve m_Dampen { get; set; }
+        public IMinMaxCurve m_Bounce { get; set; }
+        public IMinMaxCurve m_EnergyLossOnCollision { get; set; }
+        public float minKillSpeed { get; set; }
+        public float maxKillSpeed { get; set; }
+        public float radiusScale { get; set; }
+        public IBitField collidesWith { get; set; }
+        public int maxCollisionShapes { get; set; }
+        public int quality { get; set; }
+        public float voxelSize { get; set; }
+        public bool collisionMessages { get; set; }
+        public bool collidesWithDynamic { get; set; }
+        public bool interiorCollisions { get; set; }
 
         public PPtr<ITransform>[]? m_Planes
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

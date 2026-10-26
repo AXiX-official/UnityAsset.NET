@@ -4,7 +4,7 @@ using UnityAsset.NET.Types.PreDefined;
 
 namespace UnityAsset.NET;
 
-internal sealed class AssetContext
+public sealed class AssetContext
 {
     public required Func<SerializedType, IReader, IUnityAsset> Factory { get; init; }
 

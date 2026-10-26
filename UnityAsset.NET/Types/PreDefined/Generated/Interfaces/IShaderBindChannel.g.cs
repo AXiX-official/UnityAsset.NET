@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IShaderBindChannel : IPreDefinedInterface
     {
-        public sbyte source { get; }
-        public sbyte target { get; }
+        public sbyte source { get; set; }
+        public sbyte target { get; set; }
     }
 }

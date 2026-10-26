@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IDirectorGenericBinding : IPreDefinedInterface
     {
-        public PPtr<IUnityObject> key { get; }
-        public PPtr<IUnityObject> value { get; }
+        public PPtr<IUnityObject> key { get; set; }
+        public PPtr<IUnityObject> value { get; set; }
     }
 }

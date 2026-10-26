@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface Iint2_storage : IPreDefinedInterface
     {
-        public int x { get; }
-        public int y { get; }
+        public int x { get; set; }
+        public int y { get; set; }
     }
 }

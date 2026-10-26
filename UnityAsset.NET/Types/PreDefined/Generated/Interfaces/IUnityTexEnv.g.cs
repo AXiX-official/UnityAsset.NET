@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IUnityTexEnv : IPreDefinedInterface
     {
-        public PPtr<IUnityObject> m_Texture { get; }
-        public Vector2f m_Scale { get; }
-        public Vector2f m_Offset { get; }
+        public PPtr<IUnityObject> m_Texture { get; set; }
+        public Vector2f m_Scale { get; set; }
+        public Vector2f m_Offset { get; set; }
     }
 }

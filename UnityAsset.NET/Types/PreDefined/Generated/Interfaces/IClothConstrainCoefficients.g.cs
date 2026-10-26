@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IClothConstrainCoefficients : IPreDefinedInterface
     {
-        public float maxDistance { get; }
-        public float collisionSphereDistance { get; }
+        public float maxDistance { get; set; }
+        public float collisionSphereDistance { get; set; }
     }
 }

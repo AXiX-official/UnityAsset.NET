@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ICompressedAnimationCurve : IPreDefinedInterface
     {
-        public string m_Path { get; }
-        public IPackedBitVector m_Times { get; }
-        public IPackedBitVector m_Values { get; }
-        public IPackedBitVector m_Slopes { get; }
-        public int m_PreInfinity { get; }
-        public int m_PostInfinity { get; }
+        public string m_Path { get; set; }
+        public IPackedBitVector m_Times { get; set; }
+        public IPackedBitVector m_Values { get; set; }
+        public IPackedBitVector m_Slopes { get; set; }
+        public int m_PreInfinity { get; set; }
+        public int m_PostInfinity { get; set; }
     }
 }

@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISourceTextureInformation : IPreDefinedInterface
     {
-        public int width { get; }
-        public int height { get; }
-        public bool doesTextureContainAlpha { get; }
-        public bool sourceWasHDR { get; }
+        public int width { get; set; }
+        public int height { get; set; }
+        public bool doesTextureContainAlpha { get; set; }
+        public bool sourceWasHDR { get; set; }
     }
 }

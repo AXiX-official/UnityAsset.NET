@@ -8,12 +8,12 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBillboardAsset : INamedObject
     {
-        public float width { get; }
-        public float bottom { get; }
-        public float height { get; }
-        public Vector4f[] imageTexCoords { get; }
-        public Vector2f[] vertices { get; }
-        public ushort[] indices { get; }
-        public PPtr<IMaterial> material { get; }
+        public float width { get; set; }
+        public float bottom { get; set; }
+        public float height { get; set; }
+        public Vector4f[] imageTexCoords { get; set; }
+        public Vector2f[] vertices { get; set; }
+        public ushort[] indices { get; set; }
+        public PPtr<IMaterial> material { get; set; }
     }
 }

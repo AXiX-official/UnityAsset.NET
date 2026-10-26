@@ -8,18 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITransitionConstant : IPreDefinedInterface
     {
-        public IOffsetPtr[] m_ConditionConstantArray { get; }
-        public uint m_DestinationState { get; }
-        public uint m_FullPathID { get; }
-        public uint m_ID { get; }
-        public uint m_UserID { get; }
-        public float m_TransitionDuration { get; }
-        public float m_TransitionOffset { get; }
-        public float m_ExitTime { get; }
-        public bool m_HasExitTime { get; }
-        public bool m_HasFixedDuration { get; }
-        public int m_InterruptionSource { get; }
-        public bool m_OrderedInterruption { get; }
-        public bool m_CanTransitionToSelf { get; }
+        public IOffsetPtr[] m_ConditionConstantArray { get; set; }
+        public uint m_DestinationState { get; set; }
+        public uint m_FullPathID { get; set; }
+        public uint m_ID { get; set; }
+        public uint m_UserID { get; set; }
+        public float m_TransitionDuration { get; set; }
+        public float m_TransitionOffset { get; set; }
+        public float m_ExitTime { get; set; }
+        public bool m_HasExitTime { get; set; }
+        public bool m_HasFixedDuration { get; set; }
+        public int m_InterruptionSource { get; set; }
+        public bool m_OrderedInterruption { get; set; }
+        public bool m_CanTransitionToSelf { get; set; }
     }
 }

@@ -8,17 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAvatarConstant : IPreDefinedInterface
     {
-        public IOffsetPtr m_AvatarSkeleton { get; }
-        public IOffsetPtr m_AvatarSkeletonPose { get; }
-        public IOffsetPtr m_DefaultPose { get; }
-        public uint[] m_SkeletonNameIDArray { get; }
-        public IOffsetPtr m_Human { get; }
-        public int[] m_HumanSkeletonIndexArray { get; }
-        public int[] m_HumanSkeletonReverseIndexArray { get; }
-        public int m_RootMotionBoneIndex { get; }
-        public Ixform m_RootMotionBoneX { get; }
-        public IOffsetPtr m_RootMotionSkeleton { get; }
-        public IOffsetPtr m_RootMotionSkeletonPose { get; }
-        public int[] m_RootMotionSkeletonIndexArray { get; }
+        public IOffsetPtr m_AvatarSkeleton { get; set; }
+        public IOffsetPtr m_AvatarSkeletonPose { get; set; }
+        public IOffsetPtr m_DefaultPose { get; set; }
+        public uint[] m_SkeletonNameIDArray { get; set; }
+        public IOffsetPtr m_Human { get; set; }
+        public int[] m_HumanSkeletonIndexArray { get; set; }
+        public int[] m_HumanSkeletonReverseIndexArray { get; set; }
+        public int m_RootMotionBoneIndex { get; set; }
+        public Ixform m_RootMotionBoneX { get; set; }
+        public IOffsetPtr m_RootMotionSkeleton { get; set; }
+        public IOffsetPtr m_RootMotionSkeletonPose { get; set; }
+        public int[] m_RootMotionSkeletonIndexArray { get; set; }
     }
 }

@@ -8,16 +8,16 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ID3D12DeviceFilterData : IPreDefinedInterface
     {
-        public string vendorName { get; }
-        public string deviceName { get; }
-        public uint driverVersionComparator { get; }
-        public string driverVersion { get; }
-        public uint featureLevelComparator { get; }
-        public string featureLevel { get; }
-        public uint graphicsMemoryComparator { get; }
-        public string graphicsMemory { get; }
-        public uint processorCountComparator { get; }
-        public string processorCount { get; }
-        public uint deviceType { get; }
+        public string vendorName { get; set; }
+        public string deviceName { get; set; }
+        public uint driverVersionComparator { get; set; }
+        public string driverVersion { get; set; }
+        public uint featureLevelComparator { get; set; }
+        public string featureLevel { get; set; }
+        public uint graphicsMemoryComparator { get; set; }
+        public string graphicsMemory { get; set; }
+        public uint processorCountComparator { get; set; }
+        public string processorCount { get; set; }
+        public uint deviceType { get; set; }
     }
 }

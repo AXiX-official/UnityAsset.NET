@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteData : IPreDefinedInterface
     {
-        public PPtr<IUnityObject> sprite { get; }
+        public PPtr<IUnityObject> sprite { get; set; }
     }
 }

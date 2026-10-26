@@ -8,27 +8,31 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IInitialModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxCurve startLifetime { get; }
-        public IMinMaxCurve startSpeed { get; }
-        public IMinMaxGradient startColor { get; }
-        public IMinMaxCurve startSize { get; }
-        public IMinMaxCurve startSizeY { get; }
-        public IMinMaxCurve startSizeZ { get; }
-        public IMinMaxCurve startRotationX { get; }
-        public IMinMaxCurve startRotationY { get; }
-        public IMinMaxCurve startRotation { get; }
-        public float randomizeRotationDirection { get; }
-        public int maxNumParticles { get; }
-        public bool size3D { get; }
-        public bool rotation3D { get; }
-        public IMinMaxCurve gravityModifier { get; }
+        public bool enabled { get; set; }
+        public IMinMaxCurve startLifetime { get; set; }
+        public IMinMaxCurve startSpeed { get; set; }
+        public IMinMaxGradient startColor { get; set; }
+        public IMinMaxCurve startSize { get; set; }
+        public IMinMaxCurve startSizeY { get; set; }
+        public IMinMaxCurve startSizeZ { get; set; }
+        public IMinMaxCurve startRotationX { get; set; }
+        public IMinMaxCurve startRotationY { get; set; }
+        public IMinMaxCurve startRotation { get; set; }
+        public float randomizeRotationDirection { get; set; }
+        public int maxNumParticles { get; set; }
+        public bool size3D { get; set; }
+        public bool rotation3D { get; set; }
+        public IMinMaxCurve gravityModifier { get; set; }
 
         public Vector3f? customEmitterVelocity
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -37,6 +41,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

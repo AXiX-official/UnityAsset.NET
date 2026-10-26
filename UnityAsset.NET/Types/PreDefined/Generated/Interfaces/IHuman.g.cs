@@ -8,17 +8,21 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHuman : IPreDefinedInterface
     {
-        public Ixform m_RootX { get; }
-        public IOffsetPtr m_Skeleton { get; }
-        public IOffsetPtr m_SkeletonPose { get; }
-        public IOffsetPtr m_LeftHand { get; }
-        public IOffsetPtr m_RightHand { get; }
+        public Ixform m_RootX { get; set; }
+        public IOffsetPtr m_Skeleton { get; set; }
+        public IOffsetPtr m_SkeletonPose { get; set; }
+        public IOffsetPtr m_LeftHand { get; set; }
+        public IOffsetPtr m_RightHand { get; set; }
 
         public IHandle[]? m_Handles
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -28,10 +32,14 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public int[] m_HumanBoneIndex { get; }
-        public float[] m_HumanBoneMass { get; }
+        public int[] m_HumanBoneIndex { get; set; }
+        public float[] m_HumanBoneMass { get; set; }
 
         public int[]? m_ColliderIndex
         {
@@ -39,18 +47,22 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public float m_Scale { get; }
-        public float m_ArmTwist { get; }
-        public float m_ForeArmTwist { get; }
-        public float m_UpperLegTwist { get; }
-        public float m_LegTwist { get; }
-        public float m_ArmStretch { get; }
-        public float m_LegStretch { get; }
-        public float m_FeetSpacing { get; }
-        public bool m_HasLeftHand { get; }
-        public bool m_HasRightHand { get; }
-        public bool m_HasTDoF { get; }
+        public float m_Scale { get; set; }
+        public float m_ArmTwist { get; set; }
+        public float m_ForeArmTwist { get; set; }
+        public float m_UpperLegTwist { get; set; }
+        public float m_LegTwist { get; set; }
+        public float m_ArmStretch { get; set; }
+        public float m_LegStretch { get; set; }
+        public float m_FeetSpacing { get; set; }
+        public bool m_HasLeftHand { get; set; }
+        public bool m_HasRightHand { get; set; }
+        public bool m_HasTDoF { get; set; }
     }
 }

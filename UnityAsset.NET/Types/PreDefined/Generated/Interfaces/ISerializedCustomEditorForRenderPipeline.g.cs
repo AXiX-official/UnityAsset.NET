@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedCustomEditorForRenderPipeline : IPreDefinedInterface
     {
-        public string customEditorName { get; }
-        public string renderPipelineType { get; }
+        public string customEditorName { get; set; }
+        public string renderPipelineType { get; set; }
     }
 }

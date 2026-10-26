@@ -14,6 +14,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_UseConsistencySorting
@@ -22,29 +26,37 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public int m_InterpolationPosesPerJob { get; }
-        public int m_NewContactsPerJob { get; }
-        public int m_CollideContactsPerJob { get; }
-        public int m_ClearFlagsPerJob { get; }
-        public int m_ClearBodyForcesPerJob { get; }
-        public int m_SyncDiscreteFixturesPerJob { get; }
-        public int m_SyncContinuousFixturesPerJob { get; }
-        public int m_FindNearestContactsPerJob { get; }
-        public int m_UpdateTriggerContactsPerJob { get; }
-        public int m_IslandSolverCostThreshold { get; }
-        public int m_IslandSolverBodyCostScale { get; }
-        public int m_IslandSolverContactCostScale { get; }
-        public int m_IslandSolverJointCostScale { get; }
-        public int m_IslandSolverBodiesPerJob { get; }
-        public int m_IslandSolverContactsPerJob { get; }
+        public int m_InterpolationPosesPerJob { get; set; }
+        public int m_NewContactsPerJob { get; set; }
+        public int m_CollideContactsPerJob { get; set; }
+        public int m_ClearFlagsPerJob { get; set; }
+        public int m_ClearBodyForcesPerJob { get; set; }
+        public int m_SyncDiscreteFixturesPerJob { get; set; }
+        public int m_SyncContinuousFixturesPerJob { get; set; }
+        public int m_FindNearestContactsPerJob { get; set; }
+        public int m_UpdateTriggerContactsPerJob { get; set; }
+        public int m_IslandSolverCostThreshold { get; set; }
+        public int m_IslandSolverBodyCostScale { get; set; }
+        public int m_IslandSolverContactCostScale { get; set; }
+        public int m_IslandSolverJointCostScale { get; set; }
+        public int m_IslandSolverBodiesPerJob { get; set; }
+        public int m_IslandSolverContactsPerJob { get; set; }
 
         public bool? useMultithreading
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -53,6 +65,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,13 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IGoogle : IPreDefinedInterface
     {
-        public int depthFormat { get; }
+        public int depthFormat { get; set; }
 
         public bool? enableTransitionView
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -24,6 +28,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? enableVideoLayer
@@ -31,6 +39,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -40,6 +52,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? minimumSupportedHeadTracking
@@ -48,6 +64,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? maximumSupportedHeadTracking
@@ -55,6 +75,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVulkanGraphicsJobsDeviceFilterData : IPreDefinedInterface
     {
-        public uint preferredMode { get; }
-        public IAndroidDeviceFilterData filter { get; }
+        public uint preferredMode { get; set; }
+        public IAndroidDeviceFilterData filter { get; set; }
     }
 }

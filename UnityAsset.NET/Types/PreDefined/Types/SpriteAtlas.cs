@@ -7,12 +7,12 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 public class SpriteAtlas : ISpriteAtlas
 {
     public string ClassName => "SpriteAtlas";
-    public string m_Name { get; }
-    public PPtr<ISprite>[] m_PackedSprites { get; }
-    public string[] m_PackedSpriteNamesToIndex { get; }
-    public ((GUID, Int64), SpriteAtlasData)[] m_RenderDataMap { get; }
-    public string m_Tag { get; }
-    public bool m_IsVariant { get; }
+    public string m_Name { get; set; }
+    public PPtr<ISprite>[] m_PackedSprites { get; set; }
+    public string[] m_PackedSpriteNamesToIndex { get; set; }
+    public ((GUID, Int64), SpriteAtlasData)[] m_RenderDataMap { get; set; }
+    public string m_Tag { get; set; }
+    public bool m_IsVariant { get; set; }
     
     public SpriteAtlas(IReader reader)
     {

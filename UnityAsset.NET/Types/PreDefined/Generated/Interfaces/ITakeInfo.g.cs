@@ -8,20 +8,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITakeInfo : IPreDefinedInterface
     {
-        public string name { get; }
-        public string defaultClipName { get; }
-        public float startTime { get; }
-        public float stopTime { get; }
-        public float bakeStartTime { get; }
-        public float bakeStopTime { get; }
-        public float sampleRate { get; }
-        public PPtr<IAnimationClip> clip { get; }
+        public string name { get; set; }
+        public string defaultClipName { get; set; }
+        public float startTime { get; set; }
+        public float stopTime { get; set; }
+        public float bakeStartTime { get; set; }
+        public float bakeStopTime { get; set; }
+        public float sampleRate { get; set; }
+        public PPtr<IAnimationClip> clip { get; set; }
 
         public long? internalID
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

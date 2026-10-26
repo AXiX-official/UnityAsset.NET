@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface INavMeshBuildDebugSettings : IPreDefinedInterface
     {
-        public byte m_Flags { get; }
+        public byte m_Flags { get; set; }
     }
 }

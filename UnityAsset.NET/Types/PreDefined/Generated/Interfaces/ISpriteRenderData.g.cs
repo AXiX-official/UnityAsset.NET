@@ -8,23 +8,27 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteRenderData : IPreDefinedInterface
     {
-        public PPtr<ITexture2D> texture { get; }
-        public PPtr<ITexture2D> alphaTexture { get; }
-        public ISubMesh[] m_SubMeshes { get; }
-        public byte[] m_IndexBuffer { get; }
-        public IVertexData m_VertexData { get; }
-        public Rectf textureRect { get; }
-        public Vector2f textureRectOffset { get; }
-        public Vector2f atlasRectOffset { get; }
-        public uint settingsRaw { get; }
-        public Vector4f uvTransform { get; }
-        public float downscaleMultiplier { get; }
+        public PPtr<ITexture2D> texture { get; set; }
+        public PPtr<ITexture2D> alphaTexture { get; set; }
+        public ISubMesh[] m_SubMeshes { get; set; }
+        public byte[] m_IndexBuffer { get; set; }
+        public IVertexData m_VertexData { get; set; }
+        public Rectf textureRect { get; set; }
+        public Vector2f textureRectOffset { get; set; }
+        public Vector2f atlasRectOffset { get; set; }
+        public uint settingsRaw { get; set; }
+        public Vector4f uvTransform { get; set; }
+        public float downscaleMultiplier { get; set; }
 
         public IMatrix4x4f[]? m_Bindpose
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -34,6 +38,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public SecondarySpriteTexture[]? secondaryTextures
@@ -41,6 +49,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

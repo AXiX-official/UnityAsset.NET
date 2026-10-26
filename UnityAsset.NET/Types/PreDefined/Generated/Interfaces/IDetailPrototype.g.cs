@@ -8,13 +8,13 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IDetailPrototype : IPreDefinedInterface
     {
-        public PPtr<GameObject> prototype { get; }
-        public PPtr<ITexture2D> prototypeTexture { get; }
-        public float minWidth { get; }
-        public float maxWidth { get; }
-        public float minHeight { get; }
-        public float maxHeight { get; }
-        public float noiseSpread { get; }
+        public PPtr<GameObject> prototype { get; set; }
+        public PPtr<ITexture2D> prototypeTexture { get; set; }
+        public float minWidth { get; set; }
+        public float maxWidth { get; set; }
+        public float minHeight { get; set; }
+        public float maxHeight { get; set; }
+        public float noiseSpread { get; set; }
 
         public float? bendFactor
         {
@@ -22,10 +22,14 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public IColorRGBA healthyColor { get; }
-        public IColorRGBA dryColor { get; }
+        public IColorRGBA healthyColor { get; set; }
+        public IColorRGBA dryColor { get; set; }
 
         public float? lightmapFactor
         {
@@ -33,16 +37,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public int renderMode { get; }
-        public int usePrototypeMesh { get; }
+        public int renderMode { get; set; }
+        public int usePrototypeMesh { get; set; }
 
         public float? holeTestRadius
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -52,6 +64,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? useInstancing
@@ -59,6 +75,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -68,6 +88,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? useDensityScaling
@@ -75,6 +99,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -84,6 +112,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? positionOrderliness
@@ -91,6 +123,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -100,6 +136,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? positionJitter
@@ -107,6 +147,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

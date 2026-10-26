@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IComputeShaderParam : IPreDefinedInterface
     {
-        public string name { get; }
-        public int type { get; }
-        public uint offset { get; }
-        public uint arraySize { get; }
-        public uint rowCount { get; }
-        public uint colCount { get; }
+        public string name { get; set; }
+        public int type { get; set; }
+        public uint offset { get; set; }
+        public uint arraySize { get; set; }
+        public uint rowCount { get; set; }
+        public uint colCount { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISamplerParameter : IPreDefinedInterface
     {
-        public uint sampler { get; }
-        public int bindPoint { get; }
+        public uint sampler { get; set; }
+        public int bindPoint { get; set; }
     }
 }

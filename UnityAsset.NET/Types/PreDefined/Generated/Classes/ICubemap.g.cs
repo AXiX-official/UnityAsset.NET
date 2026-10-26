@@ -8,26 +8,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ICubemap : INamedObject
     {
-        public int m_Width { get; }
-        public int m_Height { get; }
-        public uint m_CompleteImageSize { get; }
-        public int m_TextureFormat { get; }
-        public int m_MipCount { get; }
-        public bool m_IsReadable { get; }
-        public int m_ImageCount { get; }
-        public int m_TextureDimension { get; }
-        public IGLTextureSettings m_TextureSettings { get; }
-        public int m_LightmapFormat { get; }
-        public int m_ColorSpace { get; }
-        public TypelessData image_data { get; }
-        public StreamingInfo m_StreamData { get; }
-        public PPtr<ITexture2D>[] m_SourceTextures { get; }
+        public int m_Width { get; set; }
+        public int m_Height { get; set; }
+        public uint m_CompleteImageSize { get; set; }
+        public int m_TextureFormat { get; set; }
+        public int m_MipCount { get; set; }
+        public bool m_IsReadable { get; set; }
+        public int m_ImageCount { get; set; }
+        public int m_TextureDimension { get; set; }
+        public IGLTextureSettings m_TextureSettings { get; set; }
+        public int m_LightmapFormat { get; set; }
+        public int m_ColorSpace { get; set; }
+        public TypelessData image_data { get; set; }
+        public StreamingInfo m_StreamData { get; set; }
+        public PPtr<ITexture2D>[] m_SourceTextures { get; set; }
 
         public int? m_ForcedFallbackFormat
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -37,6 +41,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_StreamingMipmaps
@@ -44,6 +52,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -53,6 +65,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_IgnoreMasterTextureLimit
@@ -60,6 +76,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -69,6 +89,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_MipsStripped
@@ -76,6 +100,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -85,6 +113,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public byte[]? m_PlatformBlob
@@ -92,6 +124,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -101,6 +137,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public string? m_MipmapLimitGroupName
@@ -108,6 +148,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

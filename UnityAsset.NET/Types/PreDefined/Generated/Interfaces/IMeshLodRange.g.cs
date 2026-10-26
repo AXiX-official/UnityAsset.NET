@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMeshLodRange : IPreDefinedInterface
     {
-        public uint m_IndexStart { get; }
-        public uint m_IndexCount { get; }
+        public uint m_IndexStart { get; set; }
+        public uint m_IndexCount { get; set; }
     }
 }

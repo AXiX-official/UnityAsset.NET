@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IConstraintSource : IPreDefinedInterface
     {
-        public PPtr<ITransform> sourceTransform { get; }
-        public float weight { get; }
+        public PPtr<ITransform> sourceTransform { get; set; }
+        public float weight { get; set; }
     }
 }

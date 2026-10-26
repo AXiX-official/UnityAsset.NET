@@ -8,17 +8,21 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPackingSettings : IPreDefinedInterface
     {
-        public int padding { get; }
-        public int blockOffset { get; }
-        public bool allowAlphaSplitting { get; }
-        public bool enableRotation { get; }
-        public bool enableTightPacking { get; }
+        public int padding { get; set; }
+        public int blockOffset { get; set; }
+        public bool allowAlphaSplitting { get; set; }
+        public bool enableRotation { get; set; }
+        public bool enableTightPacking { get; set; }
 
         public bool? enableAlphaDilation
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

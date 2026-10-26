@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IEmissionModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxCurve rateOverTime { get; }
-        public IMinMaxCurve rateOverDistance { get; }
-        public int m_BurstCount { get; }
-        public IParticleSystemEmissionBurst[] m_Bursts { get; }
+        public bool enabled { get; set; }
+        public IMinMaxCurve rateOverTime { get; set; }
+        public IMinMaxCurve rateOverDistance { get; set; }
+        public int m_BurstCount { get; set; }
+        public IParticleSystemEmissionBurst[] m_Bursts { get; set; }
     }
 }

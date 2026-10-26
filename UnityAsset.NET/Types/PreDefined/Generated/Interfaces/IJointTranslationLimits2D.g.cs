@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IJointTranslationLimits2D : IPreDefinedInterface
     {
-        public float m_LowerTranslation { get; }
-        public float m_UpperTranslation { get; }
+        public float m_LowerTranslation { get; set; }
+        public float m_UpperTranslation { get; set; }
     }
 }

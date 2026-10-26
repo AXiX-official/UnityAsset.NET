@@ -8,14 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBufferBinding : IPreDefinedInterface
     {
-        public int m_NameIndex { get; }
-        public int m_Index { get; }
+        public int m_NameIndex { get; set; }
+        public int m_Index { get; set; }
 
         public int? m_ArraySize
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

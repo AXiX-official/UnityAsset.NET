@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IForceModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxCurve x { get; }
-        public IMinMaxCurve y { get; }
-        public IMinMaxCurve z { get; }
-        public bool inWorldSpace { get; }
-        public bool randomizePerFrame { get; }
+        public bool enabled { get; set; }
+        public IMinMaxCurve x { get; set; }
+        public IMinMaxCurve y { get; set; }
+        public IMinMaxCurve z { get; set; }
+        public bool inWorldSpace { get; set; }
+        public bool randomizePerFrame { get; set; }
     }
 }

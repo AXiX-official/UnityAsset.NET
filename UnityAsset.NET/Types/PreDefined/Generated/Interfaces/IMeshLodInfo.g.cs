@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMeshLodInfo : IPreDefinedInterface
     {
-        public ILodSelectionCurve m_LodSelectionCurve { get; }
-        public int m_NumLevels { get; }
-        public IMeshLodSubMesh[] m_SubMeshes { get; }
+        public ILodSelectionCurve m_LodSelectionCurve { get; set; }
+        public int m_NumLevels { get; set; }
+        public IMeshLodSubMesh[] m_SubMeshes { get; set; }
     }
 }

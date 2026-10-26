@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IDenseClip : IPreDefinedInterface
     {
-        public int m_FrameCount { get; }
-        public uint m_CurveCount { get; }
-        public float m_SampleRate { get; }
-        public float m_BeginTime { get; }
-        public float[] m_SampleArray { get; }
+        public int m_FrameCount { get; set; }
+        public uint m_CurveCount { get; set; }
+        public float m_SampleRate { get; set; }
+        public float m_BeginTime { get; set; }
+        public float[] m_SampleArray { get; set; }
     }
 }

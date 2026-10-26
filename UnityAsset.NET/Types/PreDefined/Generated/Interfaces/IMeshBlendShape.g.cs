@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMeshBlendShape : IPreDefinedInterface
     {
-        public uint firstVertex { get; }
-        public uint vertexCount { get; }
-        public bool hasNormals { get; }
-        public bool hasTangents { get; }
+        public uint firstVertex { get; set; }
+        public uint vertexCount { get; set; }
+        public bool hasNormals { get; set; }
+        public bool hasTangents { get; set; }
     }
 }

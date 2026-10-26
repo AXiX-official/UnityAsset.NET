@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedShaderDependency : IPreDefinedInterface
     {
-        public string from { get; }
-        public string to { get; }
+        public string from { get; set; }
+        public string to { get; set; }
     }
 }

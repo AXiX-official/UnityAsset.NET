@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface INode : IPreDefinedInterface
     {
-        public int m_ParentId { get; }
-        public int m_AxesId { get; }
+        public int m_ParentId { get; set; }
+        public int m_AxesId { get; set; }
     }
 }

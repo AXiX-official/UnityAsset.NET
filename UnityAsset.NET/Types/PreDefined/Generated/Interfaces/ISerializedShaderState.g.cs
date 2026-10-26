@@ -8,42 +8,46 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedShaderState : IPreDefinedInterface
     {
-        public ISerializedShaderRTBlendState rtBlend0 { get; }
-        public ISerializedShaderRTBlendState rtBlend1 { get; }
-        public ISerializedShaderRTBlendState rtBlend2 { get; }
-        public ISerializedShaderRTBlendState rtBlend3 { get; }
-        public ISerializedShaderRTBlendState rtBlend4 { get; }
-        public ISerializedShaderRTBlendState rtBlend5 { get; }
-        public ISerializedShaderRTBlendState rtBlend6 { get; }
-        public ISerializedShaderRTBlendState rtBlend7 { get; }
-        public bool rtSeparateBlend { get; }
-        public ISerializedShaderFloatValue zTest { get; }
-        public ISerializedShaderFloatValue zWrite { get; }
-        public ISerializedShaderFloatValue culling { get; }
-        public ISerializedShaderFloatValue offsetFactor { get; }
-        public ISerializedShaderFloatValue offsetUnits { get; }
-        public ISerializedShaderFloatValue alphaToMask { get; }
-        public ISerializedStencilOp stencilOp { get; }
-        public ISerializedStencilOp stencilOpFront { get; }
-        public ISerializedStencilOp stencilOpBack { get; }
-        public ISerializedShaderFloatValue stencilReadMask { get; }
-        public ISerializedShaderFloatValue stencilWriteMask { get; }
-        public ISerializedShaderFloatValue stencilRef { get; }
-        public ISerializedShaderFloatValue fogStart { get; }
-        public ISerializedShaderFloatValue fogEnd { get; }
-        public ISerializedShaderFloatValue fogDensity { get; }
-        public ISerializedShaderVectorValue fogColor { get; }
-        public int fogMode { get; }
-        public int gpuProgramID { get; }
-        public ISerializedTagMap m_Tags { get; }
-        public int m_LOD { get; }
-        public bool lighting { get; }
+        public ISerializedShaderRTBlendState rtBlend0 { get; set; }
+        public ISerializedShaderRTBlendState rtBlend1 { get; set; }
+        public ISerializedShaderRTBlendState rtBlend2 { get; set; }
+        public ISerializedShaderRTBlendState rtBlend3 { get; set; }
+        public ISerializedShaderRTBlendState rtBlend4 { get; set; }
+        public ISerializedShaderRTBlendState rtBlend5 { get; set; }
+        public ISerializedShaderRTBlendState rtBlend6 { get; set; }
+        public ISerializedShaderRTBlendState rtBlend7 { get; set; }
+        public bool rtSeparateBlend { get; set; }
+        public ISerializedShaderFloatValue zTest { get; set; }
+        public ISerializedShaderFloatValue zWrite { get; set; }
+        public ISerializedShaderFloatValue culling { get; set; }
+        public ISerializedShaderFloatValue offsetFactor { get; set; }
+        public ISerializedShaderFloatValue offsetUnits { get; set; }
+        public ISerializedShaderFloatValue alphaToMask { get; set; }
+        public ISerializedStencilOp stencilOp { get; set; }
+        public ISerializedStencilOp stencilOpFront { get; set; }
+        public ISerializedStencilOp stencilOpBack { get; set; }
+        public ISerializedShaderFloatValue stencilReadMask { get; set; }
+        public ISerializedShaderFloatValue stencilWriteMask { get; set; }
+        public ISerializedShaderFloatValue stencilRef { get; set; }
+        public ISerializedShaderFloatValue fogStart { get; set; }
+        public ISerializedShaderFloatValue fogEnd { get; set; }
+        public ISerializedShaderFloatValue fogDensity { get; set; }
+        public ISerializedShaderVectorValue fogColor { get; set; }
+        public int fogMode { get; set; }
+        public int gpuProgramID { get; set; }
+        public ISerializedTagMap m_Tags { get; set; }
+        public int m_LOD { get; set; }
+        public bool lighting { get; set; }
 
         public ISerializedShaderFloatValue? zClip
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -52,6 +56,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IClip : IPreDefinedInterface
     {
-        public IStreamedClip m_StreamedClip { get; }
-        public IDenseClip m_DenseClip { get; }
-        public IConstantClip m_ConstantClip { get; }
+        public IStreamedClip m_StreamedClip { get; set; }
+        public IDenseClip m_DenseClip { get; set; }
+        public IConstantClip m_ConstantClip { get; set; }
 
         public IOffsetPtr? m_Binding
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

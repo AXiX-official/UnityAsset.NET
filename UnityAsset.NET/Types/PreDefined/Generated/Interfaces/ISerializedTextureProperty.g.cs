@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedTextureProperty : IPreDefinedInterface
     {
-        public string m_DefaultName { get; }
-        public int m_TexDim { get; }
+        public string m_DefaultName { get; set; }
+        public int m_TexDim { get; set; }
     }
 }

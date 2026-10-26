@@ -8,17 +8,21 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMonoScript : INamedObject
     {
-        public int m_ExecutionOrder { get; }
-        public IHash128 m_PropertiesHash { get; }
-        public string m_ClassName { get; }
-        public string m_Namespace { get; }
-        public string m_AssemblyName { get; }
+        public int m_ExecutionOrder { get; set; }
+        public IHash128 m_PropertiesHash { get; set; }
+        public string m_ClassName { get; set; }
+        public string m_Namespace { get; set; }
+        public string m_AssemblyName { get; set; }
 
         public bool? m_IsEditorScript
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IJointSpring : IPreDefinedInterface
     {
-        public float spring { get; }
-        public float damper { get; }
-        public float targetPosition { get; }
+        public float spring { get; set; }
+        public float damper { get; set; }
+        public float targetPosition { get; set; }
     }
 }

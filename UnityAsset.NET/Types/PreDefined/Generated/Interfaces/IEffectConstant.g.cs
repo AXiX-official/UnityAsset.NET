@@ -8,12 +8,12 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IEffectConstant : IPreDefinedInterface
     {
-        public int type { get; }
-        public uint groupConstantIndex { get; }
-        public uint sendTargetEffectIndex { get; }
-        public uint wetMixLevelIndex { get; }
-        public uint prevEffectIndex { get; }
-        public bool bypass { get; }
-        public uint[] parameterIndices { get; }
+        public int type { get; set; }
+        public uint groupConstantIndex { get; set; }
+        public uint sendTargetEffectIndex { get; set; }
+        public uint wetMixLevelIndex { get; set; }
+        public uint prevEffectIndex { get; set; }
+        public bool bypass { get; set; }
+        public uint[] parameterIndices { get; set; }
     }
 }

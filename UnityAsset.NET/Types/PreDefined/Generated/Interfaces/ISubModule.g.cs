@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISubModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public ISubEmitterData[] subEmitters { get; }
+        public bool enabled { get; set; }
+        public ISubEmitterData[] subEmitters { get; set; }
     }
 }

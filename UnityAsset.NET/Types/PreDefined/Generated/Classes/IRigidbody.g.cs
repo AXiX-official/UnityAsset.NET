@@ -8,14 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IRigidbody : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public float m_Mass { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
+        public float m_Mass { get; set; }
 
         public float? m_Drag
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -25,19 +29,27 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public bool m_UseGravity { get; }
-        public bool m_IsKinematic { get; }
-        public byte m_Interpolate { get; }
-        public int m_Constraints { get; }
-        public int m_CollisionDetection { get; }
+        public bool m_UseGravity { get; set; }
+        public bool m_IsKinematic { get; set; }
+        public byte m_Interpolate { get; set; }
+        public int m_Constraints { get; set; }
+        public int m_CollisionDetection { get; set; }
 
         public Vector3f? m_CenterOfMass
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -47,6 +59,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Quaternionf? m_InertiaRotation
@@ -54,6 +70,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -63,6 +83,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_ImplicitTensor
@@ -70,6 +94,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -79,6 +107,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IBitField? m_ExcludeLayers
@@ -86,6 +118,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -95,6 +131,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? m_AngularDamping
@@ -102,6 +142,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

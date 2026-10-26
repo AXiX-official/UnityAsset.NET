@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISubCollider : IPreDefinedInterface
     {
-        public PPtr<ICollider2D> m_Collider { get; }
-        public IIntPoint[][] m_ColliderPaths { get; }
+        public PPtr<ICollider2D> m_Collider { get; set; }
+        public IIntPoint[][] m_ColliderPaths { get; set; }
     }
 }

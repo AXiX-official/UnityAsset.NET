@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISourceAssetIdentifier : IPreDefinedInterface
     {
-        public string type { get; }
-        public string assembly { get; }
-        public string name { get; }
+        public string type { get; set; }
+        public string assembly { get; set; }
+        public string name { get; set; }
     }
 }

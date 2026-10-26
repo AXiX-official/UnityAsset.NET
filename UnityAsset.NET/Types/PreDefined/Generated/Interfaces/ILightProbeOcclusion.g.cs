@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILightProbeOcclusion : IPreDefinedInterface
     {
-        public int[] m_ProbeOcclusionLightIndex { get; }
-        public float[] m_Occlusion { get; }
-        public sbyte[] m_OcclusionMaskChannel { get; }
+        public int[] m_ProbeOcclusionLightIndex { get; set; }
+        public float[] m_Occlusion { get; set; }
+        public sbyte[] m_OcclusionMaskChannel { get; set; }
     }
 }

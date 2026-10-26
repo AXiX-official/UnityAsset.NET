@@ -500,12 +500,20 @@ public class InterfaceGenerator
                         SyntaxFactory.ReturnStatement(
                             SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression))));
                 propertyDeclaration = propertyDeclaration.AddAccessorListAccessors(getterWithBody);
+
+                // A member only some versions carry still needs a setter: the classes that do carry it declare their
+                // own, and the ones that do not inherit this no-op instead of having to invent a place to store it.
+                var setterWithBody = SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                    .WithBody(SyntaxFactory.Block());
+                propertyDeclaration = propertyDeclaration.AddAccessorListAccessors(setterWithBody);
             }
             else
             {
                 var abstractGetter = SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
                     .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
-                propertyDeclaration = propertyDeclaration.AddAccessorListAccessors(abstractGetter);
+                var abstractSetter = SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                propertyDeclaration = propertyDeclaration.AddAccessorListAccessors(abstractGetter, abstractSetter);
             }
             
             members.Add(propertyDeclaration);

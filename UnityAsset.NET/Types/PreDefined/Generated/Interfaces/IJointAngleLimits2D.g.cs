@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IJointAngleLimits2D : IPreDefinedInterface
     {
-        public float m_LowerAngle { get; }
-        public float m_UpperAngle { get; }
+        public float m_LowerAngle { get; set; }
+        public float m_UpperAngle { get; set; }
     }
 }

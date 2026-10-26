@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISerializedShaderVectorValue : IPreDefinedInterface
     {
-        public ISerializedShaderFloatValue x { get; }
-        public ISerializedShaderFloatValue y { get; }
-        public ISerializedShaderFloatValue z { get; }
-        public ISerializedShaderFloatValue w { get; }
-        public string name { get; }
+        public ISerializedShaderFloatValue x { get; set; }
+        public ISerializedShaderFloatValue y { get; set; }
+        public ISerializedShaderFloatValue z { get; set; }
+        public ISerializedShaderFloatValue w { get; set; }
+        public string name { get; set; }
     }
 }

@@ -8,23 +8,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IParticleSystemForceFieldParameters : IPreDefinedInterface
     {
-        public int m_Shape { get; }
-        public float m_StartRange { get; }
-        public float m_EndRange { get; }
-        public float m_Length { get; }
-        public float m_GravityFocus { get; }
-        public Vector2f m_RotationRandomness { get; }
-        public IMinMaxCurve m_DirectionCurveX { get; }
-        public IMinMaxCurve m_DirectionCurveY { get; }
-        public IMinMaxCurve m_DirectionCurveZ { get; }
-        public IMinMaxCurve m_GravityCurve { get; }
-        public IMinMaxCurve m_RotationSpeedCurve { get; }
-        public IMinMaxCurve m_RotationAttractionCurve { get; }
-        public IMinMaxCurve m_DragCurve { get; }
-        public PPtr<ITexture3D> m_VectorField { get; }
-        public IMinMaxCurve m_VectorFieldSpeedCurve { get; }
-        public IMinMaxCurve m_VectorFieldAttractionCurve { get; }
-        public bool m_MultiplyDragByParticleSize { get; }
-        public bool m_MultiplyDragByParticleVelocity { get; }
+        public int m_Shape { get; set; }
+        public float m_StartRange { get; set; }
+        public float m_EndRange { get; set; }
+        public float m_Length { get; set; }
+        public float m_GravityFocus { get; set; }
+        public Vector2f m_RotationRandomness { get; set; }
+        public IMinMaxCurve m_DirectionCurveX { get; set; }
+        public IMinMaxCurve m_DirectionCurveY { get; set; }
+        public IMinMaxCurve m_DirectionCurveZ { get; set; }
+        public IMinMaxCurve m_GravityCurve { get; set; }
+        public IMinMaxCurve m_RotationSpeedCurve { get; set; }
+        public IMinMaxCurve m_RotationAttractionCurve { get; set; }
+        public IMinMaxCurve m_DragCurve { get; set; }
+        public PPtr<ITexture3D> m_VectorField { get; set; }
+        public IMinMaxCurve m_VectorFieldSpeedCurve { get; set; }
+        public IMinMaxCurve m_VectorFieldAttractionCurve { get; set; }
+        public bool m_MultiplyDragByParticleSize { get; set; }
+        public bool m_MultiplyDragByParticleVelocity { get; set; }
     }
 }

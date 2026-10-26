@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IJointDrive : IPreDefinedInterface
     {
-        public float positionSpring { get; }
-        public float positionDamper { get; }
-        public float maximumForce { get; }
+        public float positionSpring { get; set; }
+        public float positionDamper { get; set; }
+        public float maximumForce { get; set; }
 
         public int? useAcceleration
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

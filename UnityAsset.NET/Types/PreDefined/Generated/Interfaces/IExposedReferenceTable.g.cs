@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IExposedReferenceTable : IPreDefinedInterface
     {
-        public ValueTuple<string, PPtr<IUnityObject>>[] m_References { get; }
+        public ValueTuple<string, PPtr<IUnityObject>>[] m_References { get; set; }
     }
 }

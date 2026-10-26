@@ -8,14 +8,14 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ICollider : IPreDefinedInterface
     {
-        public Ixform m_X { get; }
-        public uint m_Type { get; }
-        public uint m_XMotionType { get; }
-        public uint m_YMotionType { get; }
-        public uint m_ZMotionType { get; }
-        public float m_MinLimitX { get; }
-        public float m_MaxLimitX { get; }
-        public float m_MaxLimitY { get; }
-        public float m_MaxLimitZ { get; }
+        public Ixform m_X { get; set; }
+        public uint m_Type { get; set; }
+        public uint m_XMotionType { get; set; }
+        public uint m_YMotionType { get; set; }
+        public uint m_ZMotionType { get; set; }
+        public float m_MinLimitX { get; set; }
+        public float m_MaxLimitX { get; set; }
+        public float m_MaxLimitY { get; set; }
+        public float m_MaxLimitZ { get; set; }
     }
 }

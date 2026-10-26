@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITileAnimationData : IPreDefinedInterface
     {
-        public PPtr<ISprite>[] m_AnimatedSprites { get; }
-        public float m_AnimationSpeed { get; }
-        public float m_AnimationTimeOffset { get; }
+        public PPtr<ISprite>[] m_AnimatedSprites { get; set; }
+        public float m_AnimationSpeed { get; set; }
+        public float m_AnimationTimeOffset { get; set; }
 
         public bool? m_IsLooping
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -25,6 +29,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

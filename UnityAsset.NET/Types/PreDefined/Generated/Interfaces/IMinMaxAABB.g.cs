@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IMinMaxAABB : IPreDefinedInterface
     {
-        public Vector3f m_Min { get; }
-        public Vector3f m_Max { get; }
+        public Vector3f m_Min { get; set; }
+        public Vector3f m_Max { get; set; }
     }
 }

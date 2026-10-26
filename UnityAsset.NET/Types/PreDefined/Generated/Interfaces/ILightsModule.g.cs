@@ -8,15 +8,15 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILightsModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public float ratio { get; }
-        public PPtr<ILight> light { get; }
-        public bool randomDistribution { get; }
-        public bool color { get; }
-        public bool range { get; }
-        public bool intensity { get; }
-        public IMinMaxCurve rangeCurve { get; }
-        public IMinMaxCurve intensityCurve { get; }
-        public int maxLights { get; }
+        public bool enabled { get; set; }
+        public float ratio { get; set; }
+        public PPtr<ILight> light { get; set; }
+        public bool randomDistribution { get; set; }
+        public bool color { get; set; }
+        public bool range { get; set; }
+        public bool intensity { get; set; }
+        public IMinMaxCurve rangeCurve { get; set; }
+        public IMinMaxCurve intensityCurve { get; set; }
+        public int maxLights { get; set; }
     }
 }

@@ -7,10 +7,10 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 public struct Vector4f : IPreDefinedInterface
 {
     public string ClassName => "Vector4f";
-    public float x { get; }
-    public float y { get; }
-    public float z { get; }
-    public float w { get; }
+    public float x { get; set; }
+    public float y { get; set; }
+    public float z { get; set; }
+    public float w { get; set; }
 
     public Vector4f(IReader reader)
     {

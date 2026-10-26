@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHand : IPreDefinedInterface
     {
-        public int[] m_HandBoneIndex { get; }
+        public int[] m_HandBoneIndex { get; set; }
     }
 }

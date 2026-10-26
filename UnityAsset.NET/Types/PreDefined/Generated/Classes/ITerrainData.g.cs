@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITerrainData : INamedObject
     {
-        public ISplatDatabase m_SplatDatabase { get; }
-        public IDetailDatabase m_DetailDatabase { get; }
-        public IHeightmap m_Heightmap { get; }
+        public ISplatDatabase m_SplatDatabase { get; set; }
+        public IDetailDatabase m_DetailDatabase { get; set; }
+        public IHeightmap m_Heightmap { get; set; }
 
         public PPtr<IShader>[]? m_PreloadShaders
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

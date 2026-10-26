@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IJointMotor : IPreDefinedInterface
     {
-        public float targetVelocity { get; }
-        public float force { get; }
-        public int freeSpin { get; }
+        public float targetVelocity { get; set; }
+        public float force { get; set; }
+        public int freeSpin { get; set; }
     }
 }

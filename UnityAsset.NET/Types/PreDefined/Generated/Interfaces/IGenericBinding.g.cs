@@ -8,18 +8,22 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IGenericBinding : IPreDefinedInterface
     {
-        public uint path { get; }
-        public uint attribute { get; }
-        public PPtr<IUnityObject> script { get; }
-        public int typeID { get; }
-        public byte customType { get; }
-        public byte isPPtrCurve { get; }
+        public uint path { get; set; }
+        public uint attribute { get; set; }
+        public PPtr<IUnityObject> script { get; set; }
+        public int typeID { get; set; }
+        public byte customType { get; set; }
+        public byte isPPtrCurve { get; set; }
 
         public byte? isIntCurve
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -28,6 +32,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

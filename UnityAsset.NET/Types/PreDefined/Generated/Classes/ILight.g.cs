@@ -8,13 +8,13 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILight : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public byte m_Enabled { get; }
-        public int m_Type { get; }
-        public IColorRGBA m_Color { get; }
-        public float m_Intensity { get; }
-        public float m_Range { get; }
-        public float m_SpotAngle { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
+        public byte m_Enabled { get; set; }
+        public int m_Type { get; set; }
+        public IColorRGBA m_Color { get; set; }
+        public float m_Intensity { get; set; }
+        public float m_Range { get; set; }
+        public float m_SpotAngle { get; set; }
 
         public float? m_CookieSize
         {
@@ -22,18 +22,22 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public IShadowSettings m_Shadows { get; }
-        public PPtr<IUnityObject> m_Cookie { get; }
-        public bool m_DrawHalo { get; }
-        public ILightBakingOutput m_BakingOutput { get; }
-        public PPtr<IFlare> m_Flare { get; }
-        public int m_RenderMode { get; }
-        public IBitField m_CullingMask { get; }
-        public int m_Lightmapping { get; }
-        public Vector2f m_AreaSize { get; }
-        public float m_BounceIntensity { get; }
+        public IShadowSettings m_Shadows { get; set; }
+        public PPtr<IUnityObject> m_Cookie { get; set; }
+        public bool m_DrawHalo { get; set; }
+        public ILightBakingOutput m_BakingOutput { get; set; }
+        public PPtr<IFlare> m_Flare { get; set; }
+        public int m_RenderMode { get; set; }
+        public IBitField m_CullingMask { get; set; }
+        public int m_Lightmapping { get; set; }
+        public Vector2f m_AreaSize { get; set; }
+        public float m_BounceIntensity { get; set; }
 
         public IFalloffTable? m_FalloffTable
         {
@@ -41,16 +45,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public float m_ColorTemperature { get; }
-        public bool m_UseColorTemperature { get; }
+        public float m_ColorTemperature { get; set; }
+        public bool m_UseColorTemperature { get; set; }
 
         public int? m_LightShadowCasterMode
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -60,6 +72,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public uint? m_RenderingLayerMask
@@ -67,6 +83,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -76,6 +96,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_UseBoundingSphereOverride
@@ -83,6 +107,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -92,6 +120,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_UseViewFrustumForShadowCasterCull
@@ -99,6 +131,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -108,6 +144,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_LightUnit
@@ -115,6 +155,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -124,6 +168,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_EnableSpotReflector
@@ -131,6 +179,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -140,6 +192,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public float? m_ShapeRadius
@@ -147,6 +203,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

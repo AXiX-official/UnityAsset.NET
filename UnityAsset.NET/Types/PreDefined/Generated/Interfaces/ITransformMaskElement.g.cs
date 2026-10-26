@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITransformMaskElement : IPreDefinedInterface
     {
-        public string m_Path { get; }
-        public float m_Weight { get; }
+        public string m_Path { get; set; }
+        public float m_Weight { get; set; }
     }
 }

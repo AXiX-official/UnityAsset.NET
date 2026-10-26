@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IEnlightenRendererInformation : IPreDefinedInterface
     {
-        public PPtr<IUnityObject> renderer { get; }
-        public Vector4f dynamicLightmapSTInSystem { get; }
-        public int systemId { get; }
-        public IHash128 instanceHash { get; }
+        public PPtr<IUnityObject> renderer { get; set; }
+        public Vector4f dynamicLightmapSTInSystem { get; set; }
+        public int systemId { get; set; }
+        public IHash128 instanceHash { get; set; }
     }
 }

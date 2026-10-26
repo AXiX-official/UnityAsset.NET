@@ -8,31 +8,35 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IFont : INamedObject
     {
-        public float m_LineSpacing { get; }
-        public PPtr<IMaterial> m_DefaultMaterial { get; }
-        public float m_FontSize { get; }
-        public PPtr<IUnityObject> m_Texture { get; }
-        public int m_AsciiStartOffset { get; }
-        public float m_Tracking { get; }
-        public int m_CharacterSpacing { get; }
-        public int m_CharacterPadding { get; }
-        public int m_ConvertCase { get; }
-        public ICharacterInfo[] m_CharacterRects { get; }
-        public ValueTuple<ValueTuple<ushort, ushort>, float>[] m_KerningValues { get; }
-        public float m_PixelScale { get; }
-        public char[] m_FontData { get; }
-        public float m_Ascent { get; }
-        public float m_Descent { get; }
-        public uint m_DefaultStyle { get; }
-        public string[] m_FontNames { get; }
-        public PPtr<IFont>[] m_FallbackFonts { get; }
-        public int m_FontRenderingMode { get; }
+        public float m_LineSpacing { get; set; }
+        public PPtr<IMaterial> m_DefaultMaterial { get; set; }
+        public float m_FontSize { get; set; }
+        public PPtr<IUnityObject> m_Texture { get; set; }
+        public int m_AsciiStartOffset { get; set; }
+        public float m_Tracking { get; set; }
+        public int m_CharacterSpacing { get; set; }
+        public int m_CharacterPadding { get; set; }
+        public int m_ConvertCase { get; set; }
+        public ICharacterInfo[] m_CharacterRects { get; set; }
+        public ValueTuple<ValueTuple<ushort, ushort>, float>[] m_KerningValues { get; set; }
+        public float m_PixelScale { get; set; }
+        public char[] m_FontData { get; set; }
+        public float m_Ascent { get; set; }
+        public float m_Descent { get; set; }
+        public uint m_DefaultStyle { get; set; }
+        public string[] m_FontNames { get; set; }
+        public PPtr<IFont>[] m_FallbackFonts { get; set; }
+        public int m_FontRenderingMode { get; set; }
 
         public bool? m_UseLegacyBoundsCalculation
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -41,6 +45,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IGISettings : IPreDefinedInterface
     {
-        public float m_BounceScale { get; }
-        public float m_IndirectOutputScale { get; }
-        public float m_AlbedoBoost { get; }
+        public float m_BounceScale { get; set; }
+        public float m_IndirectOutputScale { get; set; }
+        public float m_AlbedoBoost { get; set; }
 
         public float? m_TemporalCoherenceThreshold
         {
@@ -18,10 +18,14 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public uint m_EnvironmentLightingMode { get; }
-        public bool m_EnableBakedLightmaps { get; }
-        public bool m_EnableRealtimeLightmaps { get; }
+        public uint m_EnvironmentLightingMode { get; set; }
+        public bool m_EnableBakedLightmaps { get; set; }
+        public bool m_EnableRealtimeLightmaps { get; set; }
     }
 }

@@ -8,13 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IParticleSystemEmissionBurst : IPreDefinedInterface
     {
-        public float time { get; }
+        public float time { get; set; }
 
         public uint? minCount
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -24,16 +28,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public uint cycleCount { get; }
-        public float repeatInterval { get; }
+        public uint cycleCount { get; set; }
+        public float repeatInterval { get; set; }
 
         public IMinMaxCurve? countCurve
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -42,6 +54,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

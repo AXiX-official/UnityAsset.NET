@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPPtrKeyframe : IPreDefinedInterface
     {
-        public float time { get; }
-        public PPtr<IUnityObject> value { get; }
+        public float time { get; set; }
+        public PPtr<IUnityObject> value { get; set; }
     }
 }

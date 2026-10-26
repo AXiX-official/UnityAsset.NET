@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAddedGameObject : IPreDefinedInterface
     {
-        public PPtr<ITransform> targetCorrespondingSourceObject { get; }
-        public int insertIndex { get; }
-        public PPtr<ITransform> addedObject { get; }
+        public PPtr<ITransform> targetCorrespondingSourceObject { get; set; }
+        public int insertIndex { get; set; }
+        public PPtr<ITransform> addedObject { get; set; }
     }
 }

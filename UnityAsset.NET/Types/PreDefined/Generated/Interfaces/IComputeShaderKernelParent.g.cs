@@ -8,13 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IComputeShaderKernelParent : IPreDefinedInterface
     {
-        public string name { get; }
+        public string name { get; set; }
 
         public ValueTuple<string, IComputeShaderKernel>[]? variantMap
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -24,6 +28,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public string[]? globalKeywords
@@ -31,6 +39,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -40,6 +52,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IComputeShaderKernel[]? uniqueVariants
@@ -47,6 +63,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -56,6 +76,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public string[]? dynamicKeywords
@@ -63,6 +87,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

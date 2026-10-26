@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHeightMeshBVNode : IPreDefinedInterface
     {
-        public Vector3f min { get; }
-        public Vector3f max { get; }
-        public int i { get; }
-        public int n { get; }
+        public Vector3f min { get; set; }
+        public Vector3f max { get; set; }
+        public int i { get; set; }
+        public int n { get; set; }
     }
 }

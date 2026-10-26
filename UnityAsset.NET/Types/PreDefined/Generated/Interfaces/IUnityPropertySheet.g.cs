@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IUnityPropertySheet : IPreDefinedInterface
     {
-        public ValueTuple<string, IUnityTexEnv>[] m_TexEnvs { get; }
-        public ValueTuple<string, float>[] m_Floats { get; }
-        public ValueTuple<string, IColorRGBA>[] m_Colors { get; }
+        public ValueTuple<string, IUnityTexEnv>[] m_TexEnvs { get; set; }
+        public ValueTuple<string, float>[] m_Floats { get; set; }
+        public ValueTuple<string, IColorRGBA>[] m_Colors { get; set; }
 
         public ValueTuple<string, int>[]? m_Ints
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

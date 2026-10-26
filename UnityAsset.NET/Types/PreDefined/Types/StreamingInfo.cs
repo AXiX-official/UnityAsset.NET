@@ -9,9 +9,9 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 public class StreamingInfo  : IPreDefinedObject
 {
     public string ClassName => "StreamingInfo";
-    public UInt64 offset { get; }
-    public UInt32 size { get; }
-    public string path { get; }
+    public UInt64 offset { get; set; }
+    public UInt32 size { get; set; }
+    public string path { get; set; }
     
     public StreamingInfo(IReader reader)
     {
@@ -27,7 +27,7 @@ public class StreamingInfo  : IPreDefinedObject
     
     public void Write(IWriter writer)
     {
-        if (writer is not AssetWriter assetWriter)
+        if (writer is not IAssetWriter assetWriter)
             throw new InvalidOperationException(
                 "Writing StreamingInfo needs an AssetWriter: the offset width depends on the asset's Unity version.");
 

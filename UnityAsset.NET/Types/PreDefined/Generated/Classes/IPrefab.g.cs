@@ -14,6 +14,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public PPtr<IPrefab>? m_ParentPrefab
@@ -22,15 +26,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public PPtr<GameObject> m_RootGameObject { get; }
+        public PPtr<GameObject> m_RootGameObject { get; set; }
 
         public bool? m_IsPrefabParent
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -40,6 +52,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_IsPrefabAsset
@@ -47,6 +63,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -56,6 +76,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public bool? m_ContainsMissingSerializeReferenceTypes
@@ -63,6 +87,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

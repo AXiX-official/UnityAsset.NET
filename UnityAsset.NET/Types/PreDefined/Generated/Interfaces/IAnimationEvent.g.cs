@@ -8,12 +8,12 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimationEvent : IPreDefinedInterface
     {
-        public float time { get; }
-        public string functionName { get; }
-        public string data { get; }
-        public PPtr<IUnityObject> objectReferenceParameter { get; }
-        public float floatParameter { get; }
-        public int intParameter { get; }
-        public int messageOptions { get; }
+        public float time { get; set; }
+        public string functionName { get; set; }
+        public string data { get; set; }
+        public PPtr<IUnityObject> objectReferenceParameter { get; set; }
+        public float floatParameter { get; set; }
+        public int intParameter { get; set; }
+        public int messageOptions { get; set; }
     }
 }

@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IFlare : INamedObject
     {
-        public PPtr<IUnityObject> m_FlareTexture { get; }
-        public int m_TextureLayout { get; }
-        public IFlareElement[] m_Elements { get; }
-        public bool m_UseFog { get; }
+        public PPtr<IUnityObject> m_FlareTexture { get; set; }
+        public int m_TextureLayout { get; set; }
+        public IFlareElement[] m_Elements { get; set; }
+        public bool m_UseFog { get; set; }
     }
 }

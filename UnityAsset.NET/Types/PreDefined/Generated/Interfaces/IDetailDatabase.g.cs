@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IDetailDatabase : IPreDefinedInterface
     {
-        public IDetailPatch[] m_Patches { get; }
-        public IDetailPrototype[] m_DetailPrototypes { get; }
-        public int m_PatchCount { get; }
-        public int m_PatchSamples { get; }
+        public IDetailPatch[] m_Patches { get; set; }
+        public IDetailPrototype[] m_DetailPrototypes { get; set; }
+        public int m_PatchCount { get; set; }
+        public int m_PatchSamples { get; set; }
 
         public Vector3f[]? m_RandomRotations
         {
@@ -19,21 +19,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public IColorRGBA WavingGrassTint { get; }
-        public float m_WavingGrassStrength { get; }
-        public float m_WavingGrassAmount { get; }
-        public float m_WavingGrassSpeed { get; }
-        public ITreeInstance[] m_TreeInstances { get; }
-        public ITreePrototype[] m_TreePrototypes { get; }
-        public PPtr<ITexture2D>[] m_PreloadTextureAtlasData { get; }
+        public IColorRGBA WavingGrassTint { get; set; }
+        public float m_WavingGrassStrength { get; set; }
+        public float m_WavingGrassAmount { get; set; }
+        public float m_WavingGrassSpeed { get; set; }
+        public ITreeInstance[] m_TreeInstances { get; set; }
+        public ITreePrototype[] m_TreePrototypes { get; set; }
+        public PPtr<ITexture2D>[] m_PreloadTextureAtlasData { get; set; }
 
         public PPtr<IShader>? m_DetailBillboardShader
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -43,6 +51,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public PPtr<IShader>? m_DetailMeshGrassShader
@@ -50,6 +62,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -59,6 +75,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public PPtr<IShader>? m_DefaultShaders_1_
@@ -66,6 +86,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -75,6 +99,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_DetailScatterMode
@@ -82,6 +110,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

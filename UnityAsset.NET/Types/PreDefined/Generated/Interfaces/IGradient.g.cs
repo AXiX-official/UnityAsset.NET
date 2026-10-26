@@ -8,39 +8,43 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IGradient : IPreDefinedInterface
     {
-        public IColorRGBA key0 { get; }
-        public IColorRGBA key1 { get; }
-        public IColorRGBA key2 { get; }
-        public IColorRGBA key3 { get; }
-        public IColorRGBA key4 { get; }
-        public IColorRGBA key5 { get; }
-        public IColorRGBA key6 { get; }
-        public IColorRGBA key7 { get; }
-        public ushort ctime0 { get; }
-        public ushort ctime1 { get; }
-        public ushort ctime2 { get; }
-        public ushort ctime3 { get; }
-        public ushort ctime4 { get; }
-        public ushort ctime5 { get; }
-        public ushort ctime6 { get; }
-        public ushort ctime7 { get; }
-        public ushort atime0 { get; }
-        public ushort atime1 { get; }
-        public ushort atime2 { get; }
-        public ushort atime3 { get; }
-        public ushort atime4 { get; }
-        public ushort atime5 { get; }
-        public ushort atime6 { get; }
-        public ushort atime7 { get; }
-        public RefSum<int, byte> m_Mode { get; }
-        public byte m_NumColorKeys { get; }
-        public byte m_NumAlphaKeys { get; }
+        public IColorRGBA key0 { get; set; }
+        public IColorRGBA key1 { get; set; }
+        public IColorRGBA key2 { get; set; }
+        public IColorRGBA key3 { get; set; }
+        public IColorRGBA key4 { get; set; }
+        public IColorRGBA key5 { get; set; }
+        public IColorRGBA key6 { get; set; }
+        public IColorRGBA key7 { get; set; }
+        public ushort ctime0 { get; set; }
+        public ushort ctime1 { get; set; }
+        public ushort ctime2 { get; set; }
+        public ushort ctime3 { get; set; }
+        public ushort ctime4 { get; set; }
+        public ushort ctime5 { get; set; }
+        public ushort ctime6 { get; set; }
+        public ushort ctime7 { get; set; }
+        public ushort atime0 { get; set; }
+        public ushort atime1 { get; set; }
+        public ushort atime2 { get; set; }
+        public ushort atime3 { get; set; }
+        public ushort atime4 { get; set; }
+        public ushort atime5 { get; set; }
+        public ushort atime6 { get; set; }
+        public ushort atime7 { get; set; }
+        public RefSum<int, byte> m_Mode { get; set; }
+        public byte m_NumColorKeys { get; set; }
+        public byte m_NumAlphaKeys { get; set; }
 
         public sbyte? m_ColorSpace
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

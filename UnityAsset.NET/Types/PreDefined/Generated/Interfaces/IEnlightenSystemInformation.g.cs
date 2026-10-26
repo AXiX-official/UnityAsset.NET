@@ -8,12 +8,12 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IEnlightenSystemInformation : IPreDefinedInterface
     {
-        public uint rendererIndex { get; }
-        public uint rendererSize { get; }
-        public int atlasIndex { get; }
-        public int atlasOffsetX { get; }
-        public int atlasOffsetY { get; }
-        public IHash128 inputSystemHash { get; }
-        public IHash128 radiositySystemHash { get; }
+        public uint rendererIndex { get; set; }
+        public uint rendererSize { get; set; }
+        public int atlasIndex { get; set; }
+        public int atlasOffsetX { get; set; }
+        public int atlasOffsetY { get; set; }
+        public IHash128 inputSystemHash { get; set; }
+        public IHash128 radiositySystemHash { get; set; }
     }
 }

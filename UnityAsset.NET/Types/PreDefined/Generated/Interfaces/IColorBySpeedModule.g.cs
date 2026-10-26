@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IColorBySpeedModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxGradient gradient { get; }
-        public Vector2f range { get; }
+        public bool enabled { get; set; }
+        public IMinMaxGradient gradient { get; set; }
+        public Vector2f range { get; set; }
     }
 }

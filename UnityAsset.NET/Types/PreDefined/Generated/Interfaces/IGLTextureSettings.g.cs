@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IGLTextureSettings : IPreDefinedInterface
     {
-        public int m_FilterMode { get; }
-        public int m_Aniso { get; }
-        public float m_MipBias { get; }
-        public int m_WrapU { get; }
-        public int m_WrapV { get; }
-        public int m_WrapW { get; }
+        public int m_FilterMode { get; set; }
+        public int m_Aniso { get; set; }
+        public float m_MipBias { get; set; }
+        public int m_WrapU { get; set; }
+        public int m_WrapV { get; set; }
+        public int m_WrapW { get; set; }
     }
 }

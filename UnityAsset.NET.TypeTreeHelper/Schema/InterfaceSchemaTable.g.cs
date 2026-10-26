@@ -3743,7 +3743,7 @@ internal static class GeneratedInterfaceSchemaTable
             new("m_Bones", "ISpriteBone[]?", true),
             new("m_Border", "Vector4f", false),
             new("m_Extrude", "uint", false),
-            new("m_IsPolygon", "bool", false),
+            new("m_IsPolygon", "bool?", true),
             new("m_Offset", "Vector2f", false),
             new("m_PhysicsShape", "Vector2f[][]", false),
             new("m_Pivot", "Vector2f", false),

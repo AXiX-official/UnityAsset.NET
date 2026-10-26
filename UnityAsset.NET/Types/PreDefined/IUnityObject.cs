@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using UnityAsset.NET.IO;
 
 namespace UnityAsset.NET.Types.PreDefined;
 
@@ -18,4 +19,6 @@ public interface IUnityObject
         root.ToPlainText(sb);
         return sb.ToString();
     }
+
+    public void Write(IWriter writer);
 }

@@ -8,14 +8,14 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITetrahedron : IPreDefinedInterface
     {
-        public int indices_0_ { get; }
-        public int indices_1_ { get; }
-        public int indices_2_ { get; }
-        public int indices_3_ { get; }
-        public int neighbors_0_ { get; }
-        public int neighbors_1_ { get; }
-        public int neighbors_2_ { get; }
-        public int neighbors_3_ { get; }
-        public IMatrix3x4f matrix { get; }
+        public int indices_0_ { get; set; }
+        public int indices_1_ { get; set; }
+        public int indices_2_ { get; set; }
+        public int indices_3_ { get; set; }
+        public int neighbors_0_ { get; set; }
+        public int neighbors_1_ { get; set; }
+        public int neighbors_2_ { get; set; }
+        public int neighbors_3_ { get; set; }
+        public IMatrix3x4f matrix { get; set; }
     }
 }

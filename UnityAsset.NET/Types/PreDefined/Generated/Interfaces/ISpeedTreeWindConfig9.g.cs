@@ -8,36 +8,40 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpeedTreeWindConfig9 : IPreDefinedInterface
     {
-        public float m_fStrengthResponse { get; }
-        public float m_fDirectionResponse { get; }
-        public float m_fGustFrequency { get; }
-        public float m_fGustStrengthMin { get; }
-        public float m_fGustStrengthMax { get; }
-        public float m_fGustDurationMin { get; }
-        public float m_fGustDurationMax { get; }
-        public float m_fGustRiseScalar { get; }
-        public float m_fGustFallScalar { get; }
-        public float m_fBranch1StretchLimit { get; }
-        public float m_fBranch2StretchLimit { get; }
-        public float m_fSharedHeightStart { get; }
-        public IBranchWindLevel m_sShared { get; }
-        public IBranchWindLevel m_sBranch1 { get; }
-        public IBranchWindLevel m_sBranch2 { get; }
-        public IRippleGroup m_sRipple { get; }
-        public Vector3f m_vTreeExtents { get; }
-        public float m_fWindIndependence { get; }
-        public int m_bDoShared { get; }
-        public int m_bDoBranch1 { get; }
-        public int m_bDoBranch2 { get; }
-        public int m_bDoRipple { get; }
-        public int m_bDoShimmer { get; }
-        public int m_bLodFade { get; }
+        public float m_fStrengthResponse { get; set; }
+        public float m_fDirectionResponse { get; set; }
+        public float m_fGustFrequency { get; set; }
+        public float m_fGustStrengthMin { get; set; }
+        public float m_fGustStrengthMax { get; set; }
+        public float m_fGustDurationMin { get; set; }
+        public float m_fGustDurationMax { get; set; }
+        public float m_fGustRiseScalar { get; set; }
+        public float m_fGustFallScalar { get; set; }
+        public float m_fBranch1StretchLimit { get; set; }
+        public float m_fBranch2StretchLimit { get; set; }
+        public float m_fSharedHeightStart { get; set; }
+        public IBranchWindLevel m_sShared { get; set; }
+        public IBranchWindLevel m_sBranch1 { get; set; }
+        public IBranchWindLevel m_sBranch2 { get; set; }
+        public IRippleGroup m_sRipple { get; set; }
+        public Vector3f m_vTreeExtents { get; set; }
+        public float m_fWindIndependence { get; set; }
+        public int m_bDoShared { get; set; }
+        public int m_bDoBranch1 { get; set; }
+        public int m_bDoBranch2 { get; set; }
+        public int m_bDoRipple { get; set; }
+        public int m_bDoShimmer { get; set; }
+        public int m_bLodFade { get; set; }
 
         public int? pad
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -46,6 +50,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

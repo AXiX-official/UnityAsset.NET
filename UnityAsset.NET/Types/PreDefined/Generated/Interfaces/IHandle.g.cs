@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHandle : IPreDefinedInterface
     {
-        public Ixform m_X { get; }
-        public uint m_ParentHumanIndex { get; }
-        public uint m_ID { get; }
+        public Ixform m_X { get; set; }
+        public uint m_ParentHumanIndex { get; set; }
+        public uint m_ID { get; set; }
     }
 }

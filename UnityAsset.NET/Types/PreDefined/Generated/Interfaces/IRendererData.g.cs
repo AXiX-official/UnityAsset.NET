@@ -8,19 +8,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IRendererData : IPreDefinedInterface
     {
-        public PPtr<IMesh> uvMesh { get; }
-        public Vector4f terrainDynamicUVST { get; }
-        public Vector4f terrainChunkDynamicUVST { get; }
-        public ushort lightmapIndex { get; }
-        public ushort lightmapIndexDynamic { get; }
-        public Vector4f lightmapST { get; }
-        public Vector4f lightmapSTDynamic { get; }
+        public PPtr<IMesh> uvMesh { get; set; }
+        public Vector4f terrainDynamicUVST { get; set; }
+        public Vector4f terrainChunkDynamicUVST { get; set; }
+        public ushort lightmapIndex { get; set; }
+        public ushort lightmapIndexDynamic { get; set; }
+        public Vector4f lightmapST { get; set; }
+        public Vector4f lightmapSTDynamic { get; set; }
 
         public IHash128? explicitProbeSetHash
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

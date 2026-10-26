@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBuildTargetSettings : IPreDefinedInterface
     {
-        public string m_BuildTarget { get; }
-        public int m_TextureWidth { get; }
-        public int m_TextureHeight { get; }
-        public int m_TextureFormat { get; }
-        public int m_LoadingBehavior { get; }
+        public string m_BuildTarget { get; set; }
+        public int m_TextureWidth { get; set; }
+        public int m_TextureHeight { get; set; }
+        public int m_TextureFormat { get; set; }
+        public int m_LoadingBehavior { get; set; }
     }
 }

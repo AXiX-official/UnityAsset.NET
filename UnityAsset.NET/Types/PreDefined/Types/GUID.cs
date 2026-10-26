@@ -6,10 +6,10 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 public struct GUID : IPreDefinedInterface, IEquatable<GUID>
 {
     public string ClassName => "GUID";
-    public UInt32 data_0_ { get; }
-    public UInt32 data_1_ { get; }
-    public UInt32 data_2_ { get; }
-    public UInt32 data_3_ { get; }
+    public UInt32 data_0_ { get; set; }
+    public UInt32 data_1_ { get; set; }
+    public UInt32 data_2_ { get; set; }
+    public UInt32 data_3_ { get; set; }
 
     public GUID(IReader reader)
     {

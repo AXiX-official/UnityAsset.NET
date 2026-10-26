@@ -8,13 +8,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITriggerModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
+        public bool enabled { get; set; }
 
         public PPtr<IComponent>? collisionShape0
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -24,6 +28,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public PPtr<IComponent>? collisionShape2
@@ -31,6 +39,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -40,6 +52,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public PPtr<IComponent>? collisionShape4
@@ -47,6 +63,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -56,19 +76,27 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public int inside { get; }
-        public int outside { get; }
-        public int enter { get; }
-        public int exit { get; }
-        public float radiusScale { get; }
+        public int inside { get; set; }
+        public int outside { get; set; }
+        public int enter { get; set; }
+        public int exit { get; set; }
+        public float radiusScale { get; set; }
 
         public int? colliderQueryMode
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -77,6 +105,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

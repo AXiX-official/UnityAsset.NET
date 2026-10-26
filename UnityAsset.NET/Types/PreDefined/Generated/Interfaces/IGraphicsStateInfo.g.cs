@@ -8,24 +8,28 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IGraphicsStateInfo : IPreDefinedInterface
     {
-        public ulong vertexLayout { get; }
-        public ulong renderPass { get; }
-        public ulong renderState { get; }
-        public int subPassIndex { get; }
-        public int topology { get; }
-        public int forceCullMode { get; }
-        public float depthBias { get; }
-        public float slopeDepthBias { get; }
-        public bool userBackface { get; }
-        public bool appBackface { get; }
-        public bool wireframe { get; }
-        public bool invertProjectionMatrix { get; }
+        public ulong vertexLayout { get; set; }
+        public ulong renderPass { get; set; }
+        public ulong renderState { get; set; }
+        public int subPassIndex { get; set; }
+        public int topology { get; set; }
+        public int forceCullMode { get; set; }
+        public float depthBias { get; set; }
+        public float slopeDepthBias { get; set; }
+        public bool userBackface { get; set; }
+        public bool appBackface { get; set; }
+        public bool wireframe { get; set; }
+        public bool invertProjectionMatrix { get; set; }
 
         public int? shadingRateCombinerPrimitive
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -35,6 +39,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? baseShadingRate
@@ -42,6 +50,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -51,6 +63,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ulong? nonfilteringSamplerBindings
@@ -58,6 +74,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

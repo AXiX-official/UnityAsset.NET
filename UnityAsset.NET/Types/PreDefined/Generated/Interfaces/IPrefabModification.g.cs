@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPrefabModification : IPreDefinedInterface
     {
-        public PPtr<ITransform> m_TransformParent { get; }
-        public IPropertyModification[] m_Modifications { get; }
-        public RefSum<PPtr<IUnityObject>[], PPtr<IComponent>[]> m_RemovedComponents { get; }
+        public PPtr<ITransform> m_TransformParent { get; set; }
+        public IPropertyModification[] m_Modifications { get; set; }
+        public RefSum<PPtr<IUnityObject>[], PPtr<IComponent>[]> m_RemovedComponents { get; set; }
 
         public IAddedGameObject[]? m_AddedGameObjects
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -26,6 +30,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IAddedComponent[]? m_AddedComponents
@@ -33,6 +41,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

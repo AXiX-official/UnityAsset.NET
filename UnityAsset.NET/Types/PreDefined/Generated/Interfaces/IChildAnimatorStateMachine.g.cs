@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IChildAnimatorStateMachine : IPreDefinedInterface
     {
-        public PPtr<IAnimatorStateMachine> m_StateMachine { get; }
-        public Vector3f m_Position { get; }
+        public PPtr<IAnimatorStateMachine> m_StateMachine { get; set; }
+        public Vector3f m_Position { get; set; }
     }
 }

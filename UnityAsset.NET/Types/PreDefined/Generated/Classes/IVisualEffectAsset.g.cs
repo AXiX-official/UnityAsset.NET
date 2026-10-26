@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVisualEffectAsset : INamedObject
     {
-        public IVisualEffectInfo m_Infos { get; }
-        public IVFXSystemDesc[] m_Systems { get; }
+        public IVisualEffectInfo m_Infos { get; set; }
+        public IVFXSystemDesc[] m_Systems { get; set; }
     }
 }

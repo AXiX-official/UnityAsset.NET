@@ -8,13 +8,13 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAudioMixer : INamedObject
     {
-        public PPtr<IAudioMixerGroup> m_OutputGroup { get; }
-        public PPtr<IAudioMixerGroup> m_MasterGroup { get; }
-        public PPtr<IAudioMixerSnapshot>[] m_Snapshots { get; }
-        public PPtr<IAudioMixerSnapshot> m_StartSnapshot { get; }
-        public float m_SuspendThreshold { get; }
-        public bool m_EnableSuspend { get; }
-        public int m_UpdateMode { get; }
-        public IAudioMixerConstant m_MixerConstant { get; }
+        public PPtr<IAudioMixerGroup> m_OutputGroup { get; set; }
+        public PPtr<IAudioMixerGroup> m_MasterGroup { get; set; }
+        public PPtr<IAudioMixerSnapshot>[] m_Snapshots { get; set; }
+        public PPtr<IAudioMixerSnapshot> m_StartSnapshot { get; set; }
+        public float m_SuspendThreshold { get; set; }
+        public bool m_EnableSuspend { get; set; }
+        public int m_UpdateMode { get; set; }
+        public IAudioMixerConstant m_MixerConstant { get; set; }
     }
 }

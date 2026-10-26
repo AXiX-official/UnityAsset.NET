@@ -14,10 +14,14 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public int mode { get; }
-        public float spread { get; }
-        public IMinMaxCurve speed { get; }
+        public int mode { get; set; }
+        public float spread { get; set; }
+        public IMinMaxCurve speed { get; set; }
     }
 }

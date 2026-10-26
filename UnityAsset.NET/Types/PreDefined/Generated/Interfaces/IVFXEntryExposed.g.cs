@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IVFXEntryExposed : IPreDefinedInterface
     {
-        public RefSum<float, Vector2f, Vector3f, Vector4f, uint, int, IMatrix4x4f, IAnimationCurve<float>, IGradient, PPtr<INamedObject>, bool, PPtr<IUnityObject>> m_Value { get; }
-        public bool m_Overridden { get; }
+        public RefSum<float, Vector2f, Vector3f, Vector4f, uint, int, IMatrix4x4f, IAnimationCurve<float>, IGradient, PPtr<INamedObject>, bool, PPtr<IUnityObject>> m_Value { get; set; }
+        public bool m_Overridden { get; set; }
     }
 }

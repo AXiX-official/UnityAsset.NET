@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteSheetMetaData : IPreDefinedInterface
     {
-        public ISpriteMetaData[] m_Sprites { get; }
-        public Vector2f[][] m_Outline { get; }
-        public Vector2f[][] m_PhysicsShape { get; }
+        public ISpriteMetaData[] m_Sprites { get; set; }
+        public Vector2f[][] m_Outline { get; set; }
+        public Vector2f[][] m_PhysicsShape { get; set; }
 
         public ISpriteBone[]? m_Bones
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -26,6 +30,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Vector2f[]? m_Vertices
@@ -33,6 +41,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -42,6 +54,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Iint2_storage[]? m_Edges
@@ -49,6 +65,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -58,6 +78,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public long? m_InternalID
@@ -65,6 +89,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -74,6 +102,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ValueTuple<string, long>[]? m_NameFileIdTable
@@ -81,6 +113,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -90,6 +126,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ISpriteCustomMetadata? m_SpriteCustomMetadata
@@ -97,6 +137,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

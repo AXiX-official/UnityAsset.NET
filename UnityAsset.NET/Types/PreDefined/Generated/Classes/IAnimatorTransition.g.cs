@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimatorTransition : INamedObject
     {
-        public IAnimatorCondition[] m_Conditions { get; }
-        public PPtr<IAnimatorStateMachine> m_DstStateMachine { get; }
-        public PPtr<IAnimatorState> m_DstState { get; }
-        public bool m_Solo { get; }
-        public bool m_Mute { get; }
-        public bool m_IsExit { get; }
+        public IAnimatorCondition[] m_Conditions { get; set; }
+        public PPtr<IAnimatorStateMachine> m_DstStateMachine { get; set; }
+        public PPtr<IAnimatorState> m_DstState { get; set; }
+        public bool m_Solo { get; set; }
+        public bool m_Mute { get; set; }
+        public bool m_IsExit { get; set; }
     }
 }

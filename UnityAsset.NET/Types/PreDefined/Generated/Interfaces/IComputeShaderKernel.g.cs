@@ -14,21 +14,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public IComputeShaderResource[] cbs { get; }
-        public IComputeShaderResource[] textures { get; }
-        public IComputeShaderBuiltinSampler[] builtinSamplers { get; }
-        public IComputeShaderResource[] inBuffers { get; }
-        public IComputeShaderResource[] outBuffers { get; }
-        public byte[] code { get; }
-        public uint[] threadGroupSize { get; }
+        public IComputeShaderResource[] cbs { get; set; }
+        public IComputeShaderResource[] textures { get; set; }
+        public IComputeShaderBuiltinSampler[] builtinSamplers { get; set; }
+        public IComputeShaderResource[] inBuffers { get; set; }
+        public IComputeShaderResource[] outBuffers { get; set; }
+        public byte[] code { get; set; }
+        public uint[] threadGroupSize { get; set; }
 
         public uint[]? cbVariantIndices
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -37,6 +45,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,11 +8,11 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISizeBySpeedModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxCurve curve { get; }
-        public IMinMaxCurve y { get; }
-        public IMinMaxCurve z { get; }
-        public Vector2f range { get; }
-        public bool separateAxes { get; }
+        public bool enabled { get; set; }
+        public IMinMaxCurve curve { get; set; }
+        public IMinMaxCurve y { get; set; }
+        public IMinMaxCurve z { get; set; }
+        public Vector2f range { get; set; }
+        public bool separateAxes { get; set; }
     }
 }

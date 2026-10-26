@@ -8,25 +8,29 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IHumanDescription : IPreDefinedInterface
     {
-        public IHumanBone[] m_Human { get; }
-        public ISkeletonBone[] m_Skeleton { get; }
-        public float m_ArmTwist { get; }
-        public float m_ForeArmTwist { get; }
-        public float m_UpperLegTwist { get; }
-        public float m_LegTwist { get; }
-        public float m_ArmStretch { get; }
-        public float m_LegStretch { get; }
-        public float m_FeetSpacing { get; }
-        public string m_RootMotionBoneName { get; }
-        public bool m_HasTranslationDoF { get; }
-        public bool m_HasExtraRoot { get; }
-        public bool m_SkeletonHasParents { get; }
+        public IHumanBone[] m_Human { get; set; }
+        public ISkeletonBone[] m_Skeleton { get; set; }
+        public float m_ArmTwist { get; set; }
+        public float m_ForeArmTwist { get; set; }
+        public float m_UpperLegTwist { get; set; }
+        public float m_LegTwist { get; set; }
+        public float m_ArmStretch { get; set; }
+        public float m_LegStretch { get; set; }
+        public float m_FeetSpacing { get; set; }
+        public string m_RootMotionBoneName { get; set; }
+        public bool m_HasTranslationDoF { get; set; }
+        public bool m_HasExtraRoot { get; set; }
+        public bool m_SkeletonHasParents { get; set; }
 
         public float? m_GlobalScale
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -35,6 +39,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

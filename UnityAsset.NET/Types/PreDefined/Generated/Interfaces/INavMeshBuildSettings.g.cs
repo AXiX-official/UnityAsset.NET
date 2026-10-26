@@ -8,24 +8,28 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface INavMeshBuildSettings : IPreDefinedInterface
     {
-        public int agentTypeID { get; }
-        public float agentRadius { get; }
-        public float agentHeight { get; }
-        public float agentSlope { get; }
-        public float agentClimb { get; }
-        public float ledgeDropHeight { get; }
-        public float maxJumpAcrossDistance { get; }
-        public float minRegionArea { get; }
-        public int manualCellSize { get; }
-        public float cellSize { get; }
-        public int manualTileSize { get; }
-        public int tileSize { get; }
+        public int agentTypeID { get; set; }
+        public float agentRadius { get; set; }
+        public float agentHeight { get; set; }
+        public float agentSlope { get; set; }
+        public float agentClimb { get; set; }
+        public float ledgeDropHeight { get; set; }
+        public float maxJumpAcrossDistance { get; set; }
+        public float minRegionArea { get; set; }
+        public int manualCellSize { get; set; }
+        public float cellSize { get; set; }
+        public int manualTileSize { get; set; }
+        public int tileSize { get; set; }
 
         public int? accuratePlacement
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -35,6 +39,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public uint? maxJobWorkers
@@ -42,6 +50,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -51,6 +63,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? preserveTilesOutsideBounds
@@ -59,6 +75,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? buildHeightMesh
@@ -66,6 +86,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IParticleSystemForceField : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public byte m_Enabled { get; }
-        public IParticleSystemForceFieldParameters m_Parameters { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
+        public byte m_Enabled { get; set; }
+        public IParticleSystemForceFieldParameters m_Parameters { get; set; }
     }
 }

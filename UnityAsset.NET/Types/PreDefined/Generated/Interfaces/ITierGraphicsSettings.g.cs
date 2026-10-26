@@ -8,17 +8,21 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITierGraphicsSettings : IPreDefinedInterface
     {
-        public int renderingPath { get; }
-        public int hdrMode { get; }
-        public int realtimeGICPUUsage { get; }
-        public bool useCascadedShadowMaps { get; }
-        public bool useHDR { get; }
+        public int renderingPath { get; set; }
+        public int hdrMode { get; set; }
+        public int realtimeGICPUUsage { get; set; }
+        public bool useCascadedShadowMaps { get; set; }
+        public bool useHDR { get; set; }
 
         public bool? enableLPPV
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -27,6 +31,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

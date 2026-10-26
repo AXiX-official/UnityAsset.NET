@@ -6,11 +6,11 @@ namespace UnityAsset.NET.Types.PreDefined.Types;
 public class GameObject : INamedObject
 {
     public string ClassName => "GameObject";
-    public List<ComponentPair> m_Component { get; }
-    public UInt32 m_Layer { get; }
-    public String m_Name { get; }
-    public UInt16 m_Tag { get; }
-    public Boolean m_IsActive { get; }
+    public List<ComponentPair> m_Component { get; set; }
+    public UInt32 m_Layer { get; set; }
+    public String m_Name { get; set; }
+    public UInt16 m_Tag { get; set; }
+    public Boolean m_IsActive { get; set; }
 
     public GameObject(IReader reader)
     {

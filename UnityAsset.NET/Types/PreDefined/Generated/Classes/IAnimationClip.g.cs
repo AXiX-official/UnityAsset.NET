@@ -8,29 +8,33 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAnimationClip : INamedObject
     {
-        public bool m_Legacy { get; }
-        public bool m_Compressed { get; }
-        public bool m_UseHighQualityCurve { get; }
-        public IQuaternionCurve[] m_RotationCurves { get; }
-        public ICompressedAnimationCurve[] m_CompressedRotationCurves { get; }
-        public IVector3Curve[] m_EulerCurves { get; }
-        public IVector3Curve[] m_PositionCurves { get; }
-        public IVector3Curve[] m_ScaleCurves { get; }
-        public IFloatCurve[] m_FloatCurves { get; }
-        public IPPtrCurve[] m_PPtrCurves { get; }
-        public float m_SampleRate { get; }
-        public int m_WrapMode { get; }
-        public IAABB m_Bounds { get; }
-        public uint m_MuscleClipSize { get; }
-        public IClipMuscleConstant m_MuscleClip { get; }
-        public IAnimationClipBindingConstant m_ClipBindingConstant { get; }
-        public IAnimationEvent[] m_Events { get; }
+        public bool m_Legacy { get; set; }
+        public bool m_Compressed { get; set; }
+        public bool m_UseHighQualityCurve { get; set; }
+        public IQuaternionCurve[] m_RotationCurves { get; set; }
+        public ICompressedAnimationCurve[] m_CompressedRotationCurves { get; set; }
+        public IVector3Curve[] m_EulerCurves { get; set; }
+        public IVector3Curve[] m_PositionCurves { get; set; }
+        public IVector3Curve[] m_ScaleCurves { get; set; }
+        public IFloatCurve[] m_FloatCurves { get; set; }
+        public IPPtrCurve[] m_PPtrCurves { get; set; }
+        public float m_SampleRate { get; set; }
+        public int m_WrapMode { get; set; }
+        public IAABB m_Bounds { get; set; }
+        public uint m_MuscleClipSize { get; set; }
+        public IClipMuscleConstant m_MuscleClip { get; set; }
+        public IAnimationClipBindingConstant m_ClipBindingConstant { get; set; }
+        public IAnimationEvent[] m_Events { get; set; }
 
         public bool? m_HasGenericRootTransform
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -39,6 +43,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,15 +8,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAvatar : INamedObject
     {
-        public uint m_AvatarSize { get; }
-        public IAvatarConstant m_Avatar { get; }
-        public ValueTuple<uint, string>[] m_TOS { get; }
+        public uint m_AvatarSize { get; set; }
+        public IAvatarConstant m_Avatar { get; set; }
+        public ValueTuple<uint, string>[] m_TOS { get; set; }
 
         public IHumanDescription? m_HumanDescription
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

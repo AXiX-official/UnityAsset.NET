@@ -8,36 +8,40 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAudioSource : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public byte m_Enabled { get; }
-        public PPtr<IAudioMixerGroup> OutputAudioMixerGroup { get; }
-        public PPtr<IAudioClip> m_audioClip { get; }
-        public bool m_PlayOnAwake { get; }
-        public float m_Volume { get; }
-        public float m_Pitch { get; }
-        public bool Loop { get; }
-        public bool Mute { get; }
-        public bool Spatialize { get; }
-        public bool SpatializePostEffects { get; }
-        public int Priority { get; }
-        public float DopplerLevel { get; }
-        public float MinDistance { get; }
-        public float MaxDistance { get; }
-        public float Pan2D { get; }
-        public int rolloffMode { get; }
-        public bool BypassEffects { get; }
-        public bool BypassListenerEffects { get; }
-        public bool BypassReverbZones { get; }
-        public IAnimationCurve<float> rolloffCustomCurve { get; }
-        public IAnimationCurve<float> panLevelCustomCurve { get; }
-        public IAnimationCurve<float> spreadCustomCurve { get; }
-        public IAnimationCurve<float> reverbZoneMixCustomCurve { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
+        public byte m_Enabled { get; set; }
+        public PPtr<IAudioMixerGroup> OutputAudioMixerGroup { get; set; }
+        public PPtr<IAudioClip> m_audioClip { get; set; }
+        public bool m_PlayOnAwake { get; set; }
+        public float m_Volume { get; set; }
+        public float m_Pitch { get; set; }
+        public bool Loop { get; set; }
+        public bool Mute { get; set; }
+        public bool Spatialize { get; set; }
+        public bool SpatializePostEffects { get; set; }
+        public int Priority { get; set; }
+        public float DopplerLevel { get; set; }
+        public float MinDistance { get; set; }
+        public float MaxDistance { get; set; }
+        public float Pan2D { get; set; }
+        public int rolloffMode { get; set; }
+        public bool BypassEffects { get; set; }
+        public bool BypassListenerEffects { get; set; }
+        public bool BypassReverbZones { get; set; }
+        public IAnimationCurve<float> rolloffCustomCurve { get; set; }
+        public IAnimationCurve<float> panLevelCustomCurve { get; set; }
+        public IAnimationCurve<float> spreadCustomCurve { get; set; }
+        public IAnimationCurve<float> reverbZoneMixCustomCurve { get; set; }
 
         public IExtensionPropertyValue[]? m_ExtensionPropertyValues
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -46,6 +50,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

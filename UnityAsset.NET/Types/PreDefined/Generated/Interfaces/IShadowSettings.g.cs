@@ -8,19 +8,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IShadowSettings : IPreDefinedInterface
     {
-        public int m_Type { get; }
-        public int m_Resolution { get; }
-        public int m_CustomResolution { get; }
-        public float m_Strength { get; }
-        public float m_Bias { get; }
-        public float m_NormalBias { get; }
-        public float m_NearPlane { get; }
+        public int m_Type { get; set; }
+        public int m_Resolution { get; set; }
+        public int m_CustomResolution { get; set; }
+        public float m_Strength { get; set; }
+        public float m_Bias { get; set; }
+        public float m_NormalBias { get; set; }
+        public float m_NearPlane { get; set; }
 
         public IMatrix4x4f? m_CullingMatrixOverride
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -29,6 +33,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

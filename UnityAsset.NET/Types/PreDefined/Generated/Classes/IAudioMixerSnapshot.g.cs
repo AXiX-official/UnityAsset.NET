@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IAudioMixerSnapshot : INamedObject
     {
-        public PPtr<IAudioMixer> m_AudioMixer { get; }
-        public GUID m_SnapshotID { get; }
+        public PPtr<IAudioMixer> m_AudioMixer { get; set; }
+        public GUID m_SnapshotID { get; set; }
     }
 }

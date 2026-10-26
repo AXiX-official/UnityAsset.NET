@@ -8,20 +8,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IClampVelocityModule : IPreDefinedInterface
     {
-        public bool enabled { get; }
-        public IMinMaxCurve x { get; }
-        public IMinMaxCurve y { get; }
-        public IMinMaxCurve z { get; }
-        public IMinMaxCurve magnitude { get; }
-        public bool separateAxis { get; }
-        public bool inWorldSpace { get; }
-        public float dampen { get; }
+        public bool enabled { get; set; }
+        public IMinMaxCurve x { get; set; }
+        public IMinMaxCurve y { get; set; }
+        public IMinMaxCurve z { get; set; }
+        public IMinMaxCurve magnitude { get; set; }
+        public bool separateAxis { get; set; }
+        public bool inWorldSpace { get; set; }
+        public float dampen { get; set; }
 
         public bool? multiplyDragByParticleSize
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -31,6 +35,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IMinMaxCurve? drag
@@ -38,6 +46,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

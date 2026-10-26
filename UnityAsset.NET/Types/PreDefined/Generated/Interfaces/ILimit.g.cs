@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILimit : IPreDefinedInterface
     {
-        public Ifloat3 m_Min { get; }
-        public Ifloat3 m_Max { get; }
+        public Ifloat3 m_Min { get; set; }
+        public Ifloat3 m_Max { get; set; }
     }
 }

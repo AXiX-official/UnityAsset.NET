@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISkeletonBone : IPreDefinedInterface
     {
-        public string m_ParentName { get; }
-        public Vector3f m_Position { get; }
-        public Quaternionf m_Rotation { get; }
-        public Vector3f m_Scale { get; }
+        public string m_ParentName { get; set; }
+        public Vector3f m_Position { get; set; }
+        public Quaternionf m_Rotation { get; set; }
+        public Vector3f m_Scale { get; set; }
     }
 }

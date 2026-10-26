@@ -8,9 +8,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IOcclusionPortal : IUnityAsset
     {
-        public PPtr<GameObject> m_GameObject { get; }
-        public bool m_Open { get; }
-        public Vector3f m_Center { get; }
-        public Vector3f m_Size { get; }
+        public PPtr<GameObject> m_GameObject { get; set; }
+        public bool m_Open { get; set; }
+        public Vector3f m_Center { get; set; }
+        public Vector3f m_Size { get; set; }
     }
 }

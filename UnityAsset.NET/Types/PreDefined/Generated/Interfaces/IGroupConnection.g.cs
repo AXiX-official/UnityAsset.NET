@@ -8,8 +8,8 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IGroupConnection : IPreDefinedInterface
     {
-        public uint sourceGroupIndex { get; }
-        public uint targetGroupIndex { get; }
-        public uint sendEffectIndex { get; }
+        public uint sourceGroupIndex { get; set; }
+        public uint targetGroupIndex { get; set; }
+        public uint sendEffectIndex { get; set; }
     }
 }

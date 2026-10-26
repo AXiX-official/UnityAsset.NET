@@ -8,14 +8,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IPreset : INamedObject
     {
-        public IPresetType m_TargetType { get; }
-        public IPropertyModification[] m_Properties { get; }
+        public IPresetType m_TargetType { get; set; }
+        public IPropertyModification[] m_Properties { get; set; }
 
         public string[]? m_ExcludedProperties
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -25,6 +29,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public IPropertyModification[]? m_CoupledProperties
@@ -32,6 +40,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

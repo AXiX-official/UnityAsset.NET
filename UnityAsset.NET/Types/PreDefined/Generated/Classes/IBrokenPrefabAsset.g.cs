@@ -8,17 +8,21 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBrokenPrefabAsset : INamedObject
     {
-        public string m_Message { get; }
-        public bool m_IsWarning { get; }
-        public bool m_IsVariant { get; }
-        public bool m_IsPrefabFileValid { get; }
-        public PPtr<IBrokenPrefabAsset> m_BrokenParentPrefab { get; }
+        public string m_Message { get; set; }
+        public bool m_IsWarning { get; set; }
+        public bool m_IsVariant { get; set; }
+        public bool m_IsPrefabFileValid { get; set; }
+        public PPtr<IBrokenPrefabAsset> m_BrokenParentPrefab { get; set; }
 
         public int? m_ErrorCode
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

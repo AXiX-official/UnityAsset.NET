@@ -8,19 +8,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IArticulationDrive : IPreDefinedInterface
     {
-        public float lowerLimit { get; }
-        public float upperLimit { get; }
-        public float stiffness { get; }
-        public float damping { get; }
-        public float forceLimit { get; }
-        public float target { get; }
-        public float targetVelocity { get; }
+        public float lowerLimit { get; set; }
+        public float upperLimit { get; set; }
+        public float stiffness { get; set; }
+        public float damping { get; set; }
+        public float forceLimit { get; set; }
+        public float target { get; set; }
+        public float targetVelocity { get; set; }
 
         public int? driveType
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,19 +8,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILineParameters : IPreDefinedInterface
     {
-        public float widthMultiplier { get; }
-        public IAnimationCurve<float> widthCurve { get; }
-        public IGradient colorGradient { get; }
-        public int numCornerVertices { get; }
-        public int numCapVertices { get; }
-        public int alignment { get; }
-        public int textureMode { get; }
+        public float widthMultiplier { get; set; }
+        public IAnimationCurve<float> widthCurve { get; set; }
+        public IGradient colorGradient { get; set; }
+        public int numCornerVertices { get; set; }
+        public int numCapVertices { get; set; }
+        public int alignment { get; set; }
+        public int textureMode { get; set; }
 
         public bool? generateLightingData
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -30,6 +34,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public Vector2f? textureScale
@@ -37,6 +45,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

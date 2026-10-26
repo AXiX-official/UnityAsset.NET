@@ -14,15 +14,23 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
-        public PPtr<IUnityObject> terrainData { get; }
+        public PPtr<IUnityObject> terrainData { get; set; }
 
         public IMatrix4x4f? surfaceToTerrain
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -31,6 +39,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

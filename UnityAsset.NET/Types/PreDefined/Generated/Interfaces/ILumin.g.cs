@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ILumin : IPreDefinedInterface
     {
-        public int depthFormat { get; }
-        public int frameTiming { get; }
-        public bool enableGLCache { get; }
-        public uint glCacheMaxBlobSize { get; }
-        public uint glCacheMaxFileSize { get; }
+        public int depthFormat { get; set; }
+        public int frameTiming { get; set; }
+        public bool enableGLCache { get; set; }
+        public uint glCacheMaxBlobSize { get; set; }
+        public uint glCacheMaxFileSize { get; set; }
     }
 }

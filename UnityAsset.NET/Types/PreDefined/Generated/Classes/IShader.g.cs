@@ -8,20 +8,24 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IShader : INamedObject
     {
-        public ISerializedShader m_ParsedForm { get; }
-        public uint[] platforms { get; }
-        public RefSum<uint[], uint[][]> offsets { get; }
-        public RefSum<uint[], uint[][]> compressedLengths { get; }
-        public RefSum<uint[], uint[][]> decompressedLengths { get; }
-        public byte[] compressedBlob { get; }
-        public PPtr<IShader>[] m_Dependencies { get; }
-        public bool m_ShaderIsBaked { get; }
+        public ISerializedShader m_ParsedForm { get; set; }
+        public uint[] platforms { get; set; }
+        public RefSum<uint[], uint[][]> offsets { get; set; }
+        public RefSum<uint[], uint[][]> compressedLengths { get; set; }
+        public RefSum<uint[], uint[][]> decompressedLengths { get; set; }
+        public byte[] compressedBlob { get; set; }
+        public PPtr<IShader>[] m_Dependencies { get; set; }
+        public bool m_ShaderIsBaked { get; set; }
 
         public ValueTuple<string, PPtr<IUnityObject>>[]? m_NonModifiableTextures
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -31,6 +35,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public GUID? m_AssetGUID
@@ -39,6 +47,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public long? m_AssetLocalIdentifierInFile
@@ -46,6 +58,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

@@ -8,6 +8,6 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IBitField : IPreDefinedInterface
     {
-        public uint m_Bits { get; }
+        public uint m_Bits { get; set; }
     }
 }

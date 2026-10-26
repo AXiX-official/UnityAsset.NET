@@ -8,16 +8,20 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ITile : IPreDefinedInterface
     {
-        public uint m_TileIndex { get; }
-        public uint m_TileSpriteIndex { get; }
-        public RefSum<uint, ushort> m_TileMatrixIndex { get; }
-        public RefSum<uint, ushort> m_TileColorIndex { get; }
+        public uint m_TileIndex { get; set; }
+        public uint m_TileSpriteIndex { get; set; }
+        public RefSum<uint, ushort> m_TileMatrixIndex { get; set; }
+        public RefSum<uint, ushort> m_TileColorIndex { get; set; }
 
         public PPtr<GameObject>? m_ObjectToInstantiate
         {
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -27,6 +31,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public int? m_ColliderType
@@ -34,6 +42,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
 
@@ -43,6 +55,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public uint? m_AllTileFlags
@@ -51,6 +67,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
                 return null;
             }
+
+            set
+            {
+            }
         }
 
         public ushort? dummyAlignment
@@ -58,6 +78,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             get
             {
                 return null;
+            }
+
+            set
+            {
             }
         }
     }

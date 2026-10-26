@@ -8,10 +8,10 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ICharacterInfo : IPreDefinedInterface
     {
-        public uint index { get; }
-        public Rectf uv { get; }
-        public Rectf vert { get; }
-        public float advance { get; }
-        public bool flipped { get; }
+        public uint index { get; set; }
+        public Rectf uv { get; set; }
+        public Rectf vert { get; set; }
+        public float advance { get; set; }
+        public bool flipped { get; set; }
     }
 }

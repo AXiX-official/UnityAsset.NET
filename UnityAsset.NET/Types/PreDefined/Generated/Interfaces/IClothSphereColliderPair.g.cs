@@ -8,7 +8,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IClothSphereColliderPair : IPreDefinedInterface
     {
-        public PPtr<ISphereCollider> first { get; }
-        public PPtr<ISphereCollider> second { get; }
+        public PPtr<ISphereCollider> first { get; set; }
+        public PPtr<ISphereCollider> second { get; set; }
     }
 }
