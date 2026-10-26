@@ -24,7 +24,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: 11.0.x
 
       # Restore and build separately so a compile error is reported before any test host is started.
       - name: Restore
