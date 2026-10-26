@@ -412,6 +412,12 @@ internal static class GeneratedInterfaceSchemaTable
             new("vertices", "Vector2f[]", false),
             new("width", "float", false),
         }),
+        ["IBinding"] = new InterfaceSchema("IBinding", false, new InterfaceMemberSchema[]
+        {
+            new("m_EncodedData", "uint?", true),
+            new("m_Set", "uint?", true),
+            new("m_Slot", "uint", false),
+        }),
         ["IBitField"] = new InterfaceSchema("IBitField", false, new InterfaceMemberSchema[]
         {
             new("m_Bits", "uint", false),
@@ -598,6 +604,14 @@ internal static class GeneratedInterfaceSchemaTable
             new("m_ArraySize", "int?", true),
             new("m_Index", "int", false),
             new("m_NameIndex", "int", false),
+        }),
+        ["IBufferBindingParameter"] = new InterfaceSchema("IBufferBindingParameter", false, new InterfaceMemberSchema[]
+        {
+            new("m_ArraySize", "int", false),
+            new("m_Binding", "IBinding?", true),
+            new("m_Index", "int?", true),
+            new("m_NameIndex", "int", false),
+            new("m_ResourceType", "int?", true),
         }),
         ["IBuildTargetSettings"] = new InterfaceSchema("IBuildTargetSettings", false, new InterfaceMemberSchema[]
         {
@@ -900,7 +914,7 @@ internal static class GeneratedInterfaceSchemaTable
         }),
         ["IComputeShaderKernel"] = new InterfaceSchema("IComputeShaderKernel", false, new InterfaceMemberSchema[]
         {
-            new("builtinSamplers", "IComputeShaderBuiltinSampler[]", false),
+            new("builtinSamplers", "RefSum<IComputeShaderBuiltinSampler[], ISamplerParameter[]>", false),
             new("cbVariantIndices", "uint[]?", true),
             new("cbs", "IComputeShaderResource[]", false),
             new("code", "byte[]", false),
@@ -941,9 +955,11 @@ internal static class GeneratedInterfaceSchemaTable
         }),
         ["IComputeShaderResource"] = new InterfaceSchema("IComputeShaderResource", false, new InterfaceMemberSchema[]
         {
-            new("bindPoint", "int", false),
+            new("bindPoint", "int?", true),
             new("counter", "IComputeBufferCounter?", true),
             new("generatedName", "string", false),
+            new("m_Binding", "IBinding?", true),
+            new("m_SamplerBinding", "IBinding?", true),
             new("name", "string", false),
             new("resType", "int?", true),
             new("samplerBindPoint", "int?", true),
@@ -971,6 +987,15 @@ internal static class GeneratedInterfaceSchemaTable
             new("m_NameIndex", "int", false),
             new("m_Size", "int", false),
             new("m_StructParams", "IStructParameter[]?", true),
+            new("m_VectorParams", "IVectorParameter[]", false),
+        }),
+        ["IConstantBufferParameter"] = new InterfaceSchema("IConstantBufferParameter", false, new InterfaceMemberSchema[]
+        {
+            new("m_IsPartialCB", "bool", false),
+            new("m_MatrixParams", "IMatrixParameter[]", false),
+            new("m_NameIndex", "int", false),
+            new("m_Size", "int", false),
+            new("m_StructParams", "IStructParameter[]", false),
             new("m_VectorParams", "IVectorParameter[]", false),
         }),
         ["IConstantClip"] = new InterfaceSchema("IConstantClip", false, new InterfaceMemberSchema[]
@@ -1147,6 +1172,10 @@ internal static class GeneratedInterfaceSchemaTable
             new("rateOverDistance", "IMinMaxCurve", false),
             new("rateOverTime", "IMinMaxCurve", false),
         }),
+        ["IEnlightenCAHMap"] = new InterfaceSchema("IEnlightenCAHMap", false, new InterfaceMemberSchema[]
+        {
+            new("m_Map", "ValueTuple<ILookupKey, IHash128>[]", false),
+        }),
         ["IEnlightenRendererInformation"] = new InterfaceSchema("IEnlightenRendererInformation", false, new InterfaceMemberSchema[]
         {
             new("dynamicLightmapSTInSystem", "Vector4f", false),
@@ -1156,6 +1185,7 @@ internal static class GeneratedInterfaceSchemaTable
         }),
         ["IEnlightenSceneMapping"] = new InterfaceSchema("IEnlightenSceneMapping", false, new InterfaceMemberSchema[]
         {
+            new("m_CAHMap", "IEnlightenCAHMap?", true),
             new("m_Probesets", "IHash128[]", false),
             new("m_Renderers", "IEnlightenRendererInformation[]", false),
             new("m_SystemAtlases", "IEnlightenSystemAtlasInformation[]", false),
@@ -1193,12 +1223,16 @@ internal static class GeneratedInterfaceSchemaTable
         }),
         ["IExpression"] = new InterfaceSchema("IExpression", false, new InterfaceMemberSchema[]
         {
+            new("dataSize", "byte?", true),
+            new("dataType", "byte?", true),
             new("data_0_", "int", false),
             new("data_1_", "int", false),
             new("data_2_", "int", false),
             new("data_3_", "int", false),
-            new("op", "int", false),
-            new("valueIndex", "int", false),
+            new("jmpCode", "ushort?", true),
+            new("op", "RefSum<int, byte>", false),
+            new("scalarSwitchCase", "byte?", true),
+            new("valueIndex", "RefSum<int, ushort>", false),
         }),
         ["IExtensionPropertyValue"] = new InterfaceSchema("IExtensionPropertyValue", false, new InterfaceMemberSchema[]
         {
@@ -1318,6 +1352,7 @@ internal static class GeneratedInterfaceSchemaTable
             new("isIntCurve", "byte?", true),
             new("isPPtrCurve", "byte", false),
             new("isSerializeReferenceCurve", "byte?", true),
+            new("metaData", "ushort?", true),
             new("path", "uint", false),
             new("script", "PPtr<IUnityObject>", false),
             new("typeID", "int", false),
@@ -1837,6 +1872,11 @@ internal static class GeneratedInterfaceSchemaTable
             new("m_LodBias", "float", false),
             new("m_LodSlope", "float", false),
         }),
+        ["ILookupKey"] = new InterfaceSchema("ILookupKey", false, new InterfaceMemberSchema[]
+        {
+            new("extension", "string", false),
+            new("hash", "IHash128", false),
+        }),
         ["ILumin"] = new InterfaceSchema("ILumin", false, new InterfaceMemberSchema[]
         {
             new("depthFormat", "int", false),
@@ -1897,8 +1937,9 @@ internal static class GeneratedInterfaceSchemaTable
         ["IMatrixParameter"] = new InterfaceSchema("IMatrixParameter", false, new InterfaceMemberSchema[]
         {
             new("m_ArraySize", "int", false),
-            new("m_Index", "int", false),
+            new("m_Index", "int?", true),
             new("m_NameIndex", "int", false),
+            new("m_OffsetInConstantBuffer", "int?", true),
             new("m_RowCount", "sbyte", false),
             new("m_Type", "sbyte", false),
         }),
@@ -1921,7 +1962,9 @@ internal static class GeneratedInterfaceSchemaTable
             new("m_MeshLodInfo", "IMeshLodInfo?", true),
             new("m_MeshMetrics_0_", "float?", true),
             new("m_MeshMetrics_1_", "float?", true),
-            new("m_MeshUsageFlags", "int", false),
+            new("m_MeshUsageFlags", "int?", true),
+            new("m_PreBakeConvexCollisionMesh", "bool?", true),
+            new("m_PreBakeTriangleCollisionMesh", "bool?", true),
             new("m_RootBoneNameHash", "uint", false),
             new("m_Shapes", "IBlendShapeData", false),
             new("m_Skin", "BoneWeights4[]?", true),
@@ -2488,6 +2531,18 @@ internal static class GeneratedInterfaceSchemaTable
             new("material", "PPtr<IProceduralMaterial>", false),
             new("shaderProp", "string", false),
         }),
+        ["IProgramParameters"] = new InterfaceSchema("IProgramParameters", false, new InterfaceMemberSchema[]
+        {
+            new("m_BufferParams", "IBufferBindingParameter[]", false),
+            new("m_ConstantBufferBindings", "IBufferBindingParameter[]", false),
+            new("m_ConstantBuffers", "IConstantBufferParameter[]", false),
+            new("m_MatrixParams", "IMatrixParameter[]?", true),
+            new("m_Samplers", "ISamplerParameter[]", false),
+            new("m_SpecializationConstantParams", "ISpecializationConstantParameter[]?", true),
+            new("m_TextureParams", "ITextureParameter[]", false),
+            new("m_UAVParams", "IUAVParameter[]", false),
+            new("m_VectorParams", "IVectorParameter[]?", true),
+        }),
         ["IPropertyModification"] = new InterfaceSchema("IPropertyModification", false, new InterfaceMemberSchema[]
         {
             new("objectReference", "PPtr<IUnityObject>", false),
@@ -2943,7 +2998,8 @@ internal static class GeneratedInterfaceSchemaTable
         }),
         ["ISamplerParameter"] = new InterfaceSchema("ISamplerParameter", false, new InterfaceMemberSchema[]
         {
-            new("bindPoint", "int", false),
+            new("bindPoint", "int?", true),
+            new("m_Binding", "IBinding?", true),
             new("sampler", "uint", false),
         }),
         ["ISceneAsset"] = new InterfaceSchema("ISceneAsset", true, new InterfaceMemberSchema[]
@@ -2993,6 +3049,7 @@ internal static class GeneratedInterfaceSchemaTable
             new("m_NameIndices", "ValueTuple<string, int>[]", false),
             new("m_Platforms", "byte[]?", true),
             new("m_ProgramMask", "uint", false),
+            new("m_SerializedDynamicBranchKeywordMask", "ushort[]?", true),
             new("m_SerializedKeywordStateMask", "ushort[]?", true),
             new("m_State", "ISerializedShaderState", false),
             new("m_Tags", "ISerializedTagMap", false),
@@ -3015,7 +3072,7 @@ internal static class GeneratedInterfaceSchemaTable
         }),
         ["ISerializedProgram"] = new InterfaceSchema("ISerializedProgram", false, new InterfaceMemberSchema[]
         {
-            new("m_CommonParameters", "ISerializedProgramParameters?", true),
+            new("m_CommonParameters", "RefSum<ISerializedProgramParameters, IProgramParameters>?", true),
             new("m_ParameterBlobIndices", "uint[][]?", true),
             new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]?", true),
             new("m_SerializedKeywordStateMask", "ushort[]?", true),
@@ -3142,7 +3199,7 @@ internal static class GeneratedInterfaceSchemaTable
             new("m_KeywordIndices", "ushort[]?", true),
             new("m_LocalKeywordIndices", "ushort[]?", true),
             new("m_MatrixParams", "IMatrixParameter[]?", true),
-            new("m_Parameters", "ISerializedProgramParameters?", true),
+            new("m_Parameters", "RefSum<ISerializedProgramParameters, IProgramParameters>?", true),
             new("m_Samplers", "ISamplerParameter[]?", true),
             new("m_ShaderHardwareTier", "sbyte", false),
             new("m_ShaderRequirements", "RefSum<int, long>?", true),
@@ -3402,6 +3459,11 @@ internal static class GeneratedInterfaceSchemaTable
             new("height", "int", false),
             new("sourceWasHDR", "bool", false),
             new("width", "int", false),
+        }),
+        ["ISpecializationConstantParameter"] = new InterfaceSchema("ISpecializationConstantParameter", false, new InterfaceMemberSchema[]
+        {
+            new("m_Binding", "IBinding", false),
+            new("m_NameIndex", "int", false),
         }),
         ["ISpeedTreeWind"] = new InterfaceSchema("ISpeedTreeWind", false, new InterfaceMemberSchema[]
         {
@@ -3756,9 +3818,10 @@ internal static class GeneratedInterfaceSchemaTable
         }),
         ["ISpriteAtlas"] = new InterfaceSchema("ISpriteAtlas", true, new InterfaceMemberSchema[]
         {
+            new("m_Guid", "GUID?", true),
             new("m_IsVariant", "bool", false),
-            new("m_PackedSpriteNamesToIndex", "string[]", false),
-            new("m_PackedSprites", "PPtr<ISprite>[]", false),
+            new("m_PackedSpriteNamesToIndex", "string[]?", true),
+            new("m_PackedSprites", "PPtr<ISprite>[]?", true),
             new("m_RenderDataMap", "ValueTuple<ValueTuple<GUID, long>, SpriteAtlasData>[]", false),
             new("m_Tag", "string", false),
         }),
@@ -3803,6 +3866,22 @@ internal static class GeneratedInterfaceSchemaTable
         {
             new("sprite", "PPtr<IUnityObject>", false),
         }),
+        ["ISpriteInstanceData"] = new InterfaceSchema("ISpriteInstanceData", false, new InterfaceMemberSchema[]
+        {
+            new("border", "Vector4f", false),
+            new("m_Bindpose", "IMatrix4x4f[]", false),
+            new("m_BlendShapes", "IBlendShapeData", false),
+            new("m_IndexBuffer", "byte[]", false),
+            new("m_IndexFormat", "int", false),
+            new("m_SubMeshes", "ISubMesh[]", false),
+            new("m_VertexData", "IVertexData", false),
+            new("physicsShape", "Vector2f[][]", false),
+            new("pivot", "Vector2f", false),
+            new("pixelsToUnits", "float", false),
+            new("rect", "Rectf", false),
+            new("spriteBones", "ISpriteBone[]", false),
+            new("spriteName", "string", false),
+        }),
         ["ISpriteMetaData"] = new InterfaceSchema("ISpriteMetaData", false, new InterfaceMemberSchema[]
         {
             new("m_Alignment", "int", false),
@@ -3827,6 +3906,7 @@ internal static class GeneratedInterfaceSchemaTable
             new("atlasRectOffset", "Vector2f", false),
             new("downscaleMultiplier", "float", false),
             new("m_Bindpose", "IMatrix4x4f[]?", true),
+            new("m_BlendShapes", "IBlendShapeData?", true),
             new("m_IndexBuffer", "byte[]", false),
             new("m_SourceSkin", "BoneWeights4[]?", true),
             new("m_SubMeshes", "ISubMesh[]", false),
@@ -3841,6 +3921,7 @@ internal static class GeneratedInterfaceSchemaTable
         ["ISpriteRenderer"] = new InterfaceSchema("ISpriteRenderer", false, new InterfaceMemberSchema[]
         {
             new("m_AdaptiveModeThreshold", "float", false),
+            new("m_BlendShapeWeights", "float[]?", true),
             new("m_CastShadows", "byte", false),
             new("m_Color", "IColorRGBA", false),
             new("m_DrawMode", "int", false),
@@ -3959,9 +4040,10 @@ internal static class GeneratedInterfaceSchemaTable
         ["IStructParameter"] = new InterfaceSchema("IStructParameter", false, new InterfaceMemberSchema[]
         {
             new("m_ArraySize", "int", false),
-            new("m_Index", "int", false),
+            new("m_Index", "int?", true),
             new("m_MatrixMembers", "IMatrixParameter[]", false),
             new("m_NameIndex", "int", false),
+            new("m_OffsetInConstantBuffer", "int?", true),
             new("m_StructSize", "int", false),
             new("m_VectorMembers", "IVectorParameter[]", false),
         }),
@@ -4168,11 +4250,13 @@ internal static class GeneratedInterfaceSchemaTable
         }),
         ["ITextureParameter"] = new InterfaceSchema("ITextureParameter", false, new InterfaceMemberSchema[]
         {
+            new("m_Binding", "IBinding?", true),
             new("m_Dim", "sbyte", false),
-            new("m_Index", "int", false),
+            new("m_Index", "int?", true),
             new("m_MultiSampled", "bool?", true),
             new("m_NameIndex", "int", false),
-            new("m_SamplerIndex", "int", false),
+            new("m_SamplerBinding", "IBinding?", true),
+            new("m_SamplerIndex", "int?", true),
         }),
         ["ITextureParameters"] = new InterfaceSchema("ITextureParameters", false, new InterfaceMemberSchema[]
         {
@@ -4317,9 +4401,11 @@ internal static class GeneratedInterfaceSchemaTable
         }),
         ["IUAVParameter"] = new InterfaceSchema("IUAVParameter", false, new InterfaceMemberSchema[]
         {
-            new("m_Index", "int", false),
+            new("m_Binding", "IBinding?", true),
+            new("m_Index", "int?", true),
             new("m_NameIndex", "int", false),
-            new("m_OriginalIndex", "int", false),
+            new("m_OriginalBinding", "IBinding?", true),
+            new("m_OriginalIndex", "int?", true),
         }),
         ["IUVAnimation"] = new InterfaceSchema("IUVAnimation", false, new InterfaceMemberSchema[]
         {
@@ -4376,6 +4462,7 @@ internal static class GeneratedInterfaceSchemaTable
         ["IVFXCPUBufferDesc"] = new InterfaceSchema("IVFXCPUBufferDesc", false, new InterfaceMemberSchema[]
         {
             new("capacity", "uint", false),
+            new("debugName", "string?", true),
             new("initialData", "IVFXCPUBufferData", false),
             new("layout", "IVFXLayoutElementDesc[]", false),
             new("stride", "uint", false),
@@ -4443,6 +4530,7 @@ internal static class GeneratedInterfaceSchemaTable
         ["IVFXGPUBufferDesc"] = new InterfaceSchema("IVFXGPUBufferDesc", false, new InterfaceMemberSchema[]
         {
             new("capacity", "uint", false),
+            new("debugName", "string?", true),
             new("layout", "IVFXLayoutElementDesc[]", false),
             new("mode", "int?", true),
             new("size", "uint", false),
@@ -4524,7 +4612,7 @@ internal static class GeneratedInterfaceSchemaTable
             new("@params", "IVFXMapping[]", false),
             new("buffers", "IVFXMapping[]", false),
             new("instanceSplitIndex", "uint?", true),
-            new("processor", "PPtr<INamedObject>", false),
+            new("processor", "RefSum<PPtr<INamedObject>, PPtr<IUnityObject>>", false),
             new("temporaryBuffers", "IVFXMappingTemporary[]?", true),
             new("type", "int", false),
             new("values", "IVFXMapping[]", false),
@@ -4595,8 +4683,9 @@ internal static class GeneratedInterfaceSchemaTable
         {
             new("m_ArraySize", "int", false),
             new("m_Dim", "sbyte", false),
-            new("m_Index", "int", false),
+            new("m_Index", "int?", true),
             new("m_NameIndex", "int", false),
+            new("m_OffsetInConstantBuffer", "int?", true),
             new("m_Type", "sbyte", false),
         }),
         ["IVelocityModule"] = new InterfaceSchema("IVelocityModule", false, new InterfaceMemberSchema[]

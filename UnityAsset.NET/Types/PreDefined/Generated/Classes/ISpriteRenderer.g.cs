@@ -192,5 +192,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
             }
         }
+
+        public float[]? m_BlendShapeWeights
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

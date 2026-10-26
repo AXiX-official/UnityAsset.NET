@@ -22,7 +22,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 
         public IComputeShaderResource[] cbs { get; set; }
         public IComputeShaderResource[] textures { get; set; }
-        public IComputeShaderBuiltinSampler[] builtinSamplers { get; set; }
+        public RefSum<IComputeShaderBuiltinSampler[], ISamplerParameter[]> builtinSamplers { get; set; }
         public IComputeShaderResource[] inBuffers { get; set; }
         public IComputeShaderResource[] outBuffers { get; set; }
         public byte[] code { get; set; }

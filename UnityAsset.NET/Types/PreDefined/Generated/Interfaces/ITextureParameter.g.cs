@@ -9,11 +9,58 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
     public partial interface ITextureParameter : IPreDefinedInterface
     {
         public int m_NameIndex { get; set; }
-        public int m_Index { get; set; }
-        public int m_SamplerIndex { get; set; }
+
+        public int? m_Index
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public int? m_SamplerIndex
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
         public sbyte m_Dim { get; set; }
 
         public bool? m_MultiSampled
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public IBinding? m_Binding
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public IBinding? m_SamplerBinding
         {
             get
             {

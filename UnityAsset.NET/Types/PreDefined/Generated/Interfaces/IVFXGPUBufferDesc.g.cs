@@ -48,5 +48,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
             }
         }
+
+        public string? debugName
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

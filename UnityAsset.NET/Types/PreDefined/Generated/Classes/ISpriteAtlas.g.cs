@@ -8,10 +8,44 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface ISpriteAtlas : INamedObject
     {
-        public PPtr<ISprite>[] m_PackedSprites { get; set; }
-        public string[] m_PackedSpriteNamesToIndex { get; set; }
+        public PPtr<ISprite>[]? m_PackedSprites
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public string[]? m_PackedSpriteNamesToIndex
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
         public ValueTuple<ValueTuple<GUID, long>, SpriteAtlasData>[] m_RenderDataMap { get; set; }
         public string m_Tag { get; set; }
         public bool m_IsVariant { get; set; }
+
+        public GUID? m_Guid
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

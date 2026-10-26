@@ -34,7 +34,19 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
         public IVertexData m_VertexData { get; set; }
         public ICompressedMesh m_CompressedMesh { get; set; }
         public IAABB m_LocalAABB { get; set; }
-        public int m_MeshUsageFlags { get; set; }
+
+        public int? m_MeshUsageFlags
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
         public byte[] m_BakedConvexCollisionMesh { get; set; }
         public byte[] m_BakedTriangleCollisionMesh { get; set; }
 
@@ -123,6 +135,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
         }
 
         public IMeshLodInfo? m_MeshLodInfo
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public bool? m_PreBakeConvexCollisionMesh
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public bool? m_PreBakeTriangleCollisionMesh
         {
             get
             {

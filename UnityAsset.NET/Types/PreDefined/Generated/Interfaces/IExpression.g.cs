@@ -8,11 +8,59 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
 {
     public partial interface IExpression : IPreDefinedInterface
     {
-        public int op { get; set; }
-        public int valueIndex { get; set; }
+        public RefSum<int, byte> op { get; set; }
+        public RefSum<int, ushort> valueIndex { get; set; }
         public int data_0_ { get; set; }
         public int data_1_ { get; set; }
         public int data_2_ { get; set; }
         public int data_3_ { get; set; }
+
+        public byte? dataType
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public byte? dataSize
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public byte? scalarSwitchCase
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public ushort? jmpCode
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

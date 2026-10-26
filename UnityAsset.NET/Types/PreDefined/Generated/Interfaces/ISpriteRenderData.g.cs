@@ -55,5 +55,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
             }
         }
+
+        public IBlendShapeData? m_BlendShapes
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

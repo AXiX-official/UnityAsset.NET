@@ -158,7 +158,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             }
         }
 
-        public ISerializedProgramParameters? m_Parameters
+        public RefSum<ISerializedProgramParameters, IProgramParameters>? m_Parameters
         {
             get
             {

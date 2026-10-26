@@ -9,9 +9,33 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
     public partial interface IMatrixParameter : IPreDefinedInterface
     {
         public int m_NameIndex { get; set; }
-        public int m_Index { get; set; }
+
+        public int? m_Index
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
         public int m_ArraySize { get; set; }
         public sbyte m_Type { get; set; }
         public sbyte m_RowCount { get; set; }
+
+        public int? m_OffsetInConstantBuffer
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

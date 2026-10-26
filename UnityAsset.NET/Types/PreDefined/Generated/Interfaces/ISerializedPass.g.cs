@@ -105,5 +105,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
             }
         }
+
+        public ushort[]? m_SerializedDynamicBranchKeywordMask
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

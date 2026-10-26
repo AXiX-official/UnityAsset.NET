@@ -10,7 +10,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
     {
         public ISerializedSubProgram[] m_SubPrograms { get; set; }
 
-        public ISerializedProgramParameters? m_CommonParameters
+        public RefSum<ISerializedProgramParameters, IProgramParameters>? m_CommonParameters
         {
             get
             {

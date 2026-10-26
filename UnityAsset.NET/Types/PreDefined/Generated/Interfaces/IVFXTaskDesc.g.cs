@@ -12,7 +12,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
         public IVFXMapping[] buffers { get; set; }
         public IVFXMapping[] values { get; set; }
         public IVFXMapping[] @params { get; set; }
-        public PPtr<INamedObject> processor { get; set; }
+        public RefSum<PPtr<INamedObject>, PPtr<IUnityObject>> processor { get; set; }
 
         public IVFXMappingTemporary[]? temporaryBuffers
         {

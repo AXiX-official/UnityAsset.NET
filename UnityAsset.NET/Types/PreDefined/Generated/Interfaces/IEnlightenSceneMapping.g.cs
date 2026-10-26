@@ -13,5 +13,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
         public IHash128[] m_Probesets { get; set; }
         public IEnlightenSystemAtlasInformation[] m_SystemAtlases { get; set; }
         public IEnlightenTerrainChunksInformation[] m_TerrainChunks { get; set; }
+
+        public IEnlightenCAHMap? m_CAHMap
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

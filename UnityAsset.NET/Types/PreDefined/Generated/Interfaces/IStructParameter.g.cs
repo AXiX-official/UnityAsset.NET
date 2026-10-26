@@ -9,10 +9,34 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
     public partial interface IStructParameter : IPreDefinedInterface
     {
         public int m_NameIndex { get; set; }
-        public int m_Index { get; set; }
+
+        public int? m_Index
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
         public int m_ArraySize { get; set; }
         public int m_StructSize { get; set; }
         public IVectorParameter[] m_VectorMembers { get; set; }
         public IMatrixParameter[] m_MatrixMembers { get; set; }
+
+        public int? m_OffsetInConstantBuffer
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

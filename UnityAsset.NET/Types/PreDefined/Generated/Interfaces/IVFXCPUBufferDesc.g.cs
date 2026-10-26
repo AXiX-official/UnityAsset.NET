@@ -12,5 +12,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
         public uint stride { get; set; }
         public IVFXLayoutElementDesc[] layout { get; set; }
         public IVFXCPUBufferData initialData { get; set; }
+
+        public string? debugName
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

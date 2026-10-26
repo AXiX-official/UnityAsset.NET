@@ -10,7 +10,18 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
     {
         public string name { get; set; }
         public string generatedName { get; set; }
-        public int bindPoint { get; set; }
+
+        public int? bindPoint
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
 
         public IComputeBufferCounter? counter
         {
@@ -49,6 +60,30 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
         }
 
         public int? resType
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public IBinding? m_Binding
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public IBinding? m_SamplerBinding
         {
             get
             {

@@ -142,6 +142,18 @@ public static class InterfaceVersionTable
                 new("m_UpdateMode", "int"),
                 new("m_WrapMode", "int"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AnimatePhysics", "bool"),
+                new("m_Animation", "PPtr<IAnimationClip>"),
+                new("m_Animations", "PPtr<IAnimationClip>[]"),
+                new("m_CullingType", "int"),
+                new("m_Enabled", "byte"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_PlayAutomatically", "bool"),
+                new("m_UpdateMode", "int"),
+                new("m_WrapMode", "int"),
+            }),
         },
         ["IAnimationClip"] = new InterfaceVersionSchema[]
         {
@@ -401,6 +413,72 @@ public static class InterfaceVersionTable
                 new("m_UseHighQualityCurve", "bool"),
                 new("m_WrapMode", "int"),
             }),
+            new("6000.5.0a7", new InterfaceVersionMember[]
+            {
+                new("m_Bounds", "IAABB"),
+                new("m_ClipBindingConstant", "IAnimationClipBindingConstant"),
+                new("m_Compressed", "bool"),
+                new("m_CompressedRotationCurves", "ICompressedAnimationCurve[]"),
+                new("m_EulerCurves", "IVector3Curve[]"),
+                new("m_Events", "IAnimationEvent[]"),
+                new("m_FloatCurves", "IFloatCurve[]"),
+                new("m_HasGenericRootTransform", "bool"),
+                new("m_HasMotionFloatCurves", "bool"),
+                new("m_Legacy", "bool"),
+                new("m_MuscleClip", "IClipMuscleConstant"),
+                new("m_MuscleClipSize", "uint"),
+                new("m_PPtrCurves", "IPPtrCurve[]"),
+                new("m_PositionCurves", "IVector3Curve[]"),
+                new("m_RotationCurves", "IQuaternionCurve[]"),
+                new("m_SampleRate", "float"),
+                new("m_ScaleCurves", "IVector3Curve[]"),
+                new("m_UseHighQualityCurve", "bool"),
+                new("m_WrapMode", "int"),
+            }),
+            new("6000.5.0a9", new InterfaceVersionMember[]
+            {
+                new("m_Bounds", "IAABB"),
+                new("m_ClipBindingConstant", "IAnimationClipBindingConstant"),
+                new("m_Compressed", "bool"),
+                new("m_CompressedRotationCurves", "ICompressedAnimationCurve[]"),
+                new("m_EulerCurves", "IVector3Curve[]"),
+                new("m_Events", "IAnimationEvent[]"),
+                new("m_FloatCurves", "IFloatCurve[]"),
+                new("m_HasGenericRootTransform", "bool"),
+                new("m_HasMotionFloatCurves", "bool"),
+                new("m_Legacy", "bool"),
+                new("m_MuscleClip", "IClipMuscleConstant"),
+                new("m_MuscleClipSize", "uint"),
+                new("m_PPtrCurves", "IPPtrCurve[]"),
+                new("m_PositionCurves", "IVector3Curve[]"),
+                new("m_RotationCurves", "IQuaternionCurve[]"),
+                new("m_SampleRate", "float"),
+                new("m_ScaleCurves", "IVector3Curve[]"),
+                new("m_UseHighQualityCurve", "bool"),
+                new("m_WrapMode", "int"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_Bounds", "IAABB"),
+                new("m_ClipBindingConstant", "IAnimationClipBindingConstant"),
+                new("m_Compressed", "bool"),
+                new("m_CompressedRotationCurves", "ICompressedAnimationCurve[]"),
+                new("m_EulerCurves", "IVector3Curve[]"),
+                new("m_Events", "IAnimationEvent[]"),
+                new("m_FloatCurves", "IFloatCurve[]"),
+                new("m_HasGenericRootTransform", "bool"),
+                new("m_HasMotionFloatCurves", "bool"),
+                new("m_Legacy", "bool"),
+                new("m_MuscleClip", "IClipMuscleConstant"),
+                new("m_MuscleClipSize", "uint"),
+                new("m_PPtrCurves", "IPPtrCurve[]"),
+                new("m_PositionCurves", "IVector3Curve[]"),
+                new("m_RotationCurves", "IQuaternionCurve[]"),
+                new("m_SampleRate", "float"),
+                new("m_ScaleCurves", "IVector3Curve[]"),
+                new("m_UseHighQualityCurve", "bool"),
+                new("m_WrapMode", "int"),
+            }),
         },
         ["IAnimationClipBindingConstant"] = new InterfaceVersionSchema[]
         {
@@ -415,6 +493,11 @@ public static class InterfaceVersionTable
                 new("pptrCurveMapping", "PPtr<IUnityObject>[]"),
             }),
             new("2022.2.0a13", new InterfaceVersionMember[]
+            {
+                new("genericBindings", "IGenericBinding[]"),
+                new("pptrCurveMapping", "PPtr<IUnityObject>[]"),
+            }),
+            new("6000.5.0a7", new InterfaceVersionMember[]
             {
                 new("genericBindings", "IGenericBinding[]"),
                 new("pptrCurveMapping", "PPtr<IUnityObject>[]"),
@@ -737,6 +820,23 @@ public static class InterfaceVersionTable
                 new("m_UpdateMode", "int"),
                 new("m_WriteDefaultValuesOnDisable", "bool"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AllowConstantClipSamplingOptimization", "bool"),
+                new("m_AnimatePhysics", "bool"),
+                new("m_ApplyRootMotion", "bool"),
+                new("m_Avatar", "PPtr<IAvatar>"),
+                new("m_Controller", "PPtr<IRuntimeAnimatorController>"),
+                new("m_CullingMode", "int"),
+                new("m_Enabled", "byte"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_HasTransformHierarchy", "bool"),
+                new("m_KeepAnimatorStateOnDisable", "bool"),
+                new("m_LinearVelocityBlending", "bool"),
+                new("m_StabilizeFeet", "bool"),
+                new("m_UpdateMode", "int"),
+                new("m_WriteDefaultValuesOnDisable", "bool"),
+            }),
         },
         ["IAnimatorState"] = new InterfaceVersionSchema[]
         {
@@ -906,6 +1006,27 @@ public static class InterfaceVersionTable
                 new("m_Transitions", "PPtr<IAnimatorStateTransition>[]"),
                 new("m_WriteDefaultValues", "bool"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_CycleOffset", "float"),
+                new("m_CycleOffsetParameter", "string"),
+                new("m_CycleOffsetParameterActive", "bool"),
+                new("m_IKOnFeet", "bool"),
+                new("m_Mirror", "bool"),
+                new("m_MirrorParameter", "string"),
+                new("m_MirrorParameterActive", "bool"),
+                new("m_Motion", "PPtr<IUnityObject>"),
+                new("m_Position", "Vector3f"),
+                new("m_Speed", "float"),
+                new("m_SpeedParameter", "string"),
+                new("m_SpeedParameterActive", "bool"),
+                new("m_StateMachineBehaviours", "PPtr<IMonoBehaviour>[]"),
+                new("m_Tag", "string"),
+                new("m_TimeParameter", "string"),
+                new("m_TimeParameterActive", "bool"),
+                new("m_Transitions", "PPtr<IAnimatorStateTransition>[]"),
+                new("m_WriteDefaultValues", "bool"),
+            }),
         },
         ["IAnimatorStateMachine"] = new InterfaceVersionSchema[]
         {
@@ -1021,6 +1142,20 @@ public static class InterfaceVersionTable
                 new("m_StateMachineBehaviours", "PPtr<IMonoBehaviour>[]"),
                 new("m_StateMachineTransitions", "ValueTuple<PPtr<IAnimatorStateMachine>, PPtr<IAnimatorTransition>[]>[]"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AnyStatePosition", "Vector3f"),
+                new("m_AnyStateTransitions", "PPtr<IAnimatorStateTransition>[]"),
+                new("m_ChildStateMachines", "IChildAnimatorStateMachine[]"),
+                new("m_ChildStates", "IChildAnimatorState[]"),
+                new("m_DefaultState", "PPtr<IAnimatorState>"),
+                new("m_EntryPosition", "Vector3f"),
+                new("m_EntryTransitions", "PPtr<IAnimatorTransition>[]"),
+                new("m_ExitPosition", "Vector3f"),
+                new("m_ParentStateMachinePosition", "Vector3f"),
+                new("m_StateMachineBehaviours", "PPtr<IMonoBehaviour>[]"),
+                new("m_StateMachineTransitions", "ValueTuple<PPtr<IAnimatorStateMachine>, PPtr<IAnimatorTransition>[]>[]"),
+            }),
         },
         ["IAnimatorStateTransition"] = new InterfaceVersionSchema[]
         {
@@ -1092,6 +1227,23 @@ public static class InterfaceVersionTable
                 new("m_TransitionDuration", "float"),
                 new("m_TransitionOffset", "float"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_CanTransitionToSelf", "bool"),
+                new("m_Conditions", "IAnimatorCondition[]"),
+                new("m_DstState", "PPtr<IAnimatorState>"),
+                new("m_DstStateMachine", "PPtr<IAnimatorStateMachine>"),
+                new("m_ExitTime", "float"),
+                new("m_HasExitTime", "bool"),
+                new("m_HasFixedDuration", "bool"),
+                new("m_InterruptionSource", "int"),
+                new("m_IsExit", "bool"),
+                new("m_Mute", "bool"),
+                new("m_OrderedInterruption", "bool"),
+                new("m_Solo", "bool"),
+                new("m_TransitionDuration", "float"),
+                new("m_TransitionOffset", "float"),
+            }),
         },
         ["IAnimatorTransition"] = new InterfaceVersionSchema[]
         {
@@ -1123,6 +1275,15 @@ public static class InterfaceVersionTable
                 new("m_Solo", "bool"),
             }),
             new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+                new("m_Conditions", "IAnimatorCondition[]"),
+                new("m_DstState", "PPtr<IAnimatorState>"),
+                new("m_DstStateMachine", "PPtr<IAnimatorStateMachine>"),
+                new("m_IsExit", "bool"),
+                new("m_Mute", "bool"),
+                new("m_Solo", "bool"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_Conditions", "IAnimatorCondition[]"),
                 new("m_DstState", "PPtr<IAnimatorState>"),
@@ -1547,6 +1708,278 @@ public static class InterfaceVersionTable
                 new("m_YDrive", "IArticulationDrive"),
                 new("m_ZDrive", "IArticulationDrive"),
             }),
+            new("6000.0.68f1", new InterfaceVersionMember[]
+            {
+                new("m_AnchorPosition", "Vector3f"),
+                new("m_AnchorRotation", "Quaternionf"),
+                new("m_AngularDamping", "float"),
+                new("m_ArticulationJointType", "int"),
+                new("m_CenterOfMass", "Vector3f"),
+                new("m_CollisionDetectionMode", "int"),
+                new("m_Enabled", "byte"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Immovable", "bool"),
+                new("m_ImplicitCom", "bool"),
+                new("m_ImplicitTensor", "bool"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_InertiaRotation", "Quaternionf"),
+                new("m_InertiaTensor", "Vector3f"),
+                new("m_JointFriction", "float"),
+                new("m_LinearDamping", "float"),
+                new("m_LinearX", "int"),
+                new("m_LinearY", "int"),
+                new("m_LinearZ", "int"),
+                new("m_Mass", "float"),
+                new("m_MatchAnchors", "bool"),
+                new("m_ParentAnchorPosition", "Vector3f"),
+                new("m_ParentAnchorRotation", "Quaternionf"),
+                new("m_SwingY", "int"),
+                new("m_SwingZ", "int"),
+                new("m_Twist", "int"),
+                new("m_UseGravity", "bool"),
+                new("m_XDrive", "IArticulationDrive"),
+                new("m_YDrive", "IArticulationDrive"),
+                new("m_ZDrive", "IArticulationDrive"),
+            }),
+            new("6000.1.0a2", new InterfaceVersionMember[]
+            {
+                new("m_AnchorPosition", "Vector3f"),
+                new("m_AnchorRotation", "Quaternionf"),
+                new("m_AngularDamping", "float"),
+                new("m_ArticulationJointType", "int"),
+                new("m_CenterOfMass", "Vector3f"),
+                new("m_CollisionDetectionMode", "int"),
+                new("m_Enabled", "byte"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Immovable", "bool"),
+                new("m_ImplicitCom", "bool"),
+                new("m_ImplicitTensor", "bool"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_InertiaRotation", "Quaternionf"),
+                new("m_InertiaTensor", "Vector3f"),
+                new("m_JointFriction", "float"),
+                new("m_LinearDamping", "float"),
+                new("m_LinearX", "int"),
+                new("m_LinearY", "int"),
+                new("m_LinearZ", "int"),
+                new("m_Mass", "float"),
+                new("m_MatchAnchors", "bool"),
+                new("m_ParentAnchorPosition", "Vector3f"),
+                new("m_ParentAnchorRotation", "Quaternionf"),
+                new("m_SwingY", "int"),
+                new("m_SwingZ", "int"),
+                new("m_Twist", "int"),
+                new("m_UseGravity", "bool"),
+                new("m_XDrive", "IArticulationDrive"),
+                new("m_YDrive", "IArticulationDrive"),
+                new("m_ZDrive", "IArticulationDrive"),
+            }),
+            new("6000.3.9f1", new InterfaceVersionMember[]
+            {
+                new("m_AnchorPosition", "Vector3f"),
+                new("m_AnchorRotation", "Quaternionf"),
+                new("m_AngularDamping", "float"),
+                new("m_ArticulationJointType", "int"),
+                new("m_CenterOfMass", "Vector3f"),
+                new("m_CollisionDetectionMode", "int"),
+                new("m_Enabled", "byte"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Immovable", "bool"),
+                new("m_ImplicitCom", "bool"),
+                new("m_ImplicitTensor", "bool"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_InertiaRotation", "Quaternionf"),
+                new("m_InertiaTensor", "Vector3f"),
+                new("m_JointFriction", "float"),
+                new("m_LinearDamping", "float"),
+                new("m_LinearX", "int"),
+                new("m_LinearY", "int"),
+                new("m_LinearZ", "int"),
+                new("m_Mass", "float"),
+                new("m_MatchAnchors", "bool"),
+                new("m_ParentAnchorPosition", "Vector3f"),
+                new("m_ParentAnchorRotation", "Quaternionf"),
+                new("m_SwingY", "int"),
+                new("m_SwingZ", "int"),
+                new("m_Twist", "int"),
+                new("m_UseGravity", "bool"),
+                new("m_XDrive", "IArticulationDrive"),
+                new("m_YDrive", "IArticulationDrive"),
+                new("m_ZDrive", "IArticulationDrive"),
+            }),
+            new("6000.4.0a2", new InterfaceVersionMember[]
+            {
+                new("m_AnchorPosition", "Vector3f"),
+                new("m_AnchorRotation", "Quaternionf"),
+                new("m_AngularDamping", "float"),
+                new("m_ArticulationJointType", "int"),
+                new("m_CenterOfMass", "Vector3f"),
+                new("m_CollisionDetectionMode", "int"),
+                new("m_Enabled", "byte"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Immovable", "bool"),
+                new("m_ImplicitCom", "bool"),
+                new("m_ImplicitTensor", "bool"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_InertiaRotation", "Quaternionf"),
+                new("m_InertiaTensor", "Vector3f"),
+                new("m_JointFriction", "float"),
+                new("m_LinearDamping", "float"),
+                new("m_LinearX", "int"),
+                new("m_LinearY", "int"),
+                new("m_LinearZ", "int"),
+                new("m_Mass", "float"),
+                new("m_MatchAnchors", "bool"),
+                new("m_ParentAnchorPosition", "Vector3f"),
+                new("m_ParentAnchorRotation", "Quaternionf"),
+                new("m_SwingY", "int"),
+                new("m_SwingZ", "int"),
+                new("m_Twist", "int"),
+                new("m_UseGravity", "bool"),
+                new("m_XDrive", "IArticulationDrive"),
+                new("m_YDrive", "IArticulationDrive"),
+                new("m_ZDrive", "IArticulationDrive"),
+            }),
+            new("6000.4.0b10", new InterfaceVersionMember[]
+            {
+                new("m_AnchorPosition", "Vector3f"),
+                new("m_AnchorRotation", "Quaternionf"),
+                new("m_AngularDamping", "float"),
+                new("m_ArticulationJointType", "int"),
+                new("m_CenterOfMass", "Vector3f"),
+                new("m_CollisionDetectionMode", "int"),
+                new("m_Enabled", "byte"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Immovable", "bool"),
+                new("m_ImplicitCom", "bool"),
+                new("m_ImplicitTensor", "bool"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_InertiaRotation", "Quaternionf"),
+                new("m_InertiaTensor", "Vector3f"),
+                new("m_JointFriction", "float"),
+                new("m_LinearDamping", "float"),
+                new("m_LinearX", "int"),
+                new("m_LinearY", "int"),
+                new("m_LinearZ", "int"),
+                new("m_Mass", "float"),
+                new("m_MatchAnchors", "bool"),
+                new("m_ParentAnchorPosition", "Vector3f"),
+                new("m_ParentAnchorRotation", "Quaternionf"),
+                new("m_SwingY", "int"),
+                new("m_SwingZ", "int"),
+                new("m_Twist", "int"),
+                new("m_UseGravity", "bool"),
+                new("m_XDrive", "IArticulationDrive"),
+                new("m_YDrive", "IArticulationDrive"),
+                new("m_ZDrive", "IArticulationDrive"),
+            }),
+            new("6000.5.0a3", new InterfaceVersionMember[]
+            {
+                new("m_AnchorPosition", "Vector3f"),
+                new("m_AnchorRotation", "Quaternionf"),
+                new("m_AngularDamping", "float"),
+                new("m_ArticulationJointType", "int"),
+                new("m_CenterOfMass", "Vector3f"),
+                new("m_CollisionDetectionMode", "int"),
+                new("m_Enabled", "byte"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Immovable", "bool"),
+                new("m_ImplicitCom", "bool"),
+                new("m_ImplicitTensor", "bool"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_InertiaRotation", "Quaternionf"),
+                new("m_InertiaTensor", "Vector3f"),
+                new("m_JointFriction", "float"),
+                new("m_LinearDamping", "float"),
+                new("m_LinearX", "int"),
+                new("m_LinearY", "int"),
+                new("m_LinearZ", "int"),
+                new("m_Mass", "float"),
+                new("m_MatchAnchors", "bool"),
+                new("m_ParentAnchorPosition", "Vector3f"),
+                new("m_ParentAnchorRotation", "Quaternionf"),
+                new("m_SwingY", "int"),
+                new("m_SwingZ", "int"),
+                new("m_Twist", "int"),
+                new("m_UseGravity", "bool"),
+                new("m_XDrive", "IArticulationDrive"),
+                new("m_YDrive", "IArticulationDrive"),
+                new("m_ZDrive", "IArticulationDrive"),
+            }),
+            new("6000.5.0a7", new InterfaceVersionMember[]
+            {
+                new("m_AnchorPosition", "Vector3f"),
+                new("m_AnchorRotation", "Quaternionf"),
+                new("m_AngularDamping", "float"),
+                new("m_ArticulationJointType", "int"),
+                new("m_CenterOfMass", "Vector3f"),
+                new("m_CollisionDetectionMode", "int"),
+                new("m_Enabled", "byte"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Immovable", "bool"),
+                new("m_ImplicitCom", "bool"),
+                new("m_ImplicitTensor", "bool"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_InertiaRotation", "Quaternionf"),
+                new("m_InertiaTensor", "Vector3f"),
+                new("m_JointFriction", "float"),
+                new("m_LinearDamping", "float"),
+                new("m_LinearX", "int"),
+                new("m_LinearY", "int"),
+                new("m_LinearZ", "int"),
+                new("m_Mass", "float"),
+                new("m_MatchAnchors", "bool"),
+                new("m_ParentAnchorPosition", "Vector3f"),
+                new("m_ParentAnchorRotation", "Quaternionf"),
+                new("m_SwingY", "int"),
+                new("m_SwingZ", "int"),
+                new("m_Twist", "int"),
+                new("m_UseGravity", "bool"),
+                new("m_XDrive", "IArticulationDrive"),
+                new("m_YDrive", "IArticulationDrive"),
+                new("m_ZDrive", "IArticulationDrive"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AnchorPosition", "Vector3f"),
+                new("m_AnchorRotation", "Quaternionf"),
+                new("m_AngularDamping", "float"),
+                new("m_ArticulationJointType", "int"),
+                new("m_CenterOfMass", "Vector3f"),
+                new("m_CollisionDetectionMode", "int"),
+                new("m_Enabled", "byte"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Immovable", "bool"),
+                new("m_ImplicitCom", "bool"),
+                new("m_ImplicitTensor", "bool"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_InertiaRotation", "Quaternionf"),
+                new("m_InertiaTensor", "Vector3f"),
+                new("m_JointFriction", "float"),
+                new("m_LinearDamping", "float"),
+                new("m_LinearX", "int"),
+                new("m_LinearY", "int"),
+                new("m_LinearZ", "int"),
+                new("m_Mass", "float"),
+                new("m_MatchAnchors", "bool"),
+                new("m_ParentAnchorPosition", "Vector3f"),
+                new("m_ParentAnchorRotation", "Quaternionf"),
+                new("m_SwingY", "int"),
+                new("m_SwingZ", "int"),
+                new("m_Twist", "int"),
+                new("m_UseGravity", "bool"),
+                new("m_XDrive", "IArticulationDrive"),
+                new("m_YDrive", "IArticulationDrive"),
+                new("m_ZDrive", "IArticulationDrive"),
+            }),
         },
         ["IArticulationDrive"] = new InterfaceVersionSchema[]
         {
@@ -1676,6 +2109,19 @@ public static class InterfaceVersionTable
                 new("m_RuntimeCompatibility", "uint"),
                 new("m_SceneHashes", "ValueTuple<string, string>[]"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AssetBundleName", "string"),
+                new("m_Container", "ValueTuple<string, IAssetInfo>[]"),
+                new("m_Dependencies", "string[]"),
+                new("m_ExplicitDataLayout", "int"),
+                new("m_IsStreamedSceneAssetBundle", "bool"),
+                new("m_MainAsset", "IAssetInfo"),
+                new("m_PathFlags", "int"),
+                new("m_PreloadTable", "PPtr<IUnityObject>[]"),
+                new("m_RuntimeCompatibility", "uint"),
+                new("m_SceneHashes", "ValueTuple<string, string>[]"),
+            }),
         },
         ["IAssetInfo"] = new InterfaceVersionSchema[]
         {
@@ -1773,6 +2219,37 @@ public static class InterfaceVersionTable
                 new("m_PreloadAudioData", "bool"),
                 new("m_Resource", "IStreamedResource"),
                 new("m_SubsoundIndex", "int"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_Ambisonic", "bool"),
+                new("m_BitsPerSample", "int"),
+                new("m_Channels", "int"),
+                new("m_CompressionFormat", "int"),
+                new("m_Frequency", "int"),
+                new("m_IsTrackerFormat", "bool"),
+                new("m_Legacy3D", "bool"),
+                new("m_Length", "float"),
+                new("m_LoadInBackground", "bool"),
+                new("m_LoadType", "int"),
+                new("m_PreloadAudioData", "bool"),
+                new("m_Resource", "IStreamedResource"),
+                new("m_SubsoundIndex", "int"),
+            }),
+        },
+        ["IAudioContainerElement"] = new InterfaceVersionSchema[]
+        {
+            new("2023.2.0a9", new InterfaceVersionMember[]
+            {
+                new("m_AudioClip", "PPtr<IAudioClip>"),
+                new("m_Enabled", "bool"),
+                new("m_Volume", "float"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AudioClip", "PPtr<IAudioClip>"),
+                new("m_Enabled", "bool"),
+                new("m_Volume", "float"),
             }),
         },
         ["IAudioMixer"] = new InterfaceVersionSchema[]
@@ -1953,6 +2430,17 @@ public static class InterfaceVersionTable
                 new("m_SuspendThreshold", "float"),
                 new("m_UpdateMode", "int"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_EnableSuspend", "bool"),
+                new("m_MasterGroup", "PPtr<IAudioMixerGroup>"),
+                new("m_MixerConstant", "IAudioMixerConstant"),
+                new("m_OutputGroup", "PPtr<IAudioMixerGroup>"),
+                new("m_Snapshots", "PPtr<IAudioMixerSnapshot>[]"),
+                new("m_StartSnapshot", "PPtr<IAudioMixerSnapshot>"),
+                new("m_SuspendThreshold", "float"),
+                new("m_UpdateMode", "int"),
+            }),
         },
         ["IAudioMixerConstant"] = new InterfaceVersionSchema[]
         {
@@ -2061,6 +2549,16 @@ public static class InterfaceVersionTable
                 new("m_Parameters", "IParameter[]"),
                 new("m_SendTarget", "PPtr<IAudioMixerEffectController>"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_Bypass", "bool"),
+                new("m_EffectID", "GUID"),
+                new("m_EffectName", "string"),
+                new("m_EnableWetMix", "bool"),
+                new("m_MixLevel", "GUID"),
+                new("m_Parameters", "IParameter[]"),
+                new("m_SendTarget", "PPtr<IAudioMixerEffectController>"),
+            }),
         },
         ["IAudioMixerGroup"] = new InterfaceVersionSchema[]
         {
@@ -2088,6 +2586,12 @@ public static class InterfaceVersionTable
                 new("m_Children", "PPtr<IAudioMixerGroup>[]"),
                 new("m_GroupID", "GUID"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AudioMixer", "PPtr<IAudioMixer>"),
+                new("m_Children", "PPtr<IAudioMixerGroup>[]"),
+                new("m_GroupID", "GUID"),
+            }),
         },
         ["IAudioMixerSnapshot"] = new InterfaceVersionSchema[]
         {
@@ -2110,6 +2614,20 @@ public static class InterfaceVersionTable
             {
                 new("m_AudioMixer", "PPtr<IAudioMixer>"),
                 new("m_SnapshotID", "GUID"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AudioMixer", "PPtr<IAudioMixer>"),
+                new("m_SnapshotID", "GUID"),
+            }),
+        },
+        ["IAudioResource"] = new InterfaceVersionSchema[]
+        {
+            new("2023.2.0a9", new InterfaceVersionMember[]
+            {
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
             }),
         },
         ["IAudioSource"] = new InterfaceVersionSchema[]
@@ -2360,6 +2878,34 @@ public static class InterfaceVersionTable
                 new("rolloffMode", "int"),
                 new("spreadCustomCurve", "IAnimationCurve<float>"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("BypassEffects", "bool"),
+                new("BypassListenerEffects", "bool"),
+                new("BypassReverbZones", "bool"),
+                new("DopplerLevel", "float"),
+                new("Loop", "bool"),
+                new("MaxDistance", "float"),
+                new("MinDistance", "float"),
+                new("Mute", "bool"),
+                new("OutputAudioMixerGroup", "PPtr<IAudioMixerGroup>"),
+                new("Pan2D", "float"),
+                new("Priority", "int"),
+                new("Spatialize", "bool"),
+                new("SpatializePostEffects", "bool"),
+                new("m_Enabled", "byte"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Pitch", "float"),
+                new("m_PlayOnAwake", "bool"),
+                new("m_Resource", "PPtr<IUnityObject>"),
+                new("m_Volume", "float"),
+                new("m_audioClip", "PPtr<IAudioClip>"),
+                new("panLevelCustomCurve", "IAnimationCurve<float>"),
+                new("reverbZoneMixCustomCurve", "IAnimationCurve<float>"),
+                new("rolloffCustomCurve", "IAnimationCurve<float>"),
+                new("rolloffMode", "int"),
+                new("spreadCustomCurve", "IAnimationCurve<float>"),
+            }),
         },
         ["IAvatar"] = new InterfaceVersionSchema[]
         {
@@ -2401,6 +2947,13 @@ public static class InterfaceVersionTable
                 new("m_TOS", "ValueTuple<uint, string>[]"),
             }),
             new("2019.1.0a14", new InterfaceVersionMember[]
+            {
+                new("m_Avatar", "IAvatarConstant"),
+                new("m_AvatarSize", "uint"),
+                new("m_HumanDescription", "IHumanDescription"),
+                new("m_TOS", "ValueTuple<uint, string>[]"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_Avatar", "IAvatarConstant"),
                 new("m_AvatarSize", "uint"),
@@ -2463,6 +3016,11 @@ public static class InterfaceVersionTable
                 new("m_Elements", "ITransformMaskElement[]"),
                 new("m_Mask", "uint[]"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_Elements", "ITransformMaskElement[]"),
+                new("m_Mask", "uint[]"),
+            }),
         },
         ["IBillboardAsset"] = new InterfaceVersionSchema[]
         {
@@ -2505,6 +3063,49 @@ public static class InterfaceVersionTable
                 new("material", "PPtr<IMaterial>"),
                 new("vertices", "Vector2f[]"),
                 new("width", "float"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("bottom", "float"),
+                new("height", "float"),
+                new("imageTexCoords", "Vector4f[]"),
+                new("indices", "ushort[]"),
+                new("material", "PPtr<IMaterial>"),
+                new("vertices", "Vector2f[]"),
+                new("width", "float"),
+            }),
+        },
+        ["IBinding"] = new InterfaceVersionSchema[]
+        {
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_Set", "uint"),
+                new("m_Slot", "uint"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_Set", "uint"),
+                new("m_Slot", "uint"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_Set", "uint"),
+                new("m_Slot", "uint"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_EncodedData", "uint"),
+                new("m_Slot", "uint"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_EncodedData", "uint"),
+                new("m_Slot", "uint"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_EncodedData", "uint"),
+                new("m_Slot", "uint"),
             }),
         },
         ["IBitField"] = new InterfaceVersionSchema[]
@@ -2560,6 +3161,66 @@ public static class InterfaceVersionTable
             new("5.5.0f3", new InterfaceVersionMember[]
             {
                 new("m_Bits", "uint"),
+            }),
+        },
+        ["IBlendShapeData"] = new InterfaceVersionSchema[]
+        {
+            new("2017.1.0b1", new InterfaceVersionMember[]
+            {
+                new("channels", "IMeshBlendShapeChannel[]"),
+                new("fullWeights", "float[]"),
+                new("shapes", "IMeshBlendShape[]"),
+                new("vertices", "IBlendShapeVertex[]"),
+            }),
+            new("6000.5.0a7", new InterfaceVersionMember[]
+            {
+                new("channels", "IMeshBlendShapeChannel[]"),
+                new("fullWeights", "float[]"),
+                new("shapes", "IMeshBlendShape[]"),
+                new("vertices", "IBlendShapeVertex[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("channels", "IMeshBlendShapeChannel[]"),
+                new("fullWeights", "float[]"),
+                new("shapes", "IMeshBlendShape[]"),
+                new("vertices", "IBlendShapeVertex[]"),
+            }),
+        },
+        ["IBlobObject"] = new InterfaceVersionSchema[]
+        {
+            new("6000.3.0a2", new InterfaceVersionMember[]
+            {
+                new("m_BlobData", "char[]"),
+                new("m_BlobTypeHash", "ulong"),
+                new("m_NestedBlobObjectReferenceOffsets", "uint[]"),
+                new("m_NestedBlobObjectReferences", "PPtr<IBlobObject>[]"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_BlobData", "char[]"),
+                new("m_BlobTypeHash", "ulong"),
+                new("m_NestedBlobObjectReferenceOffsets", "uint[]"),
+                new("m_NestedBlobObjectReferences", "PPtr<IBlobObject>[]"),
+            }),
+        },
+        ["IBlockShaderContainer"] = new InterfaceVersionSchema[]
+        {
+            new("6000.4.0a2", new InterfaceVersionMember[]
+            {
+                new("blob", "uint[]"),
+                new("dependencies", "PPtr<IBlockShaderContainer>[]"),
+                new("generatedPaths", "string[]"),
+                new("guid", "GUID"),
+                new("state", "int"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("blob", "uint[]"),
+                new("dependencies", "PPtr<IBlockShaderContainer>[]"),
+                new("generatedPaths", "string[]"),
+                new("guid", "GUID"),
+                new("state", "int"),
             }),
         },
         ["IBranchWindLevel"] = new InterfaceVersionSchema[]
@@ -2921,6 +3582,14 @@ public static class InterfaceVersionTable
                 new("m_IsWarning", "bool"),
                 new("m_Message", "string"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_BrokenParentPrefab", "PPtr<IBrokenPrefabAsset>"),
+                new("m_IsPrefabFileValid", "bool"),
+                new("m_IsVariant", "bool"),
+                new("m_IsWarning", "bool"),
+                new("m_Message", "string"),
+            }),
         },
         ["IBufferBinding"] = new InterfaceVersionSchema[]
         {
@@ -2934,6 +3603,34 @@ public static class InterfaceVersionTable
                 new("m_ArraySize", "int"),
                 new("m_Index", "int"),
                 new("m_NameIndex", "int"),
+            }),
+        },
+        ["IBufferBindingParameter"] = new InterfaceVersionSchema[]
+        {
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_ArraySize", "int"),
+                new("m_Index", "int"),
+                new("m_NameIndex", "int"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_ArraySize", "int"),
+                new("m_Binding", "IBinding"),
+                new("m_NameIndex", "int"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_ArraySize", "int"),
+                new("m_Binding", "IBinding"),
+                new("m_NameIndex", "int"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_ArraySize", "int"),
+                new("m_Binding", "IBinding"),
+                new("m_NameIndex", "int"),
+                new("m_ResourceType", "int"),
             }),
         },
         ["IBuildTargetSettings"] = new InterfaceVersionSchema[]
@@ -3196,6 +3893,45 @@ public static class InterfaceVersionTable
                 new("orthographic", "bool"),
                 new("orthographic_size", "float"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("far_clip_plane", "float"),
+                new("field_of_view", "float"),
+                new("m_AllowDynamicResolution", "bool"),
+                new("m_AllowMSAA", "bool"),
+                new("m_Anamorphism", "float"),
+                new("m_Aperture", "float"),
+                new("m_BackGroundColor", "IColorRGBA"),
+                new("m_BarrelClipping", "float"),
+                new("m_BladeCount", "int"),
+                new("m_ClearFlags", "uint"),
+                new("m_CullingMask", "IBitField"),
+                new("m_Curvature", "Vector2f"),
+                new("m_Depth", "float"),
+                new("m_Enabled", "byte"),
+                new("m_FocalLength", "float"),
+                new("m_FocusDistance", "float"),
+                new("m_ForceIntoRT", "bool"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_GateFitMode", "int"),
+                new("m_HDR", "bool"),
+                new("m_Iso", "int"),
+                new("m_LensShift", "Vector2f"),
+                new("m_NormalizedViewPortRect", "Rectf"),
+                new("m_OcclusionCulling", "bool"),
+                new("m_RenderingPath", "int"),
+                new("m_SensorSize", "Vector2f"),
+                new("m_ShutterSpeed", "float"),
+                new("m_StereoConvergence", "float"),
+                new("m_StereoSeparation", "float"),
+                new("m_TargetDisplay", "int"),
+                new("m_TargetEye", "int"),
+                new("m_TargetTexture", "PPtr<IRenderTexture>"),
+                new("m_projectionMatrixMode", "int"),
+                new("near_clip_plane", "float"),
+                new("orthographic", "bool"),
+                new("orthographic_size", "float"),
+            }),
         },
         ["ICapsuleCollider"] = new InterfaceVersionSchema[]
         {
@@ -3259,6 +3995,21 @@ public static class InterfaceVersionTable
                 new("m_Radius", "float"),
             }),
             new("2023.3.0a10", new InterfaceVersionMember[]
+            {
+                new("m_Center", "Vector3f"),
+                new("m_Direction", "int"),
+                new("m_Enabled", "bool"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Height", "float"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_IsTrigger", "bool"),
+                new("m_LayerOverridePriority", "int"),
+                new("m_Material", "PPtr<IPhysicsMaterial>"),
+                new("m_ProvidesContacts", "bool"),
+                new("m_Radius", "float"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_Center", "Vector3f"),
                 new("m_Direction", "int"),
@@ -3564,6 +4315,10 @@ public static class InterfaceVersionTable
                 new("m_GameObject", "PPtr<GameObject>"),
             }),
             new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+                new("m_GameObject", "PPtr<GameObject>"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_GameObject", "PPtr<GameObject>"),
             }),
@@ -3981,6 +4736,10 @@ public static class InterfaceVersionTable
             {
                 new("m_GameObject", "PPtr<GameObject>"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_GameObject", "PPtr<GameObject>"),
+            }),
         },
         ["IComputeShader"] = new InterfaceVersionSchema[]
         {
@@ -4120,6 +4879,22 @@ public static class InterfaceVersionTable
             {
                 new("variants", "IComputeShaderPlatformVariant[]"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("variants", "IComputeShaderPlatformVariant[]"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("variants", "IComputeShaderPlatformVariant[]"),
+            }),
+            new("6000.6.0b1", new InterfaceVersionMember[]
+            {
+                new("variants", "IComputeShaderPlatformVariant[]"),
+            }),
+            new("6000.7.0a3", new InterfaceVersionMember[]
+            {
+                new("variants", "IComputeShaderPlatformVariant[]"),
+            }),
         },
         ["IComputeShaderCB"] = new InterfaceVersionSchema[]
         {
@@ -4229,6 +5004,18 @@ public static class InterfaceVersionTable
                 new("textures", "IComputeShaderResource[]"),
                 new("threadGroupSize", "uint[]"),
             }),
+            new("6000.7.0a3", new InterfaceVersionMember[]
+            {
+                new("builtinSamplers", "ISamplerParameter[]"),
+                new("cbVariantIndices", "uint[]"),
+                new("cbs", "IComputeShaderResource[]"),
+                new("code", "byte[]"),
+                new("inBuffers", "IComputeShaderResource[]"),
+                new("outBuffers", "IComputeShaderResource[]"),
+                new("requirements", "long"),
+                new("textures", "IComputeShaderResource[]"),
+                new("threadGroupSize", "uint[]"),
+            }),
         },
         ["IComputeShaderKernelParent"] = new InterfaceVersionSchema[]
         {
@@ -4262,6 +5049,15 @@ public static class InterfaceVersionTable
                 new("variantIndices", "ValueTuple<string, uint>[]"),
             }),
             new("6000.3.0a2", new InterfaceVersionMember[]
+            {
+                new("dynamicKeywords", "string[]"),
+                new("globalKeywords", "string[]"),
+                new("localKeywords", "string[]"),
+                new("name", "string"),
+                new("uniqueVariants", "IComputeShaderKernel[]"),
+                new("variantIndices", "ValueTuple<string, uint>[]"),
+            }),
+            new("6000.7.0a3", new InterfaceVersionMember[]
             {
                 new("dynamicKeywords", "string[]"),
                 new("globalKeywords", "string[]"),
@@ -4334,6 +5130,14 @@ public static class InterfaceVersionTable
                 new("targetLevel", "int"),
                 new("targetRenderer", "int"),
             }),
+            new("6000.7.0a3", new InterfaceVersionMember[]
+            {
+                new("constantBuffers", "IComputeShaderCB[]"),
+                new("kernels", "IComputeShaderKernelParent[]"),
+                new("resourcesResolved", "bool"),
+                new("targetLevel", "int"),
+                new("targetRenderer", "int"),
+            }),
         },
         ["IComputeShaderResource"] = new InterfaceVersionSchema[]
         {
@@ -4372,6 +5176,15 @@ public static class InterfaceVersionTable
                 new("name", "string"),
                 new("resType", "int"),
                 new("samplerBindPoint", "int"),
+                new("texDimension", "int"),
+            }),
+            new("6000.7.0a3", new InterfaceVersionMember[]
+            {
+                new("generatedName", "string"),
+                new("m_Binding", "IBinding"),
+                new("m_SamplerBinding", "IBinding"),
+                new("name", "string"),
+                new("resType", "int"),
                 new("texDimension", "int"),
             }),
         },
@@ -4428,6 +5241,27 @@ public static class InterfaceVersionTable
                 new("m_VectorParams", "IVectorParameter[]"),
             }),
             new("2020.3.2f1", new InterfaceVersionMember[]
+            {
+                new("m_IsPartialCB", "bool"),
+                new("m_MatrixParams", "IMatrixParameter[]"),
+                new("m_NameIndex", "int"),
+                new("m_Size", "int"),
+                new("m_StructParams", "IStructParameter[]"),
+                new("m_VectorParams", "IVectorParameter[]"),
+            }),
+        },
+        ["IConstantBufferParameter"] = new InterfaceVersionSchema[]
+        {
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_IsPartialCB", "bool"),
+                new("m_MatrixParams", "IMatrixParameter[]"),
+                new("m_NameIndex", "int"),
+                new("m_Size", "int"),
+                new("m_StructParams", "IStructParameter[]"),
+                new("m_VectorParams", "IVectorParameter[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
             {
                 new("m_IsPartialCB", "bool"),
                 new("m_MatrixParams", "IMatrixParameter[]"),
@@ -4901,6 +5735,31 @@ public static class InterfaceVersionTable
                 new("m_TextureSettings", "IGLTextureSettings"),
                 new("m_Width", "int"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("image_data", "TypelessData"),
+                new("m_ColorSpace", "int"),
+                new("m_CompleteImageSize", "uint"),
+                new("m_Height", "int"),
+                new("m_IgnoreMipmapLimit", "bool"),
+                new("m_ImageCount", "int"),
+                new("m_IsAlphaChannelOptional", "bool"),
+                new("m_IsPreProcessed", "bool"),
+                new("m_IsReadable", "bool"),
+                new("m_LightmapFormat", "int"),
+                new("m_MipCount", "int"),
+                new("m_MipmapLimitGroupName", "string"),
+                new("m_MipsStripped", "int"),
+                new("m_PlatformBlob", "byte[]"),
+                new("m_SourceTextures", "PPtr<ITexture2D>[]"),
+                new("m_StreamData", "StreamingInfo"),
+                new("m_StreamingMipmaps", "bool"),
+                new("m_StreamingMipmapsPriority", "int"),
+                new("m_TextureDimension", "int"),
+                new("m_TextureFormat", "int"),
+                new("m_TextureSettings", "IGLTextureSettings"),
+                new("m_Width", "int"),
+            }),
         },
         ["ICustomDataModule"] = new InterfaceVersionSchema[]
         {
@@ -5017,6 +5876,12 @@ public static class InterfaceVersionTable
                 new("m_GraphicsJobsFilterList", "ID3D12GraphicsJobsDeviceFilterData[]"),
             }),
             new("6000.3.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AllowFilterList", "ID3D12DeviceFilterData[]"),
+                new("m_DenyFilterList", "ID3D12DeviceFilterData[]"),
+                new("m_GraphicsJobsFilterList", "ID3D12GraphicsJobsDeviceFilterData[]"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_AllowFilterList", "ID3D12DeviceFilterData[]"),
                 new("m_DenyFilterList", "ID3D12DeviceFilterData[]"),
@@ -5331,6 +6196,26 @@ public static class InterfaceVersionTable
                 new("rateOverTime", "IMinMaxCurve"),
             }),
         },
+        ["IEnlightenSceneMapping"] = new InterfaceVersionSchema[]
+        {
+            new("2017.1.0b1", new InterfaceVersionMember[]
+            {
+                new("m_Probesets", "IHash128[]"),
+                new("m_Renderers", "IEnlightenRendererInformation[]"),
+                new("m_SystemAtlases", "IEnlightenSystemAtlasInformation[]"),
+                new("m_Systems", "IEnlightenSystemInformation[]"),
+                new("m_TerrainChunks", "IEnlightenTerrainChunksInformation[]"),
+            }),
+            new("6000.6.0b1", new InterfaceVersionMember[]
+            {
+                new("m_CAHMap", "IEnlightenCAHMap"),
+                new("m_Probesets", "IHash128[]"),
+                new("m_Renderers", "IEnlightenRendererInformation[]"),
+                new("m_SystemAtlases", "IEnlightenSystemAtlasInformation[]"),
+                new("m_Systems", "IEnlightenSystemInformation[]"),
+                new("m_TerrainChunks", "IEnlightenTerrainChunksInformation[]"),
+            }),
+        },
         ["IEntityId"] = new InterfaceVersionSchema[]
         {
             new("6000.2.0b2", new InterfaceVersionMember[]
@@ -5349,6 +6234,31 @@ public static class InterfaceVersionTable
             new("2018.4.25f1", new InterfaceVersionMember[]
             {
                 new("m_References", "ValueTuple<string, PPtr<IUnityObject>>[]"),
+            }),
+        },
+        ["IExpression"] = new InterfaceVersionSchema[]
+        {
+            new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+                new("data_0_", "int"),
+                new("data_1_", "int"),
+                new("data_2_", "int"),
+                new("data_3_", "int"),
+                new("op", "int"),
+                new("valueIndex", "int"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("dataSize", "byte"),
+                new("dataType", "byte"),
+                new("data_0_", "int"),
+                new("data_1_", "int"),
+                new("data_2_", "int"),
+                new("data_3_", "int"),
+                new("jmpCode", "ushort"),
+                new("op", "byte"),
+                new("scalarSwitchCase", "byte"),
+                new("valueIndex", "ushort"),
             }),
         },
         ["IExternalForcesModule"] = new InterfaceVersionSchema[]
@@ -5399,6 +6309,13 @@ public static class InterfaceVersionTable
                 new("m_UseFog", "bool"),
             }),
             new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+                new("m_Elements", "IFlareElement[]"),
+                new("m_FlareTexture", "PPtr<IUnityObject>"),
+                new("m_TextureLayout", "int"),
+                new("m_UseFog", "bool"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_Elements", "IFlareElement[]"),
                 new("m_FlareTexture", "PPtr<IUnityObject>"),
@@ -5643,6 +6560,30 @@ public static class InterfaceVersionTable
                 new("m_Tracking", "float"),
                 new("m_UseLegacyBoundsCalculation", "bool"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_Ascent", "float"),
+                new("m_AsciiStartOffset", "int"),
+                new("m_CharacterPadding", "int"),
+                new("m_CharacterRects", "ICharacterInfo[]"),
+                new("m_CharacterSpacing", "int"),
+                new("m_ConvertCase", "int"),
+                new("m_DefaultMaterial", "PPtr<IMaterial>"),
+                new("m_DefaultStyle", "uint"),
+                new("m_Descent", "float"),
+                new("m_FallbackFonts", "PPtr<IFont>[]"),
+                new("m_FontData", "char[]"),
+                new("m_FontNames", "string[]"),
+                new("m_FontRenderingMode", "int"),
+                new("m_FontSize", "float"),
+                new("m_KerningValues", "ValueTuple<ValueTuple<ushort, ushort>, float>[]"),
+                new("m_LineSpacing", "float"),
+                new("m_PixelScale", "float"),
+                new("m_ShouldRoundAdvanceValue", "bool"),
+                new("m_Texture", "PPtr<IUnityObject>"),
+                new("m_Tracking", "float"),
+                new("m_UseLegacyBoundsCalculation", "bool"),
+            }),
         },
         ["IForceModule"] = new InterfaceVersionSchema[]
         {
@@ -5733,6 +6674,18 @@ public static class InterfaceVersionTable
                 new("isIntCurve", "byte"),
                 new("isPPtrCurve", "byte"),
                 new("isSerializeReferenceCurve", "byte"),
+                new("path", "uint"),
+                new("script", "PPtr<IUnityObject>"),
+                new("typeID", "int"),
+            }),
+            new("6000.5.0a7", new InterfaceVersionMember[]
+            {
+                new("attribute", "uint"),
+                new("customType", "byte"),
+                new("isIntCurve", "byte"),
+                new("isPPtrCurve", "byte"),
+                new("isSerializeReferenceCurve", "byte"),
+                new("metaData", "ushort"),
                 new("path", "uint"),
                 new("script", "PPtr<IUnityObject>"),
                 new("typeID", "int"),
@@ -6401,6 +7354,25 @@ public static class InterfaceVersionTable
                 new("bytes_9_", "byte"),
             }),
             new("2017.1.0b1", new InterfaceVersionMember[]
+            {
+                new("bytes_0_", "byte"),
+                new("bytes_10_", "byte"),
+                new("bytes_11_", "byte"),
+                new("bytes_12_", "byte"),
+                new("bytes_13_", "byte"),
+                new("bytes_14_", "byte"),
+                new("bytes_15_", "byte"),
+                new("bytes_1_", "byte"),
+                new("bytes_2_", "byte"),
+                new("bytes_3_", "byte"),
+                new("bytes_4_", "byte"),
+                new("bytes_5_", "byte"),
+                new("bytes_6_", "byte"),
+                new("bytes_7_", "byte"),
+                new("bytes_8_", "byte"),
+                new("bytes_9_", "byte"),
+            }),
+            new("6000.5.0a5", new InterfaceVersionMember[]
             {
                 new("bytes_0_", "byte"),
                 new("bytes_10_", "byte"),
@@ -7335,6 +8307,40 @@ public static class InterfaceVersionTable
                 new("m_UseColorTemperature", "bool"),
                 new("m_UseViewFrustumForShadowCasterCull", "bool"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AreaSize", "Vector2f"),
+                new("m_BakingOutput", "ILightBakingOutput"),
+                new("m_BounceIntensity", "float"),
+                new("m_BoundingSphereOverride", "Vector4f"),
+                new("m_Color", "IColorRGBA"),
+                new("m_ColorTemperature", "float"),
+                new("m_Cookie", "PPtr<IUnityObject>"),
+                new("m_CookieSize2D", "Vector2f"),
+                new("m_CullingMask", "IBitField"),
+                new("m_DrawHalo", "bool"),
+                new("m_EnableSpotReflector", "bool"),
+                new("m_Enabled", "byte"),
+                new("m_Flare", "PPtr<IFlare>"),
+                new("m_ForceVisible", "bool"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_InnerSpotAngle", "float"),
+                new("m_Intensity", "float"),
+                new("m_LightShadowCasterMode", "int"),
+                new("m_LightUnit", "int"),
+                new("m_Lightmapping", "int"),
+                new("m_LuxAtDistance", "float"),
+                new("m_Range", "float"),
+                new("m_RenderMode", "int"),
+                new("m_RenderingLayerMask", "uint"),
+                new("m_Shadows", "IShadowSettings"),
+                new("m_ShapeRadius", "float"),
+                new("m_SpotAngle", "float"),
+                new("m_Type", "int"),
+                new("m_UseBoundingSphereOverride", "bool"),
+                new("m_UseColorTemperature", "bool"),
+                new("m_UseViewFrustumForShadowCasterCull", "bool"),
+            }),
         },
         ["ILightBakingOutput"] = new InterfaceVersionSchema[]
         {
@@ -7410,6 +8416,13 @@ public static class InterfaceVersionTable
                 new("m_Data", "ILightProbeData"),
             }),
             new("2023.2.0a12", new InterfaceVersionMember[]
+            {
+                new("m_BakedCoefficients", "ISphericalHarmonicsL2[]"),
+                new("m_BakedLightOcclusion", "ILightProbeOcclusion[]"),
+                new("m_Data", "ILightProbeData"),
+                new("m_HasBeenEdited", "bool"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_BakedCoefficients", "ISphericalHarmonicsL2[]"),
                 new("m_BakedLightOcclusion", "ILightProbeOcclusion[]"),
@@ -7749,6 +8762,46 @@ public static class InterfaceVersionTable
                 new("m_RealtimeEnvironmentLighting", "bool"),
                 new("m_UsingShadowmask", "bool"),
             }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_AlbedoBoost", "float"),
+                new("m_BounceScale", "float"),
+                new("m_EnableBakedLightmaps", "bool"),
+                new("m_EnableRealtimeLightmaps", "bool"),
+                new("m_IndirectOutputScale", "float"),
+                new("m_RealtimeEnvironmentLighting", "bool"),
+                new("m_UsingShadowmask", "bool"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AlbedoBoost", "float"),
+                new("m_BounceScale", "float"),
+                new("m_EnableBakedLightmaps", "bool"),
+                new("m_EnableRealtimeLightmaps", "bool"),
+                new("m_IndirectOutputScale", "float"),
+                new("m_RealtimeEnvironmentLighting", "bool"),
+                new("m_UsingShadowmask", "bool"),
+            }),
+            new("6000.6.0a6", new InterfaceVersionMember[]
+            {
+                new("m_AlbedoBoost", "float"),
+                new("m_BounceScale", "float"),
+                new("m_EnableBakedLightmaps", "bool"),
+                new("m_EnableRealtimeLightmaps", "bool"),
+                new("m_IndirectOutputScale", "float"),
+                new("m_RealtimeEnvironmentLighting", "bool"),
+                new("m_UsingShadowmask", "bool"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_AlbedoBoost", "float"),
+                new("m_BounceScale", "float"),
+                new("m_EnableBakedLightmaps", "bool"),
+                new("m_EnableRealtimeLightmaps", "bool"),
+                new("m_IndirectOutputScale", "float"),
+                new("m_RealtimeEnvironmentLighting", "bool"),
+                new("m_UsingShadowmask", "bool"),
+            }),
         },
         ["ILightsModule"] = new InterfaceVersionSchema[]
         {
@@ -8034,6 +9087,20 @@ public static class InterfaceVersionTable
                 new("m_ValidKeywords", "string[]"),
                 new("stringTagMap", "ValueTuple<string, string>[]"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("disabledShaderPasses", "string[]"),
+                new("m_BuildTextureStacks", "IBuildTextureStackReference[]"),
+                new("m_CustomRenderQueue", "int"),
+                new("m_DoubleSidedGI", "bool"),
+                new("m_EnableInstancingVariants", "bool"),
+                new("m_InvalidKeywords", "string[]"),
+                new("m_LightmapFlags", "uint"),
+                new("m_SavedProperties", "IUnityPropertySheet"),
+                new("m_Shader", "PPtr<IShader>"),
+                new("m_ValidKeywords", "string[]"),
+                new("stringTagMap", "ValueTuple<string, string>[]"),
+            }),
         },
         ["IMatrix4x4f"] = new InterfaceVersionSchema[]
         {
@@ -8150,6 +9217,25 @@ public static class InterfaceVersionTable
                 new("e31", "float"),
                 new("e32", "float"),
                 new("e33", "float"),
+            }),
+        },
+        ["IMatrixParameter"] = new InterfaceVersionSchema[]
+        {
+            new("2017.1.0b1", new InterfaceVersionMember[]
+            {
+                new("m_ArraySize", "int"),
+                new("m_Index", "int"),
+                new("m_NameIndex", "int"),
+                new("m_RowCount", "sbyte"),
+                new("m_Type", "sbyte"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_ArraySize", "int"),
+                new("m_NameIndex", "int"),
+                new("m_OffsetInConstantBuffer", "int"),
+                new("m_RowCount", "sbyte"),
+                new("m_Type", "sbyte"),
             }),
         },
         ["IMesh"] = new InterfaceVersionSchema[]
@@ -8364,6 +9450,34 @@ public static class InterfaceVersionTable
                 new("m_VariableBoneCountWeights", "IVariableBoneCountWeights"),
                 new("m_VertexData", "IVertexData"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_BakedConvexCollisionMesh", "byte[]"),
+                new("m_BakedTriangleCollisionMesh", "byte[]"),
+                new("m_BindPose", "IMatrix4x4f[]"),
+                new("m_BoneNameHashes", "uint[]"),
+                new("m_BonesAABB", "IMinMaxAABB[]"),
+                new("m_CompressedMesh", "ICompressedMesh"),
+                new("m_CookingOptions", "int"),
+                new("m_IndexBuffer", "byte[]"),
+                new("m_IndexFormat", "int"),
+                new("m_IsReadable", "bool"),
+                new("m_KeepIndices", "bool"),
+                new("m_KeepVertices", "bool"),
+                new("m_LocalAABB", "IAABB"),
+                new("m_MeshCompression", "byte"),
+                new("m_MeshLodInfo", "IMeshLodInfo"),
+                new("m_MeshMetrics_0_", "float"),
+                new("m_MeshMetrics_1_", "float"),
+                new("m_PreBakeConvexCollisionMesh", "bool"),
+                new("m_PreBakeTriangleCollisionMesh", "bool"),
+                new("m_RootBoneNameHash", "uint"),
+                new("m_Shapes", "IBlendShapeData"),
+                new("m_StreamData", "StreamingInfo"),
+                new("m_SubMeshes", "ISubMesh[]"),
+                new("m_VariableBoneCountWeights", "IVariableBoneCountWeights"),
+                new("m_VertexData", "IVertexData"),
+            }),
         },
         ["IMeshFilter"] = new InterfaceVersionSchema[]
         {
@@ -8383,6 +9497,11 @@ public static class InterfaceVersionTable
                 new("m_Mesh", "PPtr<IMesh>"),
             }),
             new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Mesh", "PPtr<IMesh>"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_GameObject", "PPtr<GameObject>"),
                 new("m_Mesh", "PPtr<IMesh>"),
@@ -8939,6 +10058,42 @@ public static class InterfaceVersionTable
                 new("m_StaticShadowCaster", "byte"),
             }),
             new("6000.4.0a4", new InterfaceVersionMember[]
+            {
+                new("m_AdditionalVertexStreams", "PPtr<IMesh>"),
+                new("m_CastShadows", "byte"),
+                new("m_DynamicOccludee", "byte"),
+                new("m_Enabled", "bool"),
+                new("m_EnlightenVertexStream", "PPtr<IMesh>"),
+                new("m_ForceMeshLod", "short"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_LightProbeUsage", "byte"),
+                new("m_LightProbeVolumeOverride", "PPtr<GameObject>"),
+                new("m_LightmapIndex", "ushort"),
+                new("m_LightmapIndexDynamic", "ushort"),
+                new("m_LightmapTilingOffset", "Vector4f"),
+                new("m_LightmapTilingOffsetDynamic", "Vector4f"),
+                new("m_MaskInteraction", "int"),
+                new("m_Materials", "PPtr<IMaterial>[]"),
+                new("m_MeshLodSelectionBias", "float"),
+                new("m_MotionVectors", "byte"),
+                new("m_ProbeAnchor", "PPtr<ITransform>"),
+                new("m_RayTraceProcedural", "byte"),
+                new("m_RayTracingAccelStructBuildFlags", "byte"),
+                new("m_RayTracingAccelStructBuildFlagsOverride", "byte"),
+                new("m_RayTracingMode", "byte"),
+                new("m_ReceiveShadows", "byte"),
+                new("m_ReflectionProbeUsage", "byte"),
+                new("m_RendererPriority", "int"),
+                new("m_RenderingLayerMask", "uint"),
+                new("m_SmallMeshCulling", "byte"),
+                new("m_SortingLayer", "short"),
+                new("m_SortingLayerID", "int"),
+                new("m_SortingOrder", "short"),
+                new("m_StaticBatchInfo", "IStaticBatchInfo"),
+                new("m_StaticBatchRoot", "PPtr<ITransform>"),
+                new("m_StaticShadowCaster", "byte"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_AdditionalVertexStreams", "PPtr<IMesh>"),
                 new("m_CastShadows", "byte"),
@@ -10411,6 +11566,14 @@ public static class InterfaceVersionTable
                 new("m_Namespace", "string"),
                 new("m_PropertiesHash", "IHash128"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AssemblyName", "string"),
+                new("m_ClassName", "string"),
+                new("m_ExecutionOrder", "int"),
+                new("m_Namespace", "string"),
+                new("m_PropertiesHash", "IHash128"),
+            }),
         },
         ["IMultiModeParameter"] = new InterfaceVersionSchema[]
         {
@@ -10744,6 +11907,18 @@ public static class InterfaceVersionTable
                 new("m_Rotation", "Quaternionf"),
                 new("m_SourceBounds", "IAABB"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AgentTypeID", "int"),
+                new("m_HeightMeshes", "IHeightMeshData[]"),
+                new("m_Heightmaps", "IHeightmapData[]"),
+                new("m_NavMeshBuildSettings", "INavMeshBuildSettings"),
+                new("m_NavMeshTiles", "INavMeshTileData[]"),
+                new("m_OffMeshLinks", "IAutoOffMeshLinkData[]"),
+                new("m_Position", "Vector3f"),
+                new("m_Rotation", "Quaternionf"),
+                new("m_SourceBounds", "IAABB"),
+            }),
         },
         ["INoiseModule"] = new InterfaceVersionSchema[]
         {
@@ -10870,6 +12045,11 @@ public static class InterfaceVersionTable
                 new("m_PVSData", "byte[]"),
                 new("m_Scenes", "IOcclusionScene[]"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_PVSData", "byte[]"),
+                new("m_Scenes", "IOcclusionScene[]"),
+            }),
         },
         ["IOcclusionPortal"] = new InterfaceVersionSchema[]
         {
@@ -10895,6 +12075,13 @@ public static class InterfaceVersionTable
                 new("m_Size", "Vector3f"),
             }),
             new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+                new("m_Center", "Vector3f"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Open", "bool"),
+                new("m_Size", "Vector3f"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_Center", "Vector3f"),
                 new("m_GameObject", "PPtr<GameObject>"),
@@ -11653,6 +12840,11 @@ public static class InterfaceVersionTable
                 new("m_FileID", "int"),
                 new("m_PathID", "long"),
             }),
+            new("6000.6.0a6", new InterfaceVersionMember[]
+            {
+                new("m_FileID", "int"),
+                new("m_PathID", "long"),
+            }),
             new("2020.1.0a3", new InterfaceVersionMember[]
             {
                 new("m_FileID", "int"),
@@ -11719,6 +12911,16 @@ public static class InterfaceVersionTable
                 new("m_PathID", "long"),
             }),
             new("2023.2.0a15", new InterfaceVersionMember[]
+            {
+                new("m_FileID", "int"),
+                new("m_PathID", "long"),
+            }),
+            new("6000.5.0a8", new InterfaceVersionMember[]
+            {
+                new("m_FileID", "int"),
+                new("m_PathID", "long"),
+            }),
+            new("6000.5.0a8", new InterfaceVersionMember[]
             {
                 new("m_FileID", "int"),
                 new("m_PathID", "long"),
@@ -11869,6 +13071,11 @@ public static class InterfaceVersionTable
                 new("m_PathID", "long"),
             }),
             new("6000.3.0a5", new InterfaceVersionMember[]
+            {
+                new("m_FileID", "int"),
+                new("m_PathID", "long"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
             {
                 new("m_FileID", "int"),
                 new("m_PathID", "long"),
@@ -12299,6 +13506,31 @@ public static class InterfaceVersionTable
                 new("m_PathID", "long"),
             }),
             new("6000.3.0b10", new InterfaceVersionMember[]
+            {
+                new("m_FileID", "int"),
+                new("m_PathID", "long"),
+            }),
+            new("6000.5.0a4", new InterfaceVersionMember[]
+            {
+                new("m_FileID", "int"),
+                new("m_PathID", "long"),
+            }),
+            new("6000.5.0a4", new InterfaceVersionMember[]
+            {
+                new("m_FileID", "int"),
+                new("m_PathID", "long"),
+            }),
+            new("6000.5.0a4", new InterfaceVersionMember[]
+            {
+                new("m_FileID", "int"),
+                new("m_PathID", "long"),
+            }),
+            new("6000.5.0a7", new InterfaceVersionMember[]
+            {
+                new("m_FileID", "int"),
+                new("m_PathID", "long"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_FileID", "int"),
                 new("m_PathID", "long"),
@@ -13362,6 +14594,94 @@ public static class InterfaceVersionTable
                 new("stopAction", "int"),
                 new("useUnscaledTime", "bool"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("ClampVelocityModule", "IClampVelocityModule"),
+                new("CollisionModule", "ICollisionModule"),
+                new("ColorBySpeedModule", "IColorBySpeedModule"),
+                new("ColorModule", "IColorModule"),
+                new("CustomDataModule", "ICustomDataModule"),
+                new("EmissionModule", "IEmissionModule"),
+                new("ExternalForcesModule", "IExternalForcesModule"),
+                new("ForceModule", "IForceModule"),
+                new("InheritVelocityModule", "IInheritVelocityModule"),
+                new("InitialModule", "IInitialModule"),
+                new("LifetimeByEmitterSpeedModule", "ILifetimeByEmitterSpeedModule"),
+                new("LightsModule", "ILightsModule"),
+                new("NoiseModule", "INoiseModule"),
+                new("RotationBySpeedModule", "IRotationBySpeedModule"),
+                new("RotationModule", "IRotationModule"),
+                new("ShapeModule", "IShapeModule"),
+                new("SizeBySpeedModule", "ISizeBySpeedModule"),
+                new("SizeModule", "ISizeModule"),
+                new("SubModule", "ISubModule"),
+                new("TrailModule", "ITrailModule"),
+                new("TriggerModule", "ITriggerModule"),
+                new("UVModule", "IUVModule"),
+                new("VelocityModule", "IVelocityModule"),
+                new("autoRandomSeed", "bool"),
+                new("cullingMode", "int"),
+                new("emitterVelocityMode", "int"),
+                new("lengthInSec", "float"),
+                new("looping", "bool"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("moveWithCustomTransform", "PPtr<ITransform>"),
+                new("moveWithTransform", "int"),
+                new("playOnAwake", "bool"),
+                new("prewarm", "bool"),
+                new("randomSeed", "int"),
+                new("ringBufferLoopRange", "Vector2f"),
+                new("ringBufferMode", "int"),
+                new("scalingMode", "int"),
+                new("simulationSpeed", "float"),
+                new("startDelay", "IMinMaxCurve"),
+                new("stopAction", "int"),
+                new("useUnscaledTime", "bool"),
+            }),
+            new("6000.6.0a6", new InterfaceVersionMember[]
+            {
+                new("ClampVelocityModule", "IClampVelocityModule"),
+                new("CollisionModule", "ICollisionModule"),
+                new("ColorBySpeedModule", "IColorBySpeedModule"),
+                new("ColorModule", "IColorModule"),
+                new("CustomDataModule", "ICustomDataModule"),
+                new("EmissionModule", "IEmissionModule"),
+                new("ExternalForcesModule", "IExternalForcesModule"),
+                new("ForceModule", "IForceModule"),
+                new("InheritVelocityModule", "IInheritVelocityModule"),
+                new("InitialModule", "IInitialModule"),
+                new("LifetimeByEmitterSpeedModule", "ILifetimeByEmitterSpeedModule"),
+                new("LightsModule", "ILightsModule"),
+                new("NoiseModule", "INoiseModule"),
+                new("RotationBySpeedModule", "IRotationBySpeedModule"),
+                new("RotationModule", "IRotationModule"),
+                new("ShapeModule", "IShapeModule"),
+                new("SizeBySpeedModule", "ISizeBySpeedModule"),
+                new("SizeModule", "ISizeModule"),
+                new("SubModule", "ISubModule"),
+                new("TrailModule", "ITrailModule"),
+                new("TriggerModule", "ITriggerModule"),
+                new("UVModule", "IUVModule"),
+                new("VelocityModule", "IVelocityModule"),
+                new("autoRandomSeed", "bool"),
+                new("cullingMode", "int"),
+                new("emitterVelocityMode", "int"),
+                new("lengthInSec", "float"),
+                new("looping", "bool"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("moveWithCustomTransform", "PPtr<ITransform>"),
+                new("moveWithTransform", "int"),
+                new("playOnAwake", "bool"),
+                new("prewarm", "bool"),
+                new("randomSeed", "int"),
+                new("ringBufferLoopRange", "Vector2f"),
+                new("ringBufferMode", "int"),
+                new("scalingMode", "int"),
+                new("simulationSpeed", "float"),
+                new("startDelay", "IMinMaxCurve"),
+                new("stopAction", "int"),
+                new("useUnscaledTime", "bool"),
+            }),
         },
         ["IParticleSystemEmissionBurst"] = new InterfaceVersionSchema[]
         {
@@ -13401,6 +14721,27 @@ public static class InterfaceVersionTable
                 new("probability", "float"),
                 new("repeatInterval", "float"),
                 new("time", "float"),
+            }),
+        },
+        ["IParticleSystemForceField"] = new InterfaceVersionSchema[]
+        {
+            new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+                new("m_Enabled", "byte"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Parameters", "IParticleSystemForceFieldParameters"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_Enabled", "byte"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Parameters", "IParticleSystemForceFieldParameters"),
+            }),
+            new("6000.6.0a6", new InterfaceVersionMember[]
+            {
+                new("m_Enabled", "byte"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Parameters", "IParticleSystemForceFieldParameters"),
             }),
         },
         ["IPerLODSettings"] = new InterfaceVersionSchema[]
@@ -13538,6 +14879,14 @@ public static class InterfaceVersionTable
                 new("m_FrictionCombine", "int"),
                 new("m_StaticFriction", "float"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_BounceCombine", "int"),
+                new("m_Bounciness", "float"),
+                new("m_DynamicFriction", "float"),
+                new("m_FrictionCombine", "int"),
+                new("m_StaticFriction", "float"),
+            }),
         },
         ["IPhysicsMaterial2D"] = new InterfaceVersionSchema[]
         {
@@ -13562,6 +14911,13 @@ public static class InterfaceVersionTable
                 new("friction", "float"),
             }),
             new("6000.0.14f1", new InterfaceVersionMember[]
+            {
+                new("bounciness", "float"),
+                new("friction", "float"),
+                new("m_BounceCombine", "int"),
+                new("m_FrictionCombine", "int"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("bounciness", "float"),
                 new("friction", "float"),
@@ -13700,6 +15056,14 @@ public static class InterfaceVersionTable
                 new("m_TargetType", "IPresetType"),
             }),
             new("2023.1.0a18", new InterfaceVersionMember[]
+            {
+                new("m_CoupledProperties", "IPropertyModification[]"),
+                new("m_CoupledType", "IPresetType"),
+                new("m_ExcludedProperties", "string[]"),
+                new("m_Properties", "IPropertyModification[]"),
+                new("m_TargetType", "IPresetType"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_CoupledProperties", "IPropertyModification[]"),
                 new("m_CoupledType", "IPresetType"),
@@ -13972,6 +15336,20 @@ public static class InterfaceVersionTable
                 new("m_ValidKeywords", "string[]"),
                 new("stringTagMap", "ValueTuple<string, string>[]"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("disabledShaderPasses", "string[]"),
+                new("m_BuildTextureStacks", "IBuildTextureStackReference[]"),
+                new("m_CustomRenderQueue", "int"),
+                new("m_DoubleSidedGI", "bool"),
+                new("m_EnableInstancingVariants", "bool"),
+                new("m_InvalidKeywords", "string[]"),
+                new("m_LightmapFlags", "uint"),
+                new("m_SavedProperties", "IUnityPropertySheet"),
+                new("m_Shader", "PPtr<IShader>"),
+                new("m_ValidKeywords", "string[]"),
+                new("stringTagMap", "ValueTuple<string, string>[]"),
+            }),
         },
         ["IProceduralTexture"] = new InterfaceVersionSchema[]
         {
@@ -14037,6 +15415,121 @@ public static class InterfaceVersionTable
             new("2023.2.0a18", new InterfaceVersionMember[]
             {
                 new("m_IsAlphaChannelOptional", "bool"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_IsAlphaChannelOptional", "bool"),
+            }),
+        },
+        ["IProgramParameters"] = new InterfaceVersionSchema[]
+        {
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_BufferParams", "IBufferBindingParameter[]"),
+                new("m_ConstantBufferBindings", "IBufferBindingParameter[]"),
+                new("m_ConstantBuffers", "IConstantBufferParameter[]"),
+                new("m_MatrixParams", "IMatrixParameter[]"),
+                new("m_Samplers", "ISamplerParameter[]"),
+                new("m_TextureParams", "ITextureParameter[]"),
+                new("m_UAVParams", "IUAVParameter[]"),
+                new("m_VectorParams", "IVectorParameter[]"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_BufferParams", "IBufferBindingParameter[]"),
+                new("m_ConstantBufferBindings", "IBufferBindingParameter[]"),
+                new("m_ConstantBuffers", "IConstantBufferParameter[]"),
+                new("m_MatrixParams", "IMatrixParameter[]"),
+                new("m_Samplers", "ISamplerParameter[]"),
+                new("m_TextureParams", "ITextureParameter[]"),
+                new("m_UAVParams", "IUAVParameter[]"),
+                new("m_VectorParams", "IVectorParameter[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_BufferParams", "IBufferBindingParameter[]"),
+                new("m_ConstantBufferBindings", "IBufferBindingParameter[]"),
+                new("m_ConstantBuffers", "IConstantBufferParameter[]"),
+                new("m_MatrixParams", "IMatrixParameter[]"),
+                new("m_Samplers", "ISamplerParameter[]"),
+                new("m_TextureParams", "ITextureParameter[]"),
+                new("m_UAVParams", "IUAVParameter[]"),
+                new("m_VectorParams", "IVectorParameter[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_BufferParams", "IBufferBindingParameter[]"),
+                new("m_ConstantBufferBindings", "IBufferBindingParameter[]"),
+                new("m_ConstantBuffers", "IConstantBufferParameter[]"),
+                new("m_MatrixParams", "IMatrixParameter[]"),
+                new("m_Samplers", "ISamplerParameter[]"),
+                new("m_TextureParams", "ITextureParameter[]"),
+                new("m_UAVParams", "IUAVParameter[]"),
+                new("m_VectorParams", "IVectorParameter[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_BufferParams", "IBufferBindingParameter[]"),
+                new("m_ConstantBufferBindings", "IBufferBindingParameter[]"),
+                new("m_ConstantBuffers", "IConstantBufferParameter[]"),
+                new("m_MatrixParams", "IMatrixParameter[]"),
+                new("m_Samplers", "ISamplerParameter[]"),
+                new("m_TextureParams", "ITextureParameter[]"),
+                new("m_UAVParams", "IUAVParameter[]"),
+                new("m_VectorParams", "IVectorParameter[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_BufferParams", "IBufferBindingParameter[]"),
+                new("m_ConstantBufferBindings", "IBufferBindingParameter[]"),
+                new("m_ConstantBuffers", "IConstantBufferParameter[]"),
+                new("m_MatrixParams", "IMatrixParameter[]"),
+                new("m_Samplers", "ISamplerParameter[]"),
+                new("m_TextureParams", "ITextureParameter[]"),
+                new("m_UAVParams", "IUAVParameter[]"),
+                new("m_VectorParams", "IVectorParameter[]"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_BufferParams", "IBufferBindingParameter[]"),
+                new("m_ConstantBufferBindings", "IBufferBindingParameter[]"),
+                new("m_ConstantBuffers", "IConstantBufferParameter[]"),
+                new("m_MatrixParams", "IMatrixParameter[]"),
+                new("m_Samplers", "ISamplerParameter[]"),
+                new("m_TextureParams", "ITextureParameter[]"),
+                new("m_UAVParams", "IUAVParameter[]"),
+                new("m_VectorParams", "IVectorParameter[]"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_BufferParams", "IBufferBindingParameter[]"),
+                new("m_ConstantBufferBindings", "IBufferBindingParameter[]"),
+                new("m_ConstantBuffers", "IConstantBufferParameter[]"),
+                new("m_MatrixParams", "IMatrixParameter[]"),
+                new("m_Samplers", "ISamplerParameter[]"),
+                new("m_TextureParams", "ITextureParameter[]"),
+                new("m_UAVParams", "IUAVParameter[]"),
+                new("m_VectorParams", "IVectorParameter[]"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_BufferParams", "IBufferBindingParameter[]"),
+                new("m_ConstantBufferBindings", "IBufferBindingParameter[]"),
+                new("m_ConstantBuffers", "IConstantBufferParameter[]"),
+                new("m_Samplers", "ISamplerParameter[]"),
+                new("m_SpecializationConstantParams", "ISpecializationConstantParameter[]"),
+                new("m_TextureParams", "ITextureParameter[]"),
+                new("m_UAVParams", "IUAVParameter[]"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_BufferParams", "IBufferBindingParameter[]"),
+                new("m_ConstantBufferBindings", "IBufferBindingParameter[]"),
+                new("m_ConstantBuffers", "IConstantBufferParameter[]"),
+                new("m_Samplers", "ISamplerParameter[]"),
+                new("m_SpecializationConstantParams", "ISpecializationConstantParameter[]"),
+                new("m_TextureParams", "ITextureParameter[]"),
+                new("m_UAVParams", "IUAVParameter[]"),
             }),
         },
         ["IQuaternionCurve"] = new InterfaceVersionSchema[]
@@ -14444,6 +15937,28 @@ public static class InterfaceVersionTable
                 new("m_VolumeDepth", "int"),
                 new("m_Width", "int"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AntiAliasing", "int"),
+                new("m_BindMS", "bool"),
+                new("m_ColorFormat", "int"),
+                new("m_DepthStencilFormat", "int"),
+                new("m_Dimension", "int"),
+                new("m_EnableCompatibleFormat", "bool"),
+                new("m_EnableRandomWrite", "bool"),
+                new("m_GenerateMips", "bool"),
+                new("m_Height", "int"),
+                new("m_IsAlphaChannelOptional", "bool"),
+                new("m_MipCount", "int"),
+                new("m_MipMap", "bool"),
+                new("m_SRGB", "bool"),
+                new("m_ShadowSamplingMode", "int"),
+                new("m_TextureSettings", "IGLTextureSettings"),
+                new("m_UseDynamicScale", "bool"),
+                new("m_UseDynamicScaleExplicit", "bool"),
+                new("m_VolumeDepth", "int"),
+                new("m_Width", "int"),
+            }),
         },
         ["IRenderer"] = new InterfaceVersionSchema[]
         {
@@ -14460,6 +15975,10 @@ public static class InterfaceVersionTable
                 new("m_GameObject", "PPtr<GameObject>"),
             }),
             new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+                new("m_GameObject", "PPtr<GameObject>"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_GameObject", "PPtr<GameObject>"),
             }),
@@ -14593,6 +16112,25 @@ public static class InterfaceVersionTable
                 new("m_Mass", "float"),
                 new("m_UseGravity", "bool"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AngularDamping", "float"),
+                new("m_CenterOfMass", "Vector3f"),
+                new("m_CollisionDetection", "int"),
+                new("m_Constraints", "int"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_ImplicitCom", "bool"),
+                new("m_ImplicitTensor", "bool"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_InertiaRotation", "Quaternionf"),
+                new("m_InertiaTensor", "Vector3f"),
+                new("m_Interpolate", "byte"),
+                new("m_IsKinematic", "bool"),
+                new("m_LinearDamping", "float"),
+                new("m_Mass", "float"),
+                new("m_UseGravity", "bool"),
+            }),
         },
         ["IRigidbody2D"] = new InterfaceVersionSchema[]
         {
@@ -14684,6 +16222,25 @@ public static class InterfaceVersionTable
                 new("m_UseFullKinematicContacts", "bool"),
             }),
             new("6000.0.11f1", new InterfaceVersionMember[]
+            {
+                new("m_AngularDamping", "float"),
+                new("m_BodyType", "int"),
+                new("m_CollisionDetection", "int"),
+                new("m_Constraints", "int"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_GravityScale", "float"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_Interpolate", "int"),
+                new("m_LinearDamping", "float"),
+                new("m_Mass", "float"),
+                new("m_Material", "PPtr<IPhysicsMaterial2D>"),
+                new("m_Simulated", "bool"),
+                new("m_SleepingMode", "int"),
+                new("m_UseAutoMass", "bool"),
+                new("m_UseFullKinematicContacts", "bool"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_AngularDamping", "float"),
                 new("m_BodyType", "int"),
@@ -14956,6 +16513,24 @@ public static class InterfaceVersionTable
                 new("m_fTwitchSharpness", "float"),
             }),
         },
+        ["ISamplerParameter"] = new InterfaceVersionSchema[]
+        {
+            new("2017.1.0b1", new InterfaceVersionMember[]
+            {
+                new("bindPoint", "int"),
+                new("sampler", "uint"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_Binding", "IBinding"),
+                new("sampler", "uint"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_Binding", "IBinding"),
+                new("sampler", "uint"),
+            }),
+        },
         ["ISceneAsset"] = new InterfaceVersionSchema[]
         {
             new("2017.1.0b1", new InterfaceVersionMember[]
@@ -14996,6 +16571,11 @@ public static class InterfaceVersionTable
                 new("m_Message", "string"),
             }),
             new("6000.3.0a3", new InterfaceVersionMember[]
+            {
+                new("m_IsWarning", "bool"),
+                new("m_Message", "string"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_IsWarning", "bool"),
                 new("m_Message", "string"),
@@ -15332,6 +16912,115 @@ public static class InterfaceVersionTable
                 new("m_HasProceduralInstancingVariant", "bool"),
                 new("m_NameIndices", "ValueTuple<string, int>[]"),
                 new("m_ProgramMask", "uint"),
+                new("m_State", "ISerializedShaderState"),
+                new("m_Tags", "ISerializedTagMap"),
+                new("m_TextureName", "string"),
+                new("m_Type", "int"),
+                new("m_UseName", "string"),
+                new("progDomain", "ISerializedProgram"),
+                new("progFragment", "ISerializedProgram"),
+                new("progGeometry", "ISerializedProgram"),
+                new("progHull", "ISerializedProgram"),
+                new("progRayTracing", "ISerializedProgram"),
+                new("progVertex", "ISerializedProgram"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_HasInstancingVariant", "bool"),
+                new("m_HasProceduralInstancingVariant", "bool"),
+                new("m_NameIndices", "ValueTuple<string, int>[]"),
+                new("m_ProgramMask", "uint"),
+                new("m_State", "ISerializedShaderState"),
+                new("m_Tags", "ISerializedTagMap"),
+                new("m_TextureName", "string"),
+                new("m_Type", "int"),
+                new("m_UseName", "string"),
+                new("progDomain", "ISerializedProgram"),
+                new("progFragment", "ISerializedProgram"),
+                new("progGeometry", "ISerializedProgram"),
+                new("progHull", "ISerializedProgram"),
+                new("progRayTracing", "ISerializedProgram"),
+                new("progVertex", "ISerializedProgram"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_HasInstancingVariant", "bool"),
+                new("m_HasProceduralInstancingVariant", "bool"),
+                new("m_NameIndices", "ValueTuple<string, int>[]"),
+                new("m_ProgramMask", "uint"),
+                new("m_State", "ISerializedShaderState"),
+                new("m_Tags", "ISerializedTagMap"),
+                new("m_TextureName", "string"),
+                new("m_Type", "int"),
+                new("m_UseName", "string"),
+                new("progDomain", "ISerializedProgram"),
+                new("progFragment", "ISerializedProgram"),
+                new("progGeometry", "ISerializedProgram"),
+                new("progHull", "ISerializedProgram"),
+                new("progRayTracing", "ISerializedProgram"),
+                new("progVertex", "ISerializedProgram"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_HasInstancingVariant", "bool"),
+                new("m_HasProceduralInstancingVariant", "bool"),
+                new("m_NameIndices", "ValueTuple<string, int>[]"),
+                new("m_ProgramMask", "uint"),
+                new("m_State", "ISerializedShaderState"),
+                new("m_Tags", "ISerializedTagMap"),
+                new("m_TextureName", "string"),
+                new("m_Type", "int"),
+                new("m_UseName", "string"),
+                new("progDomain", "ISerializedProgram"),
+                new("progFragment", "ISerializedProgram"),
+                new("progGeometry", "ISerializedProgram"),
+                new("progHull", "ISerializedProgram"),
+                new("progRayTracing", "ISerializedProgram"),
+                new("progVertex", "ISerializedProgram"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_HasInstancingVariant", "bool"),
+                new("m_HasProceduralInstancingVariant", "bool"),
+                new("m_NameIndices", "ValueTuple<string, int>[]"),
+                new("m_ProgramMask", "uint"),
+                new("m_State", "ISerializedShaderState"),
+                new("m_Tags", "ISerializedTagMap"),
+                new("m_TextureName", "string"),
+                new("m_Type", "int"),
+                new("m_UseName", "string"),
+                new("progDomain", "ISerializedProgram"),
+                new("progFragment", "ISerializedProgram"),
+                new("progGeometry", "ISerializedProgram"),
+                new("progHull", "ISerializedProgram"),
+                new("progRayTracing", "ISerializedProgram"),
+                new("progVertex", "ISerializedProgram"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_HasInstancingVariant", "bool"),
+                new("m_HasProceduralInstancingVariant", "bool"),
+                new("m_NameIndices", "ValueTuple<string, int>[]"),
+                new("m_ProgramMask", "uint"),
+                new("m_State", "ISerializedShaderState"),
+                new("m_Tags", "ISerializedTagMap"),
+                new("m_TextureName", "string"),
+                new("m_Type", "int"),
+                new("m_UseName", "string"),
+                new("progDomain", "ISerializedProgram"),
+                new("progFragment", "ISerializedProgram"),
+                new("progGeometry", "ISerializedProgram"),
+                new("progHull", "ISerializedProgram"),
+                new("progRayTracing", "ISerializedProgram"),
+                new("progVertex", "ISerializedProgram"),
+            }),
+            new("6000.7.0a3", new InterfaceVersionMember[]
+            {
+                new("m_HasInstancingVariant", "bool"),
+                new("m_HasProceduralInstancingVariant", "bool"),
+                new("m_NameIndices", "ValueTuple<string, int>[]"),
+                new("m_ProgramMask", "uint"),
+                new("m_SerializedDynamicBranchKeywordMask", "ushort[]"),
                 new("m_State", "ISerializedShaderState"),
                 new("m_Tags", "ISerializedTagMap"),
                 new("m_TextureName", "string"),
@@ -15695,6 +17384,246 @@ public static class InterfaceVersionTable
                 new("m_SerializedKeywordStateMask", "ushort[]"),
                 new("m_SubPrograms", "ISerializedSubProgram[]"),
             }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CommonParameters", "IProgramParameters"),
+                new("m_ParameterBlobIndices", "uint[][]"),
+                new("m_PlayerSubPrograms", "ISerializedPlayerSubProgram[][]"),
+                new("m_SerializedKeywordStateMask", "ushort[]"),
+                new("m_SubPrograms", "ISerializedSubProgram[]"),
+            }),
         },
         ["ISerializedProgramParameters"] = new InterfaceVersionSchema[]
         {
@@ -15902,6 +17831,78 @@ public static class InterfaceVersionTable
                 new("m_SubShaders", "ISerializedSubShader[]"),
             }),
             new("2023.1.0a9", new InterfaceVersionMember[]
+            {
+                new("m_CustomEditorForRenderPipelines", "ISerializedCustomEditorForRenderPipeline[]"),
+                new("m_CustomEditorName", "string"),
+                new("m_Dependencies", "ISerializedShaderDependency[]"),
+                new("m_DisableNoSubshadersMessage", "bool"),
+                new("m_FallbackName", "string"),
+                new("m_KeywordFlags", "byte[]"),
+                new("m_KeywordNames", "string[]"),
+                new("m_PropInfo", "ISerializedProperties"),
+                new("m_SubShaders", "ISerializedSubShader[]"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_CustomEditorForRenderPipelines", "ISerializedCustomEditorForRenderPipeline[]"),
+                new("m_CustomEditorName", "string"),
+                new("m_Dependencies", "ISerializedShaderDependency[]"),
+                new("m_DisableNoSubshadersMessage", "bool"),
+                new("m_FallbackName", "string"),
+                new("m_KeywordFlags", "byte[]"),
+                new("m_KeywordNames", "string[]"),
+                new("m_PropInfo", "ISerializedProperties"),
+                new("m_SubShaders", "ISerializedSubShader[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CustomEditorForRenderPipelines", "ISerializedCustomEditorForRenderPipeline[]"),
+                new("m_CustomEditorName", "string"),
+                new("m_Dependencies", "ISerializedShaderDependency[]"),
+                new("m_DisableNoSubshadersMessage", "bool"),
+                new("m_FallbackName", "string"),
+                new("m_KeywordFlags", "byte[]"),
+                new("m_KeywordNames", "string[]"),
+                new("m_PropInfo", "ISerializedProperties"),
+                new("m_SubShaders", "ISerializedSubShader[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_CustomEditorForRenderPipelines", "ISerializedCustomEditorForRenderPipeline[]"),
+                new("m_CustomEditorName", "string"),
+                new("m_Dependencies", "ISerializedShaderDependency[]"),
+                new("m_DisableNoSubshadersMessage", "bool"),
+                new("m_FallbackName", "string"),
+                new("m_KeywordFlags", "byte[]"),
+                new("m_KeywordNames", "string[]"),
+                new("m_PropInfo", "ISerializedProperties"),
+                new("m_SubShaders", "ISerializedSubShader[]"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_CustomEditorForRenderPipelines", "ISerializedCustomEditorForRenderPipeline[]"),
+                new("m_CustomEditorName", "string"),
+                new("m_Dependencies", "ISerializedShaderDependency[]"),
+                new("m_DisableNoSubshadersMessage", "bool"),
+                new("m_FallbackName", "string"),
+                new("m_KeywordFlags", "byte[]"),
+                new("m_KeywordNames", "string[]"),
+                new("m_PropInfo", "ISerializedProperties"),
+                new("m_SubShaders", "ISerializedSubShader[]"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_CustomEditorForRenderPipelines", "ISerializedCustomEditorForRenderPipeline[]"),
+                new("m_CustomEditorName", "string"),
+                new("m_Dependencies", "ISerializedShaderDependency[]"),
+                new("m_DisableNoSubshadersMessage", "bool"),
+                new("m_FallbackName", "string"),
+                new("m_KeywordFlags", "byte[]"),
+                new("m_KeywordNames", "string[]"),
+                new("m_PropInfo", "ISerializedProperties"),
+                new("m_SubShaders", "ISerializedSubShader[]"),
+            }),
+            new("6000.7.0a3", new InterfaceVersionMember[]
             {
                 new("m_CustomEditorForRenderPipelines", "ISerializedCustomEditorForRenderPipeline[]"),
                 new("m_CustomEditorName", "string"),
@@ -16412,6 +18413,56 @@ public static class InterfaceVersionTable
                 new("m_ShaderHardwareTier", "sbyte"),
                 new("m_ShaderRequirements", "long"),
             }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_BlobIndex", "uint"),
+                new("m_Channels", "IParserBindChannels"),
+                new("m_GpuProgramType", "sbyte"),
+                new("m_KeywordIndices", "ushort[]"),
+                new("m_Parameters", "IProgramParameters"),
+                new("m_ShaderHardwareTier", "sbyte"),
+                new("m_ShaderRequirements", "long"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_BlobIndex", "uint"),
+                new("m_Channels", "IParserBindChannels"),
+                new("m_GpuProgramType", "sbyte"),
+                new("m_KeywordIndices", "ushort[]"),
+                new("m_Parameters", "IProgramParameters"),
+                new("m_ShaderHardwareTier", "sbyte"),
+                new("m_ShaderRequirements", "long"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_BlobIndex", "uint"),
+                new("m_Channels", "IParserBindChannels"),
+                new("m_GpuProgramType", "sbyte"),
+                new("m_KeywordIndices", "ushort[]"),
+                new("m_Parameters", "IProgramParameters"),
+                new("m_ShaderHardwareTier", "sbyte"),
+                new("m_ShaderRequirements", "long"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_BlobIndex", "uint"),
+                new("m_Channels", "IParserBindChannels"),
+                new("m_GpuProgramType", "sbyte"),
+                new("m_KeywordIndices", "ushort[]"),
+                new("m_Parameters", "IProgramParameters"),
+                new("m_ShaderHardwareTier", "sbyte"),
+                new("m_ShaderRequirements", "long"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_BlobIndex", "uint"),
+                new("m_Channels", "IParserBindChannels"),
+                new("m_GpuProgramType", "sbyte"),
+                new("m_KeywordIndices", "ushort[]"),
+                new("m_Parameters", "IProgramParameters"),
+                new("m_ShaderHardwareTier", "sbyte"),
+                new("m_ShaderRequirements", "long"),
+            }),
         },
         ["ISerializedSubShader"] = new InterfaceVersionSchema[]
         {
@@ -16512,6 +18563,42 @@ public static class InterfaceVersionTable
                 new("m_Tags", "ISerializedTagMap"),
             }),
             new("2023.1.0a9", new InterfaceVersionMember[]
+            {
+                new("m_LOD", "int"),
+                new("m_Passes", "ISerializedPass[]"),
+                new("m_Tags", "ISerializedTagMap"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_LOD", "int"),
+                new("m_Passes", "ISerializedPass[]"),
+                new("m_Tags", "ISerializedTagMap"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_LOD", "int"),
+                new("m_Passes", "ISerializedPass[]"),
+                new("m_Tags", "ISerializedTagMap"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_LOD", "int"),
+                new("m_Passes", "ISerializedPass[]"),
+                new("m_Tags", "ISerializedTagMap"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("m_LOD", "int"),
+                new("m_Passes", "ISerializedPass[]"),
+                new("m_Tags", "ISerializedTagMap"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("m_LOD", "int"),
+                new("m_Passes", "ISerializedPass[]"),
+                new("m_Tags", "ISerializedTagMap"),
+            }),
+            new("6000.7.0a3", new InterfaceVersionMember[]
             {
                 new("m_LOD", "int"),
                 new("m_Passes", "ISerializedPass[]"),
@@ -17113,6 +19200,126 @@ public static class InterfaceVersionTable
                 new("platforms", "uint[]"),
                 new("stageCounts", "uint[]"),
             }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("compressedBlob", "byte[]"),
+                new("compressedLengths", "uint[][]"),
+                new("decompressedLengths", "uint[][]"),
+                new("m_AssetGUID", "GUID"),
+                new("m_AssetLocalIdentifierInFile", "long"),
+                new("m_Dependencies", "PPtr<IShader>[]"),
+                new("m_NonModifiableTextures", "ValueTuple<string, PPtr<IUnityObject>>[]"),
+                new("m_ParsedForm", "ISerializedShader"),
+                new("m_ShaderIsBaked", "bool"),
+                new("offsets", "uint[][]"),
+                new("platforms", "uint[]"),
+                new("stageCounts", "uint[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("compressedBlob", "byte[]"),
+                new("compressedLengths", "uint[][]"),
+                new("decompressedLengths", "uint[][]"),
+                new("m_AssetGUID", "GUID"),
+                new("m_AssetLocalIdentifierInFile", "long"),
+                new("m_Dependencies", "PPtr<IShader>[]"),
+                new("m_NonModifiableTextures", "ValueTuple<string, PPtr<IUnityObject>>[]"),
+                new("m_ParsedForm", "ISerializedShader"),
+                new("m_ShaderIsBaked", "bool"),
+                new("offsets", "uint[][]"),
+                new("platforms", "uint[]"),
+                new("stageCounts", "uint[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("compressedBlob", "byte[]"),
+                new("compressedLengths", "uint[][]"),
+                new("decompressedLengths", "uint[][]"),
+                new("m_AssetGUID", "GUID"),
+                new("m_AssetLocalIdentifierInFile", "long"),
+                new("m_Dependencies", "PPtr<IShader>[]"),
+                new("m_NonModifiableTextures", "ValueTuple<string, PPtr<IUnityObject>>[]"),
+                new("m_ParsedForm", "ISerializedShader"),
+                new("m_ShaderIsBaked", "bool"),
+                new("offsets", "uint[][]"),
+                new("platforms", "uint[]"),
+                new("stageCounts", "uint[]"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("compressedBlob", "byte[]"),
+                new("compressedLengths", "uint[][]"),
+                new("decompressedLengths", "uint[][]"),
+                new("m_AssetGUID", "GUID"),
+                new("m_AssetLocalIdentifierInFile", "long"),
+                new("m_Dependencies", "PPtr<IShader>[]"),
+                new("m_NonModifiableTextures", "ValueTuple<string, PPtr<IUnityObject>>[]"),
+                new("m_ParsedForm", "ISerializedShader"),
+                new("m_ShaderIsBaked", "bool"),
+                new("offsets", "uint[][]"),
+                new("platforms", "uint[]"),
+                new("stageCounts", "uint[]"),
+            }),
+            new("6000.6.0a7", new InterfaceVersionMember[]
+            {
+                new("compressedBlob", "byte[]"),
+                new("compressedLengths", "uint[][]"),
+                new("decompressedLengths", "uint[][]"),
+                new("m_AssetGUID", "GUID"),
+                new("m_AssetLocalIdentifierInFile", "long"),
+                new("m_Dependencies", "PPtr<IShader>[]"),
+                new("m_NonModifiableTextures", "ValueTuple<string, PPtr<IUnityObject>>[]"),
+                new("m_ParsedForm", "ISerializedShader"),
+                new("m_ShaderIsBaked", "bool"),
+                new("offsets", "uint[][]"),
+                new("platforms", "uint[]"),
+                new("stageCounts", "uint[]"),
+            }),
+            new("6000.6.0b1", new InterfaceVersionMember[]
+            {
+                new("compressedBlob", "byte[]"),
+                new("compressedLengths", "uint[][]"),
+                new("decompressedLengths", "uint[][]"),
+                new("m_AssetGUID", "GUID"),
+                new("m_AssetLocalIdentifierInFile", "long"),
+                new("m_Dependencies", "PPtr<IShader>[]"),
+                new("m_NonModifiableTextures", "ValueTuple<string, PPtr<IUnityObject>>[]"),
+                new("m_ParsedForm", "ISerializedShader"),
+                new("m_ShaderIsBaked", "bool"),
+                new("offsets", "uint[][]"),
+                new("platforms", "uint[]"),
+                new("stageCounts", "uint[]"),
+            }),
+            new("6000.7.0a2", new InterfaceVersionMember[]
+            {
+                new("compressedBlob", "byte[]"),
+                new("compressedLengths", "uint[][]"),
+                new("decompressedLengths", "uint[][]"),
+                new("m_AssetGUID", "GUID"),
+                new("m_AssetLocalIdentifierInFile", "long"),
+                new("m_Dependencies", "PPtr<IShader>[]"),
+                new("m_NonModifiableTextures", "ValueTuple<string, PPtr<IUnityObject>>[]"),
+                new("m_ParsedForm", "ISerializedShader"),
+                new("m_ShaderIsBaked", "bool"),
+                new("offsets", "uint[][]"),
+                new("platforms", "uint[]"),
+                new("stageCounts", "uint[]"),
+            }),
+            new("6000.7.0a3", new InterfaceVersionMember[]
+            {
+                new("compressedBlob", "byte[]"),
+                new("compressedLengths", "uint[][]"),
+                new("decompressedLengths", "uint[][]"),
+                new("m_AssetGUID", "GUID"),
+                new("m_AssetLocalIdentifierInFile", "long"),
+                new("m_Dependencies", "PPtr<IShader>[]"),
+                new("m_NonModifiableTextures", "ValueTuple<string, PPtr<IUnityObject>>[]"),
+                new("m_ParsedForm", "ISerializedShader"),
+                new("m_ShaderIsBaked", "bool"),
+                new("offsets", "uint[][]"),
+                new("platforms", "uint[]"),
+                new("stageCounts", "uint[]"),
+            }),
         },
         ["IShaderVariantCollection"] = new InterfaceVersionSchema[]
         {
@@ -17129,6 +19336,10 @@ public static class InterfaceVersionTable
                 new("m_Shaders", "ValueTuple<PPtr<IShader>, IShaderInfo>[]"),
             }),
             new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+                new("m_Shaders", "ValueTuple<PPtr<IShader>, IShaderInfo>[]"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_Shaders", "ValueTuple<PPtr<IShader>, IShaderInfo>[]"),
             }),
@@ -18203,6 +20414,49 @@ public static class InterfaceVersionTable
                 new("m_StaticShadowCaster", "byte"),
                 new("m_UpdateWhenOffscreen", "bool"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AABB", "IAABB"),
+                new("m_BlendShapeWeights", "float[]"),
+                new("m_Bones", "PPtr<ITransform>[]"),
+                new("m_CastShadows", "byte"),
+                new("m_DirtyAABB", "bool"),
+                new("m_DynamicOccludee", "byte"),
+                new("m_Enabled", "bool"),
+                new("m_ForceMeshLod", "short"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_LightProbeUsage", "byte"),
+                new("m_LightProbeVolumeOverride", "PPtr<GameObject>"),
+                new("m_LightmapIndex", "ushort"),
+                new("m_LightmapIndexDynamic", "ushort"),
+                new("m_LightmapTilingOffset", "Vector4f"),
+                new("m_LightmapTilingOffsetDynamic", "Vector4f"),
+                new("m_MaskInteraction", "int"),
+                new("m_Materials", "PPtr<IMaterial>[]"),
+                new("m_Mesh", "PPtr<IMesh>"),
+                new("m_MeshLodSelectionBias", "float"),
+                new("m_MotionVectors", "byte"),
+                new("m_ProbeAnchor", "PPtr<ITransform>"),
+                new("m_Quality", "int"),
+                new("m_RayTraceProcedural", "byte"),
+                new("m_RayTracingAccelStructBuildFlags", "byte"),
+                new("m_RayTracingAccelStructBuildFlagsOverride", "byte"),
+                new("m_RayTracingMode", "byte"),
+                new("m_ReceiveShadows", "byte"),
+                new("m_ReflectionProbeUsage", "byte"),
+                new("m_RendererPriority", "int"),
+                new("m_RenderingLayerMask", "uint"),
+                new("m_RootBone", "PPtr<ITransform>"),
+                new("m_SkinnedMotionVectors", "bool"),
+                new("m_SmallMeshCulling", "byte"),
+                new("m_SortingLayer", "short"),
+                new("m_SortingLayerID", "int"),
+                new("m_SortingOrder", "short"),
+                new("m_StaticBatchInfo", "IStaticBatchInfo"),
+                new("m_StaticBatchRoot", "PPtr<ITransform>"),
+                new("m_StaticShadowCaster", "byte"),
+                new("m_UpdateWhenOffscreen", "bool"),
+            }),
         },
         ["ISoftJointLimit"] = new InterfaceVersionSchema[]
         {
@@ -18342,6 +20596,16 @@ public static class InterfaceVersionTable
                 new("m_SortingLayerID", "int"),
                 new("m_SortingOrder", "short"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_Enabled", "byte"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_Sort3DAs2D", "bool"),
+                new("m_SortAtRoot", "bool"),
+                new("m_SortingLayer", "short"),
+                new("m_SortingLayerID", "int"),
+                new("m_SortingOrder", "short"),
+            }),
         },
         ["ISourceAssetIdentifier"] = new InterfaceVersionSchema[]
         {
@@ -18383,6 +20647,12 @@ public static class InterfaceVersionTable
                 new("m_eVersion", "int"),
             }),
             new("6000.0.8f1", new InterfaceVersionMember[]
+            {
+                new("m_Config8", "ISpeedTreeWindConfig8"),
+                new("m_Config9", "ISpeedTreeWindConfig9"),
+                new("m_eVersion", "int"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_Config8", "ISpeedTreeWindConfig8"),
                 new("m_Config9", "ISpeedTreeWindConfig9"),
@@ -18500,6 +20770,19 @@ public static class InterfaceVersionTable
                 new("m_Radius", "float"),
             }),
             new("2023.3.0a10", new InterfaceVersionMember[]
+            {
+                new("m_Center", "Vector3f"),
+                new("m_Enabled", "bool"),
+                new("m_ExcludeLayers", "IBitField"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_IncludeLayers", "IBitField"),
+                new("m_IsTrigger", "bool"),
+                new("m_LayerOverridePriority", "int"),
+                new("m_Material", "PPtr<IPhysicsMaterial>"),
+                new("m_ProvidesContacts", "bool"),
+                new("m_Radius", "float"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_Center", "Vector3f"),
                 new("m_Enabled", "bool"),
@@ -18788,6 +21071,38 @@ public static class InterfaceVersionTable
                 new("m_SpriteAtlas", "PPtr<SpriteAtlas>"),
             }),
             new("6000.5.0a3", new InterfaceVersionMember[]
+            {
+                new("m_AtlasTags", "string[]"),
+                new("m_Bones", "ISpriteBone[]"),
+                new("m_Border", "Vector4f"),
+                new("m_Extrude", "uint"),
+                new("m_Offset", "Vector2f"),
+                new("m_PhysicsShape", "Vector2f[][]"),
+                new("m_Pivot", "Vector2f"),
+                new("m_PixelsToUnits", "float"),
+                new("m_RD", "ISpriteRenderData"),
+                new("m_Rect", "Rectf"),
+                new("m_RenderDataKey", "ValueTuple<GUID, long>"),
+                new("m_ScriptableObjects", "PPtr<IMonoBehaviour>[]"),
+                new("m_SpriteAtlas", "PPtr<SpriteAtlas>"),
+            }),
+            new("6000.5.0a7", new InterfaceVersionMember[]
+            {
+                new("m_AtlasTags", "string[]"),
+                new("m_Bones", "ISpriteBone[]"),
+                new("m_Border", "Vector4f"),
+                new("m_Extrude", "uint"),
+                new("m_Offset", "Vector2f"),
+                new("m_PhysicsShape", "Vector2f[][]"),
+                new("m_Pivot", "Vector2f"),
+                new("m_PixelsToUnits", "float"),
+                new("m_RD", "ISpriteRenderData"),
+                new("m_Rect", "Rectf"),
+                new("m_RenderDataKey", "ValueTuple<GUID, long>"),
+                new("m_ScriptableObjects", "PPtr<IMonoBehaviour>[]"),
+                new("m_SpriteAtlas", "PPtr<SpriteAtlas>"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_AtlasTags", "string[]"),
                 new("m_Bones", "ISpriteBone[]"),
@@ -19102,6 +21417,29 @@ public static class InterfaceVersionTable
                 new("m_RenderDataMap", "ValueTuple<ValueTuple<GUID, long>, SpriteAtlasData>[]"),
                 new("m_Tag", "string"),
             }),
+            new("6000.5.0a4", new InterfaceVersionMember[]
+            {
+                new("m_Guid", "GUID"),
+                new("m_IsVariant", "bool"),
+                new("m_PackedSpriteNamesToIndex", "string[]"),
+                new("m_PackedSprites", "PPtr<ISprite>[]"),
+                new("m_RenderDataMap", "ValueTuple<ValueTuple<GUID, long>, SpriteAtlasData>[]"),
+                new("m_Tag", "string"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_Guid", "GUID"),
+                new("m_IsVariant", "bool"),
+                new("m_RenderDataMap", "ValueTuple<ValueTuple<GUID, long>, SpriteAtlasData>[]"),
+                new("m_Tag", "string"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_Guid", "GUID"),
+                new("m_IsVariant", "bool"),
+                new("m_RenderDataMap", "ValueTuple<ValueTuple<GUID, long>, SpriteAtlasData>[]"),
+                new("m_Tag", "string"),
+            }),
         },
         ["ISpriteAtlasEditorData"] = new InterfaceVersionSchema[]
         {
@@ -19371,6 +21709,23 @@ public static class InterfaceVersionTable
                 new("textureRectOffset", "Vector2f"),
                 new("uvTransform", "Vector4f"),
             }),
+            new("6000.5.0a7", new InterfaceVersionMember[]
+            {
+                new("alphaTexture", "PPtr<ITexture2D>"),
+                new("atlasRectOffset", "Vector2f"),
+                new("downscaleMultiplier", "float"),
+                new("m_Bindpose", "IMatrix4x4f[]"),
+                new("m_BlendShapes", "IBlendShapeData"),
+                new("m_IndexBuffer", "byte[]"),
+                new("m_SubMeshes", "ISubMesh[]"),
+                new("m_VertexData", "IVertexData"),
+                new("secondaryTextures", "SecondarySpriteTexture[]"),
+                new("settingsRaw", "uint"),
+                new("texture", "PPtr<ITexture2D>"),
+                new("textureRect", "Rectf"),
+                new("textureRectOffset", "Vector2f"),
+                new("uvTransform", "Vector4f"),
+            }),
             new("2017.1.0b1", new InterfaceVersionMember[]
             {
                 new("alphaTexture", "PPtr<ITexture2D>"),
@@ -19436,6 +21791,23 @@ public static class InterfaceVersionTable
                 new("atlasRectOffset", "Vector2f"),
                 new("downscaleMultiplier", "float"),
                 new("m_Bindpose", "IMatrix4x4f[]"),
+                new("m_IndexBuffer", "byte[]"),
+                new("m_SubMeshes", "ISubMesh[]"),
+                new("m_VertexData", "IVertexData"),
+                new("secondaryTextures", "SecondarySpriteTexture[]"),
+                new("settingsRaw", "uint"),
+                new("texture", "PPtr<ITexture2D>"),
+                new("textureRect", "Rectf"),
+                new("textureRectOffset", "Vector2f"),
+                new("uvTransform", "Vector4f"),
+            }),
+            new("6000.5.0a7", new InterfaceVersionMember[]
+            {
+                new("alphaTexture", "PPtr<ITexture2D>"),
+                new("atlasRectOffset", "Vector2f"),
+                new("downscaleMultiplier", "float"),
+                new("m_Bindpose", "IMatrix4x4f[]"),
+                new("m_BlendShapes", "IBlendShapeData"),
                 new("m_IndexBuffer", "byte[]"),
                 new("m_SubMeshes", "ISubMesh[]"),
                 new("m_VertexData", "IVertexData"),
@@ -20207,6 +22579,96 @@ public static class InterfaceVersionTable
                 new("m_StaticShadowCaster", "byte"),
                 new("m_WasSpriteAssigned", "bool"),
             }),
+            new("6000.5.0a7", new InterfaceVersionMember[]
+            {
+                new("m_AdaptiveModeThreshold", "float"),
+                new("m_BlendShapeWeights", "float[]"),
+                new("m_CastShadows", "byte"),
+                new("m_Color", "IColorRGBA"),
+                new("m_DrawMode", "int"),
+                new("m_DynamicOccludee", "byte"),
+                new("m_Enabled", "bool"),
+                new("m_FlipX", "bool"),
+                new("m_FlipY", "bool"),
+                new("m_ForceMeshLod", "short"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_LightProbeUsage", "byte"),
+                new("m_LightProbeVolumeOverride", "PPtr<GameObject>"),
+                new("m_LightmapIndex", "ushort"),
+                new("m_LightmapIndexDynamic", "ushort"),
+                new("m_LightmapTilingOffset", "Vector4f"),
+                new("m_LightmapTilingOffsetDynamic", "Vector4f"),
+                new("m_MaskInteraction", "int"),
+                new("m_Materials", "PPtr<IMaterial>[]"),
+                new("m_MeshLodSelectionBias", "float"),
+                new("m_MotionVectors", "byte"),
+                new("m_ProbeAnchor", "PPtr<ITransform>"),
+                new("m_RayTraceProcedural", "byte"),
+                new("m_RayTracingAccelStructBuildFlags", "byte"),
+                new("m_RayTracingAccelStructBuildFlagsOverride", "byte"),
+                new("m_RayTracingMode", "byte"),
+                new("m_ReceiveShadows", "byte"),
+                new("m_ReflectionProbeUsage", "byte"),
+                new("m_RendererPriority", "int"),
+                new("m_RenderingLayerMask", "uint"),
+                new("m_Size", "Vector2f"),
+                new("m_SmallMeshCulling", "byte"),
+                new("m_SortingLayer", "short"),
+                new("m_SortingLayerID", "int"),
+                new("m_SortingOrder", "short"),
+                new("m_Sprite", "PPtr<ISprite>"),
+                new("m_SpriteSortPoint", "int"),
+                new("m_SpriteTileMode", "int"),
+                new("m_StaticBatchInfo", "IStaticBatchInfo"),
+                new("m_StaticBatchRoot", "PPtr<ITransform>"),
+                new("m_StaticShadowCaster", "byte"),
+                new("m_WasSpriteAssigned", "bool"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_AdaptiveModeThreshold", "float"),
+                new("m_BlendShapeWeights", "float[]"),
+                new("m_CastShadows", "byte"),
+                new("m_Color", "IColorRGBA"),
+                new("m_DrawMode", "int"),
+                new("m_DynamicOccludee", "byte"),
+                new("m_Enabled", "bool"),
+                new("m_FlipX", "bool"),
+                new("m_FlipY", "bool"),
+                new("m_ForceMeshLod", "short"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_LightProbeUsage", "byte"),
+                new("m_LightProbeVolumeOverride", "PPtr<GameObject>"),
+                new("m_LightmapIndex", "ushort"),
+                new("m_LightmapIndexDynamic", "ushort"),
+                new("m_LightmapTilingOffset", "Vector4f"),
+                new("m_LightmapTilingOffsetDynamic", "Vector4f"),
+                new("m_MaskInteraction", "int"),
+                new("m_Materials", "PPtr<IMaterial>[]"),
+                new("m_MeshLodSelectionBias", "float"),
+                new("m_MotionVectors", "byte"),
+                new("m_ProbeAnchor", "PPtr<ITransform>"),
+                new("m_RayTraceProcedural", "byte"),
+                new("m_RayTracingAccelStructBuildFlags", "byte"),
+                new("m_RayTracingAccelStructBuildFlagsOverride", "byte"),
+                new("m_RayTracingMode", "byte"),
+                new("m_ReceiveShadows", "byte"),
+                new("m_ReflectionProbeUsage", "byte"),
+                new("m_RendererPriority", "int"),
+                new("m_RenderingLayerMask", "uint"),
+                new("m_Size", "Vector2f"),
+                new("m_SmallMeshCulling", "byte"),
+                new("m_SortingLayer", "short"),
+                new("m_SortingLayerID", "int"),
+                new("m_SortingOrder", "short"),
+                new("m_Sprite", "PPtr<ISprite>"),
+                new("m_SpriteSortPoint", "int"),
+                new("m_SpriteTileMode", "int"),
+                new("m_StaticBatchInfo", "IStaticBatchInfo"),
+                new("m_StaticBatchRoot", "PPtr<ITransform>"),
+                new("m_StaticShadowCaster", "byte"),
+                new("m_WasSpriteAssigned", "bool"),
+            }),
         },
         ["ISpriteSheetMetaData"] = new InterfaceVersionSchema[]
         {
@@ -20436,6 +22898,27 @@ public static class InterfaceVersionTable
                 new("m_Source", "string"),
             }),
         },
+        ["IStructParameter"] = new InterfaceVersionSchema[]
+        {
+            new("2017.3.0b1", new InterfaceVersionMember[]
+            {
+                new("m_ArraySize", "int"),
+                new("m_Index", "int"),
+                new("m_MatrixMembers", "IMatrixParameter[]"),
+                new("m_NameIndex", "int"),
+                new("m_StructSize", "int"),
+                new("m_VectorMembers", "IVectorParameter[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_ArraySize", "int"),
+                new("m_MatrixMembers", "IMatrixParameter[]"),
+                new("m_NameIndex", "int"),
+                new("m_OffsetInConstantBuffer", "int"),
+                new("m_StructSize", "int"),
+                new("m_VectorMembers", "IVectorParameter[]"),
+            }),
+        },
         ["ISubEmitterData"] = new InterfaceVersionSchema[]
         {
             new("2017.1.0b1", new InterfaceVersionMember[]
@@ -20504,6 +22987,9 @@ public static class InterfaceVersionTable
             {
             }),
             new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
             }),
         },
@@ -20775,6 +23261,13 @@ public static class InterfaceVersionTable
                 new("m_PreloadShaders", "PPtr<IShader>[]"),
                 new("m_SplatDatabase", "ISplatDatabase"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_DetailDatabase", "IDetailDatabase"),
+                new("m_Heightmap", "IHeightmap"),
+                new("m_PreloadShaders", "PPtr<IShader>[]"),
+                new("m_SplatDatabase", "ISplatDatabase"),
+            }),
         },
         ["ITerrainLayer"] = new InterfaceVersionSchema[]
         {
@@ -20795,6 +23288,23 @@ public static class InterfaceVersionTable
                 new("m_TileSize", "Vector2f"),
             }),
             new("2023.1.0a19", new InterfaceVersionMember[]
+            {
+                new("m_DiffuseRemapMax", "Vector4f"),
+                new("m_DiffuseRemapMin", "Vector4f"),
+                new("m_DiffuseTexture", "PPtr<ITexture2D>"),
+                new("m_MaskMapRemapMax", "Vector4f"),
+                new("m_MaskMapRemapMin", "Vector4f"),
+                new("m_MaskMapTexture", "PPtr<ITexture2D>"),
+                new("m_Metallic", "float"),
+                new("m_NormalMapTexture", "PPtr<ITexture2D>"),
+                new("m_NormalScale", "float"),
+                new("m_Smoothness", "float"),
+                new("m_SmoothnessSource", "int"),
+                new("m_Specular", "IColorRGBA"),
+                new("m_TileOffset", "Vector2f"),
+                new("m_TileSize", "Vector2f"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_DiffuseRemapMax", "Vector4f"),
                 new("m_DiffuseRemapMin", "Vector4f"),
@@ -20832,6 +23342,10 @@ public static class InterfaceVersionTable
                 new("m_Script", "string"),
             }),
             new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+                new("m_Script", "string"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("m_Script", "string"),
             }),
@@ -21280,6 +23794,30 @@ public static class InterfaceVersionTable
                 new("m_TextureSettings", "IGLTextureSettings"),
                 new("m_Width", "int"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("image_data", "TypelessData"),
+                new("m_ColorSpace", "int"),
+                new("m_CompleteImageSize", "uint"),
+                new("m_Height", "int"),
+                new("m_IgnoreMipmapLimit", "bool"),
+                new("m_ImageCount", "int"),
+                new("m_IsAlphaChannelOptional", "bool"),
+                new("m_IsPreProcessed", "bool"),
+                new("m_IsReadable", "bool"),
+                new("m_LightmapFormat", "int"),
+                new("m_MipCount", "int"),
+                new("m_MipmapLimitGroupName", "string"),
+                new("m_MipsStripped", "int"),
+                new("m_PlatformBlob", "byte[]"),
+                new("m_StreamData", "StreamingInfo"),
+                new("m_StreamingMipmaps", "bool"),
+                new("m_StreamingMipmapsPriority", "int"),
+                new("m_TextureDimension", "int"),
+                new("m_TextureFormat", "int"),
+                new("m_TextureSettings", "IGLTextureSettings"),
+                new("m_Width", "int"),
+            }),
         },
         ["ITexture3D"] = new InterfaceVersionSchema[]
         {
@@ -21425,6 +23963,22 @@ public static class InterfaceVersionTable
                 new("m_Width", "int"),
             }),
             new("2023.2.0a19", new InterfaceVersionMember[]
+            {
+                new("image_data", "TypelessData"),
+                new("m_ColorSpace", "int"),
+                new("m_DataSize", "uint"),
+                new("m_Depth", "int"),
+                new("m_Format", "int"),
+                new("m_Height", "int"),
+                new("m_IsAlphaChannelOptional", "bool"),
+                new("m_IsReadable", "bool"),
+                new("m_MipCount", "int"),
+                new("m_StreamData", "StreamingInfo"),
+                new("m_TextureSettings", "IGLTextureSettings"),
+                new("m_UsageMode", "int"),
+                new("m_Width", "int"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
             {
                 new("image_data", "TypelessData"),
                 new("m_ColorSpace", "int"),
@@ -21616,6 +24170,22 @@ public static class InterfaceVersionTable
                 new("m_MultiSampled", "bool"),
                 new("m_NameIndex", "int"),
                 new("m_SamplerIndex", "int"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_Binding", "IBinding"),
+                new("m_Dim", "sbyte"),
+                new("m_MultiSampled", "bool"),
+                new("m_NameIndex", "int"),
+                new("m_SamplerBinding", "IBinding"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_Binding", "IBinding"),
+                new("m_Dim", "sbyte"),
+                new("m_MultiSampled", "bool"),
+                new("m_NameIndex", "int"),
+                new("m_SamplerBinding", "IBinding"),
             }),
         },
         ["ITextureParameters"] = new InterfaceVersionSchema[]
@@ -22132,6 +24702,15 @@ public static class InterfaceVersionTable
                 new("m_LocalRotation", "Quaternionf"),
                 new("m_LocalScale", "Vector3f"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_Children", "PPtr<ITransform>[]"),
+                new("m_Father", "PPtr<ITransform>"),
+                new("m_GameObject", "PPtr<GameObject>"),
+                new("m_LocalPosition", "Vector3f"),
+                new("m_LocalRotation", "Quaternionf"),
+                new("m_LocalScale", "Vector3f"),
+            }),
         },
         ["ITreePrototype"] = new InterfaceVersionSchema[]
         {
@@ -22174,6 +24753,27 @@ public static class InterfaceVersionTable
                 new("outside", "int"),
                 new("primitives", "PPtr<IComponent>[]"),
                 new("radiusScale", "float"),
+            }),
+        },
+        ["IUAVParameter"] = new InterfaceVersionSchema[]
+        {
+            new("2017.1.0b1", new InterfaceVersionMember[]
+            {
+                new("m_Index", "int"),
+                new("m_NameIndex", "int"),
+                new("m_OriginalIndex", "int"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_Binding", "IBinding"),
+                new("m_NameIndex", "int"),
+                new("m_OriginalBinding", "IBinding"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_Binding", "IBinding"),
+                new("m_NameIndex", "int"),
+                new("m_OriginalBinding", "IBinding"),
             }),
         },
         ["IUVModule"] = new InterfaceVersionSchema[]
@@ -22290,6 +24890,24 @@ public static class InterfaceVersionTable
                 new("m_Colors", "ValueTuple<string, IColorRGBA>[]"),
                 new("m_Floats", "ValueTuple<string, float>[]"),
                 new("m_TexEnvs", "ValueTuple<string, IUnityTexEnv>[]"),
+            }),
+        },
+        ["IVFXCPUBufferDesc"] = new InterfaceVersionSchema[]
+        {
+            new("2018.3.0b1", new InterfaceVersionMember[]
+            {
+                new("capacity", "uint"),
+                new("initialData", "IVFXCPUBufferData"),
+                new("layout", "IVFXLayoutElementDesc[]"),
+                new("stride", "uint"),
+            }),
+            new("6000.3.14f1", new InterfaceVersionMember[]
+            {
+                new("capacity", "uint"),
+                new("debugName", "string"),
+                new("initialData", "IVFXCPUBufferData"),
+                new("layout", "IVFXLayoutElementDesc[]"),
+                new("stride", "uint"),
             }),
         },
         ["IVFXEditorSystemDesc"] = new InterfaceVersionSchema[]
@@ -22545,6 +25163,19 @@ public static class InterfaceVersionTable
                 new("m_NeedsMainCamera", "bool"),
                 new("m_NeedsWorldToLocal", "bool"),
             }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_ConstantBakeCurveCount", "uint"),
+                new("m_ConstantBakeGradientCount", "uint"),
+                new("m_DynamicBakeCurveCount", "uint"),
+                new("m_DynamicBakeGradientCount", "uint"),
+                new("m_Expressions", "IExpression[]"),
+                new("m_MaxCommonExpressionsIndex", "uint"),
+                new("m_NeededMainCameraBuffers", "int"),
+                new("m_NeedsLocalToWorld", "bool"),
+                new("m_NeedsMainCamera", "bool"),
+                new("m_NeedsWorldToLocal", "bool"),
+            }),
         },
         ["IVFXField"] = new InterfaceVersionSchema[]
         {
@@ -22683,6 +25314,26 @@ public static class InterfaceVersionTable
             new("6000.0.0b11", new InterfaceVersionMember[]
             {
                 new("capacity", "uint"),
+                new("layout", "IVFXLayoutElementDesc[]"),
+                new("mode", "int"),
+                new("size", "uint"),
+                new("stride", "uint"),
+                new("target", "int"),
+            }),
+            new("6000.3.14f1", new InterfaceVersionMember[]
+            {
+                new("capacity", "uint"),
+                new("debugName", "string"),
+                new("layout", "IVFXLayoutElementDesc[]"),
+                new("mode", "int"),
+                new("size", "uint"),
+                new("stride", "uint"),
+                new("target", "int"),
+            }),
+            new("6000.3.14f1", new InterfaceVersionMember[]
+            {
+                new("capacity", "uint"),
+                new("debugName", "string"),
                 new("layout", "IVFXLayoutElementDesc[]"),
                 new("mode", "int"),
                 new("size", "uint"),
@@ -22869,6 +25520,18 @@ public static class InterfaceVersionTable
                 new("type", "int"),
                 new("values", "IVFXMapping[]"),
             }),
+            new("6000.6.0a6", new InterfaceVersionMember[]
+            {
+                new("buffers", "IVFXMapping[]"),
+                new("capacity", "uint"),
+                new("flags", "int"),
+                new("instanceSplitDescs", "IVFXInstanceSplitDesc[]"),
+                new("layer", "uint"),
+                new("name", "string"),
+                new("tasks", "IVFXTaskDesc[]"),
+                new("type", "int"),
+                new("values", "IVFXMapping[]"),
+            }),
         },
         ["IVFXTaskDesc"] = new InterfaceVersionSchema[]
         {
@@ -22899,6 +25562,16 @@ public static class InterfaceVersionTable
                 new("type", "int"),
                 new("values", "IVFXMapping[]"),
             }),
+            new("6000.6.0a6", new InterfaceVersionMember[]
+            {
+                new("@params", "IVFXMapping[]"),
+                new("buffers", "IVFXMapping[]"),
+                new("instanceSplitIndex", "uint"),
+                new("processor", "PPtr<IUnityObject>"),
+                new("temporaryBuffers", "IVFXMappingTemporary[]"),
+                new("type", "int"),
+                new("values", "IVFXMapping[]"),
+            }),
         },
         ["IVFXTemporaryGPUBufferDesc"] = new InterfaceVersionSchema[]
         {
@@ -22908,6 +25581,11 @@ public static class InterfaceVersionTable
                 new("frameCount", "uint"),
             }),
             new("6000.0.0b11", new InterfaceVersionMember[]
+            {
+                new("desc", "IVFXGPUBufferDesc"),
+                new("frameCount", "uint"),
+            }),
+            new("6000.3.14f1", new InterfaceVersionMember[]
             {
                 new("desc", "IVFXGPUBufferDesc"),
                 new("frameCount", "uint"),
@@ -23109,6 +25787,25 @@ public static class InterfaceVersionTable
             {
                 new("curve", "IAnimationCurve<Vector3f>"),
                 new("path", "string"),
+            }),
+        },
+        ["IVectorParameter"] = new InterfaceVersionSchema[]
+        {
+            new("2017.1.0b1", new InterfaceVersionMember[]
+            {
+                new("m_ArraySize", "int"),
+                new("m_Dim", "sbyte"),
+                new("m_Index", "int"),
+                new("m_NameIndex", "int"),
+                new("m_Type", "sbyte"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_ArraySize", "int"),
+                new("m_Dim", "sbyte"),
+                new("m_NameIndex", "int"),
+                new("m_OffsetInConstantBuffer", "int"),
+                new("m_Type", "sbyte"),
             }),
         },
         ["IVelocityModule"] = new InterfaceVersionSchema[]
@@ -23326,6 +26023,26 @@ public static class InterfaceVersionTable
                 new("m_VideoShaders", "PPtr<IShader>[]"),
                 new("m_sRGB", "bool"),
             }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("Height", "uint"),
+                new("Width", "uint"),
+                new("m_AudioChannelCount", "ushort[]"),
+                new("m_AudioLanguage", "string[]"),
+                new("m_AudioSampleRate", "uint[]"),
+                new("m_ExternalResources", "IStreamedResource"),
+                new("m_Format", "int"),
+                new("m_FrameCount", "ulong"),
+                new("m_FrameRate", "double"),
+                new("m_HasSplitAlpha", "bool"),
+                new("m_OriginalPath", "string"),
+                new("m_PixelAspecRatioDen", "uint"),
+                new("m_PixelAspecRatioNum", "uint"),
+                new("m_ProxyHeight", "uint"),
+                new("m_ProxyWidth", "uint"),
+                new("m_VideoShaders", "PPtr<IShader>[]"),
+                new("m_sRGB", "bool"),
+            }),
         },
         ["IVisualEffectAsset"] = new InterfaceVersionSchema[]
         {
@@ -23500,6 +26217,81 @@ public static class InterfaceVersionTable
                 new("m_Systems", "IVFXSystemDesc[]"),
             }),
             new("6000.3.0a2", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.3.14f1", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.3.16f1", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.4.0a2", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.4.4f1", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.4.8f1", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.5.0a3", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.5.0a7", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.5.0b1", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.5.0b5", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.6.0a2", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.6.0a3", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.6.0a6", new InterfaceVersionMember[]
+            {
+                new("m_Infos", "IVisualEffectInfo"),
+                new("m_Systems", "IVFXSystemDesc[]"),
+            }),
+            new("6000.7.0a3", new InterfaceVersionMember[]
             {
                 new("m_Infos", "IVisualEffectInfo"),
                 new("m_Systems", "IVFXSystemDesc[]"),
@@ -23901,6 +26693,89 @@ public static class InterfaceVersionTable
                 new("m_TemporaryBuffers", "IVFXTemporaryGPUBufferDesc[]"),
                 new("m_UpdateMode", "int"),
             }),
+            new("6000.3.14f1", new InterfaceVersionMember[]
+            {
+                new("m_Buffers", "IVFXGPUBufferDesc[]"),
+                new("m_CPUBuffers", "IVFXCPUBufferDesc[]"),
+                new("m_CompilationVersion", "uint"),
+                new("m_CullingFlags", "int"),
+                new("m_Events", "IVFXEventDesc[]"),
+                new("m_ExposedExpressions", "IVFXExposedMapping[]"),
+                new("m_Expressions", "IVFXExpressionContainer"),
+                new("m_InitialEventName", "string"),
+                new("m_InstancingCapacity", "uint"),
+                new("m_InstancingDisabledReason", "int"),
+                new("m_InstancingMode", "int"),
+                new("m_PreWarmDeltaTime", "float"),
+                new("m_PreWarmStepCount", "uint"),
+                new("m_PropertySheet", "IVFXPropertySheetSerializedBase"),
+                new("m_RendererSettings", "IVFXRendererSettings"),
+                new("m_RuntimeVersion", "uint"),
+                new("m_TemporaryBuffers", "IVFXTemporaryGPUBufferDesc[]"),
+                new("m_UpdateMode", "int"),
+            }),
+            new("6000.5.0a6", new InterfaceVersionMember[]
+            {
+                new("m_Buffers", "IVFXGPUBufferDesc[]"),
+                new("m_CPUBuffers", "IVFXCPUBufferDesc[]"),
+                new("m_CompilationVersion", "uint"),
+                new("m_CullingFlags", "int"),
+                new("m_Events", "IVFXEventDesc[]"),
+                new("m_ExposedExpressions", "IVFXExposedMapping[]"),
+                new("m_Expressions", "IVFXExpressionContainer"),
+                new("m_InitialEventName", "string"),
+                new("m_InstancingCapacity", "uint"),
+                new("m_InstancingDisabledReason", "int"),
+                new("m_InstancingMode", "int"),
+                new("m_PreWarmDeltaTime", "float"),
+                new("m_PreWarmStepCount", "uint"),
+                new("m_PropertySheet", "IVFXPropertySheetSerializedBase"),
+                new("m_RendererSettings", "IVFXRendererSettings"),
+                new("m_RuntimeVersion", "uint"),
+                new("m_TemporaryBuffers", "IVFXTemporaryGPUBufferDesc[]"),
+                new("m_UpdateMode", "int"),
+            }),
+            new("6000.5.0b5", new InterfaceVersionMember[]
+            {
+                new("m_Buffers", "IVFXGPUBufferDesc[]"),
+                new("m_CPUBuffers", "IVFXCPUBufferDesc[]"),
+                new("m_CompilationVersion", "uint"),
+                new("m_CullingFlags", "int"),
+                new("m_Events", "IVFXEventDesc[]"),
+                new("m_ExposedExpressions", "IVFXExposedMapping[]"),
+                new("m_Expressions", "IVFXExpressionContainer"),
+                new("m_InitialEventName", "string"),
+                new("m_InstancingCapacity", "uint"),
+                new("m_InstancingDisabledReason", "int"),
+                new("m_InstancingMode", "int"),
+                new("m_PreWarmDeltaTime", "float"),
+                new("m_PreWarmStepCount", "uint"),
+                new("m_PropertySheet", "IVFXPropertySheetSerializedBase"),
+                new("m_RendererSettings", "IVFXRendererSettings"),
+                new("m_RuntimeVersion", "uint"),
+                new("m_TemporaryBuffers", "IVFXTemporaryGPUBufferDesc[]"),
+                new("m_UpdateMode", "int"),
+            }),
+            new("6000.6.0a6", new InterfaceVersionMember[]
+            {
+                new("m_Buffers", "IVFXGPUBufferDesc[]"),
+                new("m_CPUBuffers", "IVFXCPUBufferDesc[]"),
+                new("m_CullingFlags", "int"),
+                new("m_Events", "IVFXEventDesc[]"),
+                new("m_ExposedExpressions", "IVFXExposedMapping[]"),
+                new("m_Expressions", "IVFXExpressionContainer"),
+                new("m_InitialEventName", "string"),
+                new("m_InstancingCapacity", "uint"),
+                new("m_InstancingDisabledReason", "int"),
+                new("m_InstancingMode", "int"),
+                new("m_PreWarmDeltaTime", "float"),
+                new("m_PreWarmStepCount", "uint"),
+                new("m_PropertySheet", "IVFXPropertySheetSerializedBase"),
+                new("m_RendererSettings", "IVFXRendererSettings"),
+                new("m_RuntimeVersion", "uint"),
+                new("m_TemporaryBuffers", "IVFXTemporaryGPUBufferDesc[]"),
+                new("m_UpdateMode", "int"),
+            }),
         },
         ["IVisualEffectSettings"] = new InterfaceVersionSchema[]
         {
@@ -23957,6 +26832,21 @@ public static class InterfaceVersionTable
                 new("m_PreWarmStepCount", "uint"),
                 new("m_RendererSettings", "IVFXRendererSettings"),
                 new("m_UpdateMode", "int"),
+            }),
+        },
+        ["IVulkanDeviceFilterLists"] = new InterfaceVersionSchema[]
+        {
+            new("6000.1.0a5", new InterfaceVersionMember[]
+            {
+                new("m_GfxJobFilterList", "IVulkanGraphicsJobsDeviceFilterData[]"),
+                new("m_VulkanAllowFilterList", "IAndroidDeviceFilterData[]"),
+                new("m_VulkanDenyFilterList", "IAndroidDeviceFilterData[]"),
+            }),
+            new("6000.6.0a5", new InterfaceVersionMember[]
+            {
+                new("m_GfxJobFilterList", "IVulkanGraphicsJobsDeviceFilterData[]"),
+                new("m_VulkanAllowFilterList", "IAndroidDeviceFilterData[]"),
+                new("m_VulkanDenyFilterList", "IAndroidDeviceFilterData[]"),
             }),
         },
         ["IWheelFrictionCurve"] = new InterfaceVersionSchema[]

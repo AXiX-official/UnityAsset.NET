@@ -9,7 +9,53 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
     public partial interface IUAVParameter : IPreDefinedInterface
     {
         public int m_NameIndex { get; set; }
-        public int m_Index { get; set; }
-        public int m_OriginalIndex { get; set; }
+
+        public int? m_Index
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public int? m_OriginalIndex
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public IBinding? m_Binding
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
+
+        public IBinding? m_OriginalBinding
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }

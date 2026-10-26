@@ -38,5 +38,17 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
             {
             }
         }
+
+        public ushort? metaData
+        {
+            get
+            {
+                return null;
+            }
+
+            set
+            {
+            }
+        }
     }
 }
