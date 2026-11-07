@@ -96,3 +96,5 @@ This project stands on the shoulders of these amazing open-source projects:
 - [AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET) by [nesrak1](https://github.com/nesrak1)
 - [UnityPy](https://github.com/K0lb3/UnityPy) by [K0lb3](https://github.com/K0lb3)
 - [RustyAssetBundleEXtractor](https://github.com/UniversalGameExtraction/RustyAssetBundleEXtractor) by [UniversalGameExtraction](https://github.com/UniversalGameExtraction)
+
+See [AOT and NodeData](AOT.md) for NativeAOT builds, fallback configuration, tests and benchmarks.

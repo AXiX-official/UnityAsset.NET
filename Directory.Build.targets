@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <UnityAssetNodeData Condition="'$(PublishAot)' == 'true'">true</UnityAssetNodeData>
+    <DefineConstants Condition="'$(UnityAssetNodeData)' == 'true' or '$(PublishAot)' == 'true'">$(DefineConstants);UNITYASSET_NODEDATA</DefineConstants>
+  </PropertyGroup>
+  <!-- Allows validating the library with a single installed SDK; leaves analyzer targets intact. -->
+  <PropertyGroup Condition="'$(UnityAssetTargetFramework)' != '' and '$(TargetFrameworks)' != ''">
+    <TargetFrameworks>$(UnityAssetTargetFramework)</TargetFrameworks>
+  </PropertyGroup>
+</Project>

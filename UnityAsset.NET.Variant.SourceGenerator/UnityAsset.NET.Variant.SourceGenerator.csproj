@@ -1,6 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk" TreatAsLocalProperty="PublishAot">
 
     <PropertyGroup>
+        <PublishAot>false</PublishAot>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <IsRoslynAnalyzer>true</IsRoslynAnalyzer>

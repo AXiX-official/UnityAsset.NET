@@ -1,51 +1,58 @@
 name: tests
-
 on:
   push:
     branches: [master, main]
   pull_request:
   workflow_dispatch:
-
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
-
 jobs:
   test:
-    name: build and test
+    name: JIT (NodeData=${{ matrix.nodedata }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
-
+    strategy:
+      matrix:
+        nodedata: [false, true]
     steps:
       - uses: actions/checkout@v4
-
-      # The test project targets net10.0 and the libraries multi-target down to netstandard2.1, so the newest SDK in the
-      # matrix is the one that has to be present.
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 11.0.x
-
-      # Restore and build separately so a compile error is reported before any test host is started.
-      - name: Restore
-        run: dotnet restore UnityAsset.NET.sln
-
-      - name: Build
-        run: dotnet build UnityAsset.NET.sln --no-restore --configuration Release
-
+          dotnet-version: |
+            10.0.x
+            11.0.x
+      - name: Build libraries and tests
+        run: dotnet build tests/UnityAsset.NET.Tests -c Release -p:UnityAssetNodeData=${{ matrix.nodedata }}
       - name: Test
-        run: >
-          dotnet test tests/UnityAsset.NET.Tests/UnityAsset.NET.Tests.csproj
-          --no-build
-          --configuration Release
-          --logger "trx;LogFileName=results.trx"
-          --results-directory TestResults
-
-      - name: Upload test results
-        # Always: a failed run is exactly when the report is worth having.
+        run: dotnet test tests/UnityAsset.NET.Tests -c Release --no-build --logger "trx;LogFileName=results.trx" --results-directory TestResults
+      - name: Smoke and synthetic benchmark
+        run: dotnet run --project tests/UnityAsset.NET.AotSmoke -c Release -p:UnityAssetNodeData=${{ matrix.nodedata }} -- --benchmark
+      - name: Build interface generator
+        if: matrix.nodedata == false
+        run: dotnet build UnityAsset.NET.UnityTypeGen -c Release
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: test-results-${{ matrix.nodedata }}
           path: TestResults
           if-no-files-found: ignore
+  native-aot:
+    name: NativeAOT smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            10.0.x
+            11.0.x
+      - name: Publish (automatically selects NodeData)
+        run: dotnet publish tests/UnityAsset.NET.AotSmoke -c Release -r linux-x64 -p:PublishAot=true -o artifacts/aot-smoke
+      - name: Native smoke and synthetic benchmark
+        run: ./artifacts/aot-smoke/UnityAsset.NET.AotSmoke --benchmark
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-aot-smoke
+          path: artifacts/aot-smoke

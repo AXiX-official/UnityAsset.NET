@@ -1,5 +1,8 @@
 <Project>
     <PropertyGroup>
+        <UnityAssetNodeData Condition="'$(PublishAot)' == 'true'">true</UnityAssetNodeData>
+    </PropertyGroup>
+    <PropertyGroup>
         <Authors>AXiX</Authors>
         <Copyright>AXiX</Copyright>
         <PackageProjectUrl>https://github.com/AXiX-official/UnityAsset.NET</PackageProjectUrl>

@@ -7,6 +7,7 @@ namespace UnityAsset.NET;
 
 public class NodeData
 {
+    internal NodeData(string type, string name, object value) { Type = type; Name = name; Value = value; }
     public string Type;
     public string Name;
     public object Value;
@@ -87,6 +88,7 @@ public class NodeData
                 for (int j = 0; j < size; j++)
                 {
                     dic.Add(new KeyValuePair<object, object>(ReadValue(reader, first), ReadValue(reader, second)));
+                    if (pair.RequiresAlign) reader.Align(4);
                 }
                 value = dic;
                 break;
@@ -201,6 +203,7 @@ public class NodeData
                     {
                         WriteValue(writer, first, entry.Key);
                         WriteValue(writer, second, entry.Value);
+                        if (pair.RequiresAlign) writer.Align(4);
                     }
                     break;
                 }

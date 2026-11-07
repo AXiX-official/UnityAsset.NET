@@ -1,3 +1,4 @@
+#if !UNITYASSET_NODEDATA
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Reflection;
@@ -332,3 +333,4 @@ public sealed class TypeRegistry : IDisposable
     private static void PersistSource(string directory, string generatedSource)
         => File.WriteAllText(Path.Combine(directory, GeneratedSourceFileName), generatedSource);
 }
+#endif

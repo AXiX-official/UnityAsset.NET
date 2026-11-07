@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -225,6 +226,7 @@ public static class Helper
 
     private const string NamedObjectInterfaceName = "INamedObject";
     
+    [RequiresUnreferencedCode("Reflection-based schema inspection is a build-time operation; use InterfaceSchemaTable at runtime.")]
     public static bool DerivesFromNamedObject(Type? interfaceType)
         => interfaceType is not null
            && (interfaceType.Name == NamedObjectInterfaceName
@@ -402,6 +404,7 @@ public static class Helper
         return csharpType.IsGenericType && csharpType.GetGenericTypeDefinition() == typeof(Nullable<>);
     }
 
+    [RequiresUnreferencedCode("Reflection-based schema inspection requires the complete interface hierarchy. Use InterfaceSchemaTable at runtime.")]
     public static Dictionary<string, PropertyInfo> GetAllInterfaceProperties(Type type)
     {
         var properties = new Dictionary<string, PropertyInfo>();
