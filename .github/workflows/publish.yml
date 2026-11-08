@@ -1,0 +1,93 @@
+name: publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  publish:
+    name: pack and publish NuGet packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 11.0.x
+
+      - name: Restore
+        run: dotnet restore UnityAsset.NET.sln
+
+      - name: Build
+        run: dotnet build UnityAsset.NET.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test tests/UnityAsset.NET.Tests/UnityAsset.NET.Tests.csproj --no-build --configuration Release
+
+      - name: Pack
+        run: >-
+          dotnet pack UnityAsset.NET.sln --no-restore --configuration Release
+          --nologo --disable-build-servers
+          -p:PackageOutputPath=${{ github.workspace }}/artifacts/packages
+
+      - name: List packages
+        shell: bash
+        run: |
+          shopt -s nullglob
+          packages=(artifacts/packages/*.nupkg)
+          if [ "${#packages[@]}" -eq 0 ]; then
+            echo 'No NuGet packages were produced.' >&2
+            exit 1
+          fi
+          for package in "${packages[@]}"; do
+            echo "$(basename "$package")"
+          done
+
+      # Register this repository/workflow as a trusted publisher for every package on nuget.org first.
+      - name: Log in to NuGet with Trusted Publishing
+        id: nuget
+        uses: NuGet/login@v1
+        with:
+          # Set repository variable NUGET_USER to the exact nuget.org account name.
+          user: ${{ vars.NUGET_USER || github.repository_owner }}
+
+      - name: Push packages
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          for pattern in \
+            'artifacts/packages/UnityAsset.NET.Core.*.nupkg' \
+            'artifacts/packages/UnityAsset.NET.BundleFiles.*.nupkg' \
+            'artifacts/packages/UnityAsset.NET.TypeTreeHelper.*.nupkg' \
+            'artifacts/packages/UnityAsset.NET.[0-9]*.nupkg'; do
+            for package in $pattern; do
+              [ -f "$package" ] || continue
+              dotnet nuget push "$package" \
+                --api-key "$NUGET_API_KEY" \
+                --source https://api.nuget.org/v3/index.json \
+                --skip-duplicate
+            done
+          done
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: artifacts/packages/*.nupkg
