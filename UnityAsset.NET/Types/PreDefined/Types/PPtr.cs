@@ -34,6 +34,13 @@ public class PPtr<T> : IPPtr where T : IUnityObject
         m_SerializedFile = ((AssetReader)reader).AssetsFile;
     }
     
+    public PPtr(PPtrRef pointer, IReader reader)
+    {
+        m_FileID = pointer.m_FileID;
+        m_PathID = pointer.m_PathID;
+        m_SerializedFile = ((AssetReader)reader).AssetsFile;
+    }
+    
     public void Write(IWriter writer)
     {
         writer.WriteInt32(m_FileID);

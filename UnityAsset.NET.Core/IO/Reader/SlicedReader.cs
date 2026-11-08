@@ -66,6 +66,15 @@ namespace UnityAsset.NET.IO.Reader
             return BaseReader.ReadBytes(count);
         }
 
+        public ReadOnlySpan<byte> ReadSpan(int count)
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count must be non-negative.");
+            if (Position + count > Length)
+                throw BeyondSlice($"{count} bytes", Position, Length);
+            return BaseReader.ReadSpan(count);
+        }
+
         public short ReadInt16()
         {
             if (Position + 2 > Length)

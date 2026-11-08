@@ -1,12 +1,11 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Collections.Generic;
 
-namespace UnityAsset.NET.Variant.SourceGenerator;
+namespace UnityAsset.NET.SourceGenerator;
 
 [Generator]
-public class VariantGenerator : IIncrementalGenerator 
+public sealed class VariantGenerator : IIncrementalGenerator 
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {

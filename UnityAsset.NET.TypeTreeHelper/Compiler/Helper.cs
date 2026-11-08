@@ -222,13 +222,6 @@ public static class Helper
     {
         return current.SubNodes.Any(sb => sb is {TypeName: "string", Name: "m_Name"});
     }
-
-    private const string NamedObjectInterfaceName = "INamedObject";
-    
-    public static bool DerivesFromNamedObject(Type? interfaceType)
-        => interfaceType is not null
-           && (interfaceType.Name == NamedObjectInterfaceName
-               || interfaceType.GetInterfaces().Any(i => i.Name == NamedObjectInterfaceName));
     
     # region IdentifierSanitizer Logic
     
@@ -282,16 +275,6 @@ public static class Helper
             "bool" => "bool",
             "string" => "string",
             _ => throw new NotSupportedException($"Unknown primitive Unity type: {unityType}")
-        };
-    }
-    
-    public static bool IsCSharpPrimitive(string type)
-    {
-        return type switch
-        {
-            "sbyte" or "byte" or "char" or "short" or "ushort" or "int" or "uint" or "long" or "ulong" or
-                "float" or "double" or "bool" or "string" => true,
-            _ => false,
         };
     }
 
@@ -385,76 +368,4 @@ public static class Helper
     }
 
     # endregion
-
-    # region Predefined Interface Logic
-
-    public static bool IsNullable(Type csharpType)
-    {
-        if (csharpType.IsGenericParameter)
-        {
-            return false;
-        }
-        
-        if (!csharpType.IsValueType)
-        {
-            return true;
-        }
-        return csharpType.IsGenericType && csharpType.GetGenericTypeDefinition() == typeof(Nullable<>);
-    }
-
-    public static Dictionary<string, PropertyInfo> GetAllInterfaceProperties(Type type)
-    {
-        var properties = new Dictionary<string, PropertyInfo>();
-
-        foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
-        {
-            properties[property.Name] = property;
-        }
-
-        foreach (var baseInterface in type.GetInterfaces())
-        {
-            foreach (var property in GetAllInterfaceProperties(baseInterface))
-            {
-                properties[property.Key] = property.Value;
-            }
-        }
-
-        return properties;
-    }
-
-    # endregion
-
-    public static TypeSyntax GetTypeSyntax(Type type)
-    {
-        if (type.IsArray)
-        {
-            var elemType = GetTypeSyntax(type.GetElementType()!);
-            return SyntaxFactory.ArrayType(elemType)
-                .AddRankSpecifiers(
-                    SyntaxFactory.ArrayRankSpecifier(
-                        SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
-                            SyntaxFactory.OmittedArraySizeExpression()
-                        )
-                    )
-                );
-        }
-        
-        if (type.IsGenericType)
-        {
-            var genericBaseName = type.Name.Split('`')[0];
-            if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
-                return type.GetGenericArguments().Select(GetTypeSyntax).First();
-            var typeArgumentSyntaxes = type.GetGenericArguments().Select(GetTypeSyntax);
-            return SyntaxFactory.GenericName(
-                SyntaxFactory.Identifier(genericBaseName)
-            )
-            .WithTypeArgumentList(
-                SyntaxFactory.TypeArgumentList(
-                    SyntaxFactory.SeparatedList(typeArgumentSyntaxes)
-                )
-            );
-        }
-
-        return SyntaxFactory.ParseTypeName(type.Name);
-    }
 }

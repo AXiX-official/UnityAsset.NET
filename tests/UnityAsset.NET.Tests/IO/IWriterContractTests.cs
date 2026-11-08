@@ -89,7 +89,8 @@ public sealed class IWriterContractTests
     [Fact]
     public void FlushAtEveryBufferBoundary_DoesNotShiftTheOutput()
     {
-        // Write one byte past a 4-byte buffer repeatedly: every iteration exercises the flush-at-capacity path.
+        // Writing one byte past a small buffer repeatedly: every iteration exercises the flush-at-capacity path. Four
+        // bytes is below the writer's minimum, so this also pins that raising it does not shift the output.
         for (var length = 1; length <= 33; length++)
         {
             var payload = Payload(length);
@@ -232,6 +233,37 @@ public sealed class IWriterContractTests
     {
         Assert.Equal(new byte[] { 0x3F, 0x80, 0x00, 0x00 }, Write(Endianness.BigEndian, w => w.WriteSingle(1.0f)));
         Assert.Equal(new byte[] { 0x00, 0x00, 0x80, 0x3F }, Write(Endianness.LittleEndian, w => w.WriteSingle(1.0f)));
+    }
+
+    /// <summary>
+    /// A buffer smaller than the widest scalar is raised to it, so an eight-byte value still lands in one piece: the
+    /// writer has no second staging area, and this is what keeps a tiny buffer from costing correctness.
+    /// </summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(7)]
+    public void BufferSmallerThanAScalar_StillWritesThatScalarInOnePiece(int bufferSize)
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new CustomStreamWriter(stream, Endianness.BigEndian, leaveOpen: true, bufferSize: bufferSize))
+        {
+            writer.WriteInt32(0x11223344);
+            writer.WriteInt64(0x0102030405060708);
+            writer.WriteDouble(1.0);
+        }
+
+        Assert.Equal(
+            new byte[]
+            {
+                0x11, 0x22, 0x33, 0x44,
+                0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+                0x3F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            },
+            stream.ToArray());
     }
 
     [Fact]

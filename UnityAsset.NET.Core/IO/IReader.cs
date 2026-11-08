@@ -48,6 +48,7 @@ namespace UnityAsset.NET.IO
         public byte ReadByte();
         public sbyte ReadSByte() => (sbyte)ReadByte();
         public byte[] ReadBytes(int count);
+        public ReadOnlySpan<byte> ReadSpan(int count) => ReadBytes(count);
 
         public void ReadExactly(Span<byte> buffer)
         {
@@ -59,7 +60,7 @@ namespace UnityAsset.NET.IO
         public bool ReadBoolean() => ReadByte() != 0;
         public sbyte ReadInt8() => (sbyte)ReadByte();
         public byte ReadUInt8() => ReadByte();
-        public char ReadChar() => BitConverter.ToChar(ReadBytes(2), 0);
+        public char ReadChar() => BitConverter.ToChar(ReadSpan(2));
         public short ReadInt16();
         public ushort ReadUInt16();
         public int ReadInt32();
@@ -91,7 +92,7 @@ namespace UnityAsset.NET.IO
                 return string.Empty;
             }
 
-            var ret = Encoding.UTF8.GetString(ReadBytes(length));
+            var ret = Encoding.UTF8.GetString(ReadSpan(length));
             Align(4);
             return ret;
         }

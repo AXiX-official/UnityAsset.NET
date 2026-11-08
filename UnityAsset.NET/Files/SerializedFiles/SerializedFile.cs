@@ -205,7 +205,8 @@ public sealed class SerializedFile : IFile
 
     public void Serialize(IWriter writer)
     {
-        Write(writer, Assets.Select(asset => (IAsset)asset).ToList());
+        var sink = writer as IAssetWriter ?? new AssetWriterProxy(writer, this);
+        Write(sink, Assets.Select(asset => (IAsset)asset).ToList());
         
         /*var pos = writer.Position;
         Header.Serialize(writer);
@@ -232,7 +233,7 @@ public sealed class SerializedFile : IFile
 
     public void Serialize(Stream output, bool leaveOpen = true)
     {
-        using var writer = new CustomStreamWriter(output, leaveOpen: leaveOpen);
+        using var writer = new AssetWriter(output, this, leaveOpen: leaveOpen);
         Serialize(writer);
     }
 

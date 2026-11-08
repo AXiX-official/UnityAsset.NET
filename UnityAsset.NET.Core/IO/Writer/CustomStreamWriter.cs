@@ -1,3 +1,6 @@
+using System.Buffers.Binary;
+using System.Text;
+
 namespace UnityAsset.NET.IO.Writer
 {
     public class CustomStreamWriter : IWriter, IDisposable
@@ -8,6 +11,8 @@ namespace UnityAsset.NET.IO.Writer
         private readonly byte[] _buffer;
         private int _bufferPos;
         private int BuffRemaining => _buffer.Length - _bufferPos;
+        
+        private const int MinimumBufferSize = 8;
 
         public CustomStreamWriter(Stream stream, Endianness endian = Endianness.BigEndian, bool leaveOpen = false,
             int bufferSize = 8192)
@@ -18,7 +23,7 @@ namespace UnityAsset.NET.IO.Writer
             Endian = endian;
             _leaveOpen = leaveOpen;
 
-            _buffer = new byte[bufferSize];
+            _buffer = new byte[Math.Max(bufferSize, MinimumBufferSize)];
         }
 
         private void FlushBuffer()
@@ -132,6 +137,137 @@ namespace UnityAsset.NET.IO.Writer
             }
 
             return totalBytesRead;
+        }
+        
+        private Span<byte> Reserve(int size)
+        {
+            if (BuffRemaining < size) FlushBuffer();
+            return _buffer.AsSpan(_bufferPos, size);
+        }
+
+        private void Commit(Span<byte> span) => _bufferPos += span.Length;
+
+        public void WriteChar(char value)
+        {
+            var span = Reserve(2);
+            if (BitConverter.IsLittleEndian) BinaryPrimitives.WriteUInt16LittleEndian(span, value);
+            else BinaryPrimitives.WriteUInt16BigEndian(span, value);
+            Commit(span);
+        }
+
+        public void WriteInt16(short value)
+        {
+            var span = Reserve(2);
+            if (Endian == Endianness.BigEndian) BinaryPrimitives.WriteInt16BigEndian(span, value);
+            else BinaryPrimitives.WriteInt16LittleEndian(span, value);
+            Commit(span);
+        }
+
+        public void WriteUInt16(ushort value)
+        {
+            var span = Reserve(2);
+            if (Endian == Endianness.BigEndian) BinaryPrimitives.WriteUInt16BigEndian(span, value);
+            else BinaryPrimitives.WriteUInt16LittleEndian(span, value);
+            Commit(span);
+        }
+
+        public void WriteInt32(int value)
+        {
+            var span = Reserve(4);
+            if (Endian == Endianness.BigEndian) BinaryPrimitives.WriteInt32BigEndian(span, value);
+            else BinaryPrimitives.WriteInt32LittleEndian(span, value);
+            Commit(span);
+        }
+
+        public void WriteUInt32(uint value)
+        {
+            var span = Reserve(4);
+            if (Endian == Endianness.BigEndian) BinaryPrimitives.WriteUInt32BigEndian(span, value);
+            else BinaryPrimitives.WriteUInt32LittleEndian(span, value);
+            Commit(span);
+        }
+
+        public void WriteInt64(long value)
+        {
+            var span = Reserve(8);
+            if (Endian == Endianness.BigEndian) BinaryPrimitives.WriteInt64BigEndian(span, value);
+            else BinaryPrimitives.WriteInt64LittleEndian(span, value);
+            Commit(span);
+        }
+
+        public void WriteUInt64(ulong value)
+        {
+            var span = Reserve(8);
+            if (Endian == Endianness.BigEndian) BinaryPrimitives.WriteUInt64BigEndian(span, value);
+            else BinaryPrimitives.WriteUInt64LittleEndian(span, value);
+            Commit(span);
+        }
+
+        public void WriteSingle(float value)
+        {
+            // Bit patterns rather than BinaryPrimitives' Single overloads: those are not in netstandard2.1.
+            var bits = BitConverter.SingleToInt32Bits(value);
+            var span = Reserve(4);
+            if (Endian == Endianness.BigEndian) BinaryPrimitives.WriteInt32BigEndian(span, bits);
+            else BinaryPrimitives.WriteInt32LittleEndian(span, bits);
+            Commit(span);
+        }
+
+        public void WriteDouble(double value)
+        {
+            var bits = BitConverter.DoubleToInt64Bits(value);
+            var span = Reserve(8);
+            if (Endian == Endianness.BigEndian) BinaryPrimitives.WriteInt64BigEndian(span, bits);
+            else BinaryPrimitives.WriteInt64LittleEndian(span, bits);
+            Commit(span);
+        }
+
+        # endregion
+
+        # region Strings
+
+        public void WriteNullTerminatedString(string value)
+        {
+            if (TryWriteString(value, terminator: true, out _)) return;
+
+            WriteBytes(Encoding.UTF8.GetBytes(value));
+            WriteByte(0);
+        }
+
+        public void WriteSizedString(string value)
+        {
+            if (!TryWriteString(value, terminator: false, out _))
+            {
+                var bytes = Encoding.UTF8.GetBytes(value);
+                WriteInt32(bytes.Length);
+                WriteBytes(bytes);
+            }
+            
+            ((IWriter)this).Align(4);
+        }
+        
+        private bool TryWriteString(string value, bool terminator, out int length)
+        {
+            length = Encoding.UTF8.GetByteCount(value);
+            var total = (terminator ? 0 : 4) + length + (terminator ? 1 : 0);
+            if (total > _buffer.Length) return false;
+
+            if (BuffRemaining < total) FlushBuffer();
+            var span = _buffer.AsSpan(_bufferPos, total);
+
+            var offset = 0;
+            if (!terminator)
+            {
+                if (Endian == Endianness.BigEndian) BinaryPrimitives.WriteInt32BigEndian(span, length);
+                else BinaryPrimitives.WriteInt32LittleEndian(span, length);
+                offset = 4;
+            }
+
+            Encoding.UTF8.GetBytes(value, span.Slice(offset, length));
+            if (terminator) span[offset + length] = 0;
+
+            _bufferPos += total;
+            return true;
         }
 
         # endregion

@@ -93,6 +93,8 @@ namespace UnityAsset.NET.IO.Reader
 
         public byte[] ReadBytes(int count) => ReadOnlySpanBytes(count).ToArray();
 
+        public ReadOnlySpan<byte> ReadSpan(int count) => ReadOnlySpanBytes(count);
+
         public Int16 ReadInt16()
         {
             return Endian == Endianness.BigEndian
