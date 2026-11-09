@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace UnityAsset.NET.SourceGenerator.NodeAdapter;
 
@@ -21,10 +22,21 @@ public sealed class NodeAdapterGenerator : IIncrementalGenerator
     /// </summary>
     private const string InterfaceFolder = "Types/PreDefined/";
 
-    public void Initialize(IncrementalGeneratorInitializationContext context) =>
-        context.RegisterSourceOutput(context.CompilationProvider, (output, compilation) =>
+    /// <summary>
+    /// Set by the project when the NodeData backend is selected (and implied by PublishAot). A runtime-codegen build
+    /// does not need this layer, and emitting it there would put 10,000 lines of adapters into an assembly that cannot
+    /// reach them.
+    /// </summary>
+    private const string NodeDataProperty = "build_property.UnityAssetNodeData";
+
+    public void Initialize(IncrementalGeneratorInitializationContext context)
+    {
+        var input = context.CompilationProvider.Combine(context.AnalyzerConfigOptionsProvider);
+        context.RegisterSourceOutput(input, (output, pair) =>
         {
+            var (compilation, options) = pair;
             if (compilation.AssemblyName != TargetAssembly) return;
+            if (!IsNodeDataEnabled(options)) return;
 
             // Filter by path before touching any root: a source tree that is not read is not parsed.
             var definitions = compilation.SyntaxTrees
@@ -35,4 +47,9 @@ public sealed class NodeAdapterGenerator : IIncrementalGenerator
 
             output.AddSource("NodeAdapters.g.cs", new NodeAdapterEmitter(new InterfaceModel(definitions)).Emit());
         });
+    }
+
+    private static bool IsNodeDataEnabled(AnalyzerConfigOptionsProvider options) =>
+        options.GlobalOptions.TryGetValue(NodeDataProperty, out var value)
+        && string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
 }

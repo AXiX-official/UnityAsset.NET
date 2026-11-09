@@ -289,6 +289,31 @@ namespace UnityAsset.NET.IO.Reader
             return bytes;
         }
 
+        /// <summary>
+        /// Hands back a view of the decompressed block instead of allocating and copying, which is what the default
+        /// implementation does and what every block read used to pay. A range that runs past the end of the current
+        /// block cannot be one contiguous view, so that case still falls back to a copy.
+        /// </summary>
+        public ReadOnlySpan<byte> ReadSpan(int count)
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count must be non-negative.");
+            if (count > ((IReader)this).Remaining)
+                throw new EndOfStreamException();
+            if (count == 0)
+                return ReadOnlySpan<byte>.Empty;
+
+            EnsureBlockLoaded(Position);
+            if ((ulong)count <= BufferRemaining)
+            {
+                var span = _buffer.AsSpan((int)BufferPos, count);
+                Position += count;
+                return span;
+            }
+
+            return ReadBytes(count);
+        }
+
         public short ReadInt16()
         {
             EnsureBlockLoaded(Position);

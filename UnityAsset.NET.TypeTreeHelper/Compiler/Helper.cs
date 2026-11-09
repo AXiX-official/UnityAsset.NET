@@ -356,6 +356,10 @@ public static class Helper
     
     public static bool IsPreDefinedType(TypeTreeRepr current) => PreDefinedTypes.Contains(current.TypeName);
     
+    /// <summary>
+    /// Whether a tree node is a Unity map. A map is not given its own IR node: it is laid out as a vector of pairs and
+    /// is resolved as one, so this is only a shape test and the code generator does not branch on it.
+    /// </summary>
     public static bool IsMap(TypeTreeRepr current)
     {
         if (current.TypeName == "map") return true;

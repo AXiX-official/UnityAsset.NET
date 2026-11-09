@@ -79,6 +79,33 @@ public class RoslynTypeBuilder
     {
         if (typeInfo is VectorTypeInfo vector)
         {
+            // A vector of plain scalars is contiguous in the file, so it is written as one block rather than one
+            // delegate call and one interface call per element.
+            if (CanCopyBlock(vector))
+            {
+                return SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.IdentifierName(writerParam),
+                            SyntaxFactory.GenericName("WriteArrayBlock")
+                                .AddTypeArgumentListArguments(vector.ElementType.ToTypeSyntax())))
+                    .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(access)));
+            }
+
+            if (IsStringVector(vector))
+            {
+                return SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.IdentifierName(writerParam),
+                            SyntaxFactory.IdentifierName("WriteSizedStringArray")))
+                    .AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName(access)),
+                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(vector.ElementRequireAlign
+                            ? SyntaxKind.TrueLiteralExpression
+                            : SyntaxKind.FalseLiteralExpression)));
+            }
+
             if (CreateWriterExpression(vector.ElementType, "item", "w") is not { } elementWriter)
                 return null;
 
@@ -120,26 +147,50 @@ public class RoslynTypeBuilder
             // the reader reads the shape's type and casts the result to the declaration, while the writer is handed the
             // declaration and casts it to the shape's type, which is what its method accepts.
 
-            // A map is read as an array of pairs, so it is written as the writer's counterpart of that same call.
-            MapTypeInfo map when CreateWriterExpression(map.PairType, "item", "w") is { } pairWriter =>
+            // A map is written as its pair array with the key and value writers bound once instead of once per entry;
+            // a string key is written inline, which removes another indirect call per entry.
+            MapTypeInfo stringKeyedMap when IsStringKeyedMap(stringKeyedMap)
+                && CreateWriterExpression(stringKeyedMap.PairType.Item2Type, "v", "w") is { } mapValueWriter =>
                 SyntaxFactory.InvocationExpression(
-                    SyntaxFactory.MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        SyntaxFactory.IdentifierName(writerParam),
-                        SyntaxFactory.GenericName("WriteArrayWithAlign")
-                            .AddTypeArgumentListArguments(map.PairType.ToTypeSyntax())))
-                .AddArgumentListArguments(
-                    SyntaxFactory.Argument(SyntaxFactory.IdentifierName(access)),
-                    SyntaxFactory.Argument(SyntaxFactory.ParenthesizedLambdaExpression(
-                        SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(new[]
-                        {
-                            SyntaxFactory.Parameter(SyntaxFactory.Identifier("w")),
-                            SyntaxFactory.Parameter(SyntaxFactory.Identifier("item")),
-                        })),
-                        pairWriter)),
-                    SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(map.PairRequireAlign
-                        ? SyntaxKind.TrueLiteralExpression
-                        : SyntaxKind.FalseLiteralExpression))),
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.IdentifierName(writerParam),
+                            SyntaxFactory.GenericName("WriteStringKeyedPairArrayWithAlign")
+                                .AddTypeArgumentListArguments(stringKeyedMap.PairType.Item2Type.ToTypeSyntax())))
+                    .AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName(access)),
+                        SyntaxFactory.Argument(PairLambda(mapValueWriter, "v")),
+                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(stringKeyedMap.PairType.Item2RequireAlign
+                            ? SyntaxKind.TrueLiteralExpression
+                            : SyntaxKind.FalseLiteralExpression)),
+                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(stringKeyedMap.PairRequireAlign
+                            ? SyntaxKind.TrueLiteralExpression
+                            : SyntaxKind.FalseLiteralExpression))),
+
+            MapTypeInfo map
+                when CreateWriterExpression(map.PairType.Item1Type, "k", "w") is { } mapKeyWriter
+                     && CreateWriterExpression(map.PairType.Item2Type, "v", "w") is { } mapEntryValueWriter =>
+                SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.IdentifierName(writerParam),
+                            SyntaxFactory.GenericName("WritePairArrayWithAlign")
+                                .AddTypeArgumentListArguments(
+                                    map.PairType.Item1Type.ToTypeSyntax(),
+                                    map.PairType.Item2Type.ToTypeSyntax())))
+                    .AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName(access)),
+                        SyntaxFactory.Argument(PairLambda(mapKeyWriter, "k")),
+                        SyntaxFactory.Argument(PairLambda(mapEntryValueWriter, "v")),
+                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(map.PairType.Item1RequireAlign
+                            ? SyntaxKind.TrueLiteralExpression
+                            : SyntaxKind.FalseLiteralExpression)),
+                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(map.PairType.Item2RequireAlign
+                            ? SyntaxKind.TrueLiteralExpression
+                            : SyntaxKind.FalseLiteralExpression)),
+                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(map.PairRequireAlign
+                            ? SyntaxKind.TrueLiteralExpression
+                            : SyntaxKind.FalseLiteralExpression))),
 
             // A pair is read key first, then value, with an alignment after each: the writer's call takes the value and
             // the two element writers in that same order.
@@ -508,7 +559,7 @@ public class RoslynTypeBuilder
                     SyntaxFactory.Block(CreateAssetNodeCreationStatement(mapPairName, path.Pair, m.PairType, mapNodeName, names))
                 );
                 statements.Add(mapForeach);
-                
+
                 // parentNode.Children.Add(mapNode);
                 statements.Add(
                     SyntaxFactory.ExpressionStatement(
@@ -722,6 +773,74 @@ public class RoslynTypeBuilder
                         ? SyntaxKind.TrueLiteralExpression
                         : SyntaxKind.FalseLiteralExpression))
                 ),
+            MapTypeInfo stringKeyedMap when IsStringKeyedMap(stringKeyedMap) =>
+                SyntaxFactory.InvocationExpression(
+                    SyntaxFactory.MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        SyntaxFactory.IdentifierName(readerParamName),
+                        SyntaxFactory.GenericName("ReadStringKeyedPairArrayWithAlign")
+                            .AddTypeArgumentListArguments(stringKeyedMap.PairType.Item2Type.ToTypeSyntax())
+                    )
+                ).AddArgumentListArguments(
+                    SyntaxFactory.Argument(SyntaxFactory.SimpleLambdaExpression(
+                        SyntaxFactory.Parameter(SyntaxFactory.Identifier("r")),
+                        CreateReaderExpression(stringKeyedMap.PairType.Item2Type, "r")
+                    )),
+                    SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(stringKeyedMap.PairType.Item2RequireAlign
+                        ? SyntaxKind.TrueLiteralExpression
+                        : SyntaxKind.FalseLiteralExpression)),
+                    SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(stringKeyedMap.PairRequireAlign
+                        ? SyntaxKind.TrueLiteralExpression
+                        : SyntaxKind.FalseLiteralExpression))
+                ),
+            MapTypeInfo mapTypeInfo =>
+                SyntaxFactory.InvocationExpression(
+                    SyntaxFactory.MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        SyntaxFactory.IdentifierName(readerParamName),
+                        SyntaxFactory.GenericName("ReadPairArrayWithAlign")
+                            .AddTypeArgumentListArguments(
+                                mapTypeInfo.PairType.Item1Type.ToTypeSyntax(),
+                                mapTypeInfo.PairType.Item2Type.ToTypeSyntax())
+                    )
+                ).AddArgumentListArguments(
+                    SyntaxFactory.Argument(SyntaxFactory.SimpleLambdaExpression(
+                        SyntaxFactory.Parameter(SyntaxFactory.Identifier("r")),
+                        CreateReaderExpression(mapTypeInfo.PairType.Item1Type, "r")
+                    )),
+                    SyntaxFactory.Argument(SyntaxFactory.SimpleLambdaExpression(
+                        SyntaxFactory.Parameter(SyntaxFactory.Identifier("r")),
+                        CreateReaderExpression(mapTypeInfo.PairType.Item2Type, "r")
+                    )),
+                    SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(mapTypeInfo.PairType.Item1RequireAlign
+                        ? SyntaxKind.TrueLiteralExpression
+                        : SyntaxKind.FalseLiteralExpression)),
+                    SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(mapTypeInfo.PairType.Item2RequireAlign
+                        ? SyntaxKind.TrueLiteralExpression
+                        : SyntaxKind.FalseLiteralExpression)),
+                    SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(mapTypeInfo.PairRequireAlign
+                        ? SyntaxKind.TrueLiteralExpression
+                        : SyntaxKind.FalseLiteralExpression))
+                ),
+            VectorTypeInfo stringVector when IsStringVector(stringVector) =>
+                SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.IdentifierName(readerParamName),
+                            SyntaxFactory.IdentifierName("ReadSizedStringArray")))
+                    .AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(stringVector.ElementRequireAlign
+                            ? SyntaxKind.TrueLiteralExpression
+                            : SyntaxKind.FalseLiteralExpression))),
+            VectorTypeInfo blockVector when CanCopyBlock(blockVector) =>
+                SyntaxFactory.InvocationExpression(
+                    SyntaxFactory.MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        SyntaxFactory.IdentifierName(readerParamName),
+                        SyntaxFactory.GenericName("ReadArrayBlock")
+                            .AddTypeArgumentListArguments(blockVector.ElementType.ToTypeSyntax())
+                    )
+                ),
             VectorTypeInfo vectorTypeInfo =>
                 SyntaxFactory.InvocationExpression(
                     SyntaxFactory.MemberAccessExpression(
@@ -739,26 +858,56 @@ public class RoslynTypeBuilder
                         ? SyntaxKind.TrueLiteralExpression
                         : SyntaxKind.FalseLiteralExpression))
                 ),
-            MapTypeInfo mapTypeInfo =>
-                SyntaxFactory.InvocationExpression(
-                    SyntaxFactory.MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        SyntaxFactory.IdentifierName(readerParamName),
-                        SyntaxFactory.GenericName("ReadArrayWithAlign")
-                            .AddTypeArgumentListArguments(mapTypeInfo.PairType.ToTypeSyntax())
-                    )
-                ).AddArgumentListArguments(
-                    SyntaxFactory.Argument(SyntaxFactory.SimpleLambdaExpression(
-                        SyntaxFactory.Parameter(SyntaxFactory.Identifier("r")),
-                        CreateReaderExpression(mapTypeInfo.PairType, "r")
-                    )),
-                    SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(mapTypeInfo.PairRequireAlign
-                        ? SyntaxKind.TrueLiteralExpression
-                        : SyntaxKind.FalseLiteralExpression))
-                ),
             _ => throw new Exception("Unreachable")
         };
     }
+
+    /// <summary>
+    /// A vector of plain scalars is contiguous in the file, so one block copy replaces a delegate call and an interface
+    /// call per element, in both directions. Strings are not unmanaged, and an element with padding of its own is not
+    /// adjacent to the next one, so both keep the per-element path.
+    /// </summary>
+    /// <summary>
+    /// A map keyed by a sized string, which is the usual Unity shape: its key would otherwise cost an extra delegate
+    /// call per entry. A key that needs padding of its own keeps the general path.
+    /// </summary>
+    private static bool IsStringKeyedMap(MapTypeInfo mapTypeInfo) =>
+        !mapTypeInfo.PairType.Item1RequireAlign
+        && mapTypeInfo.PairType.Item1Type is PrimitiveTypeInfo primitiveTypeInfo
+        && primitiveTypeInfo.OriginalTypeName == "string";
+
+    /// <summary>
+    /// A vector of sized strings has no unmanaged block, but the per-element delegate still goes away: the loop moves
+    /// into the reader.
+    /// </summary>
+    private static bool IsStringVector(VectorTypeInfo vectorTypeInfo) =>
+        vectorTypeInfo.ElementType is PrimitiveTypeInfo primitiveTypeInfo
+        && primitiveTypeInfo.OriginalTypeName == "string";
+
+    /// <summary>
+    /// The writer-side element lambda takes the writer and the item, so it is a parenthesized lambda rather than the
+    /// simple one the reader side gets away with.
+    /// </summary>
+    private static ParenthesizedLambdaExpressionSyntax PairLambda(ExpressionSyntax body, string itemName) =>
+        SyntaxFactory.ParenthesizedLambdaExpression(
+            SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(new[]
+            {
+                SyntaxFactory.Parameter(SyntaxFactory.Identifier("w")),
+                SyntaxFactory.Parameter(SyntaxFactory.Identifier(itemName)),
+            })),
+            body);
+
+    private static bool CanCopyBlock(VectorTypeInfo vectorTypeInfo) =>
+        !vectorTypeInfo.ElementRequireAlign
+        && vectorTypeInfo.ElementType switch
+        {
+            PrimitiveTypeInfo primitiveTypeInfo => primitiveTypeInfo.OriginalTypeName != "string",
+            // The stand-ins kept as structs (vectors, quaternion, rect, GUID, channel info) are plain scalars, so the
+            // elements of their vectors are contiguous too. Every other predefined type is a class with its own reader.
+            PredefinedTypeInfo predefinedTypeInfo =>
+                Helper.PreDefinedStructs.Contains(predefinedTypeInfo.PredefinedTypeSyntax.ToString()),
+            _ => false,
+        };
 
     private ConstructorDeclarationSyntax BuildConstructor(string className, List<UnityFieldInfo> fieldInfos)
     {

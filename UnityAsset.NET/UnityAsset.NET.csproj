@@ -42,7 +42,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\UnityAsset.NET.SourceGenerator\UnityAsset.NET.SourceGenerator.csproj" GlobalPropertiesToRemove="TargetFramework;PublishAot;RuntimeIdentifier;SelfContained" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" />
+        <!-- The same generator emits the JIT backend's RefSum types, so it always has to run; only the NodeData
+             adapter half is conditional, decided inside the generator from the UnityAssetNodeData property. -->
+        <ProjectReference Include="..\UnityAsset.NET.SourceGenerator\UnityAsset.NET.SourceGenerator.csproj"
+                          GlobalPropertiesToRemove="TargetFramework;PublishAot;RuntimeIdentifier;SelfContained"
+                          OutputItemType="Analyzer"
+                          ReferenceOutputAssembly="false"
+                          PrivateAssets="all" />
+        <CompilerVisibleProperty Include="UnityAssetNodeData" />
     </ItemGroup>
 
 </Project>

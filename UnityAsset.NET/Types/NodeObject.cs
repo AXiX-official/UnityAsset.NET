@@ -207,8 +207,8 @@ public class NodeObject : IUnityAsset
     internal static PPtrRef Pointer(IPPtr pointer) => new(pointer.m_FileID, pointer.m_PathID);
 
     /// <summary>A vector of structures as one typed array, whether the tree keeps a flat run or one node per element.</summary>
-    internal static T[] StructRun<T>(object value, TypeTreeRepr element) where T : unmanaged
-        => NodeData.StructRun<T>(value, element);
+    internal static T[] StructArray<T>(object value, TypeTreeRepr element) where T : unmanaged
+        => NodeData.StructArray<T>(value, element);
 
     /// <summary>The same vector back as the tree holds it.</summary>
     internal static object StructValues<T>(T[] values, TypeTreeRepr element) where T : unmanaged

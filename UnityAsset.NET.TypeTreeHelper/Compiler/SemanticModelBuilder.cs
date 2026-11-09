@@ -239,6 +239,18 @@ public class SemanticModelBuilder
                 Item2RequireAlign = item2Node.RequiresAlign
             };
         }
+        else if (Helper.IsMap(node))
+        {
+            // Ahead of the vector check: a map carries an Array child just like a vector, so the vector test would
+            // swallow it and every map would silently become a vector of pairs.
+            var pairNode = node.SubNodes[0].SubNodes[1];
+            typeInfo = new MapTypeInfo
+            {
+                TypeTreeRepr = node,
+                PairType = (PairTypeInfo)ResolveNode(pairNode),
+                PairRequireAlign = pairNode.RequiresAlign
+            };
+        }
         else if (Helper.IsVector(node))
         {
             var elementNode = node.SubNodes[0].SubNodes[1];
@@ -247,16 +259,6 @@ public class SemanticModelBuilder
                 TypeTreeRepr = node,
                 ElementType = ResolveNode(elementNode),
                 ElementRequireAlign = elementNode.RequiresAlign
-            };
-        }
-        else if (Helper.IsMap(node))
-        {
-            var pairNode = node.SubNodes[0].SubNodes[1];
-            typeInfo = new MapTypeInfo
-            {
-                TypeTreeRepr = node,
-                PairType = (PairTypeInfo)ResolveNode(pairNode),
-                PairRequireAlign = pairNode.RequiresAlign
             };
         }
         else // Complex Type

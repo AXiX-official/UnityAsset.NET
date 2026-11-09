@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace UnityAsset.NET.IO
@@ -157,6 +159,123 @@ namespace UnityAsset.NET.IO
         public T[] ReadArrayWithAlign<T>(Func<IReader, T> constructor, bool requiresAlign) =>
             ReadArrayWithAlign(ReadInt32(), constructor, requiresAlign);
 
+        /// <summary>
+        /// Reads a vector of unmanaged elements that are stored back to back, copying the whole block in one go. The
+        /// per-element path pays a delegate call and an interface call for every item, which is what made large buffers
+        /// (shader blobs, animation curves) dominate the runtime-codegen backend.
+        /// </summary>
+        /// <remarks>
+        /// Only for elements with no padding of their own and no indirection: the caller must check both before choosing
+        /// this overload, because the bytes of two elements have to be adjacent for a block copy to be correct.
+        /// </remarks>
+        public T[] ReadArrayBlock<T>(int count) where T : unmanaged
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+            if (count == 0)
+                return Array.Empty<T>();
+
+            var elementSize = Unsafe.SizeOf<T>();
+            var bytes = ReadSpan(count * elementSize);
+            var values = MemoryMarshal.Cast<byte, T>(bytes).ToArray();
+
+            // A short read must fail the way the element-by-element path does, instead of silently returning a
+            // truncated vector and shifting every following field.
+            if (values.Length != count)
+                throw new EndOfStreamException(
+                    $"A vector of {count} elements needs {count * elementSize} bytes, but only {bytes.Length} are left.");
+
+            if ((Endian == Endianness.BigEndian) != !BitConverter.IsLittleEndian)
+                ElementSwap.Reverse(values.AsSpan(), elementSize);
+
+            return values;
+        }
+
+        public T[] ReadArrayBlock<T>() where T : unmanaged => ReadArrayBlock<T>(ReadInt32());
+
+        /// <summary>
+        /// Reads a map as an array of pairs, keeping the loop inside the reader. The element-by-element path pays an
+        /// outer delegate call, a <see cref="ReadPairWithAlign{TK, TV}"/> call and two element delegates per pair.
+        /// </summary>
+        public (TK, TV)[] ReadPairArrayWithAlign<TK, TV>(int count, Func<IReader, TK> keyReader,
+            Func<IReader, TV> valueReader, bool keyRequiresAlign, bool valueRequiresAlign, bool pairRequiresAlign)
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+
+            var pairs = new (TK, TV)[count];
+            for (var index = 0; index < count; index++)
+            {
+                var key = keyReader(this);
+                if (keyRequiresAlign)
+                    Align(4);
+                var value = valueReader(this);
+                if (valueRequiresAlign)
+                    Align(4);
+                pairs[index] = (key, value);
+                if (pairRequiresAlign)
+                    Align(4);
+            }
+
+            return pairs;
+        }
+
+        public (TK, TV)[] ReadPairArrayWithAlign<TK, TV>(Func<IReader, TK> keyReader,
+            Func<IReader, TV> valueReader, bool keyRequiresAlign, bool valueRequiresAlign, bool pairRequiresAlign) =>
+            ReadPairArrayWithAlign(ReadInt32(), keyReader, valueReader, keyRequiresAlign, valueRequiresAlign,
+                pairRequiresAlign);
+
+        /// <summary>
+        /// The most common Unity map shape: a sized-string key and a value. Reading the key inline instead of through a
+        /// delegate removes one indirect call per entry, which is what maps of texture properties and material
+        /// parameters cost otherwise.
+        /// </summary>
+        public (string, TV)[] ReadStringKeyedPairArrayWithAlign<TV>(int count, Func<IReader, TV> valueReader,
+            bool valueRequiresAlign, bool pairRequiresAlign)
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+
+            var pairs = new (string, TV)[count];
+            for (var index = 0; index < count; index++)
+            {
+                var key = ReadSizedString();
+                var value = valueReader(this);
+                if (valueRequiresAlign)
+                    Align(4);
+                pairs[index] = (key, value);
+                if (pairRequiresAlign)
+                    Align(4);
+            }
+
+            return pairs;
+        }
+
+        public (string, TV)[] ReadStringKeyedPairArrayWithAlign<TV>(Func<IReader, TV> valueReader,
+            bool valueRequiresAlign, bool pairRequiresAlign) =>
+            ReadStringKeyedPairArrayWithAlign(ReadInt32(), valueReader, valueRequiresAlign, pairRequiresAlign);
+
+        /// <summary>
+        /// A vector of length-prefixed strings, read without a delegate call per element.
+        /// </summary>
+        public string[] ReadSizedStringArray(int count, bool requiresAlign)
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+
+            var values = new string[count];
+            for (var index = 0; index < count; index++)
+            {
+                values[index] = ReadSizedString();
+                if (requiresAlign)
+                    Align(4);
+            }
+
+            return values;
+        }
+
+        public string[] ReadSizedStringArray(bool requiresAlign) => ReadSizedStringArray(ReadInt32(), requiresAlign);
+
         public (TK, TV) ReadPairWithAlign<TK, TV>(Func<IReader, TK> keyConstructor,
             Func<IReader, TV> valueConstructor, bool keyRequiresAlign, bool valueRequiresAlign) where TK : notnull
         {
@@ -181,6 +300,21 @@ namespace UnityAsset.NET.IO
                 throw new ArgumentOutOfRangeException(offsetName);
             if (count < 0 || offset + count > length)
                 throw new ArgumentOutOfRangeException(countName);
+        }
+    }
+
+    /// <summary>
+    /// Byte-order reversal for a block of equally sized elements, shared by the block read and block write paths so the
+    /// two cannot drift apart.
+    /// </summary>
+    internal static class ElementSwap
+    {
+        public static void Reverse<T>(Span<T> values, int elementSize) where T : unmanaged
+        {
+            var bytes = MemoryMarshal.AsBytes(values);
+            for (var offset = 0; offset < bytes.Length; offset += elementSize)
+                for (int left = offset, right = offset + elementSize - 1; left < right; left++, right--)
+                    (bytes[left], bytes[right]) = (bytes[right], bytes[left]);
         }
     }
 }

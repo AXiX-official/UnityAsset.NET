@@ -99,7 +99,7 @@ public class NodeData
                     var element = vector.SubNodes[1];
 
 
-                    if (IsCsharpPrim(element.Kind)) value = ReadCsharpPrim(reader, element, size);
+                    if (IsCsharpPrim(element.Kind)) value = ReadCsharpPrimArray(reader, element, size);
                     else if (IsPrimArray(element) is { } flat) value = ReadPrimArray(reader, element, size, flat);
                     else if (size == 0) value = Array.Empty<object>();
                     else
@@ -172,7 +172,7 @@ public class NodeData
     /// The vector as one typed array. A flat run in the tree is the same bytes an element struct is, so this is a
     /// reinterpretation rather than a conversion; a node per element is unpacked into the same array.
     /// </summary>
-    internal static T[] StructRun<T>(object value, TypeTreeRepr element) where T : unmanaged
+    internal static T[] StructArray<T>(object value, TypeTreeRepr element) where T : unmanaged
     {
         if (value is object[] nodes)
         {
@@ -247,36 +247,36 @@ public class NodeData
     private static object ReadPrimArray(IReader reader, TypeTreeRepr element, int count, (NodeKind Kind, int Leaves) flat) =>
         flat.Kind switch
         {
-            NodeKind.SInt8 => ReadCsharpPrim<sbyte>(reader, element, count * flat.Leaves, 1),
-            NodeKind.UInt8 => ReadCsharpPrim<byte>(reader, element, count * flat.Leaves, 1),
-            NodeKind.Int16 => ReadCsharpPrim<short>(reader, element, count * flat.Leaves, 2),
-            NodeKind.UInt16 => ReadCsharpPrim<ushort>(reader, element, count * flat.Leaves, 2),
-            NodeKind.Int32 => ReadCsharpPrim<int>(reader, element, count * flat.Leaves, 4),
-            NodeKind.UInt32 => ReadCsharpPrim<uint>(reader, element, count * flat.Leaves, 4),
-            NodeKind.Int64 => ReadCsharpPrim<long>(reader, element, count * flat.Leaves, 8),
-            NodeKind.UInt64 => ReadCsharpPrim<ulong>(reader, element, count * flat.Leaves, 8),
-            NodeKind.Single => ReadCsharpPrim<float>(reader, element, count * flat.Leaves, 4),
-            NodeKind.Double => ReadCsharpPrim<double>(reader, element, count * flat.Leaves, 8),
+            NodeKind.SInt8 => ReadCsharpPrimArray<sbyte>(reader, element, count * flat.Leaves, 1),
+            NodeKind.UInt8 => ReadCsharpPrimArray<byte>(reader, element, count * flat.Leaves, 1),
+            NodeKind.Int16 => ReadCsharpPrimArray<short>(reader, element, count * flat.Leaves, 2),
+            NodeKind.UInt16 => ReadCsharpPrimArray<ushort>(reader, element, count * flat.Leaves, 2),
+            NodeKind.Int32 => ReadCsharpPrimArray<int>(reader, element, count * flat.Leaves, 4),
+            NodeKind.UInt32 => ReadCsharpPrimArray<uint>(reader, element, count * flat.Leaves, 4),
+            NodeKind.Int64 => ReadCsharpPrimArray<long>(reader, element, count * flat.Leaves, 8),
+            NodeKind.UInt64 => ReadCsharpPrimArray<ulong>(reader, element, count * flat.Leaves, 8),
+            NodeKind.Single => ReadCsharpPrimArray<float>(reader, element, count * flat.Leaves, 4),
+            NodeKind.Double => ReadCsharpPrimArray<double>(reader, element, count * flat.Leaves, 8),
             _ => throw new NotSupportedException($"A {flat.Kind} run is not a scalar"),
         };
 
-    private static object ReadCsharpPrim(IReader reader, TypeTreeRepr element, int count) => element.Kind switch
+    private static object ReadCsharpPrimArray(IReader reader, TypeTreeRepr element, int count) => element.Kind switch
     {
-        NodeKind.SInt8 => ReadCsharpPrim<sbyte>(reader, element, count, 1),
-        NodeKind.UInt8 => ReadCsharpPrim<byte>(reader, element, count, 1),
-        NodeKind.Int16 => ReadCsharpPrim<short>(reader, element, count, 2),
-        NodeKind.UInt16 => ReadCsharpPrim<ushort>(reader, element, count, 2),
-        NodeKind.Int32 => ReadCsharpPrim<int>(reader, element, count, 4),
-        NodeKind.UInt32 => ReadCsharpPrim<uint>(reader, element, count, 4),
-        NodeKind.Int64 => ReadCsharpPrim<long>(reader, element, count, 8),
-        NodeKind.UInt64 => ReadCsharpPrim<ulong>(reader, element, count, 8),
-        NodeKind.Single => ReadCsharpPrim<float>(reader, element, count, 4),
-        NodeKind.Double => ReadCsharpPrim<double>(reader, element, count, 8),
-        NodeKind.String => ReadStringRun(reader, element, count),
+        NodeKind.SInt8 => ReadCsharpPrimArray<sbyte>(reader, element, count, 1),
+        NodeKind.UInt8 => ReadCsharpPrimArray<byte>(reader, element, count, 1),
+        NodeKind.Int16 => ReadCsharpPrimArray<short>(reader, element, count, 2),
+        NodeKind.UInt16 => ReadCsharpPrimArray<ushort>(reader, element, count, 2),
+        NodeKind.Int32 => ReadCsharpPrimArray<int>(reader, element, count, 4),
+        NodeKind.UInt32 => ReadCsharpPrimArray<uint>(reader, element, count, 4),
+        NodeKind.Int64 => ReadCsharpPrimArray<long>(reader, element, count, 8),
+        NodeKind.UInt64 => ReadCsharpPrimArray<ulong>(reader, element, count, 8),
+        NodeKind.Single => ReadCsharpPrimArray<float>(reader, element, count, 4),
+        NodeKind.Double => ReadCsharpPrimArray<double>(reader, element, count, 8),
+        NodeKind.String => ReadStringArray(reader, element, count),
         _ => Array.Empty<NodeData>(),
     };
 
-    private static T[] ReadCsharpPrim<T>(IReader reader, TypeTreeRepr element, int count, int elementSize)
+    private static T[] ReadCsharpPrimArray<T>(IReader reader, TypeTreeRepr element, int count, int elementSize)
         where T : unmanaged
     {
         if (count == 0) return Array.Empty<T>();
@@ -294,7 +294,7 @@ public class NodeData
         return values;
     }
 
-    private static string[] ReadStringRun(IReader reader, TypeTreeRepr element, int count)
+    private static string[] ReadStringArray(IReader reader, TypeTreeRepr element, int count)
     {
         if (count == 0) return Array.Empty<string>();
 
@@ -308,14 +308,14 @@ public class NodeData
         return values;
     }
 
-    private static void WriteCsharpPrim<T>(IWriter writer, T[] values, int elementSize, bool align, Action<IWriter, T> write)
+    private static void WriteCsharpPrimArray<T>(IWriter writer, T[] values, int elementSize, bool align, Action<IWriter, T> write)
         where T : unmanaged
     {
         writer.WriteInt32(values.Length);
-        WriteRunValues(writer, values, elementSize, align, write);
+        WriteCsharpPrimArrayValues(writer, values, elementSize, align, write);
     }
 
-    private static void WriteRunValues<T>(IWriter writer, T[] values, int elementSize, bool align, Action<IWriter, T> write)
+    private static void WriteCsharpPrimArrayValues<T>(IWriter writer, T[] values, int elementSize, bool align, Action<IWriter, T> write)
         where T : unmanaged
     {
         // One copy when the bytes are already in the file's order and nothing is padded between them.
@@ -415,7 +415,7 @@ public class NodeData
                     // The schema says which encoding the tree holds: a run of plain values, or one value per element.
                     if (IsCsharpPrim(element.Kind))
                     {
-                        WriteCsharpPrim(writer, element, value);
+                        WriteCsharpPrimArray(writer, element, value);
                         break;
                     }
 
@@ -458,21 +458,21 @@ public class NodeData
             writer.Align(4);
     }
 
-    private static void WriteCsharpPrim(IWriter writer, TypeTreeRepr element, object value)
+    private static void WriteCsharpPrimArray(IWriter writer, TypeTreeRepr element, object value)
     {
         var align = element.RequiresAlign;
         switch (element.Kind)
         {
-            case NodeKind.SInt8: WriteCsharpPrim(writer, (sbyte[])value, 1, align, static (w, v) => w.WriteInt8(v)); break;
-            case NodeKind.UInt8: WriteCsharpPrim(writer, (byte[])value, 1, align, static (w, v) => w.WriteUInt8(v)); break;
-            case NodeKind.Int16: WriteCsharpPrim(writer, (short[])value, 2, align, static (w, v) => w.WriteInt16(v)); break;
-            case NodeKind.UInt16: WriteCsharpPrim(writer, (ushort[])value, 2, align, static (w, v) => w.WriteUInt16(v)); break;
-            case NodeKind.Int32: WriteCsharpPrim(writer, (int[])value, 4, align, static (w, v) => w.WriteInt32(v)); break;
-            case NodeKind.UInt32: WriteCsharpPrim(writer, (uint[])value, 4, align, static (w, v) => w.WriteUInt32(v)); break;
-            case NodeKind.Int64: WriteCsharpPrim(writer, (long[])value, 8, align, static (w, v) => w.WriteInt64(v)); break;
-            case NodeKind.UInt64: WriteCsharpPrim(writer, (ulong[])value, 8, align, static (w, v) => w.WriteUInt64(v)); break;
-            case NodeKind.Single: WriteCsharpPrim(writer, (float[])value, 4, align, static (w, v) => w.WriteSingle(v)); break;
-            case NodeKind.Double: WriteCsharpPrim(writer, (double[])value, 8, align, static (w, v) => w.WriteDouble(v)); break;
+            case NodeKind.SInt8: WriteCsharpPrimArray(writer, (sbyte[])value, 1, align, static (w, v) => w.WriteInt8(v)); break;
+            case NodeKind.UInt8: WriteCsharpPrimArray(writer, (byte[])value, 1, align, static (w, v) => w.WriteUInt8(v)); break;
+            case NodeKind.Int16: WriteCsharpPrimArray(writer, (short[])value, 2, align, static (w, v) => w.WriteInt16(v)); break;
+            case NodeKind.UInt16: WriteCsharpPrimArray(writer, (ushort[])value, 2, align, static (w, v) => w.WriteUInt16(v)); break;
+            case NodeKind.Int32: WriteCsharpPrimArray(writer, (int[])value, 4, align, static (w, v) => w.WriteInt32(v)); break;
+            case NodeKind.UInt32: WriteCsharpPrimArray(writer, (uint[])value, 4, align, static (w, v) => w.WriteUInt32(v)); break;
+            case NodeKind.Int64: WriteCsharpPrimArray(writer, (long[])value, 8, align, static (w, v) => w.WriteInt64(v)); break;
+            case NodeKind.UInt64: WriteCsharpPrimArray(writer, (ulong[])value, 8, align, static (w, v) => w.WriteUInt64(v)); break;
+            case NodeKind.Single: WriteCsharpPrimArray(writer, (float[])value, 4, align, static (w, v) => w.WriteSingle(v)); break;
+            case NodeKind.Double: WriteCsharpPrimArray(writer, (double[])value, 8, align, static (w, v) => w.WriteDouble(v)); break;
             case NodeKind.String: WriteStringRun(writer, (string[])value, align); break;
             default:
                 throw new NotSupportedException($"A {element.Kind} vector is not written as a run.");
@@ -508,7 +508,7 @@ public class NodeData
         Action<IWriter, T> write) where T : unmanaged
     {
         writer.WriteInt32(values.Length / leaves);
-        WriteRunValues(writer, values, elementSize, align, write);
+        WriteCsharpPrimArrayValues(writer, values, elementSize, align, write);
     }
 
     private static void WriteStringRun(IWriter writer, string[] values, bool align)

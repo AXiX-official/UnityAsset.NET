@@ -1,6 +1,8 @@
 #if !UNITYASSET_NODEDATA
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Security.Cryptography;
@@ -89,6 +91,10 @@ public sealed class TypeRegistry : IDisposable
     private const string GeneratedSourceFileName = $"{AssemblyNameSpace}.g.cs";
 
     private ConcurrentDictionary<Hash128, Type> _typeCache = new();
+
+    // One delegate per generated type, bound when the assembly is loaded. Parsing must not pay for a closure or a
+    // reflective constructor invocation per asset: that fixed cost dominated types with few fields.
+    private ConcurrentDictionary<Hash128, Func<IReader, object>> _factories = new();
     private CollectibleAssemblyContext? _loadContext;
     private string? _artifactDirectory;
     private bool _disposed;
@@ -165,6 +171,7 @@ public sealed class TypeRegistry : IDisposable
             var assembly = newContext.LoadFromStream(ms);
 
             var typeCache = new ConcurrentDictionary<Hash128, Type>();
+            var factories = new ConcurrentDictionary<Hash128, Func<IReader, object>>();
             foreach (var (hash128, source) in typesToGenerate)
             {
                 var type = source.TypeTree;
@@ -177,6 +184,8 @@ public sealed class TypeRegistry : IDisposable
                 if (generatedType != null)
                 {
                     typeCache.TryAdd(hash128, generatedType);
+                    if (TryCreateFactory(generatedType, out var factory))
+                        factories.TryAdd(hash128, factory);
                     continue;
                 }
 
@@ -201,6 +210,7 @@ public sealed class TypeRegistry : IDisposable
             UnloadContext();
             _loadContext = newContext;
             _typeCache = typeCache;
+            _factories = factories;
             _artifactDirectory = artifactDirectory;
         }
     }
@@ -213,6 +223,11 @@ public sealed class TypeRegistry : IDisposable
         if (PreDefinedTypeTable.ByUnityTypeName.TryGetValue(type.ToTypeName(), out var preDefinedType))
             return preDefinedType.Create;
 
+        if (_factories.TryGetValue(type.TypeHash, out var factory))
+            return factory;
+
+        // The delegate is bound together with the assembly; a type whose constructor could not be bound still resolves,
+        // just through the slow path, so an unexpected shape degrades instead of failing the whole catalog.
         if (_typeCache.TryGetValue(type.TypeHash, out var cachedType))
         {
             return reader => Activator.CreateInstance(cachedType, args: [reader])
@@ -223,8 +238,32 @@ public sealed class TypeRegistry : IDisposable
         throw NotInRegistry(type);
     }
 
-    private static NotSupportedException NotInRegistry(SerializedType type)
-        => new($"The type {type.Describe()} is not part of this registry: it is neither one of the pre-defined types " +
+    /// <summary>
+    /// Binds the generated constructor to a delegate once, so parsing invokes it directly instead of going through
+    /// <see cref="Activator"/> and allocating an argument array per asset.
+    /// </summary>
+    private static bool TryCreateFactory(Type generatedType, [NotNullWhen(true)] out Func<IReader, object>? factory)
+    {
+        factory = null;
+
+        var constructor = generatedType.GetConstructor([typeof(IReader)]);
+        if (constructor is null)
+            return false;
+
+        try
+        {
+            var reader = Expression.Parameter(typeof(IReader), "reader");
+            factory = Expression.Lambda<Func<IReader, object>>(
+                Expression.New(constructor, reader), reader).Compile();
+            return true;
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+        {
+            return false;
+        }
+    }
+
+    private static NotSupportedException NotInRegistry(SerializedType type)        => new($"The type {type.Describe()} is not part of this registry: it is neither one of the pre-defined types " +
                "nor a type this session compiled. Load the asset's file through the session that owns this registry " +
                "(AssetManager.Adopt for a file parsed by hand), or check that the type tree is present in the tpk " +
                "database if the file is stripped.");
@@ -238,6 +277,7 @@ public sealed class TypeRegistry : IDisposable
 
             UnloadContext();
             _typeCache = new ConcurrentDictionary<Hash128, Type>();
+            _factories = new ConcurrentDictionary<Hash128, Func<IReader, object>>();
             _artifactDirectory = null;
             _disposed = true;
         }

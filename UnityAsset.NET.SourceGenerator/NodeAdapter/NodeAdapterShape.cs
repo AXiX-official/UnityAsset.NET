@@ -85,7 +85,7 @@ internal sealed class NodeAdapterShape
         // sides reinterpret the same bytes, so neither direction builds a node per element.
         if (UnityTypeNames.ConcreteStructs.Contains(element))
             return new AdapterCase(
-                Read: $"NodeObject.StructRun<{element}>(v, NodeObject.Element(s))",
+                Read: $"NodeObject.StructArray<{element}>(v, NodeObject.Element(s))",
                 Write: $"NodeObject.StructValues(v, NodeObject.Element(s))",
                 Match: match);
 
