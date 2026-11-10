@@ -263,7 +263,7 @@ public static class Helper
         {
             "SInt8" => "sbyte",
             "UInt8" => "byte",
-            "char" => "char",
+            "char" => "byte",
             "short" or "SInt16" => "short",
             "UInt16" or "unsigned short" => "ushort",
             "int" or "SInt32" => "int",

@@ -20,7 +20,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
         public ICharacterInfo[] m_CharacterRects { get; set; }
         public ValueTuple<ValueTuple<ushort, ushort>, float>[] m_KerningValues { get; set; }
         public float m_PixelScale { get; set; }
-        public char[] m_FontData { get; set; }
+        public byte[] m_FontData { get; set; }
         public float m_Ascent { get; set; }
         public float m_Descent { get; set; }
         public uint m_DefaultStyle { get; set; }

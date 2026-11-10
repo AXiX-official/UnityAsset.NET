@@ -296,12 +296,12 @@ internal static class GeneratedInterfaceSchemaTable
             new("exposedParameterNames", "uint[]", false),
             new("groupConnections", "IGroupConnection[]?", true),
             new("groupGUIDs", "GUID[]", false),
-            new("groupNameBuffer", "char[]", false),
+            new("groupNameBuffer", "byte[]", false),
             new("groups", "IGroupConstant[]", false),
             new("numSideChainBuffers", "uint", false),
-            new("pluginEffectNameBuffer", "char[]", false),
+            new("pluginEffectNameBuffer", "byte[]", false),
             new("snapshotGUIDs", "GUID[]", false),
-            new("snapshotNameBuffer", "char[]", false),
+            new("snapshotNameBuffer", "byte[]", false),
             new("snapshots", "ISnapshotConstant[]", false),
         }),
         ["IAudioMixerEffectController"] = new InterfaceSchema("IAudioMixerEffectController", true, new InterfaceMemberSchema[]
@@ -473,7 +473,7 @@ internal static class GeneratedInterfaceSchemaTable
         }),
         ["IBlobObject"] = new InterfaceSchema("IBlobObject", true, new InterfaceMemberSchema[]
         {
-            new("m_BlobData", "char[]", false),
+            new("m_BlobData", "byte[]", false),
             new("m_BlobTypeHash", "ulong", false),
             new("m_NestedBlobObjectReferenceOffsets", "uint[]", false),
             new("m_NestedBlobObjectReferences", "PPtr<IBlobObject>[]", false),
@@ -1305,7 +1305,7 @@ internal static class GeneratedInterfaceSchemaTable
             new("m_DefaultStyle", "uint", false),
             new("m_Descent", "float", false),
             new("m_FallbackFonts", "PPtr<IFont>[]", false),
-            new("m_FontData", "char[]", false),
+            new("m_FontData", "byte[]", false),
             new("m_FontNames", "string[]", false),
             new("m_FontRenderingMode", "int", false),
             new("m_FontSize", "float", false),

@@ -15,9 +15,9 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
         public uint numSideChainBuffers { get; set; }
         public ISnapshotConstant[] snapshots { get; set; }
         public GUID[] snapshotGUIDs { get; set; }
-        public char[] groupNameBuffer { get; set; }
-        public char[] snapshotNameBuffer { get; set; }
-        public char[] pluginEffectNameBuffer { get; set; }
+        public byte[] groupNameBuffer { get; set; }
+        public byte[] snapshotNameBuffer { get; set; }
+        public byte[] pluginEffectNameBuffer { get; set; }
         public uint[] exposedParameterNames { get; set; }
         public uint[] exposedParameterIndices { get; set; }
 

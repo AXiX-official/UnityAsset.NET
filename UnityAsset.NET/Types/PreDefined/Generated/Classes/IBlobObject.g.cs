@@ -9,7 +9,7 @@ namespace UnityAsset.NET.Types.PreDefined.Interfaces
     public partial interface IBlobObject : INamedObject
     {
         public ulong m_BlobTypeHash { get; set; }
-        public char[] m_BlobData { get; set; }
+        public byte[] m_BlobData { get; set; }
         public uint[] m_NestedBlobObjectReferenceOffsets { get; set; }
         public PPtr<IBlobObject>[] m_NestedBlobObjectReferences { get; set; }
     }
