@@ -15,6 +15,7 @@ namespace UnityAsset.NET.FileSystem.ZipFileSystem;
 /// </summary>
 public sealed class ZipFileSystem : IFileSystem
 {
+    public static readonly string ArchiveSeparator = "|";
     private readonly IFileSystem _source;
 
     /// <summary>
@@ -58,6 +59,8 @@ public sealed class ZipFileSystem : IFileSystem
     public string SpillDirectory { get; set; } = Setting.ZipSpillDirectory;
 
     public List<IVirtualFileInfo> LoadedFiles { get; private set; } = new();
+    
+    private readonly Dictionary<string, HashSet<string>> _archiveEntryNames = new(StringComparer.Ordinal);
 
     public async Task<List<IVirtualFileInfo>> LoadAsync(List<string> paths, IProgress<LoadProgress>? progress = null)
     {
@@ -79,7 +82,10 @@ public sealed class ZipFileSystem : IFileSystem
                     try
                     {
                         if (IsArchive(path))
+                        {
+                            _archiveEntryNames[path] = new ();
                             Expand(path, files, progress);
+                        }
                         else
                             loose.Add(path);
                     }
@@ -165,15 +171,25 @@ public sealed class ZipFileSystem : IFileSystem
             return false;
         }
     }
+    
+    private ZipFileInfo CreateZipFileInfo(string archivePath, ZipArchiveEntry entry, FileType fileType)
+    {
+        return entry.Length <= Setting.ZipSpillThreshold
+            ? ZipFileInfo.InMemory(archivePath, entry.FullName, ReadEntry(entry), fileType)
+            : ZipFileInfo.OnDisk(archivePath, entry.FullName, Spill(entry), fileType);
+    }
 
     private void Expand(string archivePath, List<IVirtualFileInfo> into, IProgress<LoadProgress>? progress)
     {
         using var archive = ZipFile.OpenRead(archivePath);
         var entries = archive.Entries.Where(entry => !IsDirectory(entry)).ToList();
 
+        var archiveEntries = _archiveEntryNames[archivePath];
+        
         for (var index = 0; index < entries.Count; index++)
         {
             var entry = entries[index];
+            archiveEntries.Add(entry.Name);
             progress?.Report(new LoadProgress($"ZipFileSystem: {entry.FullName}", entries.Count, index + 1));
 
             // One partially read stream decides the type, and it costs nothing else: an apk is mostly resources and
@@ -183,9 +199,7 @@ public sealed class ZipFileSystem : IFileSystem
             if (!IsWanted(entry.FullName, entry.Length, fileType))
                 continue;
 
-            var file = entry.Length <= SpillThreshold
-                ? ZipFileInfo.InMemory(archivePath, entry.FullName, ReadEntry(entry), fileType)
-                : ZipFileInfo.OnDisk(archivePath, entry.FullName, Spill(entry), fileType);
+            var file = CreateZipFileInfo(archivePath, entry, fileType);
 
             _entries.Add(file);
             into.Add(file);
@@ -298,5 +312,30 @@ public sealed class ZipFileSystem : IFileSystem
         }
 
         _entries.Clear();
+    }
+    
+    public List<IVirtualFileInfo> LoadFile(List<string> paths)
+    {
+        var directFiles = paths.Where(p => !p.Contains(ArchiveSeparator)).ToList();
+        var archiveFiles = paths.Where(p => p.Contains(ArchiveSeparator)).ToList();
+        
+        var addedFiles = _source.LoadFile(directFiles);
+        
+        foreach (var group in archiveFiles
+                     .Select(p => p.Split(ArchiveSeparator, 2))
+                     .Where(parts => parts.Length == 2)
+                     .GroupBy(parts => parts[0], parts => parts[1], StringComparer.Ordinal))
+        {
+            using var archive = ZipFile.OpenRead(group.Key);
+            foreach (var entryName in group)
+            {
+                var entry = archive.GetEntry(entryName);
+                if (entry is null) continue;
+                var fileType = FileTypeHelper.GetFileType(ReadHead(entry), entry.Length);
+                addedFiles.Add(CreateZipFileInfo(group.Key, entry, fileType));
+            }
+        }
+
+        return addedFiles;
     }
 }

@@ -13,5 +13,10 @@
             return LoadAsync(filePaths.ToList(), progress);
         }
         public void Clear();
+        
+        // <summary>
+        // Loads files from the specified paths and adds them to the LoadedFiles list.
+        // </summary>
+        public List<IVirtualFileInfo> LoadFile(List<string> paths);
     }
 }

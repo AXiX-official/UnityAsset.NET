@@ -2,6 +2,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using UnityAsset.NET.Enums;
+using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
 
 namespace UnityAsset.NET.AssetHelper;
@@ -9,9 +10,9 @@ namespace UnityAsset.NET.AssetHelper;
 public static class AssetManagerExtension
 {
     /// <summary>Decodes a texture to raw bytes, reading its streaming data from the session when it is not inline.</summary>
-    public static byte[] DecodeTexture2D(this IUnitySession session, ITexture2D tex)
+    public static byte[] DecodeTexture2D(this IUnitySession session, ITexture2D tex, IVirtualFileInfo? src)
     {
-        var imageData = tex.image_data.size == 0 ? session.LoadStreamingData(tex.m_StreamData) : tex.image_data.data;
+        var imageData = tex.image_data.size == 0 ? session.LoadStreamingData(tex.m_StreamData, src) : tex.image_data.data;
         
         if (imageData == null)
             throw new NullReferenceException();
@@ -21,9 +22,9 @@ public static class AssetManagerExtension
     }
     
     /// <summary>Decodes a texture into an image, optionally flipping it the way Unity stores it.</summary>
-    public static Image<Bgra32> DecodeTexture2DToImage(this IUnitySession session, ITexture2D tex, bool flip = true)
+    public static Image<Bgra32> DecodeTexture2DToImage(this IUnitySession session, ITexture2D tex, IVirtualFileInfo? src, bool flip = true)
     {
-        var imgData = session.DecodeTexture2D(tex);
+        var imgData = session.DecodeTexture2D(tex, src);
         var image = Image.LoadPixelData<Bgra32>(imgData, tex.m_Width, tex.m_Height);
         if (flip)
             image.Mutate(x => x.Flip(FlipMode.Vertical));
@@ -31,9 +32,9 @@ public static class AssetManagerExtension
     }
     
     /// <summary>Decodes the texture a sprite points at, cropped to the sprite rectangle.</summary>
-    public static Image<Bgra32> DecodeSpriteToImage(this IUnitySession session, ISprite sprite)
+    public static Image<Bgra32> DecodeSpriteToImage(this IUnitySession session, ISprite sprite, IVirtualFileInfo? src)
     {
-        var image = SpriteHelper.GetImage(session, sprite);
+        var image = SpriteHelper.GetImage(session, sprite, src);
         return image;
     }
 }

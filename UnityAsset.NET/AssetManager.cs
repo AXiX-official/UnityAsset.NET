@@ -8,6 +8,8 @@ using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.FileSystem;
+using UnityAsset.NET.FileSystem.DirectFileSystem;
+using UnityAsset.NET.FileSystem.ZipFileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
 using UnityAsset.NET.Types;
@@ -20,7 +22,7 @@ public class AssetManager : IUnitySession, IDisposable
 {
     private IFileSystem _fileSystem;
 
-    public FrozenDictionary<string, IFile> LoadedFiles = new Dictionary<string, IFile>().ToFrozenDictionary();
+    public Dictionary<string, IFile> LoadedFiles = new ();
 
     public ConcurrentDictionary<IVirtualFileInfo, IFile> VirtualFileToFileMap = new();
 
@@ -92,7 +94,7 @@ public class AssetManager : IUnitySession, IDisposable
     public AssetManager(IFileSystem? fileSystem = null, IFileSystem.ErrorHandler? onError = null,
                         UnitySessionOptions? options = null)
     {
-        _fileSystem = fileSystem ?? new FileSystem.DirectFileSystem.DirectFileSystem(onError);
+        _fileSystem = fileSystem ?? new DirectFileSystem(onError);
         _options = options ?? UnitySessionOptions.Default;
         _typeRegistry = new TypeRegistry(_options.Codegen);
         _blockCache = new BlockCacheContext(InitialBlockCacheBudget);
@@ -112,13 +114,57 @@ public class AssetManager : IUnitySession, IDisposable
         await Task.Run(() =>
         {
             var fileWrappers = new ConcurrentBag<(string Path, IFile File)>();
-            int progressCount = 0;
             var total = files.Count;
 
             _diagnostics.Clear();
             _unreadableTypes.Clear();
+            
+            var toLoadFilesHash = new ConcurrentDictionary<string, byte>(StringComparer.OrdinalIgnoreCase);
+            foreach (var f in files)
+                toLoadFilesHash.TryAdd(f.Name, 0);
+            var nonexistentFiles = new ConcurrentDictionary<string, byte>(StringComparer.OrdinalIgnoreCase);
+            
+            var workQueue = new ConcurrentQueue<IVirtualFileInfo>(files);
+            var pending = new ConcurrentDictionary<string, byte>(StringComparer.OrdinalIgnoreCase);
+            
+            foreach (var f in files) pending[f.Path] = 0;
+            int progressCount = 0;
+            int inFlight = 0;
+            
+            void EnqueueIfNew(string path, IVirtualFileInfo info)
+            {
+                if (pending.TryAdd(path, 0))
+                    workQueue.Enqueue(info);
+            }
+            
+            var workers = Enumerable.Range(0, Environment.ProcessorCount).Select(_ => Task.Run(() =>
+            {
+                while (true)
+                {
+                    if (!workQueue.TryDequeue(out var file))
+                    {
+                        if (Volatile.Read(ref inFlight) == 0 && workQueue.IsEmpty)
+                            return;
+                        Thread.Sleep(1);
+                        continue;
+                    }
 
-            Parallel.ForEach(files, file =>
+                    Interlocked.Increment(ref inFlight);
+                    try
+                    {
+                        ProcessOne(file);
+                    }
+                    finally
+                    {
+                        Interlocked.Decrement(ref inFlight);
+                    }
+
+                    int current = Interlocked.Increment(ref progressCount);
+                    progress?.Report(new LoadProgress($"AssetManager: Loading {file.Name}", total, current));
+                }
+            })).ToArray();
+
+            void ProcessOne(IVirtualFileInfo file)
             {
                 try
                 {
@@ -145,6 +191,30 @@ public class AssetManager : IUnitySession, IDisposable
                         case FileType.SerializedFile:
                         {
                             var serializedFile = new SerializedFile(file, _options.DefaultUnityVersion);
+                            foreach (var sharedFile in serializedFile.Metadata.Externals)
+                            {
+                                var sharedFileName = sharedFile.FileName;
+                                if (!toLoadFilesHash.TryAdd(sharedFileName, 0)) continue;
+                                var sharedFilePath = Path.Combine(Path.GetDirectoryName(file.Path)!, sharedFileName);
+                                if (nonexistentFiles.ContainsKey(sharedFilePath)) continue;
+                                if (!File.Exists(sharedFilePath))
+                                {
+                                    var findFiles = Directory.GetFiles(Path.GetDirectoryName(file.Path)!, sharedFileName, SearchOption.AllDirectories);
+                                    if (findFiles.Length == 0)
+                                    {
+                                        nonexistentFiles.TryAdd(sharedFilePath, 0);
+                                        continue;
+                                    }
+                                    sharedFilePath = findFiles[0];
+                                }
+
+                                var loaded = _fileSystem.LoadFile([sharedFilePath]);
+                                foreach (var path in loaded)
+                                {
+                                    EnqueueIfNew(path.Path, path);
+                                    toLoadFilesHash.TryAdd(path.Path, 0);
+                                }
+                            }
                             fileWrappers.Add((file.Name, serializedFile));
                             VirtualFileToFileMap[file] = serializedFile;
                             break;
@@ -167,23 +237,22 @@ public class AssetManager : IUnitySession, IDisposable
                         $"{exception.GetType().Name}: {exception.Message}",
                         new LoadLocation(file.Path));
                 }
+            }
 
-                int currentProgress = Interlocked.Increment(ref progressCount);
-                progress?.Report(new LoadProgress($"AssetManager: Loading {file.Name}", total, currentProgress));
-            });
+            Task.WaitAll(workers);
 
             _blockCache.RemoveBlocksReferencedByAtMost(2);
 
             if (_options.BlockCacheSize is null)
                 _blockCache.Reset(_blockCache.TotalBlockSize * 3 / 4); // it works good for BuildSceneHierarchy
 
-            var tmpLoadedFilesDict = new Dictionary<string, IFile>();
+            LoadedFiles = new Dictionary<string, IFile>();
 
             // Sorted before insertion, so which copy of a duplicated node name survives does not depend on the order a
             // ConcurrentBag happens to enumerate — the winner used to change between runs.
             foreach (var (path, file) in fileWrappers.OrderBy(wrapper => wrapper.Path, StringComparer.Ordinal))
             {
-                if (tmpLoadedFilesDict.TryAdd(path, file))
+                if (LoadedFiles.TryAdd(path, file))
                     continue;
 
                 if (!ignoreDuplicatedFiles)
@@ -193,9 +262,7 @@ public class AssetManager : IUnitySession, IDisposable
                     "a file of this name was already loaded, and this copy was dropped",
                     new LoadLocation(path));
             }
-
-            LoadedFiles = tmpLoadedFilesDict.ToFrozenDictionary();
-
+            
             BuildUnityTypes(progress);
 
             LoadedAssets = LoadedFiles.Values
@@ -437,8 +504,6 @@ public class AssetManager : IUnitySession, IDisposable
         if (adopted.Count == 0)
             return;
 
-        // Validate first, so a rejected batch leaves the session exactly as it was.
-        var directory = LoadedFiles.ToDictionary(pair => pair.Key, pair => pair.Value);
         var filesInSession = new HashSet<IFile>(LoadedFiles.Values);
 
         foreach (var (name, file) in adopted)
@@ -449,21 +514,48 @@ public class AssetManager : IUnitySession, IDisposable
             if (!filesInSession.Add(file))
                 throw new InvalidOperationException("This file is already part of the session.");
 
-            if (!directory.TryAdd(name, file))
+            if (!LoadedFiles.TryAdd(name, file))
                 throw new InvalidOperationException($"File {name} is already loaded");
         }
 
-        LoadedFiles = directory.ToFrozenDictionary();
         LoadedAssets.AddRange(adopted.SelectMany(entry => entry.File.Assets));
 
         BuildUnityTypes();
     }
 
-    public byte[]? LoadStreamingData(StreamingInfo streamingInfo)
+    private void LoadResourceFile(List<string> paths)
+    {
+        var loadedFiles = _fileSystem.LoadFile(paths);
+        foreach (var file in loadedFiles)
+        {
+            LoadedFiles.TryAdd(file.Name, new CustomFileReaderProvider(file));
+        }
+    }
+
+    public byte[]? LoadStreamingData(StreamingInfo streamingInfo, IVirtualFileInfo? src)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var path = streamingInfo.path.Split('/')[^1];
+
+        if (!LoadedFiles.ContainsKey(path) && src is not null)
+        {
+            var srcPath = src.Path;
+            if (srcPath.Contains(ZipFileSystem.ArchiveSeparator))
+            {
+                LoadResourceFile([srcPath.Split(ZipFileSystem.ArchiveSeparator)[0] + ZipFileSystem.ArchiveSeparator + path]);
+            }
+            else
+            {
+                var dir = Path.GetDirectoryName(srcPath);
+                if (dir is not null)
+                {
+                    var fullPath = Path.Combine(dir, path);
+                    LoadResourceFile([fullPath]);
+                }
+            }
+        }
+        
         if (LoadedFiles.TryGetValue(path, out IFile? file))
         {
             if (file is IReaderProvider readerProvider)
@@ -608,7 +700,7 @@ public class AssetManager : IUnitySession, IDisposable
         _diagnostics.Clear();
         _unreadableTypes.Clear();
         VirtualFileToFileMap = new();
-        LoadedFiles = new Dictionary<string, IFile>().ToFrozenDictionary();
+        LoadedFiles = new ();
         Version = null;
         BuildTarget = null;
 

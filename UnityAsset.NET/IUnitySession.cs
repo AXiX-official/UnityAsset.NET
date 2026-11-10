@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.Files.SerializedFiles;
+using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.TypeTreeHelper;
 using UnityAsset.NET.Types.PreDefined.Types;
 
@@ -15,7 +16,7 @@ public interface IUnitySession
 
     bool TryGetLoadedFile(string name, [NotNullWhen(true)] out IFile? file);
 
-    byte[]? LoadStreamingData(StreamingInfo streamingInfo);
+    byte[]? LoadStreamingData(StreamingInfo streamingInfo, IVirtualFileInfo? src);
 
     IReadOnlyDictionary<Hash128, UnityTypeSource> LoadedTypes { get; }
 }

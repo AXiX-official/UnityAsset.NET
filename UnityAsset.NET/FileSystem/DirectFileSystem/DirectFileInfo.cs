@@ -9,7 +9,7 @@ public class DirectFileInfo : IVirtualFileInfo
     public string Path { get; }
     public string Name { get; }
     public long Length { get; }
-    public FileType FileType { get; }
+    public FileType FileType { get; set; }
     
     public DirectFileInfo(string path)
     {

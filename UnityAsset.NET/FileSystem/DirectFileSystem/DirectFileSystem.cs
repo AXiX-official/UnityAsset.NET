@@ -4,7 +4,7 @@ public class DirectFileSystem : IFileSystem
 {
     public bool RecordUnknownFiles { get; set; }
     public IFileSystem.ErrorHandler? OnError { get; set; }
-    public List<IVirtualFileInfo> LoadedFiles { get; private set; } = new();
+    public List<IVirtualFileInfo> LoadedFiles { get; private set; } = new ();
 
     public DirectFileSystem(IFileSystem.ErrorHandler? onError = null)
     {
@@ -41,5 +41,16 @@ public class DirectFileSystem : IFileSystem
     public void Clear()
     {
         LoadedFiles = new();
+    }
+
+    public List<IVirtualFileInfo> LoadFile(List<string> paths)
+    {
+        var addedFiles = paths
+            .Where(Path.Exists)
+            .Select(p => (IVirtualFileInfo)new DirectFileInfo(p))
+            .ToList();
+        
+        LoadedFiles.AddRange(addedFiles);
+        return addedFiles;
     }
 }

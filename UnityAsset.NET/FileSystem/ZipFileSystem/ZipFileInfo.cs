@@ -11,7 +11,7 @@ internal sealed class ZipFileInfo : IVirtualFileInfo, IDisposable
     private ZipFileInfo(string archivePath, string entryPath, FileType fileType, byte[]? data, SafeFileHandle? handle,
         string? spillPath)
     {
-        Path = archivePath + ":" + entryPath;
+        Path = archivePath + ZipFileSystem.ArchiveSeparator + entryPath;
         Name = entryPath;
         FileType = fileType;
         _data = data;
