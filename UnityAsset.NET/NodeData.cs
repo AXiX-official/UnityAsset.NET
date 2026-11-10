@@ -77,6 +77,7 @@ public class NodeData
                 var first = pair.SubNodes[0];
                 var second = pair.SubNodes[1];
                 var size = reader.ReadInt32();
+                ArrayBounds.Count(reader, size, "map");
                 var dic = new List<KeyValuePair<object, object>>(size);
                 for (int j = 0; j < size; j++)
                 {
@@ -96,6 +97,7 @@ public class NodeData
                     var vector = current.SubNodes[0];
                     align |= vector.RequiresAlign;
                     var size = reader.ReadInt32();
+                    ArrayBounds.Count(reader, size, "vector");
                     var element = vector.SubNodes[1];
 
 
@@ -244,21 +246,31 @@ public class NodeData
     }
 
     /// <summary>Reads a vector of same-kinded structures as one run of its scalars.</summary>
-    private static object ReadPrimArray(IReader reader, TypeTreeRepr element, int count, (NodeKind Kind, int Leaves) flat) =>
-        flat.Kind switch
+    private static object ReadPrimArray(IReader reader, TypeTreeRepr element, int count, (NodeKind Kind, int Leaves) flat)
+    {
+        ArrayBounds.Elements(reader, count, flat.Leaves, "vector");
+
+        var scalars = (long)count * flat.Leaves;
+        if (scalars > int.MaxValue)
+            throw new InvalidDataException(
+                $"A vector of {count} × {flat.Leaves} scalar(s) holds more elements than an array can " +
+                $"(at position {reader.Position}).");
+
+        return flat.Kind switch
         {
-            NodeKind.SInt8 => ReadCsharpPrimArray<sbyte>(reader, element, count * flat.Leaves, 1),
-            NodeKind.UInt8 => ReadCsharpPrimArray<byte>(reader, element, count * flat.Leaves, 1),
-            NodeKind.Int16 => ReadCsharpPrimArray<short>(reader, element, count * flat.Leaves, 2),
-            NodeKind.UInt16 => ReadCsharpPrimArray<ushort>(reader, element, count * flat.Leaves, 2),
-            NodeKind.Int32 => ReadCsharpPrimArray<int>(reader, element, count * flat.Leaves, 4),
-            NodeKind.UInt32 => ReadCsharpPrimArray<uint>(reader, element, count * flat.Leaves, 4),
-            NodeKind.Int64 => ReadCsharpPrimArray<long>(reader, element, count * flat.Leaves, 8),
-            NodeKind.UInt64 => ReadCsharpPrimArray<ulong>(reader, element, count * flat.Leaves, 8),
-            NodeKind.Single => ReadCsharpPrimArray<float>(reader, element, count * flat.Leaves, 4),
-            NodeKind.Double => ReadCsharpPrimArray<double>(reader, element, count * flat.Leaves, 8),
+            NodeKind.SInt8 => ReadCsharpPrimArray<sbyte>(reader, element, (int)scalars, 1),
+            NodeKind.UInt8 => ReadCsharpPrimArray<byte>(reader, element, (int)scalars, 1),
+            NodeKind.Int16 => ReadCsharpPrimArray<short>(reader, element, (int)scalars, 2),
+            NodeKind.UInt16 => ReadCsharpPrimArray<ushort>(reader, element, (int)scalars, 2),
+            NodeKind.Int32 => ReadCsharpPrimArray<int>(reader, element, (int)scalars, 4),
+            NodeKind.UInt32 => ReadCsharpPrimArray<uint>(reader, element, (int)scalars, 4),
+            NodeKind.Int64 => ReadCsharpPrimArray<long>(reader, element, (int)scalars, 8),
+            NodeKind.UInt64 => ReadCsharpPrimArray<ulong>(reader, element, (int)scalars, 8),
+            NodeKind.Single => ReadCsharpPrimArray<float>(reader, element, (int)scalars, 4),
+            NodeKind.Double => ReadCsharpPrimArray<double>(reader, element, (int)scalars, 8),
             _ => throw new NotSupportedException($"A {flat.Kind} run is not a scalar"),
         };
+    }
 
     private static object ReadCsharpPrimArray(IReader reader, TypeTreeRepr element, int count) => element.Kind switch
     {
@@ -279,6 +291,8 @@ public class NodeData
     private static T[] ReadCsharpPrimArray<T>(IReader reader, TypeTreeRepr element, int count, int elementSize)
         where T : unmanaged
     {
+        // Known element width, so this is the exact bound and it runs before the multiply below.
+        ArrayBounds.Elements(reader, count, elementSize, "vector");
         if (count == 0) return Array.Empty<T>();
 
         // An element that is padded on its own cannot be copied in bulk: read them one at a time, as the node path did.
@@ -289,13 +303,21 @@ public class NodeData
             return aligned;
         }
 
-        var values = MemoryMarshal.Cast<byte, T>(reader.ReadSpan(count * elementSize)).ToArray();
+        var byteCount = (long)count * elementSize;
+        if (byteCount > int.MaxValue)
+            throw new InvalidDataException(
+                $"A vector of {count} × {elementSize} byte(s) is {byteCount} bytes, more than one read can span " +
+                $"(at position {reader.Position}).");
+
+        var values = MemoryMarshal.Cast<byte, T>(reader.ReadSpan((int)byteCount)).ToArray();
         if (NeedsSwap(reader.Endian)) SwapEndianness(values.AsSpan(), elementSize);
         return values;
     }
 
     private static string[] ReadStringArray(IReader reader, TypeTreeRepr element, int count)
     {
+        // Every element carries at least its four-byte length prefix.
+        ArrayBounds.Elements(reader, count, 4, "string vector");
         if (count == 0) return Array.Empty<string>();
 
         var values = new string[count];

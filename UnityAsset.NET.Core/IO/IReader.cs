@@ -101,8 +101,7 @@ namespace UnityAsset.NET.IO
 
         public List<T> ReadList<T>(int count, Func<IReader, T> constructor)
         {
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+            ArrayBounds.Count(this, count, "list");
             var list = new List<T>(count);
             for (int i = 0; i < count; i++)
                 list.Add(constructor(this));
@@ -113,8 +112,7 @@ namespace UnityAsset.NET.IO
 
         public List<T> ReadListWithAlign<T>(int count, Func<IReader, T> constructor, bool requiresAlign)
         {
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+            ArrayBounds.Count(this, count, "list");
             var list = new List<T>(count);
             for (int i = 0; i < count; i++)
             {
@@ -131,8 +129,7 @@ namespace UnityAsset.NET.IO
 
         public T[] ReadArray<T>(int count, Func<IReader, T> constructor)
         {
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+            ArrayBounds.Count(this, count, "vector");
             var array = new T[count];
             for (int i = 0; i < count; i++)
                 array[i] = constructor(this);
@@ -143,8 +140,7 @@ namespace UnityAsset.NET.IO
 
         public T[] ReadArrayWithAlign<T>(int count, Func<IReader, T> constructor, bool requiresAlign)
         {
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+            ArrayBounds.Count(this, count, "vector");
             var array = new T[count];
             for (int i = 0; i < count; i++)
             {
@@ -160,30 +156,28 @@ namespace UnityAsset.NET.IO
             ReadArrayWithAlign(ReadInt32(), constructor, requiresAlign);
 
         /// <summary>
-        /// Reads a vector of unmanaged elements that are stored back to back, copying the whole block in one go. The
-        /// per-element path pays a delegate call and an interface call for every item, which is what made large buffers
-        /// (shader blobs, animation curves) dominate the runtime-codegen backend.
+        /// Reads a vector of unmanaged elements that are stored back to back.
         /// </summary>
-        /// <remarks>
-        /// Only for elements with no padding of their own and no indirection: the caller must check both before choosing
-        /// this overload, because the bytes of two elements have to be adjacent for a block copy to be correct.
-        /// </remarks>
         public T[] ReadArrayBlock<T>(int count) where T : unmanaged
         {
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+            var elementSize = Unsafe.SizeOf<T>();
+            ArrayBounds.Elements(this, count, elementSize, "vector");
             if (count == 0)
                 return Array.Empty<T>();
 
-            var elementSize = Unsafe.SizeOf<T>();
-            var bytes = ReadSpan(count * elementSize);
+            var byteCount = (long)count * elementSize;
+            if (byteCount > int.MaxValue)
+                throw new InvalidDataException(
+                    $"A vector of {count} × {elementSize} byte(s) is {byteCount} bytes, more than one read can span.");
+
+            var bytes = ReadSpan((int)byteCount);
             var values = MemoryMarshal.Cast<byte, T>(bytes).ToArray();
 
             // A short read must fail the way the element-by-element path does, instead of silently returning a
             // truncated vector and shifting every following field.
             if (values.Length != count)
                 throw new EndOfStreamException(
-                    $"A vector of {count} elements needs {count * elementSize} bytes, but only {bytes.Length} are left.");
+                    $"A vector of {count} elements needs {byteCount} bytes, but only {bytes.Length} are left.");
 
             if ((Endian == Endianness.BigEndian) != !BitConverter.IsLittleEndian)
                 ElementSwap.Reverse(values.AsSpan(), elementSize);
@@ -200,8 +194,7 @@ namespace UnityAsset.NET.IO
         public (TK, TV)[] ReadPairArrayWithAlign<TK, TV>(int count, Func<IReader, TK> keyReader,
             Func<IReader, TV> valueReader, bool keyRequiresAlign, bool valueRequiresAlign, bool pairRequiresAlign)
         {
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+            ArrayBounds.Count(this, count, "map");
 
             var pairs = new (TK, TV)[count];
             for (var index = 0; index < count; index++)
@@ -233,8 +226,7 @@ namespace UnityAsset.NET.IO
         public (string, TV)[] ReadStringKeyedPairArrayWithAlign<TV>(int count, Func<IReader, TV> valueReader,
             bool valueRequiresAlign, bool pairRequiresAlign)
         {
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+            ArrayBounds.Elements(this, count, 4, "map");
 
             var pairs = new (string, TV)[count];
             for (var index = 0; index < count; index++)
@@ -260,8 +252,8 @@ namespace UnityAsset.NET.IO
         /// </summary>
         public string[] ReadSizedStringArray(int count, bool requiresAlign)
         {
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count), "Count cannot be negative.");
+            // Every element carries at least its four-byte length prefix.
+            ArrayBounds.Elements(this, count, 4, "string vector");
 
             var values = new string[count];
             for (var index = 0; index < count; index++)

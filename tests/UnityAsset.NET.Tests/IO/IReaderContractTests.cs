@@ -169,6 +169,66 @@ public sealed class IReaderContractTests
     }
 
     // ---------------------------------------------------------------------------------------------------------------
+    // Collections: the count is a claim about memory, and it is bounded before the array exists.
+    // ---------------------------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void ReadArray_CountExactlyWhatIsLeft_IsAccepted()
+    {
+        // The bound is a necessary condition, not a conservative one: three one-byte elements in three remaining bytes are
+        // legal, so an off-by-one here would refuse valid assets rather than damaged ones.
+        var reader = (IReader)new MemoryReader(new byte[] { 0x03, 0x00, 0x00, 0x00, 0x0A, 0x0B, 0x0C })
+            { Endian = Endianness.LittleEndian };
+
+        var values = reader.ReadArray(r => r.ReadByte());
+
+        Assert.Equal(new byte[] { 0x0A, 0x0B, 0x0C }, values);
+        Assert.Equal(0, reader.Remaining);
+    }
+
+    [Fact]
+    public void ReadArray_CountLargerThanWhatIsLeft_ThrowsAndConsumesOnlyThePrefix()
+    {
+        // A count of 4096 with three bytes of payload. Refusing it before the allocation keeps the reader just past the
+        // count, which is where a reader that ran out of bytes would have stopped — so a caller can still say which field
+        // failed.
+        var reader = (IReader)new MemoryReader(new byte[] { 0x00, 0x10, 0x00, 0x00, 0x0A, 0x0B, 0x0C })
+            { Endian = Endianness.LittleEndian };
+
+        var exception = Assert.Throws<EndOfStreamException>(() => reader.ReadArray(r => r.ReadByte()));
+
+        Assert.Contains("4096", exception.Message);
+        Assert.Equal(4, reader.Position);
+    }
+
+    [Fact]
+    public void ReadArrayBlock_CountLargerThanWhatIsLeft_ThrowsBeforeTheMultiply()
+    {
+        // Two int32 elements need eight bytes and five are left. The exact bound refuses it, which is also what keeps
+        // `count * elementSize` from wrapping on a count that a damaged file claims.
+        var reader = (IReader)new MemoryReader(new byte[] { 0xAA, 0x00, 0x00, 0x00, 0x0A })
+            { Endian = Endianness.LittleEndian };
+
+        var exception = Assert.Throws<EndOfStreamException>(() => reader.ReadArrayBlock<int>(2));
+
+        Assert.Contains("cannot fit", exception.Message);
+        Assert.Equal(0, reader.Position);
+    }
+
+    [Fact]
+    public void ReadSizedStringArray_CountLargerThanWhatIsLeft_Throws()
+    {
+        // Every element carries at least its four-byte length prefix, so ten of them cannot fit in three bytes.
+        var reader = (IReader)new MemoryReader(new byte[] { 0x0A, 0x00, 0x00, 0x00, 0x01, 0x02, 0x03 })
+            { Endian = Endianness.LittleEndian };
+
+        var exception = Assert.Throws<EndOfStreamException>(() =>
+            reader.ReadSizedStringArray(requiresAlign: false));
+
+        Assert.Contains("cannot fit", exception.Message);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------
     // Seek: the three origins, including the two arguments that are rejected. The matrices use Seek as setup, so the
     // member itself is only exercised here.
     // ---------------------------------------------------------------------------------------------------------------
