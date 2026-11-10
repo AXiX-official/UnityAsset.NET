@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using UnityAsset.NET.Diagnostics;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.TypeTreeHelper;
@@ -124,6 +125,15 @@ public sealed class TypeRegistry : IDisposable
     #endregion
 
     public void LoadTypes(IReadOnlyDictionary<Hash128, UnityTypeSource> typesToGenerate)
+        => LoadTypes(typesToGenerate, ErrorPolicy.Throw, out _);
+
+    /// <summary>
+    /// Compiles the catalog. <paramref name="skipped"/> receives the hashes this run left without a compiled type, which
+    /// is only ever non-empty when the policy allows skipping; a compile failure of the whole assembly is not skippable
+    /// either way, because with no assembly there is nothing left to read.
+    /// </summary>
+    public void LoadTypes(IReadOnlyDictionary<Hash128, UnityTypeSource> typesToGenerate,
+        ErrorPolicy missingType, out IReadOnlyCollection<Hash128> skipped)
     {
         ArgumentNullException.ThrowIfNull(typesToGenerate);
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -149,6 +159,10 @@ public sealed class TypeRegistry : IDisposable
             syntaxTrees: [syntaxTree],
             references: context.References,
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: optimizationLevel));
+
+        // Only assigned on the way out: the throw paths below leave it to the caller, which is what an out parameter
+        // allows and what lets this stay a void method that reports one extra collection.
+        var withoutType = new List<Hash128>();
 
         lock (_compilationLock)
         {
@@ -176,9 +190,10 @@ public sealed class TypeRegistry : IDisposable
             {
                 var type = source.TypeTree;
 
-                if (type.SubNodes.Length == 0)
-                    continue;
-
+                // A tree with no members is not special: the generator emits a class for it like any other (nothing to
+                // read inside the constructor), so it has to go through the lookup below to be registered. Skipping it
+                // here used to leave a perfectly readable type out of the caches, which surfaced as a NotSupportedException
+                // the first time one of its assets was touched.
                 var concreteTypeName = Helper.SanitizeName($"{source.ClassName}_{type.Hash}");
                 var generatedType = assembly.GetType($"{AssemblyNameSpace}.{concreteTypeName}");
                 if (generatedType != null)
@@ -192,11 +207,16 @@ public sealed class TypeRegistry : IDisposable
                 if (source.ClassName == "MonoBehaviour" || Helper.IsPreDefinedType(type))
                     continue;
 
-                throw new InvalidOperationException(
-                    $"The generated assembly has no type for {concreteTypeName} (class '{source.ClassName}', catalog " +
-                    $"hash {hash128}). The code generator and the registry agree on the generated name only as long " +
-                    "as both derive it the same way, so this means the generator skipped a type it was supposed to " +
-                    "emit, or that the two name derivations have drifted apart.");
+                if (missingType == ErrorPolicy.Throw)
+                {
+                    throw new InvalidOperationException(
+                        $"The generated assembly has no type for {concreteTypeName} (class '{source.ClassName}', catalog " +
+                        $"hash {hash128}). The code generator and the registry agree on the generated name only as long " +
+                        "as both derive it the same way, so this means the generator skipped a type it was supposed to " +
+                        "emit, or that the two name derivations have drifted apart.");
+                }
+
+                withoutType.Add(hash128);
             }
 
             var unnamedNamedTypes = FindNamedTypesWithoutContract(typesToGenerate, typeCache);
@@ -213,6 +233,8 @@ public sealed class TypeRegistry : IDisposable
             _factories = factories;
             _artifactDirectory = artifactDirectory;
         }
+
+        skipped = withoutType;
     }
     
     public Func<IReader, object> GetFactory(SerializedType type)

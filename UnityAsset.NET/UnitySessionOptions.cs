@@ -1,3 +1,4 @@
+using UnityAsset.NET.Diagnostics;
 using UnityAsset.NET.Types;
 
 namespace UnityAsset.NET;
@@ -37,6 +38,28 @@ public sealed class UnitySessionOptions
 
     /// <summary>Code generation options for this session's type catalog.</summary>
     public TypeRegistryOptions Codegen { get; init; } = new();
+
+    /// <summary>
+    /// What a load does with a type whose tree is in neither the file nor the tpk database. Under
+    /// <see cref="ErrorPolicy.SkipAndReport"/> the type is left out of the catalog, every asset of it is marked
+    /// unavailable (<see cref="Asset.Available"/> is false and <see cref="Asset.UnavailableReason"/> says why), and one
+    /// diagnostic per type says so; the rest of the load continues.
+    /// </summary>
+    public ErrorPolicy MissingType { get; init; } = ErrorPolicy.Throw;
+
+    /// <summary>
+    /// What a load does with a container or a metadata region it cannot read at all — a damaged bundle, a truncated
+    /// serialized file. Under <see cref="ErrorPolicy.SkipAndReport"/> the file is dropped from the session and reported
+    /// as <see cref="LoadProblem.FileUnreadable"/>.
+    /// </summary>
+    public ErrorPolicy CorruptFile { get; init; } = ErrorPolicy.Throw;
+
+    /// <summary>
+    /// What a load does with one asset that fails to materialise while its type was readable. Under
+    /// <see cref="ErrorPolicy.SkipAndReport"/> only that asset is marked unavailable, reported as
+    /// <see cref="LoadProblem.AssetUnreadable"/>, and everything else in the session keeps working.
+    /// </summary>
+    public ErrorPolicy CorruptAsset { get; init; } = ErrorPolicy.Throw;
 
     /// <summary>
     /// Budget for this session's decompressed block cache, in bytes. When null the session keeps the loader's

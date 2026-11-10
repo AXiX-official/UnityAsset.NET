@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using UnityAsset.NET.BundleFiles;
+using UnityAsset.NET.Diagnostics;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files;
@@ -35,6 +36,16 @@ public class AssetManager : IUnitySession, IDisposable
     private readonly UnitySessionOptions _options;
     private readonly BlockCacheContext _blockCache;
 
+    /// <summary>What this session could not read, when its policy allowed skipping; empty otherwise.</summary>
+    private readonly LoadDiagnosticBag _diagnostics = new();
+
+    /// <summary>
+    /// Types the session knows it cannot read, mapped to the reason. Written while types are built, read afterwards, and
+    /// read again when an asset of one of them is materialised — which is why it is a dictionary of reasons rather than a
+    /// set of hashes.
+    /// </summary>
+    private readonly Dictionary<Hash128, string> _unreadableTypes = new();
+
     private int _disposed;
 
     private long InitialBlockCacheBudget => _options.BlockCacheSize ?? Setting.DefaultBlockCacheSize;
@@ -57,6 +68,13 @@ public class AssetManager : IUnitySession, IDisposable
     /// statistics, the entry count and the budget all live here.
     /// </summary>
     public BlockCacheContext BlockCache => _blockCache;
+
+    /// <summary>
+    /// Everything this session could not read. Empty while every stage is on <see cref="ErrorPolicy.Throw"/>, and one
+    /// entry per skipped item once a stage is on <see cref="ErrorPolicy.SkipAndReport"/>; each entry says which
+    /// <see cref="LoadProblem"/> it was.
+    /// </summary>
+    public IReadOnlyList<LoadDiagnostic> Diagnostics => _diagnostics.Diagnostics;
 
     public bool TryGetLoadedFile(string name, [NotNullWhen(true)] out IFile? file)
     {
@@ -93,40 +111,63 @@ public class AssetManager : IUnitySession, IDisposable
     {
         await Task.Run(() =>
         {
-            var fileWrappers = new ConcurrentBag<(string, IFile)>();
+            var fileWrappers = new ConcurrentBag<(string Path, IFile File)>();
             int progressCount = 0;
             var total = files.Count;
 
+            _diagnostics.Clear();
+            _unreadableTypes.Clear();
+
             Parallel.ForEach(files, file =>
             {
-                switch (file.FileType)
+                try
                 {
-                    case FileType.BundleFile:
+                    switch (file.FileType)
                     {
-                        var bundleFile = new BundleFile(file, _options.UnityCnKey, _options.DefaultUnityVersion, _blockCache);
-                        bundleFile.ParseFilesWithTypeConversion();
-                        foreach (var fw in bundleFile.Files)
+                        case FileType.BundleFile:
                         {
-                            if (fw.File is SerializedFile parsedFile &&
-                                parsedFile.ReaderProvider is SlicedReaderProvider { BaseReaderProvider: BlockReaderProvider blockProvider } slicedProvider)
+                            var bundleFile = new BundleFile(file, _options.UnityCnKey, _options.DefaultUnityVersion, _blockCache);
+                            bundleFile.ParseFilesWithTypeConversion();
+                            foreach (var fw in bundleFile.Files)
                             {
-                                RegisterAssetToBlockMap(slicedProvider, blockProvider, parsedFile);
+                                if (fw.File is SerializedFile parsedFile &&
+                                    parsedFile.ReaderProvider is SlicedReaderProvider { BaseReaderProvider: BlockReaderProvider blockProvider } slicedProvider)
+                                {
+                                    RegisterAssetToBlockMap(slicedProvider, blockProvider, parsedFile);
+                                }
+
+                                fileWrappers.Add((fw.Info.Path, fw.File));
                             }
 
-                            fileWrappers.Add((fw.Info.Path, fw.File));
+                            VirtualFileToFileMap[file] = bundleFile;
+                            break;
                         }
-
-                        VirtualFileToFileMap[file] = bundleFile;
-                        break;
-                    }
-                    case FileType.SerializedFile:
-                    {
-                        var serializedFile = new SerializedFile(file, _options.DefaultUnityVersion);
-                        fileWrappers.Add((file.Name, serializedFile));
-                        VirtualFileToFileMap[file] = serializedFile;
-                        break;
+                        case FileType.SerializedFile:
+                        {
+                            var serializedFile = new SerializedFile(file, _options.DefaultUnityVersion);
+                            fileWrappers.Add((file.Name, serializedFile));
+                            VirtualFileToFileMap[file] = serializedFile;
+                            break;
+                        }
+                        default:
+                            // An input the sniffer could not place. Dropping it silently used to be the only option, which
+                            // made "this file was not read" indistinguishable from "this file held nothing".
+                            _diagnostics.Report(LoadProblem.UnknownFile,
+                                "the input was not recognised as a serialized file or a bundle",
+                                new LoadLocation(file.Path));
+                            break;
                     }
                 }
+                catch (Exception exception) when (exception is not OutOfMemoryException &&
+                                                  _options.CorruptFile == ErrorPolicy.SkipAndReport)
+                {
+                    // One unreadable container must not take the session down with it. Out of memory is excluded: it is
+                    // not evidence about this file, and continuing after it is not something to promise.
+                    _diagnostics.Report(LoadProblem.FileUnreadable,
+                        $"{exception.GetType().Name}: {exception.Message}",
+                        new LoadLocation(file.Path));
+                }
+
                 int currentProgress = Interlocked.Increment(ref progressCount);
                 progress?.Report(new LoadProgress($"AssetManager: Loading {file.Name}", total, currentProgress));
             });
@@ -138,12 +179,19 @@ public class AssetManager : IUnitySession, IDisposable
 
             var tmpLoadedFilesDict = new Dictionary<string, IFile>();
 
-            foreach (var (path, file) in fileWrappers)
+            // Sorted before insertion, so which copy of a duplicated node name survives does not depend on the order a
+            // ConcurrentBag happens to enumerate — the winner used to change between runs.
+            foreach (var (path, file) in fileWrappers.OrderBy(wrapper => wrapper.Path, StringComparer.Ordinal))
             {
-                if (!tmpLoadedFilesDict.TryAdd(path, file) && !ignoreDuplicatedFiles)
-                {
+                if (tmpLoadedFilesDict.TryAdd(path, file))
+                    continue;
+
+                if (!ignoreDuplicatedFiles)
                     throw new InvalidOperationException($"File {path} already loaded");
-                }
+
+                _diagnostics.Report(LoadProblem.DuplicateFile,
+                    "a file of this name was already loaded, and this copy was dropped",
+                    new LoadLocation(path));
             }
 
             LoadedFiles = tmpLoadedFilesDict.ToFrozenDictionary();
@@ -169,14 +217,30 @@ public class AssetManager : IUnitySession, IDisposable
             BuildTarget = declaring.Metadata.TargetPlatform;
         }
 
-        var catalog = CollectTypeCatalog(files, OpenTpkRoots);
+        var catalog = CollectTypeCatalog(files, OpenTpkRoots, _options.MissingType, _diagnostics, _unreadableTypes);
 
         var factory = new UnityObjectFactory(catalog, _typeRegistry);
 
-        _typeRegistry.LoadTypes(catalog);
+        _typeRegistry.LoadTypes(catalog, _options.MissingType, out var skipped);
+        foreach (var skippedHash in skipped)
+        {
+            // Already reported as missing, or not in this catalog at all: the reason the session keeps is the one the
+            // earlier stage recorded, because that is the one that decides what the asset can be used for.
+            if (!catalog.TryGetValue(skippedHash, out var source) || _unreadableTypes.ContainsKey(skippedHash))
+                continue;
+
+            var reason = $"the generated assembly has no type for {source.ClassName}";
+            _unreadableTypes[skippedHash] = reason;
+            _diagnostics.Report(LoadProblem.TypeNotGenerated,
+                "the type tree was readable but no type was generated for it",
+                new LoadLocation(TypeName: source.ClassName));
+        }
+
         _loadedTypes = catalog.ToFrozenDictionary();
         _factory = factory;
-        progress?.Report(new LoadProgress($"AssetManager: Generated {catalog.Count} types", 2, 2));
+        progress?.Report(new LoadProgress(
+            $"AssetManager: Generated {catalog.Count} types" +
+            (_unreadableTypes.Count > 0 ? $", {_unreadableTypes.Count} unreadable" : string.Empty), 2, 2));
 
         var blockCache = _blockCache;
         var context = new AssetContext
@@ -184,7 +248,8 @@ public class AssetManager : IUnitySession, IDisposable
             // Method group: the context stores a delegate, not an abstraction, so the factory does not have to
             // implement anything to be handed over.
             Factory = factory.Create,
-            OnParsed = asset => OnAssetParsed(blockCache, asset)
+            OnParsed = asset => OnAssetParsed(blockCache, asset),
+            OnFailed = OnAssetFailed
         };
         foreach (var serializedFile in files)
         {
@@ -193,6 +258,11 @@ public class AssetManager : IUnitySession, IDisposable
                 asset.AttachContext(context);
 
                 asset.IsNamedAsset = catalog.TryGetValue(asset.Info.Type.TypeHash, out var source) && source.TypeTree.IsNamed;
+
+                // A type the session already knows it cannot read marks all of its assets up front: one diagnostic per
+                // type instead of one per asset, and `Asset.Name` can then report the truth instead of an empty name.
+                if (_unreadableTypes.TryGetValue(asset.Info.Type.TypeHash, out var reason))
+                    asset.MarkUnavailable(new AssetUnavailableException(asset.TypeName, asset.PathId, reason));
             }
         }
 
@@ -212,11 +282,14 @@ public class AssetManager : IUnitySession, IDisposable
 
     internal static Dictionary<Hash128, UnityTypeSource> CollectTypeCatalog(
         IEnumerable<SerializedFile> files,
-        Func<string, IReadOnlyDictionary<string, TypeTreeRepr>> openTpkRoots)
+        Func<string, IReadOnlyDictionary<string, TypeTreeRepr>> openTpkRoots,
+        ErrorPolicy missingType,
+        LoadDiagnosticBag diagnostics,
+        IDictionary<Hash128, string> unreadable)
     {
         var catalog = new Dictionary<Hash128, UnityTypeSource>();
         var tpkRootsByVersion = new Dictionary<string, IReadOnlyDictionary<string, TypeTreeRepr>>();
-        var missingTypes = new List<string>();
+        var missingTypes = new List<(string ClassName, Hash128 Hash)>();
 
         foreach (var file in files)
         {
@@ -247,16 +320,30 @@ public class AssetManager : IUnitySession, IDisposable
 
                 if (tpkRoots.TryGetValue(typeName, out var tpkRepr))
                     catalog[type.TypeHash] = new UnityTypeSource(typeName, unityVersion, tpkRepr);
-                else if (!missingTypes.Contains(typeName))
-                    missingTypes.Add(typeName);
+                else if (!missingTypes.Exists(missing => missing.ClassName == typeName))
+                    missingTypes.Add((typeName, type.TypeHash));
             }
         }
 
         if (missingTypes.Count > 0)
         {
-            throw new NotSupportedException(
-                "These types are neither carried by their own file nor present in the type tree database (tpk): " +
-                string.Join(", ", missingTypes));
+            if (missingType == ErrorPolicy.Throw)
+            {
+                throw new NotSupportedException(
+                    "These types are neither carried by their own file nor present in the type tree database (tpk): " +
+                    string.Join(", ", missingTypes.Select(missing => missing.ClassName)));
+            }
+
+            // Skip: the type is unreadable, not absent. Every asset of it is marked unavailable where the context is
+            // attached, and one diagnostic per type says why.
+            foreach (var (className, hash) in missingTypes)
+            {
+                var reason = $"{className}: the type tree is neither in the file nor in the tpk database";
+                unreadable[hash] = reason;
+                diagnostics.Report(LoadProblem.MissingType,
+                    "the type tree is neither in the file nor in the tpk database",
+                    new LoadLocation(TypeName: className));
+            }
         }
 
         return catalog;
@@ -390,6 +477,32 @@ public class AssetManager : IUnitySession, IDisposable
         return null;
     }
 
+    /// <summary>
+    /// Decides what a failed materialisation does. Null means "rethrow the original", which is what
+    /// <see cref="ErrorPolicy.Throw"/> says and what every caller gets by default; an exception means "record it and mark
+    /// this asset unavailable".
+    /// <para>
+    /// A type the session already knows it cannot read uses the <see cref="UnitySessionOptions.MissingType"/> policy even
+    /// when <see cref="UnitySessionOptions.CorruptAsset"/> stays strict, because those two questions have different
+    /// answers: an unknown type is a gap in the tool's knowledge, a corrupt object is a damaged file.
+    /// </para>
+    /// </summary>
+    private AssetUnavailableException? OnAssetFailed(Asset asset, Exception exception)
+    {
+        var typeIsUnreadable = _unreadableTypes.ContainsKey(asset.Info.Type.TypeHash);
+        var missingType = typeIsUnreadable || exception is NotSupportedException;
+
+        if ((missingType ? _options.MissingType : _options.CorruptAsset) == ErrorPolicy.Throw)
+            return null;
+
+        _diagnostics.Report(
+            missingType ? LoadProblem.MissingType : LoadProblem.AssetUnreadable,
+            exception.Message,
+            new LoadLocation(asset.SourceFile.SourceVirtualFileInfo?.Name, asset.Container, asset.TypeName, asset.PathId));
+
+        return new AssetUnavailableException(asset.TypeName, asset.PathId, exception.Message, exception);
+    }
+
     internal static void OnAssetParsed(BlockCacheContext blockCache, Asset asset)
     {
         var sf = asset.SourceFile;
@@ -492,6 +605,8 @@ public class AssetManager : IUnitySession, IDisposable
         LoadedAssets = new();
         _loadedTypes = FrozenDictionary<Hash128, UnityTypeSource>.Empty;
         _factory = null;
+        _diagnostics.Clear();
+        _unreadableTypes.Clear();
         VirtualFileToFileMap = new();
         LoadedFiles = new Dictionary<string, IFile>().ToFrozenDictionary();
         Version = null;

@@ -10,9 +10,19 @@ public static class SerializedFileExtensions
         foreach (var asset in sf.Assets)
         {
             if (asset.TypeName == "AssetBundle")
-            { 
-                var assetBundle = (IAssetBundle)asset.Value;
-                
+            {
+                IAssetBundle assetBundle;
+                try
+                {
+                    assetBundle = (IAssetBundle)asset.Value;
+                }
+                catch (AssetUnavailableException)
+                {
+                    // The session already reported why. Without the asset its container table is simply unknown, which
+                    // costs the affected assets their paths and nothing else.
+                    continue;
+                }
+
                 foreach (var (container, assetInfo) in assetBundle.m_Container)
                 {
                     var preloadIndex = assetInfo.preloadIndex;

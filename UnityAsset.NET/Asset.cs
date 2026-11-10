@@ -12,6 +12,7 @@ public class Asset : IEquatable<Asset>, IAsset
     private string? _name;
     private readonly Lock _lock = new();
     private AssetContext? _context;
+    private AssetUnavailableException? _unavailable;
 
     public bool IsNamedAsset;
 
@@ -40,7 +41,26 @@ public class Asset : IEquatable<Asset>, IAsset
             $"Asset {TypeName}/{PathId} has no session attached: its SerializedFile was not loaded through a session " +
             "(AssetManager), or that session has been cleared or disposed.");
 
-        var value = context.Factory.Invoke(Info.Type, DataReader);
+        IUnityAsset value;
+        try
+        {
+            value = context.Factory.Invoke(Info.Type, DataReader);
+        }
+        catch (Exception exception) when (exception is not OutOfMemoryException)
+        {
+            // The session decides: no handler, or a handler that returns null, means "this failure is fatal for the load"
+            // and the original exception is rethrown untouched. A handler that returns an exception means "record it and
+            // mark this asset unavailable". Out of memory never reaches here: an allocation failure says nothing about
+            // this asset, and continuing after it is not something to promise.
+            if (context.OnFailed is not { } onFailed)
+                throw;
+
+            if (onFailed(this, exception) is not { } unavailable)
+                throw;
+
+            _unavailable = unavailable;
+            throw unavailable;
+        }
 
         // Only after a successful materialisation: the session uses this to account for the blocks it just read.
         context.OnParsed?.Invoke(this);
@@ -48,6 +68,20 @@ public class Asset : IEquatable<Asset>, IAsset
         return value;
     }
 
+    /// <summary>
+    /// Whether this asset can be read. True until a failure is recorded, so the value has to be asked for before an
+    /// unreadable asset reports itself as such — "not parsed yet" and "cannot be parsed" are different claims.
+    /// </summary>
+    public bool Available => _unavailable is null;
+
+    /// <summary>Why the asset is unavailable, or null while it is available.</summary>
+    public string? UnavailableReason => _unavailable?.Reason;
+
+    /// <summary>
+    /// Marks the asset unreadable without trying to materialise it. Used for an asset whose type the session already
+    /// knows it cannot read, so the failure is recorded once for the type instead of once per asset.
+    /// </summary>
+    internal void MarkUnavailable(AssetUnavailableException unavailable) => _unavailable ??= unavailable;
 
     public IUnityAsset Value
     {
@@ -55,6 +89,9 @@ public class Asset : IEquatable<Asset>, IAsset
         {
             lock (_lock)
             {
+                if (_unavailable is { } unavailable)
+                    throw unavailable;
+
                 if (_value is null)
                 {
                     var value = GetValue();
@@ -88,6 +125,10 @@ public class Asset : IEquatable<Asset>, IAsset
         {
             lock (_lock)
             {
+                // An unreadable asset has no name to report, and returning "" would read as "this class is not named".
+                if (_unavailable is { } unavailable)
+                    throw unavailable;
+
                 if (!IsNamedAsset)
                     return string.Empty;
 

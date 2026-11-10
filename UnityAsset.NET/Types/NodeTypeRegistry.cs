@@ -1,4 +1,5 @@
 #if UNITYASSET_NODEDATA
+using UnityAsset.NET.Diagnostics;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.TypeTreeHelper;
@@ -22,10 +23,20 @@ public sealed class TypeRegistry : IDisposable
     public string? GeneratedSourcePath => null;
 
     public void LoadTypes(IReadOnlyDictionary<Hash128, UnityTypeSource> typesToGenerate)
+        => LoadTypes(typesToGenerate, ErrorPolicy.Throw, out _);
+
+    /// <summary>
+    /// This backend has nothing to compile, so it never leaves a hash without a type: the catalog is the whole of its
+    /// knowledge, and a hash it does not contain is refused at the point of use instead. The parameter exists only so
+    /// both backends present the same surface.
+    /// </summary>
+    public void LoadTypes(IReadOnlyDictionary<Hash128, UnityTypeSource> typesToGenerate,
+        ErrorPolicy missingType, out IReadOnlyCollection<Hash128> skipped)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(typesToGenerate);
         _catalog = new Dictionary<Hash128, UnityTypeSource>(typesToGenerate);
+        skipped = Array.Empty<Hash128>();
     }
 
     public Func<IReader, object> GetFactory(SerializedType type)
