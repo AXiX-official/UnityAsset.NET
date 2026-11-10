@@ -402,7 +402,12 @@ The interface tree covers the common Unity classes. A class outside it still par
 
 ## Advanced
 
-Two things matter when shipping a tool: how the concrete types are produced, and where the type trees come from.
+### IVirtualFileTransform
+
+`IVirtualFileTransform` is a file-system-level hook that can modify the bytes of a file before the library sees them. It is useful for decryption, decompression or other transformations that are not handled by the library itself.
+
+You can find an example here: [Gf2Transform.cs](https://github.com/AXiX-official/TinyStudio/blob/master/TinyStudio/Games/GF2/Gf2Transform.cs)
+
 
 ### Code generation back ends
 
