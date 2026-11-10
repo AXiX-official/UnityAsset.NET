@@ -7,9 +7,9 @@
         <WarningsAsErrors>nullable</WarningsAsErrors>
         <Authors>AXiX</Authors>
         <Description>A work-in-progress .NET library for parsing/serializing/patching Unity Engine asset files.</Description>
-        <Version>0.5.1</Version>
-        <AssemblyVersion>0.5.1</AssemblyVersion>
-        <FileVersion>0.5.1</FileVersion>
+        <Version>0.5.2</Version>
+        <AssemblyVersion>0.5.2</AssemblyVersion>
+        <FileVersion>0.5.2</FileVersion>
         <Title>UnityAsset.NET</Title>
         <Copyright>AXiX</Copyright>
         <IsPackable>true</IsPackable>
