@@ -2595,6 +2595,16 @@ internal static class GeneratedInterfaceSchemaTable
             new("terrainDynamicUVST", "Vector4f", false),
             new("uvMesh", "PPtr<IMesh>", false),
         }),
+        ["IResourceManager"] = new InterfaceSchema("IResourceManager", false, new InterfaceMemberSchema[]
+        {
+            new("m_Container", "ValueTuple<string, PPtr<IUnityObject>>[]", false),
+            new("m_DependentAssets", "IResourceManager_Dependency[]", false),
+        }),
+        ["IResourceManager_Dependency"] = new InterfaceSchema("IResourceManager_Dependency", false, new InterfaceMemberSchema[]
+        {
+            new("m_Dependencies", "PPtr<IUnityObject>[]", false),
+            new("m_Object", "PPtr<IUnityObject>", false),
+        }),
         ["IRigidbody"] = new InterfaceSchema("IRigidbody", false, new InterfaceMemberSchema[]
         {
             new("m_AngularDamping", "float?", true),

@@ -42,7 +42,8 @@ public static class Helper
         "TextAsset",
         "Texture2D",
         "MeshFilter",
-        "SkinnedMeshRenderer"
+        "SkinnedMeshRenderer",
+        "ResourceManager"
     ];
 
     // Classes that must not claim an I<ClassName> of their own, because a nested structure already owns that name.
