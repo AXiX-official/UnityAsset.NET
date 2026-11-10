@@ -16,5 +16,15 @@ namespace UnityAsset.NET
 
         /// <summary>Budget for the decompressed block cache.</summary>
         public static long DefaultBlockCacheSize = 2L * 1024 * 1024 * 1024;
+
+        /// <summary>
+        /// Largest archive entry that is materialised in memory.
+        /// </summary>
+        public static long ZipSpillThreshold = 64L * 1024 * 1024;
+
+        /// <summary>
+        /// Where a spilled archive entry is written.
+        /// </summary>
+        public static string ZipSpillDirectory = Path.Combine(Path.GetTempPath(), "UnityAsset.NET", "zip");
     }
 }
