@@ -218,9 +218,9 @@ public sealed class ZipFileSystem : IFileSystem
 
             // One partially read stream decides the type; nothing else is read. The payload waits for the first open, so
             // an entry nobody asks for costs 48 bytes of inflate and no memory.
-            var fileType = FileTypeHelper.GetFileType(ReadHead(entry), entry.Length);
+            var probe = FileTypeHelper.Probe(ReadHead(entry), entry.Length);
 
-            var file = new ZipFileInfo(archivePath, entry.FullName, entry.Length, fileType, Materialise);
+            var file = new ZipFileInfo(archivePath, entry.FullName, entry.Length, probe.Type, Materialise, probe.Reason);
 
             _entries.Add(file);
             into.Add(file);
@@ -337,8 +337,8 @@ public sealed class ZipFileSystem : IFileSystem
             {
                 var entry = archive.GetEntry(entryName);
                 if (entry is null) continue;
-                var fileType = FileTypeHelper.GetFileType(ReadHead(entry), entry.Length);
-                addedFiles.Add(new ZipFileInfo(group.Key, entry.FullName, entry.Length, fileType, Materialise));
+                var probe = FileTypeHelper.Probe(ReadHead(entry), entry.Length);
+                addedFiles.Add(new ZipFileInfo(group.Key, entry.FullName, entry.Length, probe.Type, Materialise, probe.Reason));
             }
         }
 

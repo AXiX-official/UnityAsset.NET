@@ -8,7 +8,7 @@ internal sealed class ZipFileInfo : IVirtualFileInfo, IDisposable
     private readonly Lazy<ZipEntryStorage> _storage;
 
     public ZipFileInfo(string archivePath, string entryPath, long length, FileType fileType,
-        Func<ZipFileInfo, ZipEntryStorage> materialise)
+        Func<ZipFileInfo, ZipEntryStorage> materialise, string? unrecognisedReason = null)
     {
         ArchivePath = archivePath;
         EntryPath = entryPath;
@@ -17,6 +17,7 @@ internal sealed class ZipFileInfo : IVirtualFileInfo, IDisposable
         Name = entryPath;
         Length = length;
         FileType = fileType;
+        UnrecognisedReason = unrecognisedReason;
 
         _storage = new Lazy<ZipEntryStorage>(() => materialise(this), LazyThreadSafetyMode.ExecutionAndPublication);
     }
@@ -36,6 +37,9 @@ internal sealed class ZipFileInfo : IVirtualFileInfo, IDisposable
     public long Length { get; }
 
     public FileType FileType { get; }
+
+    /// <summary>Why the probe could not name this entry, or null when it did.</summary>
+    public string? UnrecognisedReason { get; }
 
     /// <summary>Whether the payload has been read yet. An entry nobody opened holds nothing and leaks nothing.</summary>
     internal bool IsMaterialised => _storage.IsValueCreated;

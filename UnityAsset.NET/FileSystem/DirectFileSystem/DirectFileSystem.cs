@@ -1,6 +1,6 @@
-﻿namespace UnityAsset.NET.FileSystem.DirectFileSystem;
+namespace UnityAsset.NET.FileSystem.DirectFileSystem;
 
-public class DirectFileSystem : IFileSystem
+public class DirectFileSystem : IFileSystem, IDisposable
 {
     public IFileSystem.ErrorHandler? OnError { get; set; }
     public List<IVirtualFileInfo> LoadedFiles { get; private set; } = new ();
@@ -14,6 +14,9 @@ public class DirectFileSystem : IFileSystem
     {
         return Task.Run(() =>
         {
+            // A load replaces the previous one, so what the last one opened is released here rather than at exit.
+            ReleaseFiles();
+
             var files = new List<IVirtualFileInfo>();
             var totalFiles = paths.Count;
             for (int i = 0; i < totalFiles; i++)
@@ -38,8 +41,11 @@ public class DirectFileSystem : IFileSystem
     
     public void Clear()
     {
+        ReleaseFiles();
         LoadedFiles = new();
     }
+
+    public void Dispose() => Clear();
 
     public List<IVirtualFileInfo> LoadFile(List<string> paths)
     {
@@ -50,5 +56,18 @@ public class DirectFileSystem : IFileSystem
         
         LoadedFiles.AddRange(addedFiles);
         return addedFiles;
+    }
+
+    /// <summary>
+    /// Releases the handles of the files this instance opened. Only its own type is disposed: a file handed in from
+    /// somewhere else owns whatever it wraps.
+    /// </summary>
+    private void ReleaseFiles()
+    {
+        foreach (var file in LoadedFiles)
+        {
+            if (file is DirectFileInfo direct)
+                direct.Dispose();
+        }
     }
 }

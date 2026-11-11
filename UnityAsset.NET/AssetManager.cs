@@ -237,7 +237,9 @@ public class AssetManager : IUnitySession, IDisposable
                             // An input the sniffer could not place. Dropping it silently used to be the only option, which
                             // made "this file was not read" indistinguishable from "this file held nothing".
                             _diagnostics.Report(LoadProblem.UnknownFile,
-                                "the input was not recognised as a serialized file or a bundle",
+                                file.UnrecognisedReason is { } reason
+                                    ? $"the input was not recognised: {reason}"
+                                    : "the input was not recognised as a serialized file or a bundle",
                                 new LoadLocation(file.Path));
                             break;
                     }
