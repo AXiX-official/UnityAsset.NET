@@ -33,7 +33,7 @@ public class TypeTreeNode
         RefTypeHash = refTypeHash;
     }
 
-    public static TypeTreeNode Parse(IReader reader) => new(
+    public static TypeTreeNode Parse(IReader reader, SerializedFileFormatVersion version) => new(
         reader.ReadUInt16(),
         reader.ReadByte(),
         (TypeTreeNodeFlags)reader.ReadByte(),
@@ -42,7 +42,9 @@ public class TypeTreeNode
         reader.ReadInt32(),
         reader.ReadUInt32(),
         reader.ReadUInt32(),
-        reader.ReadUInt64()
+        version >= SerializedFileFormatVersion.TypeTreeNodeWithTypeFlags 
+            ? reader.ReadUInt64()
+            : 0
     );
 
     public void Serialize(IWriter writer)

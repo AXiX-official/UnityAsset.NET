@@ -15,10 +15,11 @@ public sealed class SerializedFileMetadata
     public AssetsFileExternal[] Externals;
     public SerializedType[]? RefTypes;
     public string UserInformation;
+    public Dictionary<Hash128, List<SerializedType>> ExtractedTypeTrees;
     
     public SerializedFileMetadata(string unityVersion, BuildTarget targetPlatform, bool typeTreeEnabled,
         SerializedType[] types, AssetFileInfo[] assetInfos, AssetPPtr[] scriptTypes,
-        AssetsFileExternal[] externals,SerializedType[]? refTypes, string userInformation)
+        AssetsFileExternal[] externals,SerializedType[]? refTypes, string userInformation, Dictionary<Hash128, List<SerializedType>> extractedTypeTrees)
     {
         UnityVersion = unityVersion;
         TargetPlatform = targetPlatform;
@@ -29,6 +30,7 @@ public sealed class SerializedFileMetadata
         Externals = externals;
         RefTypes = refTypes;
         UserInformation = userInformation;
+        ExtractedTypeTrees = extractedTypeTrees;
     }
     
     public static SerializedFileMetadata Parse(IReader reader, SerializedFileFormatVersion version)
@@ -36,8 +38,9 @@ public sealed class SerializedFileMetadata
         var unityVersion = reader.ReadNullTerminatedString();
         var targetPlatform = (BuildTarget)reader.ReadUInt32();
         var typeTreeEnabled = reader.ReadBoolean();
+        var extractedTypeTrees = new Dictionary<Hash128, List<SerializedType>>();
         var types = reader.ReadArray(
-            r => SerializedType.Parse(r, version, typeTreeEnabled, false)
+            r => SerializedType.Parse(r, version, typeTreeEnabled, false, extractedTypeTrees)
             );
         int assetCount = reader.ReadInt32();
         reader.Align(4);
@@ -48,10 +51,14 @@ public sealed class SerializedFileMetadata
         var scriptTypes = reader.ReadArray(AssetPPtr.Parse);
         var externals = reader.ReadArray(AssetsFileExternal.Parse);
         SerializedType[]? refTypes = version >= SerializedFileFormatVersion.SupportsRefObject ?
-            reader.ReadArray(r => SerializedType.Parse(r, version, typeTreeEnabled, true)) :
+            reader.ReadArray(r => SerializedType.Parse(r, version, typeTreeEnabled, true, extractedTypeTrees)) :
             null;
+        /*if ()
+        {
+            
+        }*/
         var userInformation = reader.ReadNullTerminatedString();
-        return new SerializedFileMetadata(unityVersion, targetPlatform, typeTreeEnabled, types, assetInfos, scriptTypes, externals, refTypes, userInformation);
+        return new SerializedFileMetadata(unityVersion, targetPlatform, typeTreeEnabled, types, assetInfos, scriptTypes, externals, refTypes, userInformation, extractedTypeTrees);
     }
 
     public void Serialize(IWriter writer, SerializedFileFormatVersion version)

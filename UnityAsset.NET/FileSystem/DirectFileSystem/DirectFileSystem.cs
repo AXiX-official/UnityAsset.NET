@@ -2,7 +2,6 @@
 
 public class DirectFileSystem : IFileSystem
 {
-    public bool RecordUnknownFiles { get; set; }
     public IFileSystem.ErrorHandler? OnError { get; set; }
     public List<IVirtualFileInfo> LoadedFiles { get; private set; } = new ();
 
@@ -24,8 +23,7 @@ public class DirectFileSystem : IFileSystem
                 {
                     var file = new DirectFileInfo(path);
                     progress?.Report(new LoadProgress($"DirectFileSystem: Loading {file.Name}", totalFiles, i));
-                    if (file.FileType != FileType.Unknown || RecordUnknownFiles)
-                        files.Add(file);
+                    files.Add(file);
                 }
                 catch (Exception ex)
                 {

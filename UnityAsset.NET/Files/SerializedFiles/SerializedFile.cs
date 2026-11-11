@@ -137,7 +137,7 @@ public sealed class SerializedFile : IFile
 
         var metadata = new SerializedFileMetadata(Metadata.UnityVersion, Metadata.TargetPlatform,
             Metadata.TypeTreeEnabled, types.ToArray(), assetFileInfos.ToArray(), Metadata.ScriptTypes,
-            Metadata.Externals, Metadata.RefTypes, Metadata.UserInformation);
+            Metadata.Externals, Metadata.RefTypes, Metadata.UserInformation, new ());
 
         var metadataSize = CountWriter.Measure(w => metadata.Serialize(w, Header.Version));
         var headerSize = CountWriter.Measure(w => Header.Serialize(w));

@@ -219,6 +219,13 @@ public class AssetManager : IUnitySession, IDisposable
                             VirtualFileToFileMap[file] = serializedFile;
                             break;
                         }
+                        case FileType.ResourceFile:
+                        {
+                            var resourceFile = new CustomFileReaderProvider(file);
+                            fileWrappers.Add((file.Name, resourceFile));
+                            VirtualFileToFileMap[file] = resourceFile;
+                            break;
+                        }
                         default:
                             // An input the sniffer could not place. Dropping it silently used to be the only option, which
                             // made "this file was not read" indistinguishable from "this file held nothing".
@@ -261,6 +268,12 @@ public class AssetManager : IUnitySession, IDisposable
                 _diagnostics.Report(LoadProblem.DuplicateFile,
                     "a file of this name was already loaded, and this copy was dropped",
                     new LoadLocation(path));
+            }
+            
+            foreach (var (_, file) in fileWrappers)
+            {
+                if (file is SerializedFile serializedFile)
+                    serializedFile.ReadExtractedTypeTree(this);
             }
             
             BuildUnityTypes(progress);
@@ -370,7 +383,7 @@ public class AssetManager : IUnitySession, IDisposable
 
                 var typeName = ((AssetClassID)type.TypeID).ToString();
 
-                if (typeTreeEnabled && type.Nodes.Length > 0)
+                if (typeTreeEnabled && type.Nodes?.Length > 0)
                 {
                     var repr = TypeTreeIntern.TryGet(type.TypeHash, out var entry) && entry.Repr is { } internedRepr
                         ? internedRepr

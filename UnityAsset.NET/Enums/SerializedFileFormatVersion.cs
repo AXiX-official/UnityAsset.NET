@@ -76,5 +76,21 @@ public enum SerializedFileFormatVersion
     /// <summary>
     /// 2020.1 to x
     /// </summary>
-    LargeFilesSupport = 22
+    LargeFilesSupport = 22,
+    /// <summary>
+    /// 6000.5.0a5 to 6000.6
+    /// </summary>
+    ExtractedTypeTreeSupport = 23,
+    /// <summary>
+    /// 6000.7.0a6
+    /// </summary>
+    IndependentTypeTreeVersion = 24,
+    /// <summary>
+    /// 6000.7.0a6
+    /// </summary>
+    SerializeReferenceRegistryFirst = 25,
+    /// <summary>
+    /// 6000.7.0b2 to x
+    /// </summary>
+    SharedSubTreeSupport = 26,
 }

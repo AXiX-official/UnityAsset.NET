@@ -2,7 +2,6 @@
 {
     public interface IFileSystem
     {
-        public bool RecordUnknownFiles { get; set; }
         public delegate void ErrorHandler(string filePath, Exception ex, string errorMessage);
         public ErrorHandler? OnError { get; set; }
         public List<IVirtualFileInfo> LoadedFiles { get; }

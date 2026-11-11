@@ -47,6 +47,6 @@ public static class FileTypeHelper
 
         return (long)fileSize == length && (long)dataOffset <= length
             ? FileType.SerializedFile
-            : FileType.Unknown;
+            : FileType.ResourceFile;
     }
 }

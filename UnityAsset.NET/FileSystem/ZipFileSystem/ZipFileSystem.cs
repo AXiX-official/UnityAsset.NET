@@ -28,16 +28,9 @@ public sealed class ZipFileSystem : IFileSystem
     public ZipFileSystem(IFileSystem? source = null, IReadOnlyList<IVirtualFileTransform>? transforms = null)
     {
         _source = source ?? new DirectFileSystem.DirectFileSystem();
-
-        // The source is not allowed to drop an unrecognised file. Whether an input is worth keeping is decided by the
-        // stages and by this instance, and only the finished list knows whether an unrecognised file became something.
-        // The filter therefore runs once, at the end of LoadAsync.
-        _source.RecordUnknownFiles = true;
-
         Transforms = transforms ?? Array.Empty<IVirtualFileTransform>();
     }
-
-    public bool RecordUnknownFiles { get; set; }
+    
 
     public IFileSystem.ErrorHandler? OnError { get; set; }
 
@@ -113,11 +106,6 @@ public sealed class ZipFileSystem : IFileSystem
             ReleaseEntries();
             throw;
         }
-
-        // One filter, at the end: what survives is what a stage claimed or what the sniffer recognised. Filtering
-        // inside the archive layer instead would decide the fate of a file before the stages that understand it ran.
-        if (!RecordUnknownFiles)
-            files = files.Where(file => file.FileType != FileType.Unknown).ToList();
 
         LoadedFiles = files;
         return files;
@@ -196,33 +184,11 @@ public sealed class ZipFileSystem : IFileSystem
             // code, and none of it is a container, so those entries are never inflated beyond the head that refused them.
             var fileType = FileTypeHelper.GetFileType(ReadHead(entry), entry.Length);
 
-            if (!IsWanted(entry.FullName, entry.Length, fileType))
-                continue;
-
             var file = CreateZipFileInfo(archivePath, entry, fileType);
 
             _entries.Add(file);
             into.Add(file);
         }
-    }
-
-    /// <summary>
-    /// Whether an entry is worth inflating: the caller asked for everything, the sniffer recognised it, or a later stage
-    /// claims it. A stage that recognises a format the sniffer cannot (an encrypted container, for example) claims it by
-    /// name here, and would otherwise never be shown the entry at all.
-    /// </summary>
-    private bool IsWanted(string name, long length, FileType fileType)
-    {
-        if (fileType != FileType.Unknown || RecordUnknownFiles)
-            return true;
-
-        foreach (var transform in Transforms)
-        {
-            if (transform.IsInterested(name, length, fileType))
-                return true;
-        }
-
-        return false;
     }
 
     /// <summary>A directory entry carries no content and no name worth reporting.</summary>

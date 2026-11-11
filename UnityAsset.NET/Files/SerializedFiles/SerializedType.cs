@@ -38,7 +38,7 @@ public sealed class SerializedType
         TypeReference = typeReference;
     }
 
-    public static SerializedType Parse(IReader reader, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType)
+    public static SerializedType Parse(IReader reader, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType, Dictionary<Hash128, List<SerializedType>> extractedTypeTrees)
     {
         var typeId = reader.ReadInt32();
         var isStrippedType = reader.ReadBoolean();
@@ -54,25 +54,23 @@ public sealed class SerializedType
         byte[]? stringBufferBytes = null;
         int[]? typeDependencies = null;
         SerializedTypeReference? typeReference = null;
+        Hash128? typeTreeHash = null;
         if (typeTreeEnabled)
         {
-            int typeTreeNodeCount = reader.ReadInt32();
-            int stringBufferLen = reader.ReadInt32();
-            nodes = reader.ReadArray(typeTreeNodeCount, TypeTreeNode.Parse);
-            stringBufferBytes = reader.ReadBytes(stringBufferLen);
-            MemoryReader sr = new MemoryReader(stringBufferBytes);
-            for (int i = 0; i < typeTreeNodeCount; i++)
+            if (version >= ExtractedTypeTreeSupport)
             {
-                var node = nodes[i];
-                node.Name = ReadString(sr, node.NameStringOffset);
-                node.Type = ReadString(sr, node.TypeStringOffset);
+                typeTreeHash = new Hash128(reader);
+                var typeTreeSize = reader.ReadInt32();
+                if (typeTreeSize != 0)
+                {
+                    ReadTypeTreeBlob(reader, version, out nodes, out stringBufferBytes);
+                }
             }
-
-            if (nodes[0].Level != 0)
+            else
             {
-                throw new Exception(
-                    $"The first node of TypeTreeNodes should have a level of 0 but gets {nodes[0].Level}");
+                ReadTypeTreeBlob(reader, version, out nodes, out stringBufferBytes);
             }
+            
 
             if (version >= StoresTypeDependencies)
             {
@@ -82,7 +80,60 @@ public sealed class SerializedType
                     typeDependencies = reader.ReadArray(r => r.ReadInt32());
             }
         }
-        return new SerializedType(typeId, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);
+        var ret = new SerializedType(typeId, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);
+
+        if (version >= ExtractedTypeTreeSupport && nodes.Length == 0)
+        {
+            if (extractedTypeTrees.TryGetValue(typeTreeHash!.Value, out var types))
+            {
+                types.Add(ret);
+            }
+            else
+            {
+                extractedTypeTrees[typeTreeHash.Value] = [ ret ];
+            }
+        }
+        
+        return ret;
+    }
+    
+    internal static void ReadTypeTreeBlob(IReader reader, SerializedFileFormatVersion version, out TypeTreeNode[] nodes, out byte[]? stringBufferBytes)
+    {
+        if (version >= ExtractedTypeTreeSupport)
+            ValidTypeTreeHeader(reader, version);
+        int typeTreeNodeCount = reader.ReadInt32();
+        int stringBufferLen = reader.ReadInt32();
+        nodes = reader.ReadArray(typeTreeNodeCount, r => TypeTreeNode.Parse(r, version));
+        stringBufferBytes = reader.ReadBytes(stringBufferLen);
+        MemoryReader sr = new MemoryReader(stringBufferBytes);
+        for (int i = 0; i < typeTreeNodeCount; i++)
+        {
+            var node = nodes[i];
+            node.Name = ReadString(sr, node.NameStringOffset);
+            node.Type = ReadString(sr, node.TypeStringOffset);
+        }
+
+        if (nodes[0].Level != 0)
+        {
+            throw new Exception(
+                $"The first node of TypeTreeNodes should have a level of 0 but gets {nodes[0].Level}");
+        }
+    }
+
+    private static void ValidTypeTreeHeader(IReader reader, SerializedFileFormatVersion version)
+    {
+        var typeTreeSign = reader.ReadInt32(); //0x7474686d ("tthm")
+        if (typeTreeSign != 0x7474686d)
+            throw new Exception($"Invalid TypeTree signature: {typeTreeSign:X8}");
+        var typeTreeVersion = reader.ReadInt32();
+        if (version < IndependentTypeTreeVersion) //6000.5.0a5 - 6000.7.0a6
+        {
+            var serializedFileVersion = (SerializedFileFormatVersion)typeTreeVersion;
+            if (serializedFileVersion != version)
+            {
+                throw new Exception($"TypeTree version {serializedFileVersion} does not match SerializedFile version {version}");
+            }
+        }
     }
 
     private static string ReadString(IReader reader, uint value)
