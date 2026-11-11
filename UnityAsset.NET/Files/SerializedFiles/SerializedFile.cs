@@ -31,13 +31,14 @@ public sealed class SerializedFile : IFile
         Process();
     }
 
-    public SerializedFile(IVirtualFileInfo fileInfo, string? defaultUnityVersion = null)
+    public SerializedFile(IVirtualFileInfo fileInfo, string? defaultUnityVersion = null,
+        SharedSubTreeTable? sharedSubTrees = null)
     {
         ReaderProvider = new CustomFileReaderProvider(fileInfo);
         var reader = ReaderProvider.CreateReader();
         Header = SerializedFileHeader.Parse(reader);
         reader.Endian = Header.Endianness;
-        Metadata = SerializedFileMetadata.Parse(reader, Header.Version);
+        Metadata = SerializedFileMetadata.Parse(reader, Header.Version, sharedSubTrees);
         if (string.IsNullOrEmpty(Metadata.UnityVersion))
             Metadata.UnityVersion = defaultUnityVersion ?? Setting.DefaultUnityVerion;
         foreach (var assetInfo in Metadata.AssetInfos.AsSpan())
@@ -49,12 +50,13 @@ public sealed class SerializedFile : IFile
         Process();
     }
 
-    public static SerializedFile Parse(BundleFile bf, IReaderProvider readerProvider, string? defaultUnityVersion = null)
+    public static SerializedFile Parse(BundleFile bf, IReaderProvider readerProvider, string? defaultUnityVersion = null,
+        SharedSubTreeTable? sharedSubTrees = null)
     {
         var reader = readerProvider.CreateReader();
         var header = SerializedFileHeader.Parse(reader);
         reader.Endian = header.Endianness;
-        var metadata = SerializedFileMetadata.Parse(reader, header.Version);
+        var metadata = SerializedFileMetadata.Parse(reader, header.Version, sharedSubTrees);
         if (metadata.UnityVersion == "0.0.0")
         {
             metadata.UnityVersion = defaultUnityVersion ?? bf.DefaultUnityVersion ?? Setting.DefaultUnityVerion;

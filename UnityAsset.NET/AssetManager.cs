@@ -48,6 +48,13 @@ public class AssetManager : IUnitySession, IDisposable
     /// </summary>
     private readonly Dictionary<Hash128, string> _unreadableTypes = new();
 
+    /// <summary>
+    /// The shared sub-trees this session has read. One table per session, because a sub-tree hash only means something
+    /// inside one game's build: sharing it across sessions let the second game resolve against the first one's shapes.
+    /// The files of one load share it, which is what makes a type tree extracted from one file resolvable in another.
+    /// </summary>
+    internal SharedSubTreeTable SharedSubTrees { get; } = new();
+
     private int _disposed;
 
     private long InitialBlockCacheBudget => _options.BlockCacheSize ?? Setting.DefaultBlockCacheSize;
@@ -173,7 +180,7 @@ public class AssetManager : IUnitySession, IDisposable
                         case FileType.BundleFile:
                         {
                             var bundleFile = new BundleFile(file, _options.UnityCnKey, _options.DefaultUnityVersion, _blockCache);
-                            bundleFile.ParseFilesWithTypeConversion();
+                            bundleFile.ParseFilesWithTypeConversion(SharedSubTrees);
                             foreach (var fw in bundleFile.Files)
                             {
                                 if (fw.File is SerializedFile parsedFile &&
@@ -190,7 +197,7 @@ public class AssetManager : IUnitySession, IDisposable
                         }
                         case FileType.SerializedFile:
                         {
-                            var serializedFile = new SerializedFile(file, _options.DefaultUnityVersion);
+                            var serializedFile = new SerializedFile(file, _options.DefaultUnityVersion, SharedSubTrees);
                             foreach (var sharedFile in serializedFile.Metadata.Externals)
                             {
                                 var sharedFileName = sharedFile.FileName;
@@ -273,7 +280,7 @@ public class AssetManager : IUnitySession, IDisposable
             foreach (var (_, file) in fileWrappers)
             {
                 if (file is SerializedFile serializedFile)
-                    serializedFile.ReadExtractedTypeTree(this);
+                    serializedFile.ReadExtractedTypeTree(this, SharedSubTrees);
             }
             
             BuildUnityTypes(progress);
@@ -713,6 +720,7 @@ public class AssetManager : IUnitySession, IDisposable
         _factory = null;
         _diagnostics.Clear();
         _unreadableTypes.Clear();
+        SharedSubTrees.Clear();
         VirtualFileToFileMap = new();
         LoadedFiles = new ();
         Version = null;

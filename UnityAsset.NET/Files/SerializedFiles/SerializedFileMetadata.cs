@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Text;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
@@ -17,7 +17,6 @@ public sealed class SerializedFileMetadata
     public SerializedType[]? RefTypes;
     public string UserInformation;
     public Dictionary<Hash128, List<SerializedType>> ExtractedTypeTrees;
-    internal static readonly ConcurrentDictionary<Hash128, SubTreeInfo?> SharedSubTreeInfoDict = new();
     
     public SerializedFileMetadata(string unityVersion, BuildTarget targetPlatform, bool typeTreeEnabled,
         SerializedType[] types, AssetFileInfo[] assetInfos, AssetPPtr[] scriptTypes,
@@ -35,8 +34,17 @@ public sealed class SerializedFileMetadata
         ExtractedTypeTrees = extractedTypeTrees;
     }
     
-    public static SerializedFileMetadata Parse(IReader reader, SerializedFileFormatVersion version)
+    /// <summary>
+    /// Reads one file's metadata. <paramref name="sharedSubTrees"/> is the table this file's sub-tree references resolve
+    /// against; a load passes one table to every file it opens, because a type tree whose blob was extracted names a
+    /// sub-tree that lives in another file. Omitting it gives the parse a table of its own, which keeps a standalone
+    /// read self-contained instead of reaching into whatever some other session happened to parse first.
+    /// </summary>
+    public static SerializedFileMetadata Parse(IReader reader, SerializedFileFormatVersion version,
+        SharedSubTreeTable? sharedSubTrees = null)
     {
+        sharedSubTrees ??= new SharedSubTreeTable();
+
         var unityVersion = reader.ReadNullTerminatedString();
         var targetPlatform = (BuildTarget)reader.ReadUInt32();
         var typeTreeEnabled = reader.ReadBoolean();
@@ -66,7 +74,7 @@ public sealed class SerializedFileMetadata
                 var subTreeInfo = subTreeBlobSize > 0
                     ? SubTreeInfo.Parse(reader, version)
                     : null; //extracted subTree
-                SharedSubTreeInfoDict.TryAdd(subTreeHash, subTreeInfo);
+                sharedSubTrees.TryAdd(subTreeHash, subTreeInfo);
             }
             
             foreach (var serializedType in types)
@@ -75,7 +83,7 @@ public sealed class SerializedFileMetadata
                     continue;
 
                 serializedType.Nodes = ResolveSubTrees(serializedType.Nodes,
-                    serializedType.SubTreeHashList);
+                    serializedType.SubTreeHashList, sharedSubTrees);
             }
         }
         var userInformation = reader.ReadNullTerminatedString();
@@ -83,7 +91,8 @@ public sealed class SerializedFileMetadata
     }
     
     // Based on https://github.com/aelurum/AssetStudioMod
-    internal static TypeTreeNode[] ResolveSubTrees(TypeTreeNode[] nodes, Hash128[] subTreeHashes)
+    internal static TypeTreeNode[] ResolveSubTrees(TypeTreeNode[] nodes, Hash128[] subTreeHashes,
+        SharedSubTreeTable sharedSubTrees)
     {
         var nodeList = nodes.ToList();
         for (var i = 0; i < nodes.Length; i++)
@@ -94,11 +103,11 @@ public sealed class SerializedFileMetadata
                 continue;
 
             var hashIndex = (int)node.RefTypeHash;
-            if (SharedSubTreeInfoDict.TryGetValue(subTreeHashes[hashIndex], out var subTreeInfo) && subTreeInfo is not null)
+            if (sharedSubTrees.TryGet(subTreeHashes[hashIndex], out var subTreeInfo) && subTreeInfo is not null)
             {
                 if (subTreeInfo.SubTreeDependencies.Length > 0)
                 {
-                    subTreeInfo.Nodes = ResolveSubTrees(subTreeInfo.Nodes, subTreeInfo.SubTreeDependencies);
+                    subTreeInfo.Nodes = ResolveSubTrees(subTreeInfo.Nodes, subTreeInfo.SubTreeDependencies, sharedSubTrees);
                 }
                 node.TypeFlags = subTreeInfo.Nodes[0].TypeFlags;
                 for (var k = 1; k < subTreeInfo.Nodes.Length; k++) //skip Base node

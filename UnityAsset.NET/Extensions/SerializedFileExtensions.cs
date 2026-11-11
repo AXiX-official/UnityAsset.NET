@@ -88,7 +88,8 @@ public static class SerializedFileExtensions
     }
 
     // Based on https://github.com/aelurum/AssetStudioMod
-    public static void ReadExtractedTypeTree(this SerializedFile sf, IUnitySession session)
+    public static void ReadExtractedTypeTree(this SerializedFile sf, IUnitySession session,
+        SharedSubTreeTable sharedSubTrees)
     {
         var extractedTypeTrees = sf.Metadata.ExtractedTypeTrees;
         if (extractedTypeTrees.Count == 0) return;
@@ -118,17 +119,16 @@ public static class SerializedFileExtensions
         if (sf.Header.Version >= SerializedFileFormatVersion.SharedSubTreeSupport &&
             notFound.Length < extractedTypeTrees.Count)
         {
-            sf.ReadExtractedSubTree(session);
+            sf.ReadExtractedSubTree(session, sharedSubTrees);
         }
         extractedTypeTrees.Clear();
     }
 
     // Based on https://github.com/aelurum/AssetStudioMod
-    private static void ReadExtractedSubTree(this SerializedFile sf, IUnitySession session)
+    private static void ReadExtractedSubTree(this SerializedFile sf, IUnitySession session,
+        SharedSubTreeTable sharedSubTrees)
     {
-        var sharedSubTreeInfoDict = SerializedFileMetadata.SharedSubTreeInfoDict;
-        var hashes = sharedSubTreeInfoDict.Keys.ToArray();
-        foreach (var subTreeHash in hashes)
+        foreach (var subTreeHash in sharedSubTrees.Hashes)
         {
             if (!session.TryGetLoadedFile(subTreeHash.ToString(), out var file))
                 continue;
@@ -136,7 +136,7 @@ public static class SerializedFileExtensions
             if (file is IReaderProvider readerProvider)
             {
                 var reader = readerProvider.CreateReader(Endianness.LittleEndian);
-                sharedSubTreeInfoDict[subTreeHash] = SubTreeInfo.Parse(reader, sf.Header.Version);
+                sharedSubTrees.Set(subTreeHash, SubTreeInfo.Parse(reader, sf.Header.Version));
             }
         }
         foreach (var serializedType in sf.Metadata.Types)
@@ -144,8 +144,8 @@ public static class SerializedFileExtensions
             if (serializedType.SubTreeHashList.Length == 0)
                 continue;
 
-            serializedType.Nodes =
-                SerializedFileMetadata.ResolveSubTrees(serializedType.Nodes, serializedType.SubTreeHashList);
+            serializedType.Nodes = SerializedFileMetadata.ResolveSubTrees(serializedType.Nodes,
+                serializedType.SubTreeHashList, sharedSubTrees);
         }
     }
 }

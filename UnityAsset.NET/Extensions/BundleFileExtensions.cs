@@ -7,14 +7,14 @@ namespace UnityAsset.NET.Extensions;
 
 public static class BundleFileExtensions
 {
-    public static void ParseFilesWithTypeConversion(this BundleFile bf)
+    public static void ParseFilesWithTypeConversion(this BundleFile bf, SharedSubTreeTable? sharedSubTrees = null)
     {
         for (int i = 0; i < bf.Files.Count; i++)
         {
             var subFile = bf.Files[i];
             if (subFile is { CanBeSerializedFile: true, File: IReaderProvider provider})
             {
-                var sf = SerializedFile.Parse(bf, provider);
+                var sf = SerializedFile.Parse(bf, provider, sharedSubTrees: sharedSubTrees);
                 bf.Files[i] = new FileWrapper(sf, subFile.Info);
             }
         }
