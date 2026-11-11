@@ -53,7 +53,6 @@ public sealed class CountWriter : IWriter
     public void WriteInt8(sbyte value) => Advance(1);
     public void WriteUInt8(byte value) => Advance(1);
     public void WriteBoolean(bool value) => Advance(1);
-    public void WriteChar(char value) => Advance(2);
     public void WriteInt16(short value) => Advance(2);
     public void WriteUInt16(ushort value) => Advance(2);
     public void WriteInt32(int value) => Advance(4);

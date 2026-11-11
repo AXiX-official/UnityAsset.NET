@@ -147,14 +147,6 @@ namespace UnityAsset.NET.IO.Writer
 
         private void Commit(Span<byte> span) => _bufferPos += span.Length;
 
-        public void WriteChar(char value)
-        {
-            var span = Reserve(2);
-            if (BitConverter.IsLittleEndian) BinaryPrimitives.WriteUInt16LittleEndian(span, value);
-            else BinaryPrimitives.WriteUInt16BigEndian(span, value);
-            Commit(span);
-        }
-
         public void WriteInt16(short value)
         {
             var span = Reserve(2);

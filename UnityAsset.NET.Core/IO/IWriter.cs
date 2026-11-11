@@ -37,7 +37,6 @@ namespace UnityAsset.NET.IO
         public void WriteBoolean(bool value) => WriteByte((byte)(value ? 1 : 0));
         public void WriteInt8(sbyte value) => WriteSByte(value);
         public void WriteUInt8(byte value) => WriteByte(value);
-        public void WriteChar(char value) => WriteBytes(BitConverter.GetBytes(value).AsSpan(0, 2));
         public void WriteInt16(short value)
         {
             if (NeedReverse)

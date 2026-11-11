@@ -191,33 +191,6 @@ public sealed class ReadStringContractTests
     }
 
     // ---------------------------------------------------------------------------------------------------------------
-    // char: two bytes, and deliberately not controlled by Endian.
-    // ---------------------------------------------------------------------------------------------------------------
-
-    [Theory]
-    [MemberData(nameof(Implementations))]
-    public void ReadChar_IsTwoBytesAndIgnoresEndian(ReaderImpl impl)
-    {
-        // BitConverter.ToChar follows the host byte order rather than Endian, which is by design — the member is used for
-        // the type tree's own `char`, not for file data whose byte order matters. On this host (x64, little endian)
-        // {41 00} is 'A'; {00 41} is the same two bytes in the other order and therefore 0x4100. Pinpointed so that a
-        // future change to honour Endian is a deliberate one.
-        var littleEndianHost = BitConverter.IsLittleEndian;
-
-        var first = impl.Create([0x41, 0x00, 0x00]);
-        first.Endian = Endianness.BigEndian;
-        Assert.Equal(littleEndianHost ? 'A' : (char)0x4100, first.ReadChar());
-
-        var second = impl.Create([0x41, 0x00, 0x00]);
-        second.Endian = Endianness.LittleEndian;
-        Assert.Equal(littleEndianHost ? 'A' : (char)0x4100, second.ReadChar());
-
-        // Both reads consumed exactly two bytes.
-        Assert.Equal(2, first.Position);
-        Assert.Equal(2, second.Position);
-    }
-
-    // ---------------------------------------------------------------------------------------------------------------
     // Helpers.
     // ---------------------------------------------------------------------------------------------------------------
 

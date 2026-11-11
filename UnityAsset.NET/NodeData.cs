@@ -38,7 +38,7 @@ public class NodeData
                 value = reader.ReadUInt8();
                 break;
             case NodeKind.Char:
-                value = BitConverter.ToChar(reader.ReadSpan(2));
+                value = reader.ReadByte();
                 break;
             case NodeKind.Int16:
                 value = reader.ReadInt16();
@@ -377,7 +377,7 @@ public class NodeData
                 writer.WriteUInt8((byte)value);
                 break;
             case NodeKind.Char:
-                writer.WriteChar((char)value);
+                writer.WriteByte((byte)value);
                 break;
             case NodeKind.Int16:
                 writer.WriteInt16((short)value);

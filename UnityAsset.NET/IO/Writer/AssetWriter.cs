@@ -57,7 +57,6 @@ public sealed class AssetWriterProxy : IAssetWriter
     public void WriteInt8(sbyte value) => _inner.WriteInt8(value);
     public void WriteUInt8(byte value) => _inner.WriteUInt8(value);
     public void WriteBoolean(bool value) => _inner.WriteBoolean(value);
-    public void WriteChar(char value) => _inner.WriteChar(value);
     public void WriteInt16(short value) => _inner.WriteInt16(value);
     public void WriteUInt16(ushort value) => _inner.WriteUInt16(value);
     public void WriteInt32(int value) => _inner.WriteInt32(value);
