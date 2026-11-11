@@ -7,7 +7,7 @@ namespace UnityAsset.NET.Extensions;
 
 public static class SerializedFileExtensions
 {
-    public static void ProcessAssetBundle(this SerializedFile sf)
+    public static void ProcessAssetBundle(this SerializedFile sf, IUnitySession session)
     {
         foreach (var asset in sf.Assets)
         {
@@ -34,9 +34,10 @@ public static class SerializedFileExtensions
                         for (int i = preloadIndex; i < preloadIndex + preloadSize; i++)
                         {
                             var pptr = assetBundle.m_PreloadTable[i];
-                            sf.Containers[pptr.m_PathID] = container;
+                            PlaceContainer(sf, session, pptr.m_FileID, pptr.m_PathID, container);
                         }
                     }
+
                     break;
                 }
                 case "ResourceManager":
@@ -54,13 +55,36 @@ public static class SerializedFileExtensions
                     }
 
                     foreach (var (container, pptr) in resourceManager.m_Container)
-                    {
-                        sf.Containers[pptr.m_PathID] = container;
-                    }
+                        PlaceContainer(sf, session, pptr.m_FileID, pptr.m_PathID, container);
+
                     break;
                 }
             }
         }
+    }
+    
+    internal static void PlaceContainer(SerializedFile source, IUnitySession session, int fileId, long pathId,
+        string container)
+    {
+        if (pathId == 0 || string.IsNullOrEmpty(container))
+            return;
+
+        var target = source;
+        if (fileId > 0)
+        {
+            var externals = source.Metadata.Externals;
+            if (fileId > externals.Length)
+                return;
+
+            if (!session.TryGetLoadedFile(externals[fileId - 1].FileName, out var named) || named is not SerializedFile external)
+                return;
+
+            target = external;
+        }
+
+        // One asset can be named by more than one table. First wins, and the session walks its files in sorted order, so
+        // which name survives does not depend on which container happened to be read first.
+        target.Containers.TryAdd(pathId, container);
     }
 
     // Based on https://github.com/aelurum/AssetStudioMod

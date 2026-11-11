@@ -346,11 +346,12 @@ public class AssetManager : IUnitySession, IDisposable
             }
         }
 
-        // Second pass: AssetBundle processing materialises assets, and its preload table can point into other files,
-        // so every file has to be attached before any of them is processed.
+        // Second pass: the container tables materialise assets, and a pointer can name another file — a Resources entry
+        // lives in the global file but names objects in resources.assets — so every file has to be attached before any
+        // table is processed, and the pass is handed the session to resolve those names.
         foreach (var serializedFile in files)
         {
-            serializedFile.ProcessAssetBundle();
+            serializedFile.ProcessAssetBundle(this);
         }
     }
 

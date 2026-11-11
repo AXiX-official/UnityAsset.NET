@@ -162,7 +162,9 @@ public sealed class ZipFileSystem : IFileSystem
     
     private ZipFileInfo CreateZipFileInfo(string archivePath, ZipArchiveEntry entry, FileType fileType)
     {
-        return entry.Length <= Setting.ZipSpillThreshold
+        // The instance value, not the process one: a caller that moved the threshold did so to change where this load's
+        // bytes go, and reading the global here would make the per-instance property a lie.
+        return entry.Length <= SpillThreshold
             ? ZipFileInfo.InMemory(archivePath, entry.FullName, ReadEntry(entry), fileType)
             : ZipFileInfo.OnDisk(archivePath, entry.FullName, Spill(entry), fileType);
     }
