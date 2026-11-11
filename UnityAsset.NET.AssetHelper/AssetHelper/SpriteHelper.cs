@@ -8,6 +8,7 @@ using UnityAsset.NET.Files;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.IO.Reader;
+using UnityAsset.NET.Types.Predefined.Interfaces;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
 using UnityAsset.NET.Types.PreDefined.Types;
 

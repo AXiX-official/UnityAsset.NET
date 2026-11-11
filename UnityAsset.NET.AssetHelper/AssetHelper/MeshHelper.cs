@@ -5,6 +5,7 @@ using UnityAsset.NET.Enums;
 using UnityAsset.NET.Extensions;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.IO;
+using UnityAsset.NET.Types.Predefined.Interfaces;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
 using UnityAsset.NET.Types.PreDefined.Types;
 using Half = UnityAsset.NET.Extensions.Half;

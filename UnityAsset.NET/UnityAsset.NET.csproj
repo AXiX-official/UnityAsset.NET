@@ -26,9 +26,6 @@
     <ItemGroup>
       <PackageReference Condition="'$(UnityAssetNodeData)' != 'true'" Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
       <PackageReference Condition="'$(UnityAssetNodeData)' != 'true'" Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
-      <PackageReference Include="SixLabors.ImageSharp" Version="4.1.3" />
-      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
-      <PackageReference Include="AssetRipper.TextureDecoder" Version="2.4.0" />
     </ItemGroup>
     
     <ItemGroup>
