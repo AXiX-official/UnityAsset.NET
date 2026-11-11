@@ -5,29 +5,27 @@ namespace UnityAsset.NET.FileSystem.ZipFileSystem;
 
 internal sealed class ZipFileInfo : IVirtualFileInfo, IDisposable
 {
-    private readonly byte[]? _data;
-    private readonly SafeFileHandle? _handle;
+    private readonly Lazy<ZipEntryStorage> _storage;
 
-    private ZipFileInfo(string archivePath, string entryPath, FileType fileType, byte[]? data, SafeFileHandle? handle,
-        string? spillPath)
+    public ZipFileInfo(string archivePath, string entryPath, long length, FileType fileType,
+        Func<ZipFileInfo, ZipEntryStorage> materialise)
     {
+        ArchivePath = archivePath;
+        EntryPath = entryPath;
+        
         Path = archivePath + ZipFileSystem.ArchiveSeparator + entryPath;
         Name = entryPath;
+        Length = length;
         FileType = fileType;
-        _data = data;
-        _handle = handle;
-        SpillPath = spillPath;
-        Length = data?.LongLength ?? RandomAccess.GetLength(handle!);
+
+        _storage = new Lazy<ZipEntryStorage>(() => materialise(this), LazyThreadSafetyMode.ExecutionAndPublication);
     }
 
-    /// <summary>Small enough to keep: the entry was inflated into a buffer.</summary>
-    public static ZipFileInfo InMemory(string archivePath, string entryPath, byte[] data, FileType fileType)
-        => new(archivePath, entryPath, fileType, data, null, null);
+    /// <summary>Where the entry comes from: the archive has to be reopened when the bytes are finally wanted.</summary>
+    internal string ArchivePath { get; }
 
-    /// <summary>Too large for a buffer: the entry was inflated into <paramref name="spillPath"/>.</summary>
-    public static ZipFileInfo OnDisk(string archivePath, string entryPath, string spillPath, FileType fileType)
-        => new(archivePath, entryPath, fileType, null,
-            File.OpenHandle(spillPath, FileMode.Open, FileAccess.Read, FileShare.Read), spillPath);
+    /// <summary>The entry's name inside the archive, as the central directory spells it.</summary>
+    internal string EntryPath { get; }
 
     public SafeFileHandle Handle { get; } = new(IntPtr.Zero, ownsHandle: false);
 
@@ -39,18 +37,59 @@ internal sealed class ZipFileInfo : IVirtualFileInfo, IDisposable
 
     public FileType FileType { get; }
 
-    /// <summary>
-    /// Where the bytes were spilled, or null when they are in memory. The file system that created it deletes it; this
-    /// type only closes the read handle it owns.
-    /// </summary>
-    internal string? SpillPath { get; }
+    /// <summary>Whether the payload has been read yet. An entry nobody opened holds nothing and leaks nothing.</summary>
+    internal bool IsMaterialised => _storage.IsValueCreated;
+
+    /// <summary>Where the bytes were spilled, or null while the entry is unopened or held in a buffer.</summary>
+    internal string? SpillPath => IsMaterialised ? _storage.Value.SpillPath : null;
+
+    /// <summary>A fresh cursor over the payload, materialising it on the first call.</summary>
+    public IVirtualFile GetFile() => _storage.Value.File;
+
+    /// <summary>Releases the payload if there is one. Deleting a spilled file is the file system's job.</summary>
+    public void Dispose()
+    {
+        if (_storage.IsValueCreated)
+            _storage.Value.Dispose();
+    }
+}
+
+/// <summary>
+/// The payload of one entry: a buffer, or a file with the read handle every cursor shares. Which one it is was decided by
+/// the entry's declared length before anything was read, and both answer the same random-access cursor because the
+/// readers seek.
+/// </summary>
+internal sealed class ZipEntryStorage : IDisposable
+{
+    private readonly byte[]? _data;
+    private readonly SafeFileHandle? _handle;
+
+    private ZipEntryStorage(byte[]? data, SafeFileHandle? handle, long length, string? spillPath)
+    {
+        _data = data;
+        _handle = handle;
+        Length = length;
+        SpillPath = spillPath;
+    }
+
+    /// <summary>Small enough to keep: the entry was inflated into a buffer.</summary>
+    public static ZipEntryStorage InMemory(byte[] data) => new(data, null, data.LongLength, null);
+
+    /// <summary>Too large for a buffer: the entry was inflated into <paramref name="spillPath"/>.</summary>
+    public static ZipEntryStorage OnDisk(SafeFileHandle handle, long length, string spillPath)
+        => new(null, handle, length, spillPath);
+
+    public long Length { get; }
+
+    /// <summary>Where the bytes were spilled, or null when they are in a buffer. The file system that created it deletes
+    /// it; this type only closes the read handle it owns.</summary>
+    public string? SpillPath { get; }
 
     /// <summary>
     /// A fresh cursor. A spilled entry shares one read handle the way a file on disk does, so a cursor is a position and
     /// nothing else; an in-memory entry copies nothing either, it points at the same buffer.
     /// </summary>
-    public IVirtualFile GetFile()
-        => _data is { } data ? new MemoryFile(data) : new DirectFileCursor(_handle!, 0, Length);
+    public IVirtualFile File => _data is { } data ? new MemoryFile(data) : new DirectFileCursor(_handle!, 0, Length);
 
     /// <summary>
     /// Closes the read handle. Deleting the spilled file is the file system's job, because it is the one holding the error

@@ -15,8 +15,8 @@ namespace UnityAsset.NET.FileSystem
     }
 
     /// <summary>
-    /// The common case: a stage that only understands containers, so it is interested in exactly what the sniffer
-    /// recognised as one.
+    /// The common case: a stage that only understands containers. It receives every file the load produced, including the
+    /// ones the sniffer could not name, and decides for itself which of them it can decode.
     /// </summary>
     public abstract class VirtualFileTransform : IVirtualFileTransform
     {

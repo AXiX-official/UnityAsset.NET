@@ -160,13 +160,47 @@ public sealed class ZipFileSystem : IFileSystem
         }
     }
     
-    private ZipFileInfo CreateZipFileInfo(string archivePath, ZipArchiveEntry entry, FileType fileType)
+    /// <summary>
+    /// Reads one entry's payload and decides where it lives. This runs on the first <see cref="ZipFileInfo.GetFile"/>, not
+    /// while the archive is being listed, so an entry nothing reads is never inflated — which is what lets an apk be
+    /// listed in full without paying for its resources and code.
+    /// </summary>
+    private ZipEntryStorage Materialise(ZipFileInfo info)
     {
-        // The instance value, not the process one: a caller that moved the threshold did so to change where this load's
-        // bytes go, and reading the global here would make the per-instance property a lie.
-        return entry.Length <= SpillThreshold
-            ? ZipFileInfo.InMemory(archivePath, entry.FullName, ReadEntry(entry), fileType)
-            : ZipFileInfo.OnDisk(archivePath, entry.FullName, Spill(entry), fileType);
+        try
+        {
+            // The archive was opened and closed while it was listed; the entry is looked up again here, which costs a
+            // central-directory parse and nothing more.
+            using var archive = ZipFile.OpenRead(info.ArchivePath);
+            var entry = archive.GetEntry(info.EntryPath)
+                        ?? throw new FileNotFoundException(
+                            $"Entry {info.EntryPath} is no longer in {info.ArchivePath}.");
+
+            // The instance value, not the process one: a caller that moved the threshold did so to change where this
+            // load's bytes go, and reading the global here would make the per-instance property a lie.
+            if (entry.Length <= SpillThreshold)
+                return ZipEntryStorage.InMemory(ReadEntry(entry));
+
+            var spillPath = Spill(entry);
+            try
+            {
+                return ZipEntryStorage.OnDisk(
+                    File.OpenHandle(spillPath, FileMode.Open, FileAccess.Read, FileShare.Read), entry.Length, spillPath);
+            }
+            catch
+            {
+                // Opening what was just written cannot leave the file behind if it fails.
+                TryDelete(spillPath);
+                throw;
+            }
+        }
+        catch (Exception exception)
+        {
+            // A payload that cannot be read is reported where every other file problem is, and then thrown: the caller
+            // asked for bytes that do not exist.
+            OnError?.Invoke(info.Path, exception, $"Fail to read {info.EntryPath}: {exception.Message}");
+            throw;
+        }
     }
 
     private void Expand(string archivePath, List<IVirtualFileInfo> into, IProgress<LoadProgress>? progress)
@@ -182,11 +216,11 @@ public sealed class ZipFileSystem : IFileSystem
             archiveEntries.Add(entry.Name);
             progress?.Report(new LoadProgress($"ZipFileSystem: {entry.FullName}", entries.Count, index + 1));
 
-            // One partially read stream decides the type, and it costs nothing else: an apk is mostly resources and
-            // code, and none of it is a container, so those entries are never inflated beyond the head that refused them.
+            // One partially read stream decides the type; nothing else is read. The payload waits for the first open, so
+            // an entry nobody asks for costs 48 bytes of inflate and no memory.
             var fileType = FileTypeHelper.GetFileType(ReadHead(entry), entry.Length);
 
-            var file = CreateZipFileInfo(archivePath, entry, fileType);
+            var file = new ZipFileInfo(archivePath, entry.FullName, entry.Length, fileType, Materialise);
 
             _entries.Add(file);
             into.Add(file);
@@ -263,23 +297,27 @@ public sealed class ZipFileSystem : IFileSystem
             // The handle has to go before the file can be deleted on Windows, so this order is not cosmetic.
             entry.Dispose();
 
-            if (entry.SpillPath is not { } spillPath)
-                continue;
-
-            try
-            {
-                File.Delete(spillPath);
-            }
-            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-            {
-                // A temp file that will not delete is reported rather than hidden: it is the caller's disk, and a temp
-                // directory quietly filling up is exactly the kind of failure that is only noticed when it is too late.
-                OnError?.Invoke(spillPath, exception,
-                    $"Fail to delete spilled entry {spillPath}: {exception.Message}");
-            }
+            if (entry.SpillPath is { } spillPath)
+                TryDelete(spillPath);
         }
 
         _entries.Clear();
+    }
+
+    /// <summary>
+    /// Deletes a spilled payload. A temp file that will not delete is reported rather than hidden: it is the caller's
+    /// disk, and a temp directory quietly filling up is the kind of failure only noticed when it is too late.
+    /// </summary>
+    private void TryDelete(string spillPath)
+    {
+        try
+        {
+            File.Delete(spillPath);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            OnError?.Invoke(spillPath, exception, $"Fail to delete spilled entry {spillPath}: {exception.Message}");
+        }
     }
     
     public List<IVirtualFileInfo> LoadFile(List<string> paths)
@@ -300,7 +338,7 @@ public sealed class ZipFileSystem : IFileSystem
                 var entry = archive.GetEntry(entryName);
                 if (entry is null) continue;
                 var fileType = FileTypeHelper.GetFileType(ReadHead(entry), entry.Length);
-                addedFiles.Add(CreateZipFileInfo(group.Key, entry, fileType));
+                addedFiles.Add(new ZipFileInfo(group.Key, entry.FullName, entry.Length, fileType, Materialise));
             }
         }
 
