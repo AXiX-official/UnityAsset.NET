@@ -1,4 +1,4 @@
-using UnityAsset.NET.AssetHelper;
+using UnityAsset.NET.Enums;
 using UnityAsset.NET.Files.SerializedFiles;
 using UnityAsset.NET.IO;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
@@ -63,6 +63,7 @@ public static class SerializedFileExtensions
         }
     }
 
+    // Based on https://github.com/aelurum/AssetStudioMod
     public static void ReadExtractedTypeTree(this SerializedFile sf, IUnitySession session)
     {
         var extractedTypeTrees = sf.Metadata.ExtractedTypeTrees;
@@ -81,11 +82,46 @@ public static class SerializedFileExtensions
                     SerializedType.ReadTypeTreeBlob(reader, sf.Header.Version, out var nodes, out var stringBufferBytes);
                     serializedType.Nodes = nodes;
                     serializedType.StringBufferBytes = stringBufferBytes;
+                    if (sf.Header.Version >= SerializedFileFormatVersion.SharedSubTreeSupport)
+                    {
+                        serializedType.SubTreeHashList = reader.ReadArray(r => new Hash128(r));
+                    }
                 }
                 extractedTypeTrees[hash] = [];
             }
         }
         var notFound = extractedTypeTrees.Where(x => x.Value.Count != 0).ToArray();
+        if (sf.Header.Version >= SerializedFileFormatVersion.SharedSubTreeSupport &&
+            notFound.Length < extractedTypeTrees.Count)
+        {
+            sf.ReadExtractedSubTree(session);
+        }
         extractedTypeTrees.Clear();
+    }
+
+    // Based on https://github.com/aelurum/AssetStudioMod
+    private static void ReadExtractedSubTree(this SerializedFile sf, IUnitySession session)
+    {
+        var sharedSubTreeInfoDict = SerializedFileMetadata.SharedSubTreeInfoDict;
+        var hashes = sharedSubTreeInfoDict.Keys.ToArray();
+        foreach (var subTreeHash in hashes)
+        {
+            if (!session.TryGetLoadedFile(subTreeHash.ToString(), out var file))
+                continue;
+
+            if (file is IReaderProvider readerProvider)
+            {
+                var reader = readerProvider.CreateReader(Endianness.LittleEndian);
+                sharedSubTreeInfoDict[subTreeHash] = SubTreeInfo.Parse(reader, sf.Header.Version);
+            }
+        }
+        foreach (var serializedType in sf.Metadata.Types)
+        {
+            if (serializedType.SubTreeHashList.Length == 0)
+                continue;
+
+            serializedType.Nodes =
+                SerializedFileMetadata.ResolveSubTrees(serializedType.Nodes, serializedType.SubTreeHashList);
+        }
     }
 }

@@ -70,7 +70,7 @@ public sealed class SerializedFile : IFile
         return sf;
     }
 
-    public void Process()
+    private void Process()
     {
         foreach (var asset in Assets)
         {

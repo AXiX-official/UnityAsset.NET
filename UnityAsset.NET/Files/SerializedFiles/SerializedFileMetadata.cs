@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
+using System.Text;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.IO;
 
@@ -16,6 +17,7 @@ public sealed class SerializedFileMetadata
     public SerializedType[]? RefTypes;
     public string UserInformation;
     public Dictionary<Hash128, List<SerializedType>> ExtractedTypeTrees;
+    internal static readonly ConcurrentDictionary<Hash128, SubTreeInfo?> SharedSubTreeInfoDict = new();
     
     public SerializedFileMetadata(string unityVersion, BuildTarget targetPlatform, bool typeTreeEnabled,
         SerializedType[] types, AssetFileInfo[] assetInfos, AssetPPtr[] scriptTypes,
@@ -53,12 +55,67 @@ public sealed class SerializedFileMetadata
         SerializedType[]? refTypes = version >= SerializedFileFormatVersion.SupportsRefObject ?
             reader.ReadArray(r => SerializedType.Parse(r, version, typeTreeEnabled, true, extractedTypeTrees)) :
             null;
-        /*if ()
+        // Based on https://github.com/aelurum/AssetStudioMod
+        if (version >= SerializedFileFormatVersion.SharedSubTreeSupport)
         {
+            var sharedSubtreeCount = reader.ReadUInt32();
+            for (var i = 0; i < sharedSubtreeCount; i++)
+            {
+                var subTreeHash = new Hash128(reader);
+                var subTreeBlobSize = reader.ReadInt32();
+                var subTreeInfo = subTreeBlobSize > 0
+                    ? SubTreeInfo.Parse(reader, version)
+                    : null; //extracted subTree
+                SharedSubTreeInfoDict.TryAdd(subTreeHash, subTreeInfo);
+            }
             
-        }*/
+            foreach (var serializedType in types)
+            {
+                if (serializedType.SubTreeHashList.Length == 0)
+                    continue;
+
+                serializedType.Nodes = ResolveSubTrees(serializedType.Nodes,
+                    serializedType.SubTreeHashList);
+            }
+        }
         var userInformation = reader.ReadNullTerminatedString();
         return new SerializedFileMetadata(unityVersion, targetPlatform, typeTreeEnabled, types, assetInfos, scriptTypes, externals, refTypes, userInformation, extractedTypeTrees);
+    }
+    
+    // Based on https://github.com/aelurum/AssetStudioMod
+    internal static TypeTreeNode[] ResolveSubTrees(TypeTreeNode[] nodes, Hash128[] subTreeHashes)
+    {
+        var nodeList = nodes.ToList();
+        for (var i = 0; i < nodes.Length; i++)
+        {
+            var node = nodes[i];
+            var isSharedSubTreeNode = ((int)node.TypeFlags & 0x20) != 0;
+            if (!isSharedSubTreeNode)
+                continue;
+
+            var hashIndex = (int)node.RefTypeHash;
+            if (SharedSubTreeInfoDict.TryGetValue(subTreeHashes[hashIndex], out var subTreeInfo) && subTreeInfo is not null)
+            {
+                if (subTreeInfo.SubTreeDependencies.Length > 0)
+                {
+                    subTreeInfo.Nodes = ResolveSubTrees(subTreeInfo.Nodes, subTreeInfo.SubTreeDependencies);
+                }
+                node.TypeFlags = subTreeInfo.Nodes[0].TypeFlags;
+                for (var k = 1; k < subTreeInfo.Nodes.Length; k++) //skip Base node
+                {
+                    var subTreeNode = new TypeTreeNode(subTreeInfo.Nodes[k]); //deep copy
+                    subTreeNode.Level += node.Level;
+                    subTreeNode.Index = node.Index + (uint)k;
+                    nodeList.Insert(i + k, subTreeNode);
+                }
+                i += subTreeInfo.Nodes.Length - 1;
+            }
+            else
+            {
+                throw new IOException($"Can't find a shared subtree for the \"{node.Type}\" type");
+            }
+        }
+        return nodeList.ToArray();
     }
 
     public void Serialize(IWriter writer, SerializedFileFormatVersion version)

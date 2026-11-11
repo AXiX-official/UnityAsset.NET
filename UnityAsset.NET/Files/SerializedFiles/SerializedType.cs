@@ -19,8 +19,9 @@ public sealed class SerializedType
     public int[]? TypeDependencies;
     public SerializedTypeReference? TypeReference;
     public bool IsNamed;
+    public Hash128[] SubTreeHashList;
 
-    public SerializedType(Int32 typeId, bool isStrippedType, Int16 scriptTypeIndex, Hash128? scriptIdHash, Hash128 typeHash, bool isRefType, TypeTreeNode[] nodes, byte[]? stringBufferBytes, int[]? typeDependencies, SerializedTypeReference? typeReference)
+    public SerializedType(Int32 typeId, bool isStrippedType, Int16 scriptTypeIndex, Hash128? scriptIdHash, Hash128 typeHash, bool isRefType, TypeTreeNode[] nodes, byte[]? stringBufferBytes, int[]? typeDependencies, SerializedTypeReference? typeReference, Hash128[] subTreeHashList)
     {
         TypeID = typeId;
         IsStrippedType = isStrippedType;
@@ -36,6 +37,8 @@ public sealed class SerializedType
         StringBufferBytes = stringBufferBytes;
         TypeDependencies = typeDependencies;
         TypeReference = typeReference;
+        
+        SubTreeHashList = subTreeHashList;
     }
 
     public static SerializedType Parse(IReader reader, SerializedFileFormatVersion version, bool typeTreeEnabled, bool isRefType, Dictionary<Hash128, List<SerializedType>> extractedTypeTrees)
@@ -55,6 +58,8 @@ public sealed class SerializedType
         int[]? typeDependencies = null;
         SerializedTypeReference? typeReference = null;
         Hash128? typeTreeHash = null;
+        bool IsTypeTreeExtracted = false;
+        Hash128[] subTreeHashList = [];
         if (typeTreeEnabled)
         {
             if (version >= ExtractedTypeTreeSupport)
@@ -65,12 +70,18 @@ public sealed class SerializedType
                 {
                     ReadTypeTreeBlob(reader, version, out nodes, out stringBufferBytes);
                 }
+
+                if (nodes.Length == 0) IsTypeTreeExtracted = true;
             }
             else
             {
                 ReadTypeTreeBlob(reader, version, out nodes, out stringBufferBytes);
             }
-            
+
+            if (version >= SharedSubTreeSupport && IsTypeTreeExtracted)
+            {
+                subTreeHashList = reader.ReadArray(r => new Hash128(r));
+            }
 
             if (version >= StoresTypeDependencies)
             {
@@ -80,9 +91,9 @@ public sealed class SerializedType
                     typeDependencies = reader.ReadArray(r => r.ReadInt32());
             }
         }
-        var ret = new SerializedType(typeId, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference);
+        var ret = new SerializedType(typeId, isStrippedType, scriptTypeIndex, scriptIdHash, typeHash, isRefType, nodes, stringBufferBytes, typeDependencies, typeReference, subTreeHashList);
 
-        if (version >= ExtractedTypeTreeSupport && nodes.Length == 0)
+        if (IsTypeTreeExtracted)
         {
             if (extractedTypeTrees.TryGetValue(typeTreeHash!.Value, out var types))
             {

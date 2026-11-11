@@ -33,6 +33,19 @@ public class TypeTreeNode
         RefTypeHash = refTypeHash;
     }
 
+    public TypeTreeNode(TypeTreeNode node)
+    {
+        Version = node.Version;
+        Level = node.Level;
+        TypeFlags = node.TypeFlags;
+        TypeStringOffset = node.TypeStringOffset;
+        NameStringOffset = node.NameStringOffset;
+        ByteSize = node.ByteSize;
+        Index = node.Index;
+        MetaFlags = node.MetaFlags;
+        RefTypeHash = node.RefTypeHash;
+    }
+
     public static TypeTreeNode Parse(IReader reader, SerializedFileFormatVersion version) => new(
         reader.ReadUInt16(),
         reader.ReadByte(),

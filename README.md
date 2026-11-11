@@ -504,7 +504,7 @@ dotnet test tests/UnityAsset.NET.Tests/UnityAsset.NET.Tests.csproj
 This project stands on the shoulders of these amazing open-source projects:
 
 - [Studio](https://github.com/RazTools/Studio) by [Razmoth](https://github.com/RazTools)
-- [AssetStudio](https://github.com/aelurum/AssetStudio) by [aelurum](https://github.com/aelurum)
+- [AssetStudioMod](https://github.com/aelurum/AssetStudio) by [aelurum](https://github.com/aelurum)
 - [AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET) by [nesrak1](https://github.com/nesrak1)
 - [UnityPy](https://github.com/K0lb3/UnityPy) by [K0lb3](https://github.com/K0lb3)
 - [Tpk](https://github.com/AssetRipper/Tpk) and [TypeTreeDumps](https://github.com/AssetRipper/TypeTreeDumps) by [ds5678](https://github.com/ds5678)
