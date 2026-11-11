@@ -1,9 +1,4 @@
-using System.Numerics;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Drawing;
-using SixLabors.ImageSharp.Drawing.Processing;
+using SkiaSharp;
 using UnityAsset.NET.Files;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.IO;
@@ -59,7 +54,7 @@ public static class SpriteHelper
         }
     }
     
-    public static Image<Bgra32> GetImage(IUnitySession session, ISprite m_Sprite, IVirtualFileInfo? src)
+    public static SKBitmap GetImage(IUnitySession session, ISprite m_Sprite, IVirtualFileInfo? src)
     {
         if (m_Sprite.m_SpriteAtlas.TryGet(session, out var m_SpriteAtlas))
         {
@@ -80,79 +75,120 @@ public static class SpriteHelper
         }
     }
     
-    private static Image<Bgra32> CutImage(IUnitySession session, ISprite m_Sprite, ITexture2D m_Texture2D, IVirtualFileInfo? src, Rectf textureRect, Vector2f textureRectOffset, float downscaleMultiplier, SpriteSettings settingsRaw)
+    private static SKBitmap CutImage(IUnitySession session, ISprite m_Sprite, ITexture2D m_Texture2D, IVirtualFileInfo? src, Rectf textureRect, Vector2f textureRectOffset, float downscaleMultiplier, SpriteSettings settingsRaw)
     {
-        using var originalImage = session.DecodeTexture2DToImage(m_Texture2D, src, false);
+        using var originalImage = session.DecodeTexture2DToBitmap(m_Texture2D, src, false);
         
-        if (downscaleMultiplier > 0f && downscaleMultiplier != 1f)
+        SKBitmap? resized = null;
+        try
         {
-            var width = (int)(m_Texture2D.m_Width / downscaleMultiplier);
-            var height = (int)(m_Texture2D.m_Height / downscaleMultiplier);
-            originalImage.Mutate(x => x.Resize(width, height));
-        }
-        var rectX = (int)Math.Floor(textureRect.x);
-        var rectY = (int)Math.Floor(textureRect.y);
-        var rectRight = (int)Math.Ceiling(textureRect.x + textureRect.width);
-        var rectBottom = (int)Math.Ceiling(textureRect.y + textureRect.height);
-        rectRight = Math.Min(rectRight, originalImage.Width);
-        rectBottom = Math.Min(rectBottom, originalImage.Height);
-        var rect = new Rectangle(rectX, rectY, rectRight - rectX, rectBottom - rectY);
-        var spriteImage = originalImage.Clone(x => x.Crop(rect));
-        if (settingsRaw.packed == 1)
-        {
-            //RotateAndFlip
-            switch (settingsRaw.packingRotation)
+            var source = originalImage;
+            if (downscaleMultiplier > 0f && downscaleMultiplier != 1f)
             {
-                case SpritePackingRotation.FlipHorizontal:
-                    spriteImage.Mutate(x => x.Flip(FlipMode.Horizontal));
-                    break;
-                case SpritePackingRotation.FlipVertical:
-                    spriteImage.Mutate(x => x.Flip(FlipMode.Vertical));
-                    break;
-                case SpritePackingRotation.Rotate180:
-                    spriteImage.Mutate(x => x.Rotate(180));
-                    break;
-                case SpritePackingRotation.Rotate90:
-                    spriteImage.Mutate(x => x.Rotate(270));
-                    break;
+                resized = BitmapHelper.Resize(originalImage,
+                    (int)(m_Texture2D.m_Width / downscaleMultiplier),
+                    (int)(m_Texture2D.m_Height / downscaleMultiplier));
+                source = resized;
             }
-        }
 
-        //Tight
-        if (settingsRaw.packingMode == SpritePackingMode.Tight)
-        {
+            var rectX = (int)Math.Floor(textureRect.x);
+            var rectY = (int)Math.Floor(textureRect.y);
+            var rectRight = (int)Math.Ceiling(textureRect.x + textureRect.width);
+            var rectBottom = (int)Math.Ceiling(textureRect.y + textureRect.height);
+            rectRight = Math.Min(rectRight, source.Width);
+            rectBottom = Math.Min(rectBottom, source.Height);
+
+            var spriteImage = BitmapHelper.Crop(source, new SKRectI(rectX, rectY, rectRight, rectBottom));
             try
             {
-                var triangles = GetTriangles(m_Sprite.m_RD, session.Version!);
-                var polygons = triangles.Select(x => new Polygon(new LinearLineSegment(x.Select(y => new PointF(y.x, y.y)).ToArray()))).ToArray();
-                IPathCollection path = new PathCollection(polygons);
-                var matrix = Matrix3x2.CreateScale(m_Sprite.m_PixelsToUnits);
-                matrix *= Matrix3x2.CreateTranslation(m_Sprite.m_Rect.width * m_Sprite.m_Pivot.x - textureRectOffset.x, m_Sprite.m_Rect.height * m_Sprite.m_Pivot.y - textureRectOffset.y);
-                path = path.Transform(matrix);
-                var options = new DrawingOptions
+                if (settingsRaw.packed == 1)
                 {
-                    GraphicsOptions = new GraphicsOptions
+                    //RotateAndFlip
+                    var rotated = settingsRaw.packingRotation switch
                     {
-                        Antialias = false,
-                        AlphaCompositionMode = PixelAlphaCompositionMode.DestOut
+                        SpritePackingRotation.FlipHorizontal => BitmapHelper.FlipHorizontal(spriteImage),
+                        SpritePackingRotation.FlipVertical => BitmapHelper.FlipVertical(spriteImage),
+                        SpritePackingRotation.Rotate180 => BitmapHelper.Rotate(spriteImage, 180),
+                        SpritePackingRotation.Rotate90 => BitmapHelper.Rotate(spriteImage, 270),
+                        _ => null
+                    };
+
+                    if (rotated is not null)
+                    {
+                        spriteImage.Dispose();
+                        spriteImage = rotated;
                     }
-                };
-                using var mask = new Image<Bgra32>(rect.Width, rect.Height, Color.Black.ToPixel<Bgra32>());
-                mask.Mutate(x => x.Fill(options, Color.Red, path));
-                var bursh = new ImageBrush(mask);
-                spriteImage.Mutate(x => x.Fill(options, bursh));
-                spriteImage.Mutate(x => x.Flip(FlipMode.Vertical));
-                return spriteImage;
+                }
+
+                //Tight
+                if (settingsRaw.packingMode == SpritePackingMode.Tight)
+                {
+                    try
+                    {
+                        PunchOut(session, m_Sprite, spriteImage, textureRectOffset);
+                    }
+                    catch
+                    {
+                        // Tight masking is best effort, as it always was: a sprite whose mesh cannot be read is still a
+                        // rectangle, and that is better than no sprite at all.
+                    }
+                }
+
+                var flipped = BitmapHelper.FlipVertical(spriteImage);
+                spriteImage.Dispose();
+                return flipped;
             }
             catch
             {
-                // ignored
+                spriteImage.Dispose();
+                throw;
             }
         }
+        finally
+        {
+            resized?.Dispose();
+        }
+    }
 
-        //Rectangle
-        spriteImage.Mutate(x => x.Flip(FlipMode.Vertical));
-        return spriteImage;
+    /// <summary>
+    /// Removes the area outside the sprite's own triangles, which is what makes a sprite packed in a tight atlas come out
+    /// as its silhouette instead of a rectangle. The mesh is in sprite pixels, so it is scaled by pixels-to-units and
+    /// moved to the sprite's pivot, exactly as the original drawing did.
+    /// </summary>
+    private static void PunchOut(IUnitySession session, ISprite m_Sprite, SKBitmap spriteImage, Vector2f textureRectOffset)
+    {
+        var path = new SKPath();
+        try
+        {
+            foreach (var triangle in GetTriangles(m_Sprite.m_RD, session.Version!))
+            {
+                path.MoveTo(triangle[0].x, triangle[0].y);
+                path.LineTo(triangle[1].x, triangle[1].y);
+                path.LineTo(triangle[2].x, triangle[2].y);
+                path.Close();
+            }
+
+            var matrix = SKMatrix.CreateScale(m_Sprite.m_PixelsToUnits, m_Sprite.m_PixelsToUnits);
+            matrix = matrix.PostConcat(SKMatrix.CreateTranslation(
+                m_Sprite.m_Rect.width * m_Sprite.m_Pivot.x - textureRectOffset.x,
+                m_Sprite.m_Rect.height * m_Sprite.m_Pivot.y - textureRectOffset.y));
+            path.Transform(matrix);
+
+            using var canvas = new SKCanvas(spriteImage);
+            using var paint = new SKPaint
+            {
+                // DestOut keeps the destination minus the drawn area, which is the punch-out; the antialiasing is off to
+                // match the hard mask the previous renderer built.
+                BlendMode = SKBlendMode.DstOut,
+                IsAntialias = false,
+                Color = SKColors.Black
+            };
+            canvas.DrawPath(path, paint);
+        }
+        finally
+        {
+            path.Dispose();
+        }
     }
     
     private static Vector2f[][] GetTriangles(ISpriteRenderData m_RD, UnityRevision version)

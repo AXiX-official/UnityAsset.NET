@@ -16,6 +16,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\UnityAsset.NET\UnityAsset.NET.csproj" />
+    <ProjectReference Include="..\..\UnityAsset.NET.AssetHelper\UnityAsset.NET.AssetHelper.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,4 @@
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 using UnityAsset.NET.Enums;
 using UnityAsset.NET.FileSystem;
 using UnityAsset.NET.Types.PreDefined.Interfaces;
@@ -21,20 +19,14 @@ public static class AssetManagerExtension
         return TextureHelper.TextureHelper.Decode(imageData, tex.m_Width, tex.m_Height, (TextureFormat)tex.m_TextureFormat, buildTarget);
     }
     
-    /// <summary>Decodes a texture into an image, optionally flipping it the way Unity stores it.</summary>
-    public static Image<Bgra32> DecodeTexture2DToImage(this IUnitySession session, ITexture2D tex, IVirtualFileInfo? src, bool flip = true)
+    /// <summary>Decodes a texture into a bitmap, optionally flipping it the way Unity stores it.</summary>
+    public static SKBitmap DecodeTexture2DToBitmap(this IUnitySession session, ITexture2D tex, IVirtualFileInfo? src, bool flip = true)
     {
         var imgData = session.DecodeTexture2D(tex, src);
-        var image = Image.LoadPixelData<Bgra32>(imgData, tex.m_Width, tex.m_Height);
-        if (flip)
-            image.Mutate(x => x.Flip(FlipMode.Vertical));
-        return image;
+        return BitmapHelper.FromBytes(imgData, tex.m_Width, tex.m_Height, flip);
     }
     
     /// <summary>Decodes the texture a sprite points at, cropped to the sprite rectangle.</summary>
-    public static Image<Bgra32> DecodeSpriteToImage(this IUnitySession session, ISprite sprite, IVirtualFileInfo? src)
-    {
-        var image = SpriteHelper.GetImage(session, sprite, src);
-        return image;
-    }
+    public static SKBitmap DecodeSpriteToImage(this IUnitySession session, ISprite sprite, IVirtualFileInfo? src)
+        => SpriteHelper.GetImage(session, sprite, src);
 }
